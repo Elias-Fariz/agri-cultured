@@ -20,17 +20,21 @@ func _unhandled_input(event: InputEvent) -> void:
 		_try_till()
 
 func _try_till() -> void:
-	var p := player.global_position
-	var facing: Vector2 = player.facing
-	var target_pos := p + facing * float(tile_size)
+	# Convert player world position to the tile cell they are standing on
+	var player_cell: Vector2i = ground.local_to_map(ground.to_local(player.global_position))
 
-	var cell: Vector2i = ground.local_to_map(ground.to_local(target_pos))
+	# Convert facing (Vector2) to a grid step (Vector2i)
+	var step := Vector2i(int(player.facing.x), int(player.facing.y))
 
-	var current_source := ground.get_cell_source_id(layer, cell)
-	var current_atlas := ground.get_cell_atlas_coords(layer, cell)
+	# Target is exactly 1 tile in front
+	var target_cell := player_cell + step
+
+	# Read what's currently on that cell
+	var current_source: int = ground.get_cell_source_id(layer, target_cell)
+	var current_atlas: Vector2i = ground.get_cell_atlas_coords(layer, target_cell)
 
 	if current_source == source_id and current_atlas == grass_coords:
-		ground.set_cell(layer, cell, source_id, tilled_coords)
-		print("Tilled tile at cell: ", cell)
+		ground.set_cell(layer, target_cell, source_id, tilled_coords)
+		print("Tilled tile at cell: ", target_cell)
 	else:
-		print("No till: cell=", cell, " source=", current_source, " atlas=", current_atlas)
+		print("No till: cell=", target_cell, " source=", current_source, " atlas=", current_atlas)
