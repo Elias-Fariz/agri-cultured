@@ -1,0 +1,31 @@
+[gd_scene load_steps=2 format=3 uid="uid://dtrn2d385g5ul"]
+
+[ext_resource type="Script" uid="uid://dlvlsny2mv821" path="res://scripts/InventoryUI.gd" id="1_w7o80"]
+
+[node name="InventoryUI" type="CanvasLayer"]
+script = ExtResource("1_w7o80")
+
+[node name="Panel" type="Panel" parent="."]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Inventory" type="Label" parent="Panel/VBoxContainer"]
+layout_mode = 2
+
+[node name="ItemList" type="ItemList" parent="Panel/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3

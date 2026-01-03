@@ -1,10 +1,11 @@
-[gd_scene load_steps=9 format=3 uid="uid://bjx6v0gjfwt2h"]
+[gd_scene load_steps=10 format=3 uid="uid://bjx6v0gjfwt2h"]
 
 [ext_resource type="Texture2D" uid="uid://bvwrrj2bcxwqh" path="res://art/wood.PNG" id="1_4ogyy"]
 [ext_resource type="Script" uid="uid://kt4as8ri4s71" path="res://scripts/House.gd" id="1_hk67c"]
 [ext_resource type="PackedScene" uid="uid://dv7wem6ftpvdd" path="res://tscn/Player.tscn" id="3_jpwvr"]
 [ext_resource type="Script" uid="uid://t8o1qvqbjqpc" path="res://scripts/DoorToFarm.gd" id="4_jpwvr"]
 [ext_resource type="Texture2D" uid="uid://bq8o1e8mbe7qm" path="res://art/door.PNG" id="5_anwwx"]
+[ext_resource type="PackedScene" uid="uid://dtrn2d385g5ul" path="res://ui/InventoryUI.tscn" id="6_8rafo"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_bfwu5"]
 texture = ExtResource("1_4ogyy")
@@ -39,3 +40,5 @@ texture = ExtResource("5_anwwx")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DoorToFarm"]
 shape = SubResource("RectangleShape2D_eym5a")
+
+[node name="InventoryUI" parent="." instance=ExtResource("6_8rafo")]

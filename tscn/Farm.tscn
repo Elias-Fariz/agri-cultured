@@ -1,11 +1,13 @@
-[gd_scene load_steps=10 format=3 uid="uid://6ni01dvcs2m2"]
+[gd_scene load_steps=14 format=3 uid="uid://6ni01dvcs2m2"]
 
 [ext_resource type="Script" uid="uid://cevvm7fnmvrhe" path="res://scripts/Farm.gd" id="1_vobxb"]
 [ext_resource type="Texture2D" uid="uid://bsldlblkqkem5" path="res://art/tiles.png" id="2_mre8b"]
+[ext_resource type="Texture2D" uid="uid://caerjv5h3fdyv" path="res://art/tree.png" id="3_d13le"]
 [ext_resource type="PackedScene" uid="uid://dv7wem6ftpvdd" path="res://tscn/Player.tscn" id="3_vobxb"]
 [ext_resource type="PackedScene" uid="uid://d3xqpf5v6a8cl" path="res://tscn/Chest.tscn" id="5_2ywwf"]
 [ext_resource type="Texture2D" uid="uid://bq8o1e8mbe7qm" path="res://art/door.PNG" id="6_mre8b"]
 [ext_resource type="Script" uid="uid://sh30tjkuwdh7" path="res://scripts/DoorToHouse.gd" id="7_d13le"]
+[ext_resource type="PackedScene" uid="uid://dtrn2d385g5ul" path="res://ui/InventoryUI.tscn" id="8_og6c6"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_pqap4"]
 texture = ExtResource("2_mre8b")
@@ -15,7 +17,19 @@ texture_region_size = Vector2i(32, 32)
 
 [sub_resource type="TileSet" id="TileSet_2c7ny"]
 tile_size = Vector2i(32, 32)
+physics_layer_0/collision_layer = 1
 sources/0 = SubResource("TileSetAtlasSource_pqap4")
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_og6c6"]
+texture = ExtResource("3_d13le")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
+
+[sub_resource type="TileSet" id="TileSet_2ywwf"]
+tile_size = Vector2i(32, 32)
+physics_layer_0/collision_layer = 1
+sources/0 = SubResource("TileSetAtlasSource_og6c6")
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_og6c6"]
 
@@ -26,6 +40,11 @@ script = ExtResource("1_vobxb")
 tile_set = SubResource("TileSet_2c7ny")
 format = 2
 layer_0/tile_data = PackedInt32Array(65537, 0, 0, 131073, 0, 0, 196609, 0, 0, 262145, 0, 0, 327681, 0, 0, 393217, 0, 0, 458753, 0, 0, 65538, 0, 0, 131074, 0, 0, 196610, 0, 0, 262146, 0, 0, 327682, 0, 0, 393218, 0, 0, 458754, 0, 0, 65539, 0, 0, 131075, 0, 0, 196611, 0, 0, 262147, 0, 0, 327683, 0, 0, 393219, 0, 0, 458755, 0, 0, 65540, 0, 0, 131076, 0, 0, 196612, 0, 0, 262148, 0, 0, 327684, 0, 0, 393220, 0, 0, 458756, 0, 0, 65541, 0, 0, 131077, 0, 0, 196613, 0, 0, 262149, 0, 0, 327685, 0, 0, 393221, 0, 0, 458757, 0, 0, 65542, 0, 0, 131078, 0, 0, 196614, 0, 0, 262150, 0, 0, 327686, 0, 0, 393222, 0, 0, 458758, 0, 0, 65543, 0, 0, 131079, 0, 0, 196615, 0, 0, 262151, 0, 0, 327687, 0, 0, 393223, 0, 0, 458759, 0, 0, 65544, 0, 0, 131080, 0, 0, 196616, 0, 0, 262152, 0, 0, 327688, 0, 0, 393224, 0, 0, 458760, 0, 0, 65545, 0, 0, 131081, 0, 0, 196617, 0, 0, 262153, 0, 0, 327689, 0, 0, 393225, 0, 0, 458761, 0, 0, 65546, 0, 0, 131082, 0, 0, 196618, 0, 0, 262154, 0, 0, 327690, 0, 0, 393226, 0, 0, 458762, 0, 0, 65547, 0, 0, 131083, 0, 0, 196619, 0, 0, 262155, 0, 0, 327691, 0, 0, 393227, 0, 0, 458763, 0, 0, 65548, 0, 0, 131084, 0, 0, 196620, 0, 0, 262156, 0, 0, 327692, 0, 0, 393228, 0, 0, 458764, 0, 0)
+
+[node name="Objects" type="TileMap" parent="."]
+tile_set = SubResource("TileSet_2ywwf")
+format = 2
+layer_0/tile_data = PackedInt32Array(393226, 0, 0, 262152, 0, 0)
 
 [node name="Player" parent="." instance=ExtResource("3_vobxb")]
 
@@ -44,3 +63,5 @@ shape = SubResource("RectangleShape2D_og6c6")
 
 [node name="Spawn" type="Marker2D" parent="."]
 position = Vector2(168, 146)
+
+[node name="InventoryUI" parent="." instance=ExtResource("8_og6c6")]

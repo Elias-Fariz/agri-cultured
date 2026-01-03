@@ -5,7 +5,7 @@
 [ext_resource type="Script" uid="uid://cr1r8q5m1ytb4" path="res://scripts/FacingIndicator.gd" id="3_gqu4d"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_xfidv"]
-size = Vector2(32, 32)
+size = Vector2(31, 31)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_vobxb"]
 size = Vector2(28, 28)

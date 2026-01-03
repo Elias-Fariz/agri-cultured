@@ -11,6 +11,7 @@ var facing: Vector2 = Vector2.DOWN
 
 @onready var sensor: Area2D = $InteractSensor
 @onready var indicator: Node2D = $FacingIndicator
+@onready var inventory_ui = get_tree().current_scene.get_node("InventoryUI")
 
 
 func _ready() -> void:
@@ -39,6 +40,13 @@ func _physics_process(_delta: float) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("interact"):
 		_try_interact()
+		
+	if event.is_action_pressed("open_inventory"):
+		# Refresh UI content then toggle
+		inventory_ui.set_items(GameState.inventory)
+		inventory_ui.toggle_ui()
+		return
+
 
 func _update_sensor_position() -> void:
 	# Keep sensor one "step" in front of the player
