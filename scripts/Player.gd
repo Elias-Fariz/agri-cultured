@@ -9,6 +9,8 @@ var facing: Vector2 = Vector2.DOWN
 # How far in front of the player the interact sensor sits (pixels)
 @export var interact_offset: float = 18.0
 
+@export var exhausted_speed_multiplier: float = 0.4
+
 @onready var sensor: Area2D = $InteractSensor
 @onready var indicator: Node2D = $FacingIndicator
 @onready var inventory_ui = get_tree().current_scene.get_node("InventoryUI")
@@ -20,6 +22,11 @@ func _ready() -> void:
 	indicator.set_direction(facing)
 
 func _physics_process(_delta: float) -> void:
+	if GameState.is_gameplay_locked():
+		velocity = Vector2.ZERO
+		move_and_slide()
+		return
+	
 	var input := Vector2(
 		Input.get_action_strength("move_right") - Input.get_action_strength("move_left"),
 		Input.get_action_strength("move_down") - Input.get_action_strength("move_up")
@@ -34,7 +41,11 @@ func _physics_process(_delta: float) -> void:
 		_update_sensor_position()
 		indicator.set_direction(facing)
 
-	velocity = input.normalized() * speed
+	var mult := 1.0
+	if GameState.exhausted:
+		mult = exhausted_speed_multiplier
+	velocity = input.normalized() * speed * mult
+	
 	move_and_slide()
 
 func _unhandled_input(event: InputEvent) -> void:

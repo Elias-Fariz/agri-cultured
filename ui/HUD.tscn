@@ -1,0 +1,33 @@
+[gd_scene load_steps=2 format=3 uid="uid://d1qqa5bygrbsp"]
+
+[ext_resource type="Script" uid="uid://c7wv6ccc8b6td" path="res://scripts/HUD.gd" id="1_1x8ju"]
+
+[node name="HUD" type="CanvasLayer"]
+script = ExtResource("1_1x8ju")
+visual_node_path = NodePath("TopRightPanel")
+
+[node name="TopRightPanel" type="PanelContainer" parent="."]
+visible = false
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -40.0
+offset_bottom = 40.0
+grow_horizontal = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TopRightPanel"]
+layout_mode = 2
+
+[node name="TimeLabel" type="Label" parent="TopRightPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="DayLabel" type="Label" parent="TopRightPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="EnergyLabel" type="Label" parent="TopRightPanel/VBoxContainer"]
+layout_mode = 2
+text = "Energy: 5/5"
+
+[node name="WarningLabel" type="Label" parent="TopRightPanel/VBoxContainer"]
+layout_mode = 2
+text = "LOW ENERGY!"

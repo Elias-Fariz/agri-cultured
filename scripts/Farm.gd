@@ -24,18 +24,34 @@ func _unhandled_input(event: InputEvent) -> void:
 		_tool_action()
 
 func _tool_action() -> void:
-	# Grid-perfect target cell: 1 cell in front of player (based on Ground's grid)
+	if GameState.is_gameplay_locked():
+		return
+
+	# If player is exhausted, block tool use completely
+	if GameState.exhausted and GameState.energy <= 0:
+		print("Too exhausted to use tools!")
+		return
+
 	var player_cell: Vector2i = ground.local_to_map(ground.to_local(player.global_position))
 	var step := Vector2i(int(player.facing.x), int(player.facing.y))
 	var target_cell := player_cell + step
 
-	# Priority 1: chop tree if present on Objects TileMap
+	# Priority 1: chop tree if present
 	if _cell_has_tree(target_cell):
+		if not GameState.spend_energy(GameState.tool_action_cost):
+			print("No energy to chop!")
+			return
 		_chop_tree(target_cell)
 		return
 
-	# Priority 2: otherwise till the ground
-	_try_till_ground(target_cell)
+	# Priority 2: till ground (only if it actually changes a tile)
+	if _can_till_ground(target_cell):
+		if not GameState.spend_energy(GameState.tool_action_cost):
+			print("No energy to till!")
+			return
+		_try_till_ground(target_cell)
+	else:
+		print("Nothing to till here.")
 
 func _cell_has_tree(cell: Vector2i) -> bool:
 	# Objects TileMap uses the same cell coordinates if both TileMaps share tile size/origin
@@ -62,4 +78,9 @@ func _try_till_ground(cell: Vector2i) -> void:
 
 	if src == ground_source_id and atlas == grass_coords:
 		ground.set_cell(0, cell, ground_source_id, tilled_coords)
-		print("Tilled tile at cell: ", cell)
+		print("Tilled tile at cell: ", cell) 
+
+func _can_till_ground(cell: Vector2i) -> bool:
+	var src := ground.get_cell_source_id(0, cell)
+	var atlas := ground.get_cell_atlas_coords(0, cell)
+	return (src == ground_source_id and atlas == grass_coords)

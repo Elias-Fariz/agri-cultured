@@ -1,11 +1,15 @@
-[gd_scene load_steps=10 format=3 uid="uid://bjx6v0gjfwt2h"]
+[gd_scene load_steps=15 format=3 uid="uid://bjx6v0gjfwt2h"]
 
 [ext_resource type="Texture2D" uid="uid://bvwrrj2bcxwqh" path="res://art/wood.PNG" id="1_4ogyy"]
 [ext_resource type="Script" uid="uid://kt4as8ri4s71" path="res://scripts/House.gd" id="1_hk67c"]
 [ext_resource type="PackedScene" uid="uid://dv7wem6ftpvdd" path="res://tscn/Player.tscn" id="3_jpwvr"]
 [ext_resource type="Script" uid="uid://t8o1qvqbjqpc" path="res://scripts/DoorToFarm.gd" id="4_jpwvr"]
 [ext_resource type="Texture2D" uid="uid://bq8o1e8mbe7qm" path="res://art/door.PNG" id="5_anwwx"]
+[ext_resource type="PackedScene" uid="uid://ci8kga43aovsx" path="res://ui/DayNightOverlay.tscn" id="6_1y4db"]
 [ext_resource type="PackedScene" uid="uid://dtrn2d385g5ul" path="res://ui/InventoryUI.tscn" id="6_8rafo"]
+[ext_resource type="PackedScene" uid="uid://d1qqa5bygrbsp" path="res://ui/HUD.tscn" id="8_harv6"]
+[ext_resource type="Script" uid="uid://cfol50witfnin" path="res://scripts/Bed.gd" id="9_y3bo4"]
+[ext_resource type="Texture2D" uid="uid://cpkecnwhl7wbm" path="res://art/bed.PNG" id="10_obga2"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_bfwu5"]
 texture = ExtResource("1_4ogyy")
@@ -16,6 +20,9 @@ texture_region_size = Vector2i(32, 32)
 sources/0 = SubResource("TileSetAtlasSource_bfwu5")
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_eym5a"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ur3p0"]
+size = Vector2(32.5, 32)
 
 [node name="House" type="Node2D"]
 script = ExtResource("1_hk67c")
@@ -41,4 +48,19 @@ texture = ExtResource("5_anwwx")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DoorToFarm"]
 shape = SubResource("RectangleShape2D_eym5a")
 
+[node name="DayNightOverlay" parent="." instance=ExtResource("6_1y4db")]
+
 [node name="InventoryUI" parent="." instance=ExtResource("6_8rafo")]
+
+[node name="HUD" parent="." instance=ExtResource("8_harv6")]
+
+[node name="Bed" type="Area2D" parent="."]
+position = Vector2(179, 82)
+script = ExtResource("9_y3bo4")
+
+[node name="Sprite2D" type="Sprite2D" parent="Bed"]
+texture = ExtResource("10_obga2")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Bed"]
+position = Vector2(-0.25, 0)
+shape = SubResource("RectangleShape2D_ur3p0")

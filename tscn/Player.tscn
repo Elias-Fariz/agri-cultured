@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://dv7wem6ftpvdd"]
+[gd_scene load_steps=7 format=3 uid="uid://dv7wem6ftpvdd"]
 
 [ext_resource type="Script" uid="uid://lxxgykutkbm4" path="res://scripts/Player.gd" id="1_vvow5"]
 [ext_resource type="Texture2D" uid="uid://c0nmap1a7vh5i" path="res://art/player.PNG" id="2_kghmo"]
 [ext_resource type="Script" uid="uid://cr1r8q5m1ytb4" path="res://scripts/FacingIndicator.gd" id="3_gqu4d"]
+[ext_resource type="Texture2D" uid="uid://nan0sddf00hl" path="res://art/chest.png" id="4_kghmo"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_xfidv"]
 size = Vector2(31, 31)
@@ -28,3 +29,7 @@ shape = SubResource("RectangleShape2D_vobxb")
 
 [node name="FacingIndicator" type="Node2D" parent="."]
 script = ExtResource("3_gqu4d")
+
+[node name="PointLight2D" type="PointLight2D" parent="."]
+visible = false
+texture = ExtResource("4_kghmo")

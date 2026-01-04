@@ -4,6 +4,8 @@
 
 [node name="InventoryUI" type="CanvasLayer"]
 script = ExtResource("1_w7o80")
+visual_node_path = NodePath("Panel")
+start_visible_in_game = false
 
 [node name="Panel" type="Panel" parent="."]
 visible = false

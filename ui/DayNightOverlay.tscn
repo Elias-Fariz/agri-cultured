@@ -1,0 +1,16 @@
+[gd_scene load_steps=2 format=3 uid="uid://ci8kga43aovsx"]
+
+[ext_resource type="Script" uid="uid://c0nw2arn1r0rl" path="res://scripts/DayNightOverlay.gd" id="1_r28lr"]
+
+[node name="DayNightOverlay" type="CanvasLayer"]
+script = ExtResource("1_r28lr")
+visual_node_path = NodePath("Tint")
+
+[node name="Tint" type="ColorRect" parent="."]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0.5176471, 1)

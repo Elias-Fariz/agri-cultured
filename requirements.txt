@@ -1,0 +1,25 @@
+Phase 1: Gameplay Loop
+- Time/Day Cycle *CHECK*
+- Energy/Stamina System *CHECK*
+- Overlay Generalization to Not Show in Editor *CHECK*
+- Crop Growth
+
+Phase 2: In-Depth World
+- More Destructibles
+- Different Tools
+- Save/Load System
+
+Phase 3: Stardew Feel
+- NPCs
+- Friendship Points
+- Simple Quests
+
+Phase 4: Inventory/UI Polish
+
+Phase 5: Expanding
+- Seasons
+- Weather
+- Fishing
+- Cooking
+- Romance
+- Multiplayer
