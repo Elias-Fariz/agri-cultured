@@ -15,10 +15,6 @@ extends Node2D
 @export var tree_source_id: int = 0        # likely 0 inside Objects TileMap
 @export var tree_coords: Vector2i = Vector2i(0, 0)
 
-# Chop settings
-@export var chops_to_fell: int = 3
-var tree_chops: Dictionary = {}  # { Vector2i: int }
-
 # --- Crop system ---
 @export var crops_source_id: int = 1  # IMPORTANT: set this to crops.png source ID in the Objects TileSet
 
@@ -38,12 +34,85 @@ var crop_defs := {
 var crop_state: Dictionary = {}
 # --- Crop system ---
 
+# --- Destructibles (Objects TileMap) ---
+# Each destructible is defined by: source_id + atlas_coords -> behavior
+# hits: how many tool uses to destroy
+# drop: what goes into inventory
+var destructible_defs := {
+	"tree": {
+		"source_id": 0,
+		"atlas": Vector2i(0, 0),
+		"hits": 3,
+		"drop": "Wood",
+		"tool": GameState.ToolType.AXE,
+	},
+	"rock": {
+		"source_id": 2,
+		"atlas": Vector2i(0, 0),
+		"hits": 2,
+		"drop": "Stone",
+		"tool": GameState.ToolType.PICKAXE,
+	},
+}
+# Chop settings
+@export var chops_to_fell: int = 3
+var destructible_hits: Dictionary = {} # { Vector2i: int }
+# --- Destructibles ---
+
 func _ready() -> void:
+	_load_farm_state()
 	TimeManager.day_changed.connect(_on_day_changed)
 	
 func _on_day_changed(_day: int) -> void:
 	_advance_all_crops_one_day()
 
+func _load_farm_state() -> void:
+	var map := GameState.get_map_state("Farm")
+
+	# -------- FIRST RUN: capture the painted world as the baseline --------
+	if not bool(map.get("has_initialized", false)):
+		print("Farm state not initialized yet. Capturing baseline from painted scene...")
+
+		# Capture whatever is currently painted in the scene
+		map["ground"] = {}
+		_save_tilemap_non_default(ground, map["ground"])
+
+		map["objects"] = {}
+		_save_tilemap_non_default(objects, map["objects"])
+
+		# Crop state starts empty unless you already planted some before saving
+		map["crops"] = {}
+		map["hits"] = {}
+
+		map["has_initialized"] = true
+
+		# Also ensure our runtime dictionaries start clean
+		crop_state.clear()
+		destructible_hits.clear()
+
+		print("Baseline captured. Ground:", map["ground"].size(), " Objects:", map["objects"].size())
+		return
+
+	# -------- NORMAL LOAD: clear and rebuild from saved state --------
+	ground.clear_layer(0)
+	objects.clear_layer(0)
+
+	_load_tilemap_from_dict(ground, map["ground"])
+	_load_tilemap_from_dict(objects, map["objects"])
+
+	# Restore crop_state dictionary
+	crop_state.clear()
+	for key in map["crops"].keys():
+		var cell := GameState.key_to_cell(key)
+		crop_state[cell] = map["crops"][key]
+
+	# Restore partial hits
+	destructible_hits.clear()
+	for key in map["hits"].keys():
+		var cell := GameState.key_to_cell(key)
+		destructible_hits[cell] = int(map["hits"][key])
+
+	print("Loaded Farm state. Ground:", map["ground"].size(), " Objects:", map["objects"].size(), " Crops:", map["crops"].size(), " Hits:", map["hits"].size())
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("tool"):
@@ -64,16 +133,27 @@ func _tool_action() -> void:
 	var step := Vector2i(int(player.facing.x), int(player.facing.y))
 	var target_cell := player_cell + step
 
-	# 1) Trees/rocks first
-	if _cell_has_tree(target_cell):
-		if not GameState.spend_energy(GameState.tool_action_cost):
-			print("No energy to chop!")
+	var dkey := _get_destructible_key_at(target_cell)
+	if dkey != "":
+		var def: Dictionary = destructible_defs[dkey]
+		var required_tool := int(def["tool"])
+
+		if int(GameState.current_tool) != required_tool:
+			print("Wrong tool! Need ", dkey, " tool.")
 			return
-		_chop_tree(target_cell)
+
+		if not GameState.spend_energy(GameState.tool_action_cost):
+			print("No energy to use tools!")
+			return
+
+		_hit_destructible(target_cell, dkey)
 		return
 
 	# 2) Harvest ripe crops
 	if _is_crop_ripe(target_cell):
+		if GameState.current_tool != GameState.ToolType.HOE:
+			print("Need Hoe to harvest.")
+			return
 		if not GameState.spend_energy(GameState.tool_action_cost):
 			print("No energy to harvest!")
 			return
@@ -82,12 +162,49 @@ func _tool_action() -> void:
 
 	# 3) Otherwise till
 	if _can_till_ground(target_cell):
+		if GameState.current_tool != GameState.ToolType.HOE:
+			print("Need Hoe to till.")
+			return
 		if not GameState.spend_energy(GameState.tool_action_cost):
 			print("No energy to till!")
 			return
 		_try_till_ground(target_cell)
+		return
+
 	else:
 		print("Nothing to do here.")
+
+func _get_destructible_key_at(cell: Vector2i) -> String:
+	var src := objects.get_cell_source_id(0, cell)
+	if src == -1:
+		return ""
+
+	var atlas := objects.get_cell_atlas_coords(0, cell)
+
+	for key in destructible_defs.keys():
+		var def: Dictionary = destructible_defs[key]
+		if int(def["source_id"]) == src and Vector2i(def["atlas"]) == atlas:
+			return String(key)
+
+	return ""
+
+func _hit_destructible(cell: Vector2i, key: String) -> void:
+	var def: Dictionary = destructible_defs[key]
+	var needed: int = int(def["hits"])
+
+	var current := int(destructible_hits.get(cell, 0)) + 1
+	destructible_hits[cell] = current
+
+	print("Hit ", key, " ", current, "/", needed, " at ", cell)
+
+	if current >= needed:
+		objects.erase_cell(0, cell)
+		destructible_hits.erase(cell)
+
+		var drop := String(def["drop"])
+		GameState.add_item(drop)
+
+		print(key, " destroyed at ", cell, " -> +1 ", drop)
 
 func _try_plant_crop(crop_name: String) -> void:
 	if GameState.is_gameplay_locked():
@@ -169,25 +286,6 @@ func _advance_all_crops_one_day() -> void:
 		objects.set_cell(0, cell, crops_source_id, stages[next_stage])
 		print(crop_name, " grew to stage ", next_stage, " at ", cell)
 
-func _cell_has_tree(cell: Vector2i) -> bool:
-	# Objects TileMap uses the same cell coordinates if both TileMaps share tile size/origin
-	var src := objects.get_cell_source_id(0, cell)
-	if src != tree_source_id:
-		return false
-	var atlas := objects.get_cell_atlas_coords(0, cell)
-	return atlas == tree_coords
-
-func _chop_tree(cell: Vector2i) -> void:
-	var current := int(tree_chops.get(cell, 0)) + 1
-	tree_chops[cell] = current
-	print("Chop ", current, "/", chops_to_fell, " at ", cell)
-
-	if current >= chops_to_fell:
-		objects.erase_cell(0, cell)  # remove tree ONLY from Objects TileMap
-		tree_chops.erase(cell)
-		GameState.add_item("Wood")
-		print("Tree felled at ", cell)
-
 func _try_till_ground(cell: Vector2i) -> void:
 	var src := ground.get_cell_source_id(0, cell)
 	var atlas := ground.get_cell_atlas_coords(0, cell)
@@ -234,4 +332,50 @@ func _harvest_crop(cell: Vector2i) -> void:
 	var item := String(def["harvest_item"])
 	GameState.add_item(item)
 
-	print("Harvested ", crop_name, " at ", cell, " -> +1 ", item)
+	print("Harvested ", crop_name, " at ", cell, " -> +1 ", item) 
+	
+func _exit_tree() -> void:
+	_save_farm_state()
+	
+func _save_farm_state() -> void:
+	var map := GameState.get_map_state("Farm")
+
+	# Save tilled cells (only save non-default tiles)
+	map["ground"] = {}
+	_save_tilemap_non_default(ground, map["ground"])
+
+	# Save objects placed (trees/rocks/crops tiles etc.)
+	map["objects"] = {}
+	_save_tilemap_non_default(objects, map["objects"])
+
+	# Save crop growth state (your dictionary)
+	map["crops"] = {}
+	for cell in crop_state.keys():
+		var key := GameState.cell_to_key(cell)
+		map["crops"][key] = crop_state[cell]
+		
+	# Save partial hits on destructibles (so half-mined rocks persist)
+	map["hits"] = {}
+	for cell in destructible_hits.keys():
+		var key := GameState.cell_to_key(cell)
+		map["hits"][key] = int(destructible_hits[cell])
+
+	print("Saved Farm state. Ground:", map["ground"].size(), " Objects:", map["objects"].size(), " Crops:", map["crops"].size())
+
+func _save_tilemap_non_default(tilemap: TileMap, out_dict: Dictionary) -> void:
+	var used_cells := tilemap.get_used_cells(0)
+	for cell in used_cells:
+		var src := tilemap.get_cell_source_id(0, cell)
+		if src == -1:
+			continue
+		var atlas := tilemap.get_cell_atlas_coords(0, cell)
+		# Store source + atlas for each used cell
+		out_dict[GameState.cell_to_key(cell)] = { "src": src, "atlas": atlas }
+
+func _load_tilemap_from_dict(tilemap: TileMap, data: Dictionary) -> void:
+	for key in data.keys():
+		var cell := GameState.key_to_cell(key)
+		var entry: Dictionary = data[key]
+		var src := int(entry["src"])
+		var atlas := Vector2i(entry["atlas"])
+		tilemap.set_cell(0, cell, src, atlas)

@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://6ni01dvcs2m2"]
+[gd_scene load_steps=21 format=3 uid="uid://6ni01dvcs2m2"]
 
 [ext_resource type="Script" uid="uid://cevvm7fnmvrhe" path="res://scripts/Farm.gd" id="1_vobxb"]
 [ext_resource type="Texture2D" uid="uid://bsldlblkqkem5" path="res://art/tiles.png" id="2_mre8b"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://dv7wem6ftpvdd" path="res://tscn/Player.tscn" id="3_vobxb"]
 [ext_resource type="Texture2D" uid="uid://b6q6p1rqkpdec" path="res://art/crops.png" id="4_stcfw"]
 [ext_resource type="PackedScene" uid="uid://d3xqpf5v6a8cl" path="res://tscn/Chest.tscn" id="5_2ywwf"]
+[ext_resource type="Texture2D" uid="uid://1d6ygtxnkroh" path="res://art/rock.PNG" id="5_3h77f"]
 [ext_resource type="Texture2D" uid="uid://bq8o1e8mbe7qm" path="res://art/door.PNG" id="6_mre8b"]
 [ext_resource type="Script" uid="uid://sh30tjkuwdh7" path="res://scripts/DoorToHouse.gd" id="7_d13le"]
 [ext_resource type="PackedScene" uid="uid://ci8kga43aovsx" path="res://ui/DayNightOverlay.tscn" id="8_2ywwf"]
@@ -37,11 +38,18 @@ texture_region_size = Vector2i(32, 32)
 1:0/0 = 0
 2:0/0 = 0
 
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_u8tsc"]
+texture = ExtResource("5_3h77f")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
+
 [sub_resource type="TileSet" id="TileSet_2ywwf"]
 tile_size = Vector2i(32, 32)
 physics_layer_0/collision_layer = 1
 sources/0 = SubResource("TileSetAtlasSource_og6c6")
 sources/1 = SubResource("TileSetAtlasSource_b7ap2")
+sources/2 = SubResource("TileSetAtlasSource_u8tsc")
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_og6c6"]
 
@@ -56,7 +64,7 @@ layer_0/tile_data = PackedInt32Array(65537, 0, 0, 131073, 0, 0, 196609, 0, 0, 26
 [node name="Objects" type="TileMap" parent="."]
 tile_set = SubResource("TileSet_2ywwf")
 format = 2
-layer_0/tile_data = PackedInt32Array(393226, 0, 0, 262152, 0, 0)
+layer_0/tile_data = PackedInt32Array(393226, 0, 0, 262152, 0, 0, 458756, 2, 0, 131078, 2, 0)
 
 [node name="Player" parent="." instance=ExtResource("3_vobxb")]
 

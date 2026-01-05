@@ -5,9 +5,9 @@ Phase 1: Gameplay Loop
 - Crop Growth *CHECK*
 
 Phase 2: In-Depth World
-- More Destructibles
-- Different Tools
-- Save/Load System
+- More Destructibles *CHECK*
+- Different Tools *CHECK*
+- Save/Load System *CHECK*
 
 Phase 3: Stardew Feel
 - NPCs

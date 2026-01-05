@@ -57,6 +57,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		inventory_ui.set_items(GameState.inventory)
 		inventory_ui.toggle_ui()
 		return
+	
+	if event.is_action_pressed("tool_next"):
+		GameState.cycle_tool_next()
+		print("Selected tool:", GameState.get_tool_name())
 
 
 func _update_sensor_position() -> void:

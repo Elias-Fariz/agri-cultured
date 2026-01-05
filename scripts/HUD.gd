@@ -9,6 +9,8 @@ extends BaseOverlay
 
 @export var low_energy_threshold_ratio: float = 0.2
 
+@onready var tool_label: Label = $TopRightPanel/VBoxContainer/ToolLabel
+
 
 func _ready() -> void:
 	super._ready()
@@ -20,6 +22,7 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	# Simple approach: update every frame so it always reflects energy changes
 	energy_label.text = "Energy: %d/%d" % [GameState.energy, GameState.max_energy]
+	tool_label.text = "Tool: %s" % GameState.get_tool_name()
 	
 	var ratio := 0.0
 	if GameState.max_energy > 0:

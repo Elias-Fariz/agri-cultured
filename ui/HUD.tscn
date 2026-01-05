@@ -31,3 +31,7 @@ text = "Energy: 5/5"
 [node name="WarningLabel" type="Label" parent="TopRightPanel/VBoxContainer"]
 layout_mode = 2
 text = "LOW ENERGY!"
+
+[node name="ToolLabel" type="Label" parent="TopRightPanel/VBoxContainer"]
+layout_mode = 2
+text = "Tool: Hoe"

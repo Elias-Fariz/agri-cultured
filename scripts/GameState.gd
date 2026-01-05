@@ -1,6 +1,12 @@
 # GameState.gd
 extends Node
 
+enum ToolType { AXE, PICKAXE, HOE }
+const TOOL_COUNT := 3
+
+@export var starting_tool: ToolType = ToolType.HOE
+var current_tool: ToolType = ToolType.HOE
+
 # ----------------------------
 # Inventory (already working)
 # ----------------------------
@@ -19,8 +25,26 @@ func add_item(item: String) -> void:
 var energy: int = 5  # will be set on _ready
 var exhausted: bool = false
 
+# ----------------------------
+# World State (runtime persistence across scenes)
+# ----------------------------
+var world_state: Dictionary = {}
+# Example:
+# world_state["Farm"] = { ...data... }
+
 func _ready() -> void:
 	reset_energy()
+	current_tool = starting_tool
+
+func cycle_tool_next() -> void:
+	current_tool = (int(current_tool) + 1) % TOOL_COUNT
+
+func get_tool_name() -> String:
+	match current_tool:
+		ToolType.AXE: return "Axe"
+		ToolType.PICKAXE: return "Pickaxe"
+		ToolType.HOE: return "Hoe"
+	return "?"
 
 func reset_energy() -> void:
 	energy = max_energy
@@ -40,6 +64,24 @@ func spend_energy(cost: int) -> bool:
 		energy = 0
 		exhausted = true
 	return true
+	
+func get_map_state(map_name: String) -> Dictionary:
+	if not world_state.has(map_name):
+		world_state[map_name] = {
+			"has_initialized": false,
+			"ground": {},   # cell_key -> tile info
+			"objects": {},  # cell_key -> tile info
+			"crops": {},    # cell_key -> crop info
+			"hits": {}
+		}
+	return world_state[map_name]
+
+func cell_to_key(cell: Vector2i) -> String:
+	return "%d,%d" % [cell.x, cell.y]
+
+func key_to_cell(key: String) -> Vector2i:
+	var parts := key.split(",")
+	return Vector2i(int(parts[0]), int(parts[1]))
 
 # ----------------------------
 # Gameplay Lock (UI / Dialogue / Quests)
