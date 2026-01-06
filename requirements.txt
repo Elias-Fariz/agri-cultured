@@ -10,9 +10,13 @@ Phase 2: In-Depth World
 - Save/Load System *CHECK*
 
 Phase 3: Stardew Feel
-- NPCs
+- NPCs *CHECK*
 - Friendship Points
 - Simple Quests
+* Money/Shop
+* NPC Schedules
+* Audio/SFX
+* Save to Disk
 
 Phase 4: Inventory/UI Polish
 

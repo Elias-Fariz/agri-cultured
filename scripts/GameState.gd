@@ -1,6 +1,8 @@
 # GameState.gd
 extends Node
 
+var next_spawn_name: String = ""
+
 enum ToolType { AXE, PICKAXE, HOE }
 const TOOL_COUNT := 3
 

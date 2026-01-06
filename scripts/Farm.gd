@@ -1,6 +1,8 @@
 # Farm.gd (Godot 4.x) - Ground TileMap + Objects TileMap
 extends Node2D
 
+@onready var spawn_from_town := $Spawn_FromTown
+
 @onready var ground: TileMap = $Ground
 @onready var objects: TileMap = $Objects
 @onready var player := $Player as CharacterBody2D  # you said this cast works
@@ -62,6 +64,13 @@ var destructible_hits: Dictionary = {} # { Vector2i: int }
 func _ready() -> void:
 	_load_farm_state()
 	TimeManager.day_changed.connect(_on_day_changed)
+	
+	if GameState.next_spawn_name != "":
+		var marker := get_node_or_null(GameState.next_spawn_name)
+		if marker and marker is Marker2D:
+			player.global_position = (marker as Marker2D).global_position
+		GameState.next_spawn_name = ""
+
 	
 func _on_day_changed(_day: int) -> void:
 	_advance_all_crops_one_day()

@@ -1,0 +1,53 @@
+[gd_scene load_steps=13 format=3 uid="uid://b7y4cme4an3kb"]
+
+[ext_resource type="PackedScene" uid="uid://dv7wem6ftpvdd" path="res://tscn/Player.tscn" id="1_2feps"]
+[ext_resource type="Script" uid="uid://0ofb5xeer5m6" path="res://scripts/Town.gd" id="1_o31te"]
+[ext_resource type="TileSet" uid="uid://bqs5ruk6pejpc" path="res://tiles/GroundTileset.tres" id="2_ib40g"]
+[ext_resource type="Texture2D" uid="uid://bq8o1e8mbe7qm" path="res://art/door.PNG" id="2_mua0x"]
+[ext_resource type="Script" uid="uid://csqfi4j0hvvnt" path="res://scripts/TownToFarm.gd" id="2_o31te"]
+[ext_resource type="PackedScene" uid="uid://ci8kga43aovsx" path="res://ui/DayNightOverlay.tscn" id="6_6scx0"]
+[ext_resource type="PackedScene" uid="uid://d1qqa5bygrbsp" path="res://ui/HUD.tscn" id="7_xf6b5"]
+[ext_resource type="PackedScene" uid="uid://dtrn2d385g5ul" path="res://ui/InventoryUI.tscn" id="8_va2fq"]
+[ext_resource type="PackedScene" uid="uid://ded2abuo15uwh" path="res://ui/DialogueUI.tscn" id="9_xf6b5"]
+[ext_resource type="Script" uid="uid://cewvrkc6o3hdl" path="res://scripts/DialogueUI.gd" id="10_ahxm8"]
+[ext_resource type="PackedScene" uid="uid://bfaurdf2mucr2" path="res://tscn/NPC.tscn" id="10_va2fq"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ib40g"]
+
+[node name="Town" type="Node2D"]
+script = ExtResource("1_o31te")
+
+[node name="TileMap" type="TileMap" parent="."]
+position = Vector2(1, 0)
+tile_set = ExtResource("2_ib40g")
+format = 2
+layer_0/tile_data = PackedInt32Array(0, 0, 0, 65536, 0, 0, 131072, 0, 0, 196608, 0, 0, 262144, 0, 0, 327680, 0, 0, 393216, 0, 0, 458752, 0, 0, 1, 0, 0, 65537, 0, 0, 131073, 0, 0, 196609, 0, 0, 262145, 0, 0, 327681, 0, 0, 393217, 0, 0, 458753, 0, 0, 2, 0, 0, 65538, 0, 0, 131074, 0, 0, 196610, 0, 0, 262146, 0, 0, 327682, 0, 0, 393218, 0, 0, 458754, 0, 0, 3, 0, 0, 65539, 0, 0, 131075, 0, 0, 196611, 0, 0, 262147, 0, 0, 327683, 0, 0, 393219, 0, 0, 458755, 0, 0, 4, 0, 0, 65540, 0, 0, 131076, 0, 0, 196612, 0, 0, 262148, 0, 0, 327684, 0, 0, 393220, 0, 0, 458756, 0, 0, 5, 0, 0, 65541, 0, 0, 131077, 0, 0, 196613, 0, 0, 262149, 0, 0, 327685, 0, 0, 393221, 0, 0, 458757, 0, 0, 6, 0, 0, 65542, 0, 0, 131078, 0, 0, 196614, 0, 0, 262150, 0, 0, 327686, 0, 0, 393222, 0, 0, 458758, 0, 0, 7, 0, 0, 65543, 0, 0, 131079, 0, 0, 196615, 0, 0, 262151, 0, 0, 327687, 0, 0, 393223, 0, 0, 458759, 0, 0, 8, 0, 0, 65544, 0, 0, 131080, 0, 0, 196616, 0, 0, 262152, 0, 0, 327688, 0, 0, 393224, 0, 0, 458760, 0, 0, 9, 0, 0, 65545, 0, 0, 131081, 0, 0, 196617, 0, 0, 262153, 0, 0, 327689, 0, 0, 393225, 0, 0, 458761, 0, 0, 10, 0, 0, 65546, 0, 0, 131082, 0, 0, 196618, 0, 0, 262154, 0, 0, 327690, 0, 0, 393226, 0, 0, 458762, 0, 0, 11, 0, 0, 65547, 0, 0, 131083, 0, 0, 196619, 0, 0, 262155, 0, 0, 327691, 0, 0, 393227, 0, 0, 458763, 0, 0, 12, 0, 0, 65548, 0, 0, 131084, 0, 0, 196620, 0, 0, 262156, 0, 0, 327692, 0, 0, 393228, 0, 0, 458764, 0, 0)
+
+[node name="ExitToFarm" type="Area2D" parent="."]
+position = Vector2(48, 64)
+script = ExtResource("2_o31te")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ExitToFarm"]
+shape = SubResource("RectangleShape2D_ib40g")
+
+[node name="Sprite2D" type="Sprite2D" parent="ExitToFarm"]
+position = Vector2(-1, 0)
+texture = ExtResource("2_mua0x")
+
+[node name="Spawn_FromFarm" type="Marker2D" parent="."]
+position = Vector2(47, 110)
+
+[node name="Player" parent="." instance=ExtResource("1_2feps")]
+position = Vector2(129, 84)
+
+[node name="DayNightOverlay" parent="." instance=ExtResource("6_6scx0")]
+
+[node name="HUD" parent="." instance=ExtResource("7_xf6b5")]
+
+[node name="InventoryUI" parent="." instance=ExtResource("8_va2fq")]
+
+[node name="DialogueUI" parent="." groups=["dialogue_ui"] instance=ExtResource("9_xf6b5")]
+script = ExtResource("10_ahxm8")
+
+[node name="NPC" parent="." instance=ExtResource("10_va2fq")]
+position = Vector2(197, 119)
