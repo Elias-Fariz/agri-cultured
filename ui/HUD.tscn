@@ -35,3 +35,6 @@ text = "LOW ENERGY!"
 [node name="ToolLabel" type="Label" parent="TopRightPanel/VBoxContainer"]
 layout_mode = 2
 text = "Tool: Hoe"
+
+[node name="MoneyLabel" type="Label" parent="TopRightPanel/VBoxContainer"]
+layout_mode = 2

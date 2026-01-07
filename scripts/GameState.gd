@@ -12,19 +12,127 @@ var current_tool: ToolType = ToolType.HOE
 # ----------------------------
 # Inventory (already working)
 # ----------------------------
-var inventory: Array[String] = []
+var inventory: Dictionary = {}  # { "Wood": 3, "Stone": 2 }
+	
+# -------------------------
+# INVENTORY HELPERS
+# -------------------------
+# inventory is already: { "Wood": 3, ... }
 
-func add_item(item: String) -> void:
-	inventory.append(item)
-	print("Added to inventory:", item, " Inventory now:", inventory)
+func inventory_add(item_name: String, qty: int = 1) -> void:
+	if item_name.is_empty() or qty <= 0:
+		return
+	inventory[item_name] = int(inventory.get(item_name, 0)) + qty
+	print("Added to inventory:", item_name, " Inventory now:", inventory)
 
-var sell_prices := {
-	"Watermelon": 35,
-	"Stone": 5,
-	"Wood": 10
+func inventory_has(item_name: String, qty: int = 1) -> bool:
+	return int(inventory.get(item_name, 0)) >= qty
+
+func inventory_remove(item_name: String, qty: int = 1) -> bool:
+	if item_name.is_empty() or qty <= 0:
+		return false
+	var current := int(inventory.get(item_name, 0))
+	if current < qty:
+		return false
+	var new_qty := current - qty
+	if new_qty <= 0:
+		inventory.erase(item_name)
+	else:
+		inventory[item_name] = new_qty
+	return true
+
+# --- Shipping / Sell Box global state ---
+var shipping_bin: Dictionary = {}  # { "Wood": 5, "Watermelon": 2 }
+
+var sell_box: SellBox;
+
+# -------------------------
+# ITEM DATABASE (simple)
+# -------------------------
+var item_db := {
+	"Wood": {
+		"sell_price": 2,
+		"shippable": true,
+	},
+	"Stone": {
+		"sell_price": 2,
+		"shippable": true,
+	},
+	"Watermelon": {
+		"sell_price": 35,
+		"shippable": true,
+	},
+	# Tools later would be shippable: false
 }
 
-var sell_box: SellBox
+func get_sell_price(item_name: String) -> int:
+	var data = item_db.get(item_name, null)
+	if data == null:
+		return 0
+	return int(data.get("sell_price", 0))
+
+func is_shippable(item_name: String) -> bool:
+	var data = item_db.get(item_name, null)
+	if data == null:
+		return false
+	return bool(data.get("shippable", false))
+
+# -------------------------
+# SHIPPING BIN HELPERS
+# -------------------------
+# shipping_bin already exists and persists globally
+
+func shipping_add(item_name: String, qty: int = 1) -> void:
+	if item_name.is_empty() or qty <= 0:
+		return
+	shipping_bin[item_name] = int(shipping_bin.get(item_name, 0)) + qty
+
+func shipping_remove(item_name: String, qty: int = 1) -> bool:
+	if item_name.is_empty() or qty <= 0:
+		return false
+	var current := int(shipping_bin.get(item_name, 0))
+	if current < qty:
+		return false
+	var new_qty := current - qty
+	if new_qty <= 0:
+		shipping_bin.erase(item_name)
+	else:
+		shipping_bin[item_name] = new_qty
+	return true
+
+# -------------------------
+# MOVE BETWEEN INVENTORY <-> SHIPPING
+# -------------------------
+func ship_from_inventory(item_name: String, qty: int = 1) -> bool:
+	if not is_shippable(item_name):
+		return false
+	if not inventory_remove(item_name, qty):
+		return false
+	shipping_add(item_name, qty)
+	return true
+
+func unship_to_inventory(item_name: String, qty: int = 1) -> bool:
+	if not shipping_remove(item_name, qty):
+		return false
+	inventory_add(item_name, qty)
+	return true
+
+# -------------------------
+# PAYOUT
+# -------------------------
+func shipping_calculate_payout() -> int:
+	var total := 0
+	for item_name in shipping_bin.keys():
+		var qty := int(shipping_bin[item_name])
+		total += get_sell_price(String(item_name)) * qty
+	return total
+
+func shipping_payout_and_clear() -> int:
+	var payout := shipping_calculate_payout()
+	if payout > 0:
+		MoneySystem.add(payout)
+	shipping_bin.clear()
+	return payout
 
 # ----------------------------
 # Energy / Stamina (NEW)
@@ -137,6 +245,3 @@ func set_warning(msg: String) -> void:
 
 func clear_warning() -> void:
 	active_warning = ""
-
-func get_sell_price(item_id: String) -> int:
-	return int(sell_prices.get(item_id, 0))

@@ -9,6 +9,12 @@ var contents: Dictionary = {}
 
 func _ready() -> void:
 	GameState.sell_box = self
+	
+func interact() -> void:
+	# Find the UI and open it
+	var ui := get_tree().get_first_node_in_group("shipping_ui")
+	if ui:
+		ui.show_overlay()
 
 func add_item(item_id: String, qty: int = 1) -> void:
 	if item_id.is_empty() or qty <= 0:
@@ -47,8 +53,3 @@ func payout_and_clear() -> int:
 	contents.clear()
 	contents_changed.emit()
 	return payout
-
-func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("interact"):
-		add_item("Watermelon", 3)
-		print("SellBox payout would be: ", calculate_payout())

@@ -10,6 +10,7 @@ extends BaseOverlay
 @export var low_energy_threshold_ratio: float = 0.2
 
 @onready var tool_label: Label = $TopRightPanel/VBoxContainer/ToolLabel
+@onready var money_label: Label = $TopRightPanel/VBoxContainer/MoneyLabel
 
 
 func _ready() -> void:
@@ -17,6 +18,8 @@ func _ready() -> void:
 	_refresh()
 	TimeManager.time_changed.connect(func(_m): _refresh())
 	TimeManager.day_changed.connect(func(_d): _refresh())
+	_update_money_label(MoneySystem.money)
+	MoneySystem.money_changed.connect(_update_money_label)
 
 
 func _process(_delta: float) -> void:
@@ -37,6 +40,8 @@ func _process(_delta: float) -> void:
 	else:
 		warning_label.visible = false
 
+func _update_money_label(amount: int) -> void:
+	money_label.text = "Gold: %d" % amount
 
 func _refresh() -> void:
 	time_label.text = TimeManager.get_time_string()

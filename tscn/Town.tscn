@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://b7y4cme4an3kb"]
+[gd_scene load_steps=14 format=3 uid="uid://b7y4cme4an3kb"]
 
 [ext_resource type="PackedScene" uid="uid://dv7wem6ftpvdd" path="res://tscn/Player.tscn" id="1_2feps"]
 [ext_resource type="Script" uid="uid://0ofb5xeer5m6" path="res://scripts/Town.gd" id="1_o31te"]
@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://ci8kga43aovsx" path="res://ui/DayNightOverlay.tscn" id="6_6scx0"]
 [ext_resource type="PackedScene" uid="uid://d1qqa5bygrbsp" path="res://ui/HUD.tscn" id="7_xf6b5"]
 [ext_resource type="PackedScene" uid="uid://dtrn2d385g5ul" path="res://ui/InventoryUI.tscn" id="8_va2fq"]
+[ext_resource type="PackedScene" uid="uid://68vtjhtvdbhw" path="res://ui/ShippingUI.tscn" id="8_vr3p6"]
 [ext_resource type="PackedScene" uid="uid://ded2abuo15uwh" path="res://ui/DialogueUI.tscn" id="9_xf6b5"]
 [ext_resource type="Script" uid="uid://cewvrkc6o3hdl" path="res://scripts/DialogueUI.gd" id="10_ahxm8"]
 [ext_resource type="PackedScene" uid="uid://bfaurdf2mucr2" path="res://tscn/NPC.tscn" id="10_va2fq"]
@@ -43,6 +44,8 @@ position = Vector2(129, 84)
 [node name="DayNightOverlay" parent="." instance=ExtResource("6_6scx0")]
 
 [node name="HUD" parent="." instance=ExtResource("7_xf6b5")]
+
+[node name="ShippingUI" parent="." instance=ExtResource("8_vr3p6")]
 
 [node name="InventoryUI" parent="." instance=ExtResource("8_va2fq")]
 

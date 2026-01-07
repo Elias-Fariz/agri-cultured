@@ -13,7 +13,7 @@ Phase 3: Stardew Feel
 - NPCs *CHECK*
 - Friendship Points *CHECK*
 - Simple Quests
-* Money/Shop
+* Money/Shop *SELLING DONE*
 * NPC Schedules
 * Audio/SFX
 * Save to Disk

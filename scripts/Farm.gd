@@ -211,7 +211,7 @@ func _hit_destructible(cell: Vector2i, key: String) -> void:
 		destructible_hits.erase(cell)
 
 		var drop := String(def["drop"])
-		GameState.add_item(drop)
+		GameState.inventory_add(drop, 1)
 
 		print(key, " destroyed at ", cell, " -> +1 ", drop)
 
@@ -339,7 +339,7 @@ func _harvest_crop(cell: Vector2i) -> void:
 
 	# Add harvest item to inventory
 	var item := String(def["harvest_item"])
-	GameState.add_item(item)
+	GameState.inventory_add(item, 1)
 
 	print("Harvested ", crop_name, " at ", cell, " -> +1 ", item) 
 	

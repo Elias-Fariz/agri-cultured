@@ -43,9 +43,9 @@ func start_new_day() -> void:
 	minutes = int(minutes_float)
 	emit_signal("day_changed", day)
 	emit_signal("time_changed", minutes)
-	if GameState.sell_box:
-		GameState.sell_box.payout_and_clear()
 
+	# Always pay out shipping, regardless of scene
+	GameState.shipping_payout_and_clear()
 
 func get_time_string() -> String:
 	var h := minutes / 60

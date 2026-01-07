@@ -10,16 +10,12 @@ func _ready() -> void:
 		return
 	# Any other runtime setup
 
-func set_items(items: Array[String]) -> void:
+func set_items(items: Dictionary) -> void:
 	item_list.clear()
 
-	var counts := {}
-	for it in items:
-		counts[it] = int(counts.get(it, 0)) + 1
-
-	for key in counts.keys():
-		item_list.add_item("%s x%d" % [str(key), counts[key]])
-
+	for key in items.keys():
+		var count := int(items[key])
+		item_list.add_item("%s x%d" % [str(key), count])
 
 func show_ui() -> void:
 	panel.visible = true

@@ -1,0 +1,100 @@
+[gd_scene load_steps=2 format=3 uid="uid://68vtjhtvdbhw"]
+
+[ext_resource type="Script" uid="uid://cbvjnlssi1blk" path="res://scripts/ShippingUI.gd" id="1_7lwr7"]
+
+[node name="ShippingUI" type="CanvasLayer" groups=["shipping_ui"]]
+script = ExtResource("1_7lwr7")
+
+[node name="Panel" type="PanelContainer" parent="."]
+visible = false
+custom_minimum_size = Vector2(200, 200)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Margin" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+
+[node name="Root" type="VBoxContainer" parent="Panel/Margin"]
+layout_mode = 2
+
+[node name="TitleRow" type="HBoxContainer" parent="Panel/Margin/Root"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="Panel/Margin/Root/TitleRow"]
+layout_mode = 2
+text = "Shipping Bin"
+
+[node name="CloseButton" type="Button" parent="Panel/Margin/Root/TitleRow"]
+layout_mode = 2
+text = "Close"
+
+[node name="BodyRow" type="HBoxContainer" parent="Panel/Margin/Root"]
+layout_mode = 2
+
+[node name="LeftCol" type="VBoxContainer" parent="Panel/Margin/Root/BodyRow"]
+custom_minimum_size = Vector2(420, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 4.0
+
+[node name="InvLabel" type="Label" parent="Panel/Margin/Root/BodyRow/LeftCol"]
+layout_mode = 2
+text = "Inventory"
+
+[node name="InventoryList" type="ItemList" parent="Panel/Margin/Root/BodyRow/LeftCol"]
+layout_mode = 2
+size_flags_vertical = 3
+auto_width = true
+
+[node name="MidCol" type="VBoxContainer" parent="Panel/Margin/Root/BodyRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ShipOneButton" type="Button" parent="Panel/Margin/Root/BodyRow/MidCol"]
+layout_mode = 2
+text = "Ship 1 →"
+
+[node name="ShipAllButton" type="Button" parent="Panel/Margin/Root/BodyRow/MidCol"]
+layout_mode = 2
+text = "Ship All →"
+
+[node name="Spacer" type="Control" parent="Panel/Margin/Root/BodyRow/MidCol"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="TakeOneButton" type="Button" parent="Panel/Margin/Root/BodyRow/MidCol"]
+layout_mode = 2
+text = "← Take 1"
+
+[node name="TakeAllButton" type="Button" parent="Panel/Margin/Root/BodyRow/MidCol"]
+layout_mode = 2
+text = "← Take All"
+
+[node name="RightCol" type="VBoxContainer" parent="Panel/Margin/Root/BodyRow"]
+custom_minimum_size = Vector2(420, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 4.0
+
+[node name="BinLabel" type="Label" parent="Panel/Margin/Root/BodyRow/RightCol"]
+layout_mode = 2
+text = "Sell Box"
+
+[node name="BinList" type="ItemList" parent="Panel/Margin/Root/BodyRow/RightCol"]
+layout_mode = 2
+size_flags_vertical = 3
+auto_width = true
+
+[node name="FooterRow" type="HBoxContainer" parent="Panel/Margin/Root"]
+layout_mode = 2
+
+[node name="PayoutLabel" type="Label" parent="Panel/Margin/Root/FooterRow"]
+layout_mode = 2
+text = "Tomorrow: 0g"
+
+[node name="Control" type="Control" parent="Panel/Margin/Root/FooterRow"]
+layout_mode = 2
+size_flags_horizontal = 3
