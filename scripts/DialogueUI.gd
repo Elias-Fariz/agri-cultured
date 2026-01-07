@@ -4,6 +4,7 @@ extends CanvasLayer
 @onready var name_label: Label = $Box/VBox/NameLabel
 @onready var text_label: Label = $Box/VBox/TextLabel
 @onready var hint_label: Label = $Box/VBox/HintLabel
+@onready var friendship_label: Label = $Box/VBox/FriendshipLabel
 
 var _lines: Array[String] = []
 var _index: int = 0
@@ -14,13 +15,20 @@ func _ready() -> void:
 	# If you want it hidden in editor too, you can also apply your BaseOverlay pattern later.
 	hide_dialogue()
 
-func show_dialogue(speaker_name: String, lines: Array[String]) -> void:
+func show_dialogue(speaker_name: String, lines: Array[String], friendship: int = -1) -> void:
 	if lines.is_empty():
 		return
 
 	_lines = lines
 	_index = 0
 	_active = true
+	
+	# Friendship display
+	if friendship >= 0:
+		friendship_label.visible = true
+		friendship_label.text = "Friendship: %s (%d)" % [_hearts(friendship), friendship]
+	else:
+		friendship_label.visible = false
 
 	name_label.text = speaker_name
 	text_label.text = _lines[_index]
@@ -62,3 +70,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		else:
 			text_label.text = _lines[_index]
 		get_viewport().set_input_as_handled()
+
+func _hearts(friendship: int) -> String:
+	# Example: 0-49 => 0-4 hearts (10 pts per heart)
+	var hearts := clampi(friendship / 10, 0, 10)
+	return "♥".repeat(hearts) + "♡".repeat(10 - hearts)

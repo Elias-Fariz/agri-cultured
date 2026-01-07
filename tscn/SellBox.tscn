@@ -1,0 +1,17 @@
+[gd_scene load_steps=4 format=3 uid="uid://8h44y4lood6w"]
+
+[ext_resource type="Texture2D" uid="uid://c0nmap1a7vh5i" path="res://art/player.PNG" id="1_bcxrf"]
+[ext_resource type="Script" uid="uid://cjp62mpmuipii" path="res://scripts/SellBox.gd" id="1_fja1f"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_fja1f"]
+size = Vector2(32, 32)
+
+[node name="SellBox" type="Area2D"]
+script = ExtResource("1_fja1f")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_bcxrf")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+light_mask = 4
+shape = SubResource("RectangleShape2D_fja1f")

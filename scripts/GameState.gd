@@ -18,6 +18,14 @@ func add_item(item: String) -> void:
 	inventory.append(item)
 	print("Added to inventory:", item, " Inventory now:", inventory)
 
+var sell_prices := {
+	"Watermelon": 35,
+	"Stone": 5,
+	"Wood": 10
+}
+
+var sell_box: SellBox
+
 # ----------------------------
 # Energy / Stamina (NEW)
 # ----------------------------
@@ -33,6 +41,29 @@ var exhausted: bool = false
 var world_state: Dictionary = {}
 # Example:
 # world_state["Farm"] = { ...data... }
+
+# ----------------------------
+# NPC Friending (runtime persistence across scenes)
+# ----------------------------
+
+# npc_id -> friendship int
+var npc_friendship: Dictionary = {}
+
+# npc_id -> last day index talked (to prevent spam)
+var npc_last_talk_day: Dictionary = {}
+
+func get_friendship(npc_id: String) -> int:
+	return int(npc_friendship.get(npc_id, 0))
+
+func add_friendship(npc_id: String, amount: int) -> void:
+	npc_friendship[npc_id] = get_friendship(npc_id) + amount
+
+func can_gain_talk_friendship(npc_id: String, current_day: int) -> bool:
+	return int(npc_last_talk_day.get(npc_id, -999999)) != current_day
+
+func mark_talked_today(npc_id: String, current_day: int) -> void:
+	npc_last_talk_day[npc_id] = current_day
+
 
 func _ready() -> void:
 	reset_energy()
@@ -106,3 +137,6 @@ func set_warning(msg: String) -> void:
 
 func clear_warning() -> void:
 	active_warning = ""
+
+func get_sell_price(item_id: String) -> int:
+	return int(sell_prices.get(item_id, 0))

@@ -11,7 +11,7 @@ Phase 2: In-Depth World
 
 Phase 3: Stardew Feel
 - NPCs *CHECK*
-- Friendship Points
+- Friendship Points *CHECK*
 - Simple Quests
 * Money/Shop
 * NPC Schedules

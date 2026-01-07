@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://6ni01dvcs2m2"]
+[gd_scene load_steps=23 format=3 uid="uid://6ni01dvcs2m2"]
 
 [ext_resource type="Script" uid="uid://cevvm7fnmvrhe" path="res://scripts/Farm.gd" id="1_vobxb"]
 [ext_resource type="TileSet" uid="uid://bqs5ruk6pejpc" path="res://tiles/GroundTileset.tres" id="2_u8tsc"]
@@ -15,6 +15,7 @@
 [ext_resource type="PackedScene" uid="uid://be1wby7b2m0st" path="res://tscn/Bed.tscn" id="12_b7ap2"]
 [ext_resource type="Script" uid="uid://di7h2a0pu2evb" path="res://scripts/FarmToTown.gd" id="14_u8tsc"]
 [ext_resource type="PackedScene" uid="uid://ded2abuo15uwh" path="res://ui/DialogueUI.tscn" id="15_k5exi"]
+[ext_resource type="PackedScene" uid="uid://8h44y4lood6w" path="res://tscn/SellBox.tscn" id="16_rgi15"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_og6c6"]
 texture = ExtResource("3_d13le")
@@ -100,3 +101,6 @@ texture = ExtResource("6_mre8b")
 position = Vector2(407, 167)
 
 [node name="DialogueUI" parent="." instance=ExtResource("15_k5exi")]
+
+[node name="SellBox" parent="." instance=ExtResource("16_rgi15")]
+position = Vector2(56, 140)

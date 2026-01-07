@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 
 GameState="*res://scripts/GameState.gd"
 TimeManager="*res://scripts/TimeManager.gd"
+MoneySystem="*res://systems/MoneySystem.gd"
 
 [input]
 
