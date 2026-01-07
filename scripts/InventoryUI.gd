@@ -18,14 +18,10 @@ func set_items(items: Dictionary) -> void:
 		item_list.add_item("%s x%d" % [str(key), count])
 
 func show_ui() -> void:
-	panel.visible = true
-	TimeManager.pause_time()
-	GameState.lock_gameplay()
+	super.show_overlay()
 
 func hide_ui() -> void:
-	panel.visible = false
-	TimeManager.resume_time()
-	GameState.unlock_gameplay()
+	super.hide_overlay()
 
 func toggle_ui() -> void:
 	if panel.visible:

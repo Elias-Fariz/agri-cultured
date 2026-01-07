@@ -1,4 +1,4 @@
-extends CanvasLayer
+extends BaseOverlay
 
 @onready var box: Panel = $Box
 @onready var name_label: Label = $Box/VBox/NameLabel
@@ -34,25 +34,13 @@ func show_dialogue(speaker_name: String, lines: Array[String], friendship: int =
 	text_label.text = _lines[_index]
 	hint_label.text = "E: Next   Esc: Close"
 
-	box.visible = true
-
-	# Optional: lock gameplay while dialogue is open
-	# If you already have a lock system, use it here.
-	# If not, we can add it next.
-	if GameState.has_method("lock_gameplay"):
-		TimeManager.pause_time()
-		GameState.lock_gameplay()
+	super.show_overlay()
 
 func hide_dialogue() -> void:
 	_active = false
 	_lines = []
 	_index = 0
-	box.visible = false
-
-	# Optional: unlock gameplay
-	if GameState.has_method("unlock_gameplay"):
-		TimeManager.resume_time()
-		GameState.unlock_gameplay()
+	super.hide_overlay()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not _active:

@@ -35,17 +35,11 @@ func _ready() -> void:
 
 func show_overlay() -> void:
 	# If BaseOverlay already has show_overlay(), call super then refresh.
-	panel.visible = true
+	super.show_overlay()
 	_refresh_all()
-	if GameState.has_method("lock_gameplay"):
-		TimeManager.pause_time()
-		GameState.lock_gameplay()
 
 func hide_overlay() -> void:
-	panel.visible = false
-	if GameState.has_method("unlock_gameplay"):
-		TimeManager.resume_time()
-		GameState.unlock_gameplay()
+	super.hide_overlay()
 
 func _refresh_all() -> void:
 	_refresh_inventory_list()

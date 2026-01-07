@@ -6,6 +6,7 @@
 script = ExtResource("1_w7o80")
 visual_node_path = NodePath("Panel")
 start_visible_in_game = false
+is_modal = true
 
 [node name="Panel" type="Panel" parent="."]
 visible = false

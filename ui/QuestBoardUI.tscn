@@ -1,0 +1,87 @@
+[gd_scene load_steps=2 format=3 uid="uid://dk1aaefcs7nwf"]
+
+[ext_resource type="Script" uid="uid://bffujw74gm8fr" path="res://scripts/QuestBoardUI.gd" id="1_ralkd"]
+
+[node name="QuestBoardUI" type="CanvasLayer" groups=["quest_board_ui"]]
+script = ExtResource("1_ralkd")
+visual_node_path = NodePath("Panel")
+start_visible_in_game = false
+is_modal = true
+
+[node name="Panel" type="PanelContainer" parent="."]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Margin" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+
+[node name="Root" type="VBoxContainer" parent="Panel/Margin"]
+layout_mode = 2
+
+[node name="HeaderRow" type="HBoxContainer" parent="Panel/Margin/Root"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="Panel/Margin/Root/HeaderRow"]
+layout_mode = 2
+text = "TownBoard"
+
+[node name="CloseButton" type="Button" parent="Panel/Margin/Root/HeaderRow"]
+layout_mode = 2
+text = "Close"
+
+[node name="BodyRow" type="HBoxContainer" parent="Panel/Margin/Root"]
+layout_mode = 2
+
+[node name="LeftCol" type="VBoxContainer" parent="Panel/Margin/Root/BodyRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="AvailableLabel" type="Label" parent="Panel/Margin/Root/BodyRow/LeftCol"]
+layout_mode = 2
+text = "Available"
+
+[node name="AvailableList" type="ItemList" parent="Panel/Margin/Root/BodyRow/LeftCol"]
+custom_minimum_size = Vector2(0, 200)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="AcceptButton" type="Button" parent="Panel/Margin/Root/BodyRow/LeftCol"]
+layout_mode = 2
+text = "Accept"
+
+[node name="RightCol" type="VBoxContainer" parent="Panel/Margin/Root/BodyRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ActiveLabel" type="Label" parent="Panel/Margin/Root/BodyRow/RightCol"]
+layout_mode = 2
+text = "Active"
+
+[node name="ActiveList" type="ItemList" parent="Panel/Margin/Root/BodyRow/RightCol"]
+custom_minimum_size = Vector2(0, 200)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="CompletedLabel" type="Label" parent="Panel/Margin/Root/BodyRow/RightCol"]
+layout_mode = 2
+text = "Completed"
+
+[node name="CompletedList" type="ItemList" parent="Panel/Margin/Root/BodyRow/RightCol"]
+custom_minimum_size = Vector2(0, 200)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ClaimButton" type="Button" parent="Panel/Margin/Root/BodyRow/RightCol"]
+layout_mode = 2
+text = "Claim Reward"
+
+[node name="FooterRow" type="HBoxContainer" parent="Panel/Margin/Root"]
+layout_mode = 2
+
+[node name="InfoLabel" type="Label" parent="Panel/Margin/Root/FooterRow"]
+layout_mode = 2
+text = "Select a quest to accept."

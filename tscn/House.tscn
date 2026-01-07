@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://bjx6v0gjfwt2h"]
+[gd_scene load_steps=15 format=3 uid="uid://bjx6v0gjfwt2h"]
 
 [ext_resource type="Texture2D" uid="uid://bvwrrj2bcxwqh" path="res://art/wood.PNG" id="1_4ogyy"]
 [ext_resource type="Script" uid="uid://kt4as8ri4s71" path="res://scripts/House.gd" id="1_hk67c"]
@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://d1qqa5bygrbsp" path="res://ui/HUD.tscn" id="8_harv6"]
 [ext_resource type="PackedScene" uid="uid://be1wby7b2m0st" path="res://tscn/Bed.tscn" id="9_xjdd2"]
 [ext_resource type="PackedScene" uid="uid://68vtjhtvdbhw" path="res://ui/ShippingUI.tscn" id="9_y3bo4"]
+[ext_resource type="PackedScene" uid="uid://dk1aaefcs7nwf" path="res://ui/QuestBoardUI.tscn" id="11_obga2"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_bfwu5"]
 texture = ExtResource("1_4ogyy")
@@ -55,3 +56,5 @@ shape = SubResource("RectangleShape2D_eym5a")
 
 [node name="Bed" parent="." instance=ExtResource("9_xjdd2")]
 position = Vector2(135, 87)
+
+[node name="QuestBoardUI" parent="." instance=ExtResource("11_obga2")]

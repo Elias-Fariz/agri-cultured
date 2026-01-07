@@ -86,6 +86,21 @@ func shipping_add(item_name: String, qty: int = 1) -> void:
 	if item_name.is_empty() or qty <= 0:
 		return
 	shipping_bin[item_name] = int(shipping_bin.get(item_name, 0)) + qty
+	
+func report_item_shipped(item_name: String, qty: int) -> void:
+	for quest_any in active_quests.values():
+		var quest: Dictionary = quest_any
+		if String(quest.get("type", "")) == "ship" and String(quest.get("target", "")) == item_name:
+			quest["progress"] = int(quest.get("progress", 0)) + qty
+			if int(quest["progress"]) >= int(quest.get("amount", 0)):
+				complete_quest(String(quest.get("id", "")))
+
+func report_action(action: String, amount: int = 1) -> void:
+	for quest in active_quests.values():
+		if quest["type"] == action:
+			quest["progress"] += amount
+			if quest["progress"] >= quest["amount"]:
+				complete_quest(quest["id"])
 
 func shipping_remove(item_name: String, qty: int = 1) -> bool:
 	if item_name.is_empty() or qty <= 0:
@@ -128,9 +143,19 @@ func shipping_calculate_payout() -> int:
 	return total
 
 func shipping_payout_and_clear() -> int:
+	# 1) Report shipping for quests FIRST (based on what is actually in the bin overnight)
+	for item_name_any in shipping_bin.keys():
+		var item_name := String(item_name_any)
+		var qty := int(shipping_bin[item_name_any])
+		if qty > 0:
+			report_item_shipped(item_name, qty)
+
+	# 2) Pay out money
 	var payout := shipping_calculate_payout()
 	if payout > 0:
 		MoneySystem.add(payout)
+
+	# 3) Clear the bin
 	shipping_bin.clear()
 	return payout
 
@@ -171,6 +196,13 @@ func can_gain_talk_friendship(npc_id: String, current_day: int) -> bool:
 
 func mark_talked_today(npc_id: String, current_day: int) -> void:
 	npc_last_talk_day[npc_id] = current_day
+	
+# -------------------------
+# QUEST SYSTEM
+# -------------------------
+
+var active_quests: Dictionary = {}    # id -> quest dict
+var completed_quests: Dictionary = {} # id -> quest dict
 
 
 func _ready() -> void:
@@ -245,3 +277,44 @@ func set_warning(msg: String) -> void:
 
 func clear_warning() -> void:
 	active_warning = ""
+	
+# ----------------------------
+# Quests
+# ----------------------------
+
+func add_quest(quest: Dictionary) -> void:
+	if active_quests.has(quest["id"]):
+		return
+	active_quests[quest["id"]] = quest.duplicate(true)
+	print("Quest accepted: ", quest.get("id", ""))
+
+func complete_quest(quest_id: String) -> void:
+	if not active_quests.has(quest_id):
+		return
+
+	var quest: Dictionary = active_quests[quest_id]
+	quest["completed"] = true
+	active_quests.erase(quest_id)
+	completed_quests[quest_id] = quest
+	print("Quest completed: ", quest_id)
+	
+func claim_quest_reward(quest_id: String) -> void:
+	if not completed_quests.has(quest_id):
+		return
+
+	var quest: Dictionary = completed_quests[quest_id]
+	if bool(quest.get("claimed", false)):
+		return
+
+	var reward: Dictionary = Dictionary(quest.get("reward", {}))
+
+	if reward.has("money"):
+		MoneySystem.add(int(reward["money"]))
+
+	if reward.has("items"):
+		var items_reward: Dictionary = Dictionary(reward["items"])
+		for item_name_any in items_reward.keys():
+			var item_name := String(item_name_any)
+			inventory_add(item_name, int(items_reward[item_name]))
+
+	quest["claimed"] = true

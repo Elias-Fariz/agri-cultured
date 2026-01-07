@@ -1,6 +1,12 @@
-[gd_scene format=3 uid="uid://ded2abuo15uwh"]
+[gd_scene load_steps=2 format=3 uid="uid://ded2abuo15uwh"]
+
+[ext_resource type="Script" uid="uid://cewvrkc6o3hdl" path="res://scripts/DialogueUI.gd" id="1_vvl2g"]
 
 [node name="DialogueUI" type="CanvasLayer"]
+script = ExtResource("1_vvl2g")
+visual_node_path = NodePath("Box")
+start_visible_in_game = false
+is_modal = true
 
 [node name="Box" type="Panel" parent="."]
 visible = false

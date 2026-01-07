@@ -214,6 +214,14 @@ func _hit_destructible(cell: Vector2i, key: String) -> void:
 		GameState.inventory_add(drop, 1)
 
 		print(key, " destroyed at ", cell, " -> +1 ", drop)
+		# Report a distinct action based on what was destroyed
+		match key:
+			"tree":
+				GameState.report_action("chop_tree", 1)
+			"rock":
+				GameState.report_action("break_rock", 1)
+			_:
+				GameState.report_action("break_object", 1)
 
 func _try_plant_crop(crop_name: String) -> void:
 	if GameState.is_gameplay_locked():
