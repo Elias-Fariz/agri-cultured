@@ -1,0 +1,82 @@
+[gd_scene load_steps=2 format=3 uid="uid://dexrjrr1c8jfb"]
+
+[ext_resource type="Script" uid="uid://cq2f6i4fxuiu1" path="res://scripts/ShopUI.gd" id="1_p8e25"]
+
+[node name="ShopUI" type="CanvasLayer" groups=["shop_ui"]]
+script = ExtResource("1_p8e25")
+visual_node_path = NodePath("Panel")
+start_visible_in_game = false
+is_modal = true
+
+[node name="Panel" type="PanelContainer" parent="."]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Margin" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+
+[node name="Root" type="VBoxContainer" parent="Panel/Margin"]
+layout_mode = 2
+
+[node name="HeaderRow" type="HBoxContainer" parent="Panel/Margin/Root"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="Panel/Margin/Root/HeaderRow"]
+layout_mode = 2
+text = "General Store"
+
+[node name="CloseButton" type="Button" parent="Panel/Margin/Root/HeaderRow"]
+layout_mode = 2
+text = "Close"
+
+[node name="BodyRow" type="HBoxContainer" parent="Panel/Margin/Root"]
+layout_mode = 2
+
+[node name="LeftCol" type="VBoxContainer" parent="Panel/Margin/Root/BodyRow"]
+layout_mode = 2
+
+[node name="ShopLabel" type="Label" parent="Panel/Margin/Root/BodyRow/LeftCol"]
+layout_mode = 2
+text = "For Sale"
+
+[node name="ShopList" type="ItemList" parent="Panel/Margin/Root/BodyRow/LeftCol"]
+layout_mode = 2
+size_flags_vertical = 3
+auto_width = true
+auto_height = true
+
+[node name="AddButton" type="Button" parent="Panel/Margin/Root/BodyRow/LeftCol"]
+layout_mode = 2
+text = "Add →"
+
+[node name="RightCol" type="VBoxContainer" parent="Panel/Margin/Root/BodyRow"]
+layout_mode = 2
+
+[node name="CartLabel" type="Label" parent="Panel/Margin/Root/BodyRow/RightCol"]
+layout_mode = 2
+text = "Your Cart"
+
+[node name="CartList" type="ItemList" parent="Panel/Margin/Root/BodyRow/RightCol"]
+layout_mode = 2
+size_flags_vertical = 3
+auto_width = true
+auto_height = true
+
+[node name="RemoveButton" type="Button" parent="Panel/Margin/Root/BodyRow/RightCol"]
+layout_mode = 2
+text = "← Remove"
+
+[node name="FooterRow" type="HBoxContainer" parent="Panel/Margin/Root"]
+layout_mode = 2
+
+[node name="TotalLabel" type="Label" parent="Panel/Margin/Root/FooterRow"]
+layout_mode = 2
+text = "Total: 0g"
+
+[node name="BuyButton" type="Button" parent="Panel/Margin/Root/FooterRow"]
+layout_mode = 2
+text = "Buy"

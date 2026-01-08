@@ -10,9 +10,9 @@
 [ext_resource type="PackedScene" uid="uid://dtrn2d385g5ul" path="res://ui/InventoryUI.tscn" id="8_va2fq"]
 [ext_resource type="PackedScene" uid="uid://68vtjhtvdbhw" path="res://ui/ShippingUI.tscn" id="8_vr3p6"]
 [ext_resource type="PackedScene" uid="uid://ded2abuo15uwh" path="res://ui/DialogueUI.tscn" id="9_xf6b5"]
-[ext_resource type="Script" uid="uid://cewvrkc6o3hdl" path="res://scripts/DialogueUI.gd" id="10_ahxm8"]
 [ext_resource type="PackedScene" uid="uid://bfaurdf2mucr2" path="res://tscn/NPC.tscn" id="10_va2fq"]
 [ext_resource type="PackedScene" uid="uid://dk1aaefcs7nwf" path="res://ui/QuestBoardUI.tscn" id="12_15yes"]
+[ext_resource type="PackedScene" uid="uid://dexrjrr1c8jfb" path="res://ui/ShopUI.tscn" id="12_j34sm"]
 [ext_resource type="PackedScene" uid="uid://b0fhots3ucty8" path="res://tscn/TownBoard.tscn" id="14_j34sm"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ib40g"]
@@ -38,10 +38,10 @@ position = Vector2(-1, 0)
 texture = ExtResource("2_mua0x")
 
 [node name="Spawn_FromFarm" type="Marker2D" parent="."]
-position = Vector2(47, 110)
+position = Vector2(44, 93)
 
 [node name="Player" parent="." instance=ExtResource("1_2feps")]
-position = Vector2(129, 84)
+position = Vector2(90, 33)
 
 [node name="DayNightOverlay" parent="." instance=ExtResource("6_6scx0")]
 
@@ -52,13 +52,46 @@ position = Vector2(129, 84)
 [node name="InventoryUI" parent="." instance=ExtResource("8_va2fq")]
 
 [node name="DialogueUI" parent="." groups=["dialogue_ui"] instance=ExtResource("9_xf6b5")]
-script = ExtResource("10_ahxm8")
 
 [node name="QuestBoardUI" parent="." instance=ExtResource("12_15yes")]
 
-[node name="NPC" parent="." instance=ExtResource("10_va2fq")]
-position = Vector2(197, 119)
+[node name="ShopUI" parent="." instance=ExtResource("12_j34sm")]
+
+[node name="Alex" parent="." instance=ExtResource("10_va2fq")]
+position = Vector2(236, 137)
 npc_id = "npc_alex"
+display_name = "Alex"
+dialogue_lines = Array[String](["Hey, what's up?", "Welcome to the town!", "I hope you enjoy your stay!"])
+overhead_greeting_lines = Array[String](["Hey there!"])
+overhead_idle_lines = Array[String](["Football stuff"])
 
 [node name="TownBoard" parent="." instance=ExtResource("14_j34sm")]
 position = Vector2(270, 42)
+
+[node name="Lia" parent="." instance=ExtResource("10_va2fq")]
+position = Vector2(116, 193)
+npc_id = "npc_lia"
+display_name = "Lia"
+dialogue_lines = Array[String](["Have you ever stopped to smell the watermelon?", "They have the scent of a summer breeze and morning dew.", "S-Sorry, who are you?"])
+overhead_greeting_lines = Array[String](["Hello!"])
+overhead_idle_lines = Array[String](["Watermelons..."])
+quest_id = "lia_watermelon_help"
+quest_title = "Watermelon Woes"
+quest_type = "ship"
+quest_target = "Watermelon"
+quest_reward_money = 20
+quest_reward_items = Dictionary[String, int]({
+"Watermelon": 1
+})
+quest_request_lines = Array[String](["Hey, I’ve been craving a watermelon. Could you ship me one?"])
+quest_in_progress_lines = Array[String](["Still waiting on that watermelon! No rush, but I’d really appreciate it."])
+quest_completed_lines = Array[String](["You shipped the watermelon! Thank you! Here, have one for yourself."])
+quest_after_thanks_lines = Array[String](["That watermelon was delicious. Thanks again for helping me out!"])
+
+[node name="NPC" parent="." instance=ExtResource("10_va2fq")]
+position = Vector2(349, 58)
+npc_id = "npc_pierre"
+display_name = "Pierre"
+overhead_greeting_lines = Array[String](["Welcome to my shop!"])
+opens_shop = true
+shop_title = "General Store"

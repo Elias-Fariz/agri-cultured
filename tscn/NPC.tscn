@@ -1,12 +1,15 @@
-[gd_scene load_steps=6 format=3 uid="uid://bfaurdf2mucr2"]
+[gd_scene load_steps=8 format=3 uid="uid://bfaurdf2mucr2"]
 
 [ext_resource type="Script" uid="uid://ourvqmsp1j3a" path="res://scripts/NPC.gd" id="1_8j625"]
 [ext_resource type="Texture2D" uid="uid://c7c8y2irbg56" path="res://art/npc.PNG" id="1_u040o"]
 [ext_resource type="Script" uid="uid://yfylv68o2tk6" path="res://scripts/NPCInteract.gd" id="3_7xv34"]
+[ext_resource type="Texture2D" uid="uid://7giptdna0h4q" path="res://art/exclamation_mark.png" id="4_h582y"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_8j625"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_7xv34"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_h582y"]
 
 [node name="NPC" type="CharacterBody2D"]
 collision_layer = 4
@@ -25,3 +28,34 @@ script = ExtResource("3_7xv34")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="InteractArea"]
 scale = Vector2(3, 3)
 shape = SubResource("RectangleShape2D_7xv34")
+
+[node name="ProximityArea" type="Area2D" parent="."]
+scale = Vector2(5, 5)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ProximityArea"]
+shape = SubResource("RectangleShape2D_h582y")
+
+[node name="BubbleAnchor" type="Node2D" parent="."]
+position = Vector2(-20, -53)
+
+[node name="QuestIcon" type="TextureRect" parent="BubbleAnchor"]
+visible = false
+anchors_preset = -1
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("4_h582y")
+expand_mode = 2
+
+[node name="ChatterLabel" type="Label" parent="BubbleAnchor"]
+visible = false
+offset_right = 40.0
+offset_bottom = 23.0
+horizontal_alignment = 1
+
+[node name="ChatterTimer" type="Timer" parent="."]
+wait_time = 2.5
+one_shot = true
+
+[connection signal="body_entered" from="ProximityArea" to="." method="_on_ProximityArea_body_entered"]
+[connection signal="body_exited" from="ProximityArea" to="." method="_on_ProximityArea_body_exited"]
+[connection signal="timeout" from="ChatterTimer" to="." method="_on_ChatterTimer_timeout"]

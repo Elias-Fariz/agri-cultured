@@ -307,14 +307,20 @@ func claim_quest_reward(quest_id: String) -> void:
 		return
 
 	var reward: Dictionary = Dictionary(quest.get("reward", {}))
+	print("Claiming reward for ", quest_id, " -> ", reward)
 
+	# Money reward
 	if reward.has("money"):
 		MoneySystem.add(int(reward["money"]))
 
+	# Item rewards: { "items": { "Watermelon": 1, "Wood": 5 } }
 	if reward.has("items"):
 		var items_reward: Dictionary = Dictionary(reward["items"])
 		for item_name_any in items_reward.keys():
 			var item_name := String(item_name_any)
-			inventory_add(item_name, int(items_reward[item_name]))
+			var qty := int(items_reward[item_name_any])
+			inventory_add(item_name, qty)
 
 	quest["claimed"] = true
+
+	print("Quest reward claimed for ", quest_id)

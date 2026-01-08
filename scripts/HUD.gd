@@ -18,7 +18,7 @@ func _ready() -> void:
 	_refresh()
 	TimeManager.time_changed.connect(func(_m): _refresh())
 	TimeManager.day_changed.connect(func(_d): _refresh())
-	_update_money_label(MoneySystem.money)
+	_update_money_label(MoneySystem.current_money)
 	MoneySystem.money_changed.connect(_update_money_label)
 
 
