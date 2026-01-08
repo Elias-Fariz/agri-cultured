@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://b7y4cme4an3kb"]
+[gd_scene load_steps=18 format=3 uid="uid://b7y4cme4an3kb"]
 
 [ext_resource type="PackedScene" uid="uid://dv7wem6ftpvdd" path="res://tscn/Player.tscn" id="1_2feps"]
 [ext_resource type="Script" uid="uid://0ofb5xeer5m6" path="res://scripts/Town.gd" id="1_o31te"]
@@ -14,8 +14,14 @@
 [ext_resource type="PackedScene" uid="uid://dk1aaefcs7nwf" path="res://ui/QuestBoardUI.tscn" id="12_15yes"]
 [ext_resource type="PackedScene" uid="uid://dexrjrr1c8jfb" path="res://ui/ShopUI.tscn" id="12_j34sm"]
 [ext_resource type="PackedScene" uid="uid://b0fhots3ucty8" path="res://tscn/TownBoard.tscn" id="14_j34sm"]
+[ext_resource type="PackedScene" uid="uid://db3fa8eurisd7" path="res://tscn/FireflyLayer.tscn" id="15_j34sm"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ib40g"]
+
+[sub_resource type="NavigationPolygon" id="NavigationPolygon_j34sm"]
+vertices = PackedVector2Array(27.78125, 234.96875, 24.21875, 72, 77.09375, 72, 78.09375, 179.15625, 397.07813, 234.02344, 225.27344, 176.84375, 223.27344, 101.89844, 336, 100.90625, 398.90625, 15.0234375, 336, 49.28125, 18.773438, 15.96875, 18.21875, 40.28125)
+polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3), PackedInt32Array(4, 0, 3, 5), PackedInt32Array(5, 6, 7, 4), PackedInt32Array(8, 4, 7, 9), PackedInt32Array(10, 8, 9, 11)])
+outlines = Array[PackedVector2Array]([PackedVector2Array(9, 6, 409, 5, 407, 244, 18, 245, 14, 62, 87, 62, 88, 169, 215, 167, 213, 92, 326, 91, 326, 59, 8, 50)])
 
 [node name="Town" type="Node2D"]
 script = ExtResource("1_o31te")
@@ -62,8 +68,15 @@ position = Vector2(236, 137)
 npc_id = "npc_alex"
 display_name = "Alex"
 dialogue_lines = Array[String](["Hey, what's up?", "Welcome to the town!", "I hope you enjoy your stay!"])
+morning_dialogue_lines = Array[String](["Morning! Beautiful day we have!"])
+evening_dialogue_lines = Array[String](["Whew, what a long day..."])
+night_dialogue_lines = Array[String](["*gasp* I th-think I heard something over there!"])
 overhead_greeting_lines = Array[String](["Hey there!"])
 overhead_idle_lines = Array[String](["Football stuff"])
+morning_overhead_lines = Array[String](["Birds chirping..."])
+day_overhead_lines = Array[String](["THE SUN!"])
+evening_overhead_lines = Array[String](["Oof..."])
+night_overhead_lines = Array[String](["Zzz..."])
 
 [node name="TownBoard" parent="." instance=ExtResource("14_j34sm")]
 position = Vector2(270, 42)
@@ -88,10 +101,34 @@ quest_in_progress_lines = Array[String](["Still waiting on that watermelon! No r
 quest_completed_lines = Array[String](["You shipped the watermelon! Thank you! Here, have one for yourself."])
 quest_after_thanks_lines = Array[String](["That watermelon was delicious. Thanks again for helping me out!"])
 
-[node name="NPC" parent="." instance=ExtResource("10_va2fq")]
+[node name="Pierre" parent="." instance=ExtResource("10_va2fq")]
 position = Vector2(349, 58)
 npc_id = "npc_pierre"
 display_name = "Pierre"
 overhead_greeting_lines = Array[String](["Welcome to my shop!"])
 opens_shop = true
 shop_title = "General Store"
+morning_spot_path = NodePath("../NPCSpots/Shopkeeper_MorningSpot")
+day_spot_path = NodePath("../NPCSpots/Shopkeeper_DaySpot")
+evening_spot_path = NodePath("../NPCSpots/Shopkeeper_EveningSpot")
+night_spot_path = NodePath("../NPCSpots/Shopkeeper_NightSpot")
+
+[node name="FireflyLayer" parent="." groups=["firefly_layer"] instance=ExtResource("15_j34sm")]
+position = Vector2(-97, -35)
+
+[node name="NavigationRegion2D" type="NavigationRegion2D" parent="."]
+navigation_polygon = SubResource("NavigationPolygon_j34sm")
+
+[node name="NPCSpots" type="Node2D" parent="."]
+
+[node name="Shopkeeper_MorningSpot" type="Marker2D" parent="NPCSpots"]
+position = Vector2(175, 32)
+
+[node name="Shopkeeper_DaySpot" type="Marker2D" parent="NPCSpots"]
+position = Vector2(355, 51)
+
+[node name="Shopkeeper_EveningSpot" type="Marker2D" parent="NPCSpots"]
+position = Vector2(282, 135)
+
+[node name="Shopkeeper_NightSpot" type="Marker2D" parent="NPCSpots"]
+position = Vector2(51, 129)

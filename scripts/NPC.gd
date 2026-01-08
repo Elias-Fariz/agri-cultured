@@ -5,8 +5,17 @@ extends CharacterBody2D
 @export var display_name: String
 @export var dialogue_lines: Array[String] = []
 
+@export var morning_dialogue_lines: Array[String] = []
+@export var evening_dialogue_lines: Array[String] = []
+@export var night_dialogue_lines: Array[String] = []
+
 @export var overhead_greeting_lines: Array[String] = []  # e.g. ["Hello there!", "Nice day, huh?"]
 @export var overhead_idle_lines: Array[String] = []      # e.g. ["Watermelons...", "I should water the crops..."]
+
+@export var morning_overhead_lines: Array[String] = []
+@export var day_overhead_lines: Array[String] = []
+@export var evening_overhead_lines: Array[String] = []
+@export var night_overhead_lines: Array[String] = []
 
 # Optional quest fields — only used if quest_id is non-empty
 @export var quest_id: String = ""
@@ -33,25 +42,45 @@ extends CharacterBody2D
 @export var opens_shop: bool = false
 @export var shop_title: String = "Shop"
 
+@export var shop_open_hour: int = 9   # 9:00
+@export var shop_close_hour: int = 18 # 18:00
+
+@export var shop_closed_lines: Array[String] = [
+	"Sorry, we’re closed for the day.",
+	"Come back tomorrow during business hours!"
+]
+
+@onready var nav_agent: NavigationAgent2D = $NavigationAgent2D
+
+@export var move_speed: float = 40.0  # you already had something like this
+
+var _path: Array[Vector2] = []
+var _current_path_index: int = -1
+var _has_destination: bool = false
+
+const GRID_SIZE: float = 32.0  # your tile size
+
+@export var morning_spot_path: NodePath
+@export var day_spot_path: NodePath
+@export var evening_spot_path: NodePath
+@export var night_spot_path: NodePath
+
+var _current_schedule_target: Node2D = null
+
 func _ready() -> void:
 	# ... your existing NPC init ...
 	_update_quest_icon()
+	if nav_agent:
+		nav_agent.path_desired_distance = 4.0
+		nav_agent.target_desired_distance = 4.0
+
+	_current_schedule_target = null
+
+	if not Engine.is_editor_hint():
+		TimeManager.time_changed.connect(_on_time_changed_for_schedule)
+		_on_time_changed_for_schedule(TimeManager.minutes)
 
 func start_dialogue() -> void:
-	# SHOP CHECK FIRST
-	if opens_shop:
-		var shop_ui := get_tree().get_first_node_in_group("shop_ui")
-		print("He has a shop!")
-		if shop_ui:
-			# Optional: set title if you want
-			if shop_ui.has_method("set_title"):
-				shop_ui.set_title(shop_title)
-			print("He has a shopssss!")
-			shop_ui.show_overlay()
-		return
-
-	# ... existing quest + friendship dialogue logic below ...
-	
 	var ui := get_tree().get_first_node_in_group("dialogue_ui")
 	if ui== null:
 		print("No DialogueUI found in group 'dialogue_ui'. Add DialogueUI.tscn to the scene and put it in that group.")
@@ -72,9 +101,31 @@ func start_dialogue() -> void:
 		
 	var f := GameState.get_friendship(npc_id)
 	
+	# SHOP CHECK FIRST
+	if opens_shop:
+		var hour := int(TimeManager.minutes / 60)
+
+		if hour < shop_open_hour or hour >= shop_close_hour:
+			# Shop is closed → use dialogue instead of opening UI
+			var lines := shop_closed_lines
+			if lines.is_empty():
+				lines = ["Sorry, we’re closed right now. Come back tomorrow!"]
+
+			ui.show_dialogue(display_name, lines, f)
+		else:
+			# Shop is open → show ShopUI overlay
+			var shop_ui := get_tree().get_first_node_in_group("shop_ui")
+			if shop_ui:
+				if shop_ui.has_method("set_title"):
+					shop_ui.set_title(shop_title)
+				shop_ui.show_overlay()
+		return
+
+	# ... existing quest + friendship dialogue logic below ...
+	
 	# If this NPC doesn’t have a quest attached, use normal dialogue.
 	if quest_id == "":
-		ui.show_dialogue(display_name, dialogue_lines, f)
+		ui.show_dialogue(display_name, _get_time_based_dialogue(), f)
 		return
 		
 	# --- Quest-aware behavior below ---
@@ -172,28 +223,16 @@ func _update_quest_icon() -> void:
 	quest_icon.visible = show
 
 func _show_overhead_chatter() -> void:
-	# Optionally hide the quest icon while text is shown
-	if quest_icon:
-		quest_icon.visible = false
-	# ... then show chatter_label as before ...
-	
 	if chatter_label == null:
 		return
 
-	# Prefer greetings if available, otherwise idle lines
-	var pool: Array[String] = []
-	if overhead_greeting_lines.size() > 0:
-		pool = overhead_greeting_lines
-	elif overhead_idle_lines.size() > 0:
-		pool = overhead_idle_lines
-
+	var pool := _get_overhead_chatter_pool()
 	if pool.is_empty():
 		return
 
 	var idx := randi() % pool.size()
 	var text := pool[idx]
 
-	print("I'm talking to you!")
 	chatter_label.text = text
 	chatter_label.visible = true
 	chatter_timer.start()
@@ -219,3 +258,130 @@ func _on_ProximityArea_body_exited(body: Node) -> void:
 
 func _on_ChatterTimer_timeout() -> void:
 	_hide_overhead_chatter()
+
+func _get_overhead_chatter_pool() -> Array[String]:
+	var hour := int(TimeManager.minutes / 60)
+
+	# You can tune these ranges however you like
+	if hour >= 6 and hour < 10 and morning_overhead_lines.size() > 0:
+		return morning_overhead_lines
+	if hour >= 10 and hour < 18 and day_overhead_lines.size() > 0:
+		return day_overhead_lines
+	if hour >= 18 and hour < 22 and evening_overhead_lines.size() > 0:
+		return evening_overhead_lines
+	if (hour >= 22 or hour < 6) and night_overhead_lines.size() > 0:
+		return night_overhead_lines
+
+	# Fallbacks if time-specific arrays are empty
+	if overhead_greeting_lines.size() > 0:
+		return overhead_greeting_lines
+	if overhead_idle_lines.size() > 0:
+		return overhead_idle_lines
+
+	return []
+
+func _get_time_based_dialogue() -> Array[String]:
+	var hour := int(TimeManager.minutes / 60)
+
+	if hour >= 6 and hour < 10 and morning_dialogue_lines.size() > 0:
+		return morning_dialogue_lines
+	if hour >= 18 and hour < 22 and evening_dialogue_lines.size() > 0:
+		return evening_dialogue_lines
+	if (hour >= 22 or hour < 6) and night_dialogue_lines.size() > 0:
+		return night_dialogue_lines
+
+	return dialogue_lines
+
+func _snap_to_grid(pos: Vector2) -> Vector2:
+	return Vector2(
+		round(pos.x / GRID_SIZE) * GRID_SIZE,
+		round(pos.y / GRID_SIZE) * GRID_SIZE
+	)
+
+func set_destination(world_position: Vector2) -> void:
+	var start := _snap_to_grid(global_position)
+	global_position = start
+
+	var target := world_position
+
+	_path.clear()
+	_current_path_index = -1
+	_has_destination = false
+
+	var mid := Vector2(start.x, target.y)
+
+	_path.append(mid)
+	_path.append(target)
+
+	_current_path_index = 0
+	_has_destination = true
+
+func _physics_process(delta: float) -> void:
+	# Don't move while gameplay is locked (dialogue, shop, etc.)
+	if GameState.is_gameplay_locked():
+		velocity = Vector2.ZERO
+		move_and_slide()
+		return
+
+	if not _has_destination or _current_path_index < 0:
+		velocity = Vector2.ZERO
+		move_and_slide()
+		return
+
+	if _current_path_index >= _path.size():
+		_has_destination = false
+		velocity = Vector2.ZERO
+		move_and_slide()
+		return
+
+	var target := _path[_current_path_index]
+	var to_target := target - global_position
+
+	if to_target.length() < 2.0:
+		_current_path_index += 1
+
+		if _current_path_index >= _path.size():
+			_has_destination = false
+			velocity = Vector2.ZERO
+			move_and_slide()
+			return
+
+		target = _path[_current_path_index]
+		to_target = target - global_position
+
+	var dir := to_target.normalized()
+	velocity = dir * move_speed
+	move_and_slide()
+
+func _get_schedule_target_for_time(minutes: int) -> Node2D:
+	var hour := int(minutes / 60)
+
+	# Simple ranges – tune how you like
+	if hour >= 6 and hour < 10:
+		return _get_node_from_path(morning_spot_path)
+	if hour >= 10 and hour < 18:
+		return _get_node_from_path(day_spot_path)
+	if hour >= 18 and hour < 22:
+		return _get_node_from_path(evening_spot_path)
+	# Late night / very early morning
+	return _get_node_from_path(night_spot_path)
+
+func _get_node_from_path(path: NodePath) -> Node2D:
+	if path == NodePath(""):
+		return null
+	var node := get_node_or_null(path)
+	if node is Node2D:
+		return node as Node2D
+	return null
+
+func _on_time_changed_for_schedule(minutes: int) -> void:
+	var target_node := _get_schedule_target_for_time(minutes)
+	if target_node == null:
+		return
+
+	# If we're already heading to (or standing at) this spot, don't reset the path
+	if target_node == _current_schedule_target:
+		return
+
+	_current_schedule_target = target_node
+	set_destination(target_node.global_position)

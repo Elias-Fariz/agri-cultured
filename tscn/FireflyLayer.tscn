@@ -1,0 +1,31 @@
+[gd_scene load_steps=3 format=3 uid="uid://db3fa8eurisd7"]
+
+[ext_resource type="Script" uid="uid://djlv3p1x55yjd" path="res://scripts/FireflyLayer.gd" id="1_i5gjy"]
+[ext_resource type="Texture2D" uid="uid://nan0sddf00hl" path="res://art/chest.png" id="1_q1sr2"]
+
+[node name="FireflyLayer" type="Node2D"]
+script = ExtResource("1_i5gjy")
+
+[node name="Firefly1" type="PointLight2D" parent="."]
+position = Vector2(222, 71)
+texture = ExtResource("1_q1sr2")
+
+[node name="Firefly2" type="PointLight2D" parent="."]
+position = Vector2(435, 315)
+texture = ExtResource("1_q1sr2")
+
+[node name="Firefly3" type="PointLight2D" parent="."]
+position = Vector2(423, 230)
+texture = ExtResource("1_q1sr2")
+
+[node name="Firefly4" type="PointLight2D" parent="."]
+position = Vector2(198, 244)
+texture = ExtResource("1_q1sr2")
+
+[node name="Firefly5" type="PointLight2D" parent="."]
+position = Vector2(390, 141)
+texture = ExtResource("1_q1sr2")
+
+[node name="Firefly6" type="PointLight2D" parent="."]
+position = Vector2(262, 205)
+texture = ExtResource("1_q1sr2")

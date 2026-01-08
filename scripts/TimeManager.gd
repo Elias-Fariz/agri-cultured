@@ -5,7 +5,7 @@ signal day_changed(day: int)
 
 @export var minutes_per_day: int = 24 * 60
 @export var start_minutes: int = 6 * 60  # 6:00 AM
-@export var minutes_per_real_second: float = 10.0  # tune later
+@export var minutes_per_real_second: float = 60.0  # tune later, 10 originally
 
 @export var morning_start_minutes: int = 6 * 60
 
