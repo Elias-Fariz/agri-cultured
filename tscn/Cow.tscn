@@ -1,0 +1,65 @@
+[gd_scene load_steps=7 format=3 uid="uid://b0rdgln1dko2v"]
+
+[ext_resource type="Texture2D" uid="uid://ylpu3ria5fxy" path="res://art/cow.PNG" id="1_etk6k"]
+[ext_resource type="Script" uid="uid://1ofqyolb4ita" path="res://scripts/AnimalBase.gd" id="1_t7sdu"]
+[ext_resource type="Script" uid="uid://bu0y7nnpvvxrv" path="res://scripts/AnimalInteractArea.gd" id="3_5j20t"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_t7sdu"]
+size = Vector2(32, 32)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_tkclb"]
+size = Vector2(44.5, 41.5)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_5j20t"]
+size = Vector2(48, 47)
+
+[node name="Cow" type="CharacterBody2D"]
+collision_layer = 4
+script = ExtResource("1_t7sdu")
+move_speed = 25.0
+wander_interval_min = 3.0
+wander_interval_max = 6.0
+animal_id = "cow_01"
+product_item = "Milk"
+idle_chatter_lines = Array[String](["moo", "moo...", "mrrr", "*sniff*"])
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_etk6k")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_t7sdu")
+
+[node name="WanderTimer" type="Timer" parent="."]
+one_shot = true
+autostart = true
+
+[node name="BubbleAnchor" type="Node2D" parent="."]
+position = Vector2(0, -18)
+
+[node name="ChatterLabel" type="Label" parent="BubbleAnchor"]
+visible = false
+offset_left = -19.0
+offset_top = -16.0
+offset_right = 21.0
+offset_bottom = 7.0
+text = "moo"
+horizontal_alignment = 1
+
+[node name="InteractArea" type="Area2D" parent="."]
+script = ExtResource("3_5j20t")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractArea"]
+shape = SubResource("RectangleShape2D_tkclb")
+
+[node name="ProximityArea" type="Area2D" parent="."]
+collision_mask = 3
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ProximityArea"]
+shape = SubResource("RectangleShape2D_5j20t")
+
+[node name="ChatterTimer" type="Timer" parent="."]
+one_shot = true
+
+[connection signal="body_entered" from="ProximityArea" to="." method="_on_ProximityArea_body_entered"]
+[connection signal="body_exited" from="ProximityArea" to="." method="_on_ProximityArea_body_exited"]
+[connection signal="timeout" from="ChatterTimer" to="." method="_on_ChatterTimer_timeout"]

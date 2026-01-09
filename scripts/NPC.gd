@@ -67,6 +67,16 @@ const GRID_SIZE: float = 32.0  # your tile size
 
 var _current_schedule_target: Node2D = null
 
+@export var enable_idle_wander: bool = true
+@export var wander_interval_min: float = 3.0
+@export var wander_interval_max: float = 7.0
+@export var wander_tile_distance: int = 1
+@export var grid_size: float = 32.0   # match your real tile size
+
+var _anchor_position: Vector2         # where this NPC “belongs” right now
+
+@onready var _wander_timer: Timer = $WanderTimer
+
 func _ready() -> void:
 	# ... your existing NPC init ...
 	_update_quest_icon()
@@ -79,6 +89,9 @@ func _ready() -> void:
 	if not Engine.is_editor_hint():
 		TimeManager.time_changed.connect(_on_time_changed_for_schedule)
 		_on_time_changed_for_schedule(TimeManager.minutes)
+		
+	_wander_timer.timeout.connect(_on_wander_timer_timeout)
+	_schedule_next_wander()
 
 func start_dialogue() -> void:
 	var ui := get_tree().get_first_node_in_group("dialogue_ui")
@@ -246,14 +259,14 @@ func _hide_overhead_chatter() -> void:
 func _on_ProximityArea_body_entered(body: Node) -> void:
 	if not body.is_in_group("player"):  # assuming your Player is in group "player"
 		return
-	print("Proximity ENTER: ", body)
+	# print("Proximity ENTER: ", body)
 	_show_overhead_chatter()
 
 
 func _on_ProximityArea_body_exited(body: Node) -> void:
 	if not body.is_in_group("player"):
 		return
-	print("Proximity EXIT: ", body)
+	# print("Proximity EXIT: ", body)
 	_hide_overhead_chatter()
 
 func _on_ChatterTimer_timeout() -> void:
@@ -298,11 +311,16 @@ func _snap_to_grid(pos: Vector2) -> Vector2:
 		round(pos.y / GRID_SIZE) * GRID_SIZE
 	)
 
-func set_destination(world_position: Vector2) -> void:
+func set_destination(world_position: Vector2,  is_anchor: bool = false) -> void:
 	var start := _snap_to_grid(global_position)
 	global_position = start
 
-	var target := world_position
+	# ✅ Snap the marker’s position to the nearest grid tile
+	var target := _snap_to_grid(world_position)
+
+	# Optional: store this as our “anchor” for wandering (explained below)
+	if is_anchor:
+		_anchor_position = target
 
 	_path.clear()
 	_current_path_index = -1
@@ -384,4 +402,69 @@ func _on_time_changed_for_schedule(minutes: int) -> void:
 		return
 
 	_current_schedule_target = target_node
-	set_destination(target_node.global_position)
+	set_destination(target_node.global_position, true)
+
+func _schedule_next_wander() -> void:
+	if not enable_idle_wander:
+		return
+
+	# A little randomness so they don't all step in sync
+	var wait_time := randf_range(wander_interval_min, wander_interval_max)
+	_wander_timer.wait_time = wait_time
+	_wander_timer.start()
+
+func _on_wander_timer_timeout() -> void:
+	if not enable_idle_wander:
+		return
+
+	# Don't wander if UI is open, etc.
+	if GameState.is_gameplay_locked():
+		_schedule_next_wander()
+		return
+
+	# Don't wander if we're currently moving somewhere
+	if _has_destination:
+		_schedule_next_wander()
+		return
+
+	# If we don't have an anchor yet, use current snapped position
+	if _anchor_position == Vector2.ZERO:
+		_anchor_position = _snap_to_grid(global_position)
+
+	_attempt_idle_wander()
+	_schedule_next_wander()
+
+func _attempt_idle_wander() -> void:
+	# Possible directions: stay, left, right, up, down
+	var dirs := [
+		Vector2.ZERO,
+		Vector2.RIGHT,
+		Vector2.LEFT,
+		Vector2.UP,
+		Vector2.DOWN
+	]
+
+	dirs.shuffle()
+
+	for dir in dirs:
+		var offset: Vector2 = dir * grid_size * float(wander_tile_distance)
+		var candidate := _anchor_position + offset
+
+		# Skip if it's exactly where we are and dir is ZERO
+		if candidate.distance_to(global_position) < 1.0:
+			continue
+
+		if _can_wander_to(candidate):
+			# Important: we DO NOT mark this as a new anchor.
+			# This keeps all wandering centered around the original schedule spot.
+			set_destination(candidate, false)
+			return
+
+	# If no candidate worked, we just don't move this time.
+
+func _can_wander_to(world_pos: Vector2) -> bool:
+	# For now, just return true.
+	# Later you can:
+	#  - Check collisions
+	#  - Avoid water, walls, etc.
+	return true

@@ -13,10 +13,16 @@ Phase 3: Stardew Feel
 - NPCs *CHECK*
 - Friendship Points *CHECK*
 - Simple Quests *CHECK*
-* Money/Shop *SELLING DONE*
-* NPC Schedules
-* Audio/SFX
-* Save to Disk
+- Money/Shop *SELLING DONE*
+- NPC Schedules *CHECK*
+* Animals/Feeding/Collecting *CHECK*
+* Animal Pen/Mood/Friendship
+* Proper Item Database (Resources)
+* Weather System
+* Festivals/Weekly Events
+* Advanced Pathfinding
+- Audio/SFX
+- Save to Disk
 
 Phase 4: Inventory/UI Polish
 

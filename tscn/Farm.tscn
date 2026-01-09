@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=3 uid="uid://6ni01dvcs2m2"]
+[gd_scene load_steps=29 format=3 uid="uid://6ni01dvcs2m2"]
 
 [ext_resource type="Script" uid="uid://cevvm7fnmvrhe" path="res://scripts/Farm.gd" id="1_vobxb"]
 [ext_resource type="TileSet" uid="uid://bqs5ruk6pejpc" path="res://tiles/GroundTileset.tres" id="2_u8tsc"]
@@ -20,6 +20,8 @@
 [ext_resource type="PackedScene" uid="uid://dk1aaefcs7nwf" path="res://ui/QuestBoardUI.tscn" id="18_kqnqu"]
 [ext_resource type="PackedScene" uid="uid://dexrjrr1c8jfb" path="res://ui/ShopUI.tscn" id="19_4nmas"]
 [ext_resource type="PackedScene" uid="uid://db3fa8eurisd7" path="res://tscn/FireflyLayer.tscn" id="20_8lty6"]
+[ext_resource type="PackedScene" uid="uid://c3ksajlr1bllx" path="res://tscn/Chicken.tscn" id="21_65lcs"]
+[ext_resource type="PackedScene" uid="uid://b0rdgln1dko2v" path="res://tscn/Cow.tscn" id="22_u3713"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_og6c6"]
 texture = ExtResource("3_d13le")
@@ -116,3 +118,9 @@ position = Vector2(56, 140)
 [node name="ShopUI" parent="." instance=ExtResource("19_4nmas")]
 
 [node name="FireflyLayer" parent="." groups=["firefly_layer"] instance=ExtResource("20_8lty6")]
+
+[node name="Chicken" parent="." instance=ExtResource("21_65lcs")]
+position = Vector2(80, 62)
+
+[node name="Cow" parent="." instance=ExtResource("22_u3713")]
+position = Vector2(127, 112)

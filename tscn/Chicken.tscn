@@ -1,0 +1,61 @@
+[gd_scene load_steps=7 format=3 uid="uid://c3ksajlr1bllx"]
+
+[ext_resource type="Script" uid="uid://1ofqyolb4ita" path="res://scripts/AnimalBase.gd" id="1_36wrt"]
+[ext_resource type="Texture2D" uid="uid://cxx6kuami8raj" path="res://art/chicken.PNG" id="2_bnopt"]
+[ext_resource type="Script" uid="uid://bu0y7nnpvvxrv" path="res://scripts/AnimalInteractArea.gd" id="3_qfkf4"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_aqqhh"]
+size = Vector2(16, 16)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_6piks"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qfkf4"]
+size = Vector2(48, 47)
+
+[node name="Chicken" type="CharacterBody2D"]
+collision_layer = 4
+script = ExtResource("1_36wrt")
+move_speed = 50.0
+animal_id = "chicken_01"
+idle_chatter_lines = Array[String](["cluck", "cluck?", "bawk", "*scratch*"])
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_bnopt")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_aqqhh")
+
+[node name="WanderTimer" type="Timer" parent="."]
+one_shot = true
+autostart = true
+
+[node name="BubbleAnchor" type="Node2D" parent="."]
+position = Vector2(0, -18)
+
+[node name="ChatterLabel" type="Label" parent="BubbleAnchor"]
+visible = false
+offset_left = -19.0
+offset_top = -16.0
+offset_right = 21.0
+offset_bottom = 7.0
+text = "cluck"
+horizontal_alignment = 1
+
+[node name="InteractArea" type="Area2D" parent="."]
+script = ExtResource("3_qfkf4")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractArea"]
+shape = SubResource("RectangleShape2D_6piks")
+
+[node name="ProximityArea" type="Area2D" parent="."]
+collision_mask = 3
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ProximityArea"]
+shape = SubResource("RectangleShape2D_qfkf4")
+
+[node name="ChatterTimer" type="Timer" parent="."]
+one_shot = true
+
+[connection signal="body_entered" from="ProximityArea" to="." method="_on_ProximityArea_body_entered"]
+[connection signal="body_exited" from="ProximityArea" to="." method="_on_ProximityArea_body_exited"]
+[connection signal="timeout" from="ChatterTimer" to="." method="_on_ChatterTimer_timeout"]

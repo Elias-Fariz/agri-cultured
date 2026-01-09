@@ -12,6 +12,7 @@ size = Vector2(31, 31)
 size = Vector2(28, 28)
 
 [node name="Player" type="CharacterBody2D" groups=["player"]]
+collision_layer = 2
 script = ExtResource("1_vvow5")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
