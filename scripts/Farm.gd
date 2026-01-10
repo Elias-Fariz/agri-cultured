@@ -12,6 +12,7 @@ extends Node2D
 @export var ground_source_id: int = 0
 @export var grass_coords: Vector2i = Vector2i(0, 0)
 @export var tilled_coords: Vector2i = Vector2i(1, 0)
+@export var wet_tilled_coords: Vector2i = Vector2i(2, 0)  # your new darker square
 
 # Tree tileset info in Objects TileMap (tree.png atlas)
 @export var tree_source_id: int = 0        # likely 0 inside Objects TileMap
@@ -61,6 +62,9 @@ var destructible_defs := {
 var destructible_hits: Dictionary = {} # { Vector2i: int }
 # --- Destructibles ---
 
+var watered_today: Dictionary = {}  # cell_key -> true
+var rained_today: bool = false
+
 func _ready() -> void:
 	_load_farm_state()
 	TimeManager.day_changed.connect(_on_day_changed)
@@ -70,10 +74,38 @@ func _ready() -> void:
 		if marker and marker is Marker2D:
 			player.global_position = (marker as Marker2D).global_position
 		GameState.next_spawn_name = ""
+		
+	var wc := get_node_or_null("/root/WeatherChange")
+	if wc != null and wc.has_signal("weather_changed"):
+		wc.weather_changed.connect(_on_weather_changed)
+
+	# If we enter the scene and it's already raining, wet the visuals now
+	if _is_raining_today():
+		_apply_rain_wet_visuals_today()
 
 	
 func _on_day_changed(_day: int) -> void:
-	_advance_all_crops_one_day()
+	var grew_from_rain := rained_today  # rain that happened during the previous day
+
+	print("DAY CHANGED: grew_from_rain=", grew_from_rain, " is_raining_today=", _is_raining_today())
+
+	# 1) Grow crops if they were watered yesterday OR it rained yesterday
+	_advance_all_crops_one_day(grew_from_rain)
+
+	# new day reset
+	watered_today.clear()
+	# 2) Clear yesterday wet state (tiles + dictionary)
+	_clear_watered_visuals_and_state()
+	# IMPORTANT: dry visuals now so you can water again today
+	_dry_wet_tiles_under_crops()
+
+	# 3) Reset daily rain flag (we are starting a brand new day)
+	rained_today = false
+
+	# 4) If it's raining today, wet visuals for today (but no growth credit yet)
+	if _is_raining_today():
+		rained_today = true
+		_apply_rain_wet_visuals_today()
 
 func _load_farm_state() -> void:
 	var map := GameState.get_map_state("Farm")
@@ -158,7 +190,32 @@ func _tool_action() -> void:
 		_hit_destructible(target_cell, dkey)
 		return
 
-	# 2) Harvest ripe crops
+		# 2) Watering (Watering Can)
+	if GameState.current_tool == GameState.ToolType.WATERING_CAN:
+		# Optional rules:
+		# - water only tilled soil
+		# - OR water only if crop exists
+		var src := ground.get_cell_source_id(0, target_cell)
+		var atlas := ground.get_cell_atlas_coords(0, target_cell)
+
+		var is_tilled_or_wet := (src == ground_source_id and (atlas == tilled_coords or atlas == wet_tilled_coords))
+		if not is_tilled_or_wet:
+			print("Can't water here (not tilled soil).")
+			return
+
+		# If it's already wet-looking, treat it as already watered (optional behavior)
+		if atlas == wet_tilled_coords:
+			print("This tile is already wet.")
+			return
+
+		if not GameState.spend_energy(GameState.tool_action_cost):
+			print("No energy to water!")
+			return
+
+		water_cell(target_cell)
+		return
+	
+	# 3) Harvest ripe crops
 	if _is_crop_ripe(target_cell):
 		if GameState.current_tool != GameState.ToolType.HOE:
 			print("Need Hoe to harvest.")
@@ -169,7 +226,7 @@ func _tool_action() -> void:
 		_harvest_crop(target_cell)
 		return
 
-	# 3) Otherwise till
+	# 4) Otherwise till
 	if _can_till_ground(target_cell):
 		if GameState.current_tool != GameState.ToolType.HOE:
 			print("Need Hoe to till.")
@@ -262,10 +319,14 @@ func _try_plant_crop(crop_name: String) -> void:
 	print("Planted ", crop_name, " at ", cell)
 
 	
-func _advance_all_crops_one_day() -> void:
+func _advance_all_crops_one_day(raining: bool = false) -> void:
 	var cells := crop_state.keys()
 
 	for cell in cells:
+		# Only progress if watered OR it rained today
+		if not raining and not is_cell_watered(cell):
+			continue
+
 		var data: Dictionary = crop_state[cell]
 		var crop_name := String(data["type"])
 
@@ -301,7 +362,7 @@ func _advance_all_crops_one_day() -> void:
 		crop_state[cell] = data
 
 		objects.set_cell(0, cell, crops_source_id, stages[next_stage])
-		print(crop_name, " grew to stage ", next_stage, " at ", cell)
+		print(crop_name, " grew to stage ", next_stage, " at ", cell, " (watered=", (raining or is_cell_watered(cell)), ")")
 
 func _try_till_ground(cell: Vector2i) -> void:
 	var src := ground.get_cell_source_id(0, cell)
@@ -396,3 +457,75 @@ func _load_tilemap_from_dict(tilemap: TileMap, data: Dictionary) -> void:
 		var src := int(entry["src"])
 		var atlas := Vector2i(entry["atlas"])
 		tilemap.set_cell(0, cell, src, atlas)
+
+func _cell_key(cell: Vector2i) -> String:
+	return "%d,%d" % [cell.x, cell.y]
+
+func water_cell(cell: Vector2i) -> void:
+	if _is_raining_today():
+		print("Already raining — watering not needed.")
+		return
+	
+	var key := _cell_key(cell)
+	watered_today[key] = true
+
+	# Visual: switch tilled -> wet tilled
+	var src := ground.get_cell_source_id(0, cell)
+	var atlas := ground.get_cell_atlas_coords(0, cell)
+	var is_tilled := (src == ground_source_id and atlas == tilled_coords)
+
+	if is_tilled:
+		ground.set_cell(0, cell, ground_source_id, wet_tilled_coords)
+
+	print("Watered cell:", key)
+
+func is_cell_watered(cell: Vector2i) -> bool:
+	return watered_today.has(_cell_key(cell))
+
+func _clear_watered_visuals_and_state() -> void:
+	# Revert wet tiles back to normal tilled tiles
+	for key_any in watered_today.keys():
+		var key := String(key_any)
+		var parts := key.split(",")
+		var cell := Vector2i(int(parts[0]), int(parts[1]))
+
+		var src := ground.get_cell_source_id(0, cell)
+		var atlas := ground.get_cell_atlas_coords(0, cell)
+
+		if src == ground_source_id and atlas == wet_tilled_coords:
+			ground.set_cell(0, cell, ground_source_id, tilled_coords)
+
+	watered_today.clear()
+
+func _apply_rain_wet_visuals_today() -> void:
+	print("Applying rain wet visuals. crops=", crop_state.size())
+
+	# Wet only planted tiles (recommended)
+	for cell in crop_state.keys():
+		var src := ground.get_cell_source_id(0, cell)
+		var atlas := ground.get_cell_atlas_coords(0, cell)
+
+		if src == ground_source_id and atlas == tilled_coords:
+			ground.set_cell(0, cell, ground_source_id, wet_tilled_coords)
+
+func _is_raining_today() -> bool:
+	var wc := get_node_or_null("/root/WeatherChange")
+	return wc != null and wc.is_raining()
+
+func _was_raining_yesterday() -> bool:
+	var wc := get_node_or_null("/root/WeatherChange")
+	return wc != null and wc.was_raining_yesterday()
+
+func _on_weather_changed(_new_weather: int) -> void:
+	# We only "wet" on rain start. We do NOT dry when rain stops.
+	# Drying happens next morning via _on_day_changed.
+	print("WEATHER CHANGED: is_raining_today=", _is_raining_today(), " name=", get_node_or_null("/root/WeatherChange").get_weather_name() if get_node_or_null("/root/WeatherChange") else "no weather")
+	if _is_raining_today():
+		_apply_rain_wet_visuals_today()  # VISUAL ONLY
+
+func _dry_wet_tiles_under_crops() -> void:
+	for cell in crop_state.keys():
+		var src := ground.get_cell_source_id(0, cell)
+		var atlas := ground.get_cell_atlas_coords(0, cell)
+		if src == ground_source_id and atlas == wet_tilled_coords:
+			ground.set_cell(0, cell, ground_source_id, tilled_coords)

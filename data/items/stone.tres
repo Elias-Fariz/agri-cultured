@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3 uid="uid://b4ks0j2rpoljr"]
+
+[ext_resource type="Script" uid="uid://dfoyyckymw8co" path="res://data/items/ItemData.gd" id="1_xbu1n"]
+
+[resource]
+script = ExtResource("1_xbu1n")
+id = "Stone"
+display_name = "Stone"
+sell_price = 2
+description = "It's not just a boulder..."
+metadata/_custom_type_script = "uid://dfoyyckymw8co"

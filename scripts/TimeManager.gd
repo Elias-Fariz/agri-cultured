@@ -41,6 +41,10 @@ func start_new_day() -> void:
 	day += 1
 	minutes_float = morning_start_minutes
 	minutes = int(minutes_float)
+	
+	WeatherChange.roll_new_day_weather()
+	print("Weather today:", WeatherChange.get_weather_name())
+	
 	emit_signal("day_changed", day)
 	emit_signal("time_changed", minutes)
 

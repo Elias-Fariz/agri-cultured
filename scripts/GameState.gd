@@ -3,8 +3,8 @@ extends Node
 
 var next_spawn_name: String = ""
 
-enum ToolType { AXE, PICKAXE, HOE, BUCKET, HAND }
-const TOOL_COUNT := 5  # <- THIS MUST BE UPDATED
+enum ToolType { AXE, PICKAXE, HOE, BUCKET, HAND, WATERING_CAN }
+const TOOL_COUNT := 6  # <- THIS MUST BE UPDATED
 
 @export var starting_tool: ToolType = ToolType.HAND
 var current_tool: ToolType = ToolType.HAND
@@ -78,16 +78,10 @@ var item_db := {
 }
 
 func get_sell_price(item_name: String) -> int:
-	var data = item_db.get(item_name, null)
-	if data == null:
-		return 0
-	return int(data.get("sell_price", 0))
+	return ItemDb.get_sell_price(item_name)
 
 func is_shippable(item_name: String) -> bool:
-	var data = item_db.get(item_name, null)
-	if data == null:
-		return false
-	return bool(data.get("shippable", false))
+	return ItemDb.is_shippable(item_name)
 
 # -------------------------
 # SHIPPING BIN HELPERS
@@ -231,6 +225,7 @@ func get_tool_name() -> String:
 		ToolType.HOE: return "Hoe"
 		ToolType.BUCKET: return "Bucket"
 		ToolType.HAND: return "Hands"
+		ToolType.WATERING_CAN: return "Watering Can"
 	return "?"
 
 func reset_energy() -> void:

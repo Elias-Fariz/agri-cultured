@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3 uid="uid://bdkslmp23k3sv"]
+
+[ext_resource type="Script" uid="uid://dfoyyckymw8co" path="res://data/items/ItemData.gd" id="1_ay1ow"]
+
+[resource]
+script = ExtResource("1_ay1ow")
+id = "Milk"
+display_name = "Milk"
+sell_price = 20
+description = "What was he doing to the cow?"
+metadata/_custom_type_script = "uid://dfoyyckymw8co"

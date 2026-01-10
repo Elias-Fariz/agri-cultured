@@ -1,4 +1,4 @@
-[gd_scene load_steps=29 format=3 uid="uid://6ni01dvcs2m2"]
+[gd_scene load_steps=31 format=3 uid="uid://6ni01dvcs2m2"]
 
 [ext_resource type="Script" uid="uid://cevvm7fnmvrhe" path="res://scripts/Farm.gd" id="1_vobxb"]
 [ext_resource type="TileSet" uid="uid://bqs5ruk6pejpc" path="res://tiles/GroundTileset.tres" id="2_u8tsc"]
@@ -22,6 +22,7 @@
 [ext_resource type="PackedScene" uid="uid://db3fa8eurisd7" path="res://tscn/FireflyLayer.tscn" id="20_8lty6"]
 [ext_resource type="PackedScene" uid="uid://c3ksajlr1bllx" path="res://tscn/Chicken.tscn" id="21_65lcs"]
 [ext_resource type="PackedScene" uid="uid://b0rdgln1dko2v" path="res://tscn/Cow.tscn" id="22_u3713"]
+[ext_resource type="PackedScene" uid="uid://c5tput53xrui" path="res://ui/RainOverlay.tscn" id="23_f2050"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_og6c6"]
 texture = ExtResource("3_d13le")
@@ -53,6 +54,8 @@ sources/2 = SubResource("TileSetAtlasSource_u8tsc")
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_k5exi"]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_u3713"]
+
 [node name="Farm" type="Node2D"]
 script = ExtResource("1_vobxb")
 
@@ -67,6 +70,7 @@ format = 2
 layer_0/tile_data = PackedInt32Array(393226, 0, 0, 262152, 0, 0, 458756, 2, 0, 131078, 2, 0)
 
 [node name="Player" parent="." instance=ExtResource("3_vobxb")]
+position = Vector2(216, 141)
 
 [node name="Chest" parent="." instance=ExtResource("5_2ywwf")]
 position = Vector2(314, 97)
@@ -111,7 +115,7 @@ position = Vector2(407, 167)
 [node name="DialogueUI" parent="." instance=ExtResource("15_k5exi")]
 
 [node name="SellBox" parent="." instance=ExtResource("16_rgi15")]
-position = Vector2(56, 140)
+position = Vector2(376, 58)
 
 [node name="QuestBoardUI" parent="." instance=ExtResource("18_kqnqu")]
 
@@ -120,7 +124,25 @@ position = Vector2(56, 140)
 [node name="FireflyLayer" parent="." groups=["firefly_layer"] instance=ExtResource("20_8lty6")]
 
 [node name="Chicken" parent="." instance=ExtResource("21_65lcs")]
-position = Vector2(80, 62)
+position = Vector2(66, 67)
+pen_area_path = NodePath("../PenArea")
 
 [node name="Cow" parent="." instance=ExtResource("22_u3713")]
-position = Vector2(127, 112)
+position = Vector2(447, 41)
+pen_area_path = NodePath("../PenArea2")
+
+[node name="PenArea" type="Area2D" parent="."]
+position = Vector2(103, 101.00001)
+scale = Vector2(10.218615, 10.218615)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PenArea"]
+shape = SubResource("RectangleShape2D_u3713")
+
+[node name="PenArea2" type="Area2D" parent="."]
+position = Vector2(395.99997, 82.00001)
+scale = Vector2(10.218615, 10.218615)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PenArea2"]
+shape = SubResource("RectangleShape2D_u3713")
+
+[node name="RainOverlay" parent="PenArea2" instance=ExtResource("23_f2050")]

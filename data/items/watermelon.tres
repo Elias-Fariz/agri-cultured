@@ -1,10 +1,10 @@
 [gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3 uid="uid://lnkgapbi0vie"]
 
-[ext_resource type="Script" uid="uid://dfoyyckymw8co" path="res://items/ItemData.gd" id="1_5qpfu"]
+[ext_resource type="Script" uid="uid://dfoyyckymw8co" path="res://data/items/ItemData.gd" id="1_qcw0u"]
 
 [resource]
-script = ExtResource("1_5qpfu")
-id = &"Watermelon"
+script = ExtResource("1_qcw0u")
 display_name = "Watermelon"
-sell_price = 20
+sell_price = 35
+description = "Yummy, delicious"
 metadata/_custom_type_script = "uid://dfoyyckymw8co"

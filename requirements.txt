@@ -16,9 +16,9 @@ Phase 3: Stardew Feel
 - Money/Shop *SELLING DONE*
 - NPC Schedules *CHECK*
 * Animals/Feeding/Collecting *CHECK*
-* Animal Pen/Mood/Friendship
-* Proper Item Database (Resources)
-* Weather System
+* Animal Pen/Mood/Friendship *CHECK*
+* Proper Item Database (Resources) *CHECK*
+* Weather System *CHECK, FINALLY*
 * Festivals/Weekly Events
 * Advanced Pathfinding
 - Audio/SFX

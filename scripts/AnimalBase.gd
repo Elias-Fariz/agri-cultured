@@ -38,6 +38,18 @@ const GRID_SIZE: float = 32.0  # your tile size
 @onready var chatter_timer: Timer = $ChatterTimer
 @onready var proximity_area: Area2D = $ProximityArea
 
+@export var pen_area_path: NodePath   # assign your PenArea here in the Inspector
+@export var pen_margin: float = 4.0   # keeps animals slightly inside edges
+
+var _pen_rect_global: Rect2
+var _has_pen: bool = false
+
+var _last_pet_day: int = -999999
+var f := GameState.get_friendship(animal_id)
+
+var _pen_min_cell: Vector2i
+var _pen_max_cell: Vector2i
+
 func _ready() -> void:
 	# Anchor = where the animal starts
 	_anchor_position = _snap_to_grid(global_position)
@@ -48,6 +60,7 @@ func _ready() -> void:
 
 	# Listen for day changes
 	TimeManager.day_changed.connect(_on_day_changed)
+	_refresh_pen_rect()
 
 
 # =============================
@@ -67,6 +80,7 @@ func set_destination(world_position: Vector2) -> void:
 	global_position = start
 
 	var target := _snap_to_grid(world_position)
+	target = _clamp_to_pen(target)
 
 	_path.clear()
 	_current_path_index = -1
@@ -149,40 +163,87 @@ func _on_wander_timer_timeout() -> void:
 	if _anchor_position == Vector2.ZERO:
 		_anchor_position = _snap_to_grid(global_position)
 
+	# If we are outside the pen somehow, go back inside immediately
+	if _has_pen and not _pen_rect_global.has_point(global_position):
+		var back := _clamp_to_pen(_snap_to_grid(global_position))
+		set_destination(back)
+		_schedule_next_wander()
+		return
+
 	_attempt_idle_wander()
 	_schedule_next_wander()
 
 
 func _attempt_idle_wander() -> void:
-	# Animals can move up to wander_tile_distance tiles from anchor in 4 directions
-	var dirs := [
-		Vector2.ZERO,
-		Vector2.RIGHT,
-		Vector2.LEFT,
-		Vector2.UP,
-		Vector2.DOWN
-	]
+	# If we don't have a pen, fall back to simple behavior
+	if not _has_pen:
+		_attempt_idle_wander_no_pen()
+		return
 
+	# Anchor in cell coordinates
+	var anchor_cell := Vector2i(
+		int(round(_anchor_position.x / grid_size)),
+		int(round(_anchor_position.y / grid_size))
+	)
+
+	# Build a small list of candidate cells within range (2 tiles or whatever)
+	var candidates: Array[Vector2i] = []
+
+	for dx in range(-wander_tile_distance, wander_tile_distance + 1):
+		for dy in range(-wander_tile_distance, wander_tile_distance + 1):
+			# Keep it “cozy”: prefer Manhattan moves (no diagonals)
+			if abs(dx) + abs(dy) == 0:
+				continue
+			if abs(dx) + abs(dy) > wander_tile_distance:
+				continue
+
+			var c := anchor_cell + Vector2i(dx, dy)
+
+			# Must be inside pen bounds
+			if c.x < _pen_min_cell.x or c.x > _pen_max_cell.x:
+				continue
+			if c.y < _pen_min_cell.y or c.y > _pen_max_cell.y:
+				continue
+
+			candidates.append(c)
+
+	# If pen is tiny (or margin too big), candidates might be empty
+	if candidates.is_empty():
+		return
+
+	candidates.shuffle()
+
+	for c in candidates:
+		var world_target := Vector2(c.x * grid_size, c.y * grid_size)
+
+		# Skip if basically current position
+		if world_target.distance_to(global_position) < 1.0:
+			continue
+
+		# Later you can add obstacle checks here
+		set_destination(world_target)
+		return
+
+func _attempt_idle_wander_no_pen() -> void:
+	var dirs := [Vector2.RIGHT, Vector2.LEFT, Vector2.UP, Vector2.DOWN]
 	dirs.shuffle()
 
 	for dir in dirs:
-		var offset: Vector2 = dir * grid_size * float(wander_tile_distance)
-		var candidate := _anchor_position + offset
+		var candidate: Vector2 = _anchor_position + dir * grid_size * float(wander_tile_distance)
+		candidate = _snap_to_grid(candidate)
 
-		# Skip if candidate is basically where we are now
 		if candidate.distance_to(global_position) < 1.0:
 			continue
 
-		if _can_wander_to(candidate):
-			set_destination(candidate)
-			return
-	# If nothing works, we just don't move.
+		set_destination(candidate)
+		return
 
 
 func _can_wander_to(world_pos: Vector2) -> bool:
-	# For now, always true. Later we can:
-	#  - Check against collision tiles
-	#  - Clamp to pen area
+	if _has_pen and not _pen_rect_global.has_point(world_pos):
+		return false
+
+	# Later, this is where fence collisions / obstacle checks go.
 	return true
 
 
@@ -312,8 +373,11 @@ func _handle_bucket_interaction() -> void:
 
 func _handle_pet_interaction() -> void:
 	print("[Pet] Petting animal:", animal_id)
+
+	# +1 friendship once per day
+	_gain_friendship_once_per_day(1)
+
 	_show_chatter(pet_chatter)
-	# Later: affection system, etc.
 
 func _show_chatter(text: String) -> void:
 	if chatter_label == null:
@@ -357,3 +421,46 @@ func _on_ProximityArea_body_exited(body: Node) -> void:
 
 func _on_ChatterTimer_timeout() -> void:
 	_hide_chatter()
+
+func _refresh_pen_rect() -> void:
+	# ... your existing code to set _pen_rect_global and _has_pen ...
+
+	if not _has_pen:
+		return
+
+	# Convert pen rect into grid cell bounds
+	var min_world := _pen_rect_global.position
+	var max_world := _pen_rect_global.position + _pen_rect_global.size
+
+	_pen_min_cell = Vector2i(
+		int(floor(min_world.x / grid_size)),
+		int(floor(min_world.y / grid_size))
+	)
+
+	_pen_max_cell = Vector2i(
+		int(floor(max_world.x / grid_size)),
+		int(floor(max_world.y / grid_size))
+	)
+
+	# Safety: ensure min <= max
+	if _pen_max_cell.x < _pen_min_cell.x:
+		_pen_max_cell.x = _pen_min_cell.x
+	if _pen_max_cell.y < _pen_min_cell.y:
+		_pen_max_cell.y = _pen_min_cell.y
+
+func _clamp_to_pen(pos: Vector2) -> Vector2:
+	if not _has_pen:
+		return pos
+
+	return Vector2(
+		clamp(pos.x, _pen_rect_global.position.x, _pen_rect_global.position.x + _pen_rect_global.size.x),
+		clamp(pos.y, _pen_rect_global.position.y, _pen_rect_global.position.y + _pen_rect_global.size.y)
+	)
+
+func _gain_friendship_once_per_day(amount: int) -> void:
+	var day := TimeManager.day
+	if _last_pet_day == day:
+		return
+
+	_last_pet_day = day
+	GameState.add_friendship(animal_id, amount)

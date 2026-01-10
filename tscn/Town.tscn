@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://b7y4cme4an3kb"]
+[gd_scene load_steps=19 format=3 uid="uid://b7y4cme4an3kb"]
 
 [ext_resource type="PackedScene" uid="uid://dv7wem6ftpvdd" path="res://tscn/Player.tscn" id="1_2feps"]
 [ext_resource type="Script" uid="uid://0ofb5xeer5m6" path="res://scripts/Town.gd" id="1_o31te"]
@@ -15,6 +15,7 @@
 [ext_resource type="PackedScene" uid="uid://dexrjrr1c8jfb" path="res://ui/ShopUI.tscn" id="12_j34sm"]
 [ext_resource type="PackedScene" uid="uid://b0fhots3ucty8" path="res://tscn/TownBoard.tscn" id="14_j34sm"]
 [ext_resource type="PackedScene" uid="uid://db3fa8eurisd7" path="res://tscn/FireflyLayer.tscn" id="15_j34sm"]
+[ext_resource type="PackedScene" uid="uid://c5tput53xrui" path="res://ui/RainOverlay.tscn" id="16_vlptm"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ib40g"]
 
@@ -118,6 +119,8 @@ position = Vector2(-97, -35)
 
 [node name="NavigationRegion2D" type="NavigationRegion2D" parent="."]
 navigation_polygon = SubResource("NavigationPolygon_j34sm")
+
+[node name="RainOverlay" parent="." instance=ExtResource("16_vlptm")]
 
 [node name="NPCSpots" type="Node2D" parent="."]
 

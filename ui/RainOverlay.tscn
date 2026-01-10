@@ -1,0 +1,30 @@
+[gd_scene load_steps=4 format=3 uid="uid://c5tput53xrui"]
+
+[ext_resource type="Script" uid="uid://cdfohi52tbi2c" path="res://scripts/RainOverlay.gd" id="1_vd4ke"]
+[ext_resource type="Texture2D" uid="uid://b3lrgmawsofbi" path="res://art/rain.PNG" id="2_vd4ke"]
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_fbb6n"]
+particle_flag_disable_z = true
+emission_shape = 3
+emission_box_extents = Vector3(600, 20, 1)
+direction = Vector3(0, 1, 0)
+spread = 10.0
+initial_velocity_min = 379.75
+initial_velocity_max = 380.25
+gravity = Vector3(0, 900, 0)
+scale_min = 0.049999997
+scale_max = 0.65
+color = Color(0.61309975, 0.8166783, 1, 0.49803922)
+
+[node name="RainOverlay" type="CanvasLayer"]
+script = ExtResource("1_vd4ke")
+
+[node name="GPUParticles2D" type="GPUParticles2D" parent="."]
+position = Vector2(560, 16)
+amount = 250
+texture = ExtResource("2_vd4ke")
+lifetime = 1.8
+randomness = 0.3
+process_material = SubResource("ParticleProcessMaterial_fbb6n")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]

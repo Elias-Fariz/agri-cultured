@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3 uid="uid://bowtecn1qoylh"]
+
+[ext_resource type="Script" uid="uid://dfoyyckymw8co" path="res://data/items/ItemData.gd" id="1_gf3qp"]
+
+[resource]
+script = ExtResource("1_gf3qp")
+id = "Animal Feed"
+display_name = "Animal Feed"
+sell_price = 3
+description = "Don't eat it, Jerry!"
+metadata/_custom_type_script = "uid://dfoyyckymw8co"
