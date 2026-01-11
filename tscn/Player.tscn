@@ -34,3 +34,7 @@ script = ExtResource("3_gqu4d")
 [node name="PointLight2D" type="PointLight2D" parent="."]
 visible = false
 texture = ExtResource("4_kghmo")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position_smoothing_enabled = true
+position_smoothing_speed = 6.0

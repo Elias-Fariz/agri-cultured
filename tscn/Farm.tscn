@@ -146,3 +146,11 @@ scale = Vector2(10.218615, 10.218615)
 shape = SubResource("RectangleShape2D_u3713")
 
 [node name="RainOverlay" parent="PenArea2" instance=ExtResource("23_f2050")]
+
+[node name="CameraBounds" type="Node2D" parent="."]
+
+[node name="TopLeft" type="Marker2D" parent="CameraBounds"]
+position = Vector2(-593, -373)
+
+[node name="BottomRight" type="Marker2D" parent="CameraBounds"]
+position = Vector2(1598, 972)

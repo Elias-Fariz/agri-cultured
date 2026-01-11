@@ -41,6 +41,10 @@ func hide_dialogue() -> void:
 	_lines = []
 	_index = 0
 	super.hide_overlay()
+	
+	var player := get_tree().get_first_node_in_group("player")
+	if player != null and player.has_method("camera_clear_focus"):
+		player.camera_clear_focus()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not _active:

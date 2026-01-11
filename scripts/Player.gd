@@ -15,13 +15,53 @@ var facing: Vector2 = Vector2.DOWN
 @onready var indicator: Node2D = $FacingIndicator
 @onready var inventory_ui = get_tree().current_scene.get_node("InventoryUI")
 
+@onready var cam: Camera2D = $Camera2D
+@export var camera_look_ahead_pixels: float = 28.0
+@export var camera_look_ahead_smooth: float = 8.0  # higher = snappier
+
+var _cam_offset: Vector2 = Vector2.ZERO
+
+@export var camera_focus_smooth: float = 8.0
+@export var camera_max_focus_distance: float = 260.0  # prevents extreme offsets
+
+var _camera_focus_active: bool = false
+var _camera_focus_point: Vector2 = Vector2.ZERO
+var _cam_focus_offset: Vector2 = Vector2.ZERO
+
+@export var zoom_step: float = 0.1
+@export var zoom_min: float = 0.6
+@export var zoom_max: float = 1.6
+@export var zoom_smooth: float = 12.0
+
+var _target_zoom: float = 1.0
+
+var _cam_original_parent: Node = null
+var _cam_original_index: int = -1
+var _cam_original_transform: Transform2D
+
+
 
 func _ready() -> void:
 	# Ensure the sensor starts in front of the player (down by default)
 	_update_sensor_position()
 	indicator.set_direction(facing)
+	_apply_camera_bounds_if_present()
+	_target_zoom = cam.zoom.x
 
-func _physics_process(_delta: float) -> void:
+
+
+func _enter_tree() -> void:
+	call_deferred("_apply_camera_bounds_if_present")
+
+func _physics_process(delta: float) -> void:
+	# 1) Camera should ALWAYS update
+	if _camera_focus_active:
+		_update_camera_focus_offset(delta)
+	else:
+		_update_camera_lookahead(delta)
+		
+	_update_camera_zoom(delta)
+	
 	if GameState.is_gameplay_locked():
 		velocity = Vector2.ZERO
 		move_and_slide()
@@ -61,6 +101,13 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("tool_next"):
 		GameState.cycle_tool_next()
 		print("Selected tool:", GameState.get_tool_name())
+		
+	if event.is_action_pressed("camera_zoom_in"):
+		_target_zoom = clamp(_target_zoom - zoom_step, zoom_min, zoom_max)
+	if event.is_action_pressed("camera_zoom_out"):
+		_target_zoom = clamp(_target_zoom + zoom_step, zoom_min, zoom_max)
+	if event.is_action_pressed("camera_zoom_reset"):
+		_target_zoom = 1.0
 
 
 func _update_sensor_position() -> void:
@@ -74,3 +121,110 @@ func _try_interact() -> void:
 		if a.has_method("interact"):
 			a.interact()
 			return
+
+func _apply_camera_bounds_if_present() -> void:
+	# Looks for a Node2D called "CameraBounds" in the current scene,
+	# with Marker2D children "TopLeft" and "BottomRight".
+	var scene_root := get_tree().current_scene
+	if scene_root == null:
+		return
+
+	var bounds := scene_root.get_node_or_null("CameraBounds")
+	if bounds == null:
+		print("No CameraBounds found in this scene (optional).")
+		return
+
+	var tl := bounds.get_node_or_null("TopLeft") as Marker2D
+	var br := bounds.get_node_or_null("BottomRight") as Marker2D
+	if tl == null or br == null:
+		print("CameraBounds needs Marker2D children named TopLeft and BottomRight.")
+		return
+
+	# Godot Camera2D limits are in pixels (world coordinates)
+	cam.limit_left = int(tl.global_position.x)
+	cam.limit_top = int(tl.global_position.y)
+	cam.limit_right = int(br.global_position.x)
+	cam.limit_bottom = int(br.global_position.y)
+
+	# Optional: keep limits updated if you switch scenes
+	print("Camera limits set: L/T/R/B = ",
+		cam.limit_left, cam.limit_top, cam.limit_right, cam.limit_bottom)
+
+func _update_camera_lookahead(delta: float) -> void:
+	if cam == null:
+		return
+
+	# You said you have player.facing already (Vector2 like (1,0), (0,-1))
+	var facing_dir := facing
+	if facing_dir == Vector2.ZERO:
+		facing_dir = Vector2.DOWN  # safe fallback, optional
+
+	var target_offset := facing_dir.normalized() * camera_look_ahead_pixels
+
+	# Smoothly approach target offset
+	_cam_offset = _cam_offset.lerp(target_offset, 1.0 - pow(0.001, delta * camera_look_ahead_smooth))
+
+	# Apply as camera local offset
+	cam.position = _cam_offset
+
+func _update_camera_zoom(delta: float) -> void:
+	if cam == null:
+		return
+
+	var current: float = cam.zoom.x
+	var t: float = 1.0 - pow(0.001, delta * zoom_smooth)
+	var next_zoom: float = lerp(current, _target_zoom, t)
+
+	cam.zoom = Vector2(next_zoom, next_zoom)
+
+func camera_focus_on_world_point(world_pos: Vector2) -> void:
+	_camera_focus_active = true
+	_camera_focus_point = world_pos
+	_cam_focus_offset = cam.position
+	# Optional: stop Camera2D’s own smoothing from fighting us
+	if cam:
+		cam.position_smoothing_enabled = false
+		
+	print("Limits L/T/R/B: ",
+	cam.limit_left, ", ",
+	cam.limit_top, ", ",
+	cam.limit_right, ", ",
+	cam.limit_bottom,
+	"  Zoom:", cam.zoom)
+
+func camera_clear_focus() -> void:
+	_camera_focus_active = false
+	# Return control to your normal look-ahead system
+	if cam:
+		cam.position_smoothing_enabled = true
+
+func _update_camera_focus(delta: float) -> void:
+	if cam == null:
+		return
+
+	if not _camera_focus_active:
+		return
+
+	# Smoothly move the camera's global position toward focus point
+	# (This overrides the "follow player" feel temporarily)
+	var cur: Vector2 = cam.global_position
+	var t: float = 1.0 - pow(0.001, delta * camera_focus_smooth)
+	cam.global_position = cur.lerp(_camera_focus_point, t)
+
+func _update_camera_focus_offset(delta: float) -> void:
+	if cam == null:
+		return
+
+	# Desired offset so the camera looks at the NPC relative to the player
+	var desired := _camera_focus_point - global_position
+
+	# Keep it reasonable so we don't fling the camera
+	if desired.length() > camera_max_focus_distance:
+		desired = desired.normalized() * camera_max_focus_distance
+
+	# Smooth it
+	var t: float = 1.0 - pow(0.001, delta * camera_focus_smooth)
+	_cam_focus_offset = _cam_focus_offset.lerp(desired, t)
+
+	# Apply as local camera offset
+	cam.position = _cam_focus_offset

@@ -136,6 +136,17 @@ func start_dialogue() -> void:
 
 	# ... existing quest + friendship dialogue logic below ...
 	
+	# --- I KNEW IT! Do it before the shop so that this focus thing only happens with communicating NPCs
+	
+	var player := get_tree().get_first_node_in_group("player")
+	if player == null:
+		print("NPC Dialogue: No node in group 'player' found.")
+	elif player.has_method("camera_focus_on_world_point"):
+		print("NPC Dialogue: Focusing camera on NPC: ", global_position)
+		player.camera_focus_on_world_point(global_position + Vector2(0, -10))
+	else:
+		print("NPC Dialogue: Player has no camera_focus_on_world_point()")
+	
 	# If this NPC doesn’t have a quest attached, use normal dialogue.
 	if quest_id == "":
 		ui.show_dialogue(display_name, _get_time_based_dialogue(), f)

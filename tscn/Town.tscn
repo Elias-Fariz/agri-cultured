@@ -122,6 +122,15 @@ navigation_polygon = SubResource("NavigationPolygon_j34sm")
 
 [node name="RainOverlay" parent="." instance=ExtResource("16_vlptm")]
 
+[node name="CameraBounds" type="Node2D" parent="."]
+position = Vector2(175, 32)
+
+[node name="TopLeft" type="Marker2D" parent="CameraBounds"]
+position = Vector2(-593, -373)
+
+[node name="BottomRight" type="Marker2D" parent="CameraBounds"]
+position = Vector2(1598, 972)
+
 [node name="NPCSpots" type="Node2D" parent="."]
 
 [node name="Shopkeeper_MorningSpot" type="Marker2D" parent="NPCSpots"]

@@ -15,12 +15,13 @@ Phase 3: Stardew Feel
 - Simple Quests *CHECK*
 - Money/Shop *SELLING DONE*
 - NPC Schedules *CHECK*
-* Animals/Feeding/Collecting *CHECK*
-* Animal Pen/Mood/Friendship *CHECK*
-* Proper Item Database (Resources) *CHECK*
-* Weather System *CHECK, FINALLY*
-* Festivals/Weekly Events
-* Advanced Pathfinding
+- Animals/Feeding/Collecting *CHECK*
+- Animal Pen/Mood/Friendship *CHECK*
+- Proper Item Database (Resources) *CHECK*
+- Weather System *CHECK, FINALLY*
+* Camera Work *CHECK*
+- Festivals/Weekly Events
+- Advanced Pathfinding
 - Audio/SFX
 - Save to Disk
 

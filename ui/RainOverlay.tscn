@@ -20,6 +20,7 @@ color = Color(0.61309975, 0.8166783, 1, 0.49803922)
 script = ExtResource("1_vd4ke")
 
 [node name="GPUParticles2D" type="GPUParticles2D" parent="."]
+visible = false
 position = Vector2(560, 16)
 amount = 250
 texture = ExtResource("2_vd4ke")

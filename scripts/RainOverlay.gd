@@ -1,8 +1,10 @@
-extends CanvasLayer
+extends BaseOverlay
 
 @onready var particles := $GPUParticles2D
 
 func _ready() -> void:
+	particles.visible = true
+	super._ready()
 	var wc := get_node_or_null("/root/WeatherChange")
 	if wc == null:
 		print("RainOverlay: WeatherChange autoload not found at /root/WeatherChange")
