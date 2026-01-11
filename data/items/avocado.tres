@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3 uid="uid://cic1v8os27vus"]
+
+[ext_resource type="Script" uid="uid://dfoyyckymw8co" path="res://data/items/ItemData.gd" id="1_bbofv"]
+
+[resource]
+script = ExtResource("1_bbofv")
+id = "Avocado"
+display_name = "Avocado"
+sell_price = 30
+description = "Don't let me get overripe! (truth)"
+metadata/_custom_type_script = "uid://dfoyyckymw8co"

@@ -1,6 +1,7 @@
-[gd_scene load_steps=31 format=3 uid="uid://6ni01dvcs2m2"]
+[gd_scene load_steps=32 format=3 uid="uid://6ni01dvcs2m2"]
 
 [ext_resource type="Script" uid="uid://cevvm7fnmvrhe" path="res://scripts/Farm.gd" id="1_vobxb"]
+[ext_resource type="PackedScene" uid="uid://b0c10lgb0ivgd" path="res://tscn/WaterSplash.tscn" id="2_66215"]
 [ext_resource type="TileSet" uid="uid://bqs5ruk6pejpc" path="res://tiles/GroundTileset.tres" id="2_u8tsc"]
 [ext_resource type="Texture2D" uid="uid://caerjv5h3fdyv" path="res://art/tree.png" id="3_d13le"]
 [ext_resource type="PackedScene" uid="uid://dv7wem6ftpvdd" path="res://tscn/Player.tscn" id="3_vobxb"]
@@ -36,6 +37,17 @@ texture_region_size = Vector2i(32, 32)
 0:0/0 = 0
 1:0/0 = 0
 2:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+3:2/0 = 0
+0:3/0 = 0
+1:3/0 = 0
+2:3/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_u8tsc"]
 texture = ExtResource("5_3h77f")
@@ -58,6 +70,7 @@ sources/2 = SubResource("TileSetAtlasSource_u8tsc")
 
 [node name="Farm" type="Node2D"]
 script = ExtResource("1_vobxb")
+water_splash_scene = ExtResource("2_66215")
 
 [node name="Ground" type="TileMap" parent="."]
 tile_set = ExtResource("2_u8tsc")

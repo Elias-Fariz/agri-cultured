@@ -73,6 +73,22 @@ var item_db := {
 	"Animal Feed": {
 		"sell_price": 3,
 		"shippable": true,
+	},
+	"Blueberry": {
+		"sell_price": 12,
+		"shippable": true,
+	},
+	"Strawberry": {
+		"sell_price": 18,
+		"shippable": true,
+	},
+	"Avocado": {
+		"sell_price": 30,
+		"shippable": true,
+	},
+	"Overripe Avocado": {
+		"sell_price": 10,
+		"shippable": true,
 	}
 	# Tools later would be shippable: false
 }

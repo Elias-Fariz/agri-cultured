@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3 uid="uid://v65jb553s6f3"]
+
+[ext_resource type="Script" uid="uid://dfoyyckymw8co" path="res://data/items/ItemData.gd" id="1_ovsgl"]
+
+[resource]
+script = ExtResource("1_ovsgl")
+id = "Blueberry"
+display_name = "Blueberry"
+sell_price = 12
+description = "But they're purple!"
+metadata/_custom_type_script = "uid://dfoyyckymw8co"

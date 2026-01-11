@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3 uid="uid://c7ew6q1rb6dge"]
+
+[ext_resource type="Script" uid="uid://dfoyyckymw8co" path="res://data/items/ItemData.gd" id="1_aakes"]
+
+[resource]
+script = ExtResource("1_aakes")
+id = "Strawberry"
+display_name = "Strawberry"
+sell_price = 18
+description = "Each seed is another pimple on some poor girl's face"
+metadata/_custom_type_script = "uid://dfoyyckymw8co"
