@@ -20,6 +20,8 @@ Phase 3: Stardew Feel
 - Proper Item Database (Resources) *CHECK*
 - Weather System *CHECK, FINALLY*
 * Camera Work *CHECK*
+* More Crops + Seed System *CHECK*
+* Sparkle System for Done Crops *CHECK*
 - Festivals/Weekly Events
 - Advanced Pathfinding
 - Audio/SFX

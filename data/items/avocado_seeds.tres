@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3 uid="uid://bleu5u0una3fv"]
+
+[ext_resource type="Script" uid="uid://dfoyyckymw8co" path="res://data/items/ItemData.gd" id="1_vauhb"]
+
+[resource]
+script = ExtResource("1_vauhb")
+id = "Avocado Seeds"
+display_name = "Avocado Seeds"
+sell_price = 3
+description = "Plant in soil and will grow in three days, will go bad"
+metadata/_custom_type_script = "uid://dfoyyckymw8co"

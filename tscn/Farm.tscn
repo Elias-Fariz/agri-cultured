@@ -1,10 +1,12 @@
-[gd_scene load_steps=32 format=3 uid="uid://6ni01dvcs2m2"]
+[gd_scene load_steps=34 format=3 uid="uid://6ni01dvcs2m2"]
 
 [ext_resource type="Script" uid="uid://cevvm7fnmvrhe" path="res://scripts/Farm.gd" id="1_vobxb"]
 [ext_resource type="PackedScene" uid="uid://b0c10lgb0ivgd" path="res://tscn/WaterSplash.tscn" id="2_66215"]
 [ext_resource type="TileSet" uid="uid://bqs5ruk6pejpc" path="res://tiles/GroundTileset.tres" id="2_u8tsc"]
 [ext_resource type="Texture2D" uid="uid://caerjv5h3fdyv" path="res://art/tree.png" id="3_d13le"]
+[ext_resource type="PackedScene" uid="uid://bqrwddeoi3g56" path="res://tscn/CropReadySparkle.tscn" id="3_gn6mj"]
 [ext_resource type="PackedScene" uid="uid://dv7wem6ftpvdd" path="res://tscn/Player.tscn" id="3_vobxb"]
+[ext_resource type="PackedScene" uid="uid://cjsq0fmtq5oad" path="res://tscn/CropOverripeBuzz.tscn" id="4_5ju6g"]
 [ext_resource type="Texture2D" uid="uid://b6q6p1rqkpdec" path="res://art/crops.png" id="4_stcfw"]
 [ext_resource type="PackedScene" uid="uid://d3xqpf5v6a8cl" path="res://tscn/Chest.tscn" id="5_2ywwf"]
 [ext_resource type="Texture2D" uid="uid://1d6ygtxnkroh" path="res://art/rock.PNG" id="5_3h77f"]
@@ -71,6 +73,8 @@ sources/2 = SubResource("TileSetAtlasSource_u8tsc")
 [node name="Farm" type="Node2D"]
 script = ExtResource("1_vobxb")
 water_splash_scene = ExtResource("2_66215")
+ripe_indicator_scene = ExtResource("3_gn6mj")
+overripe_indicator_scene = ExtResource("4_5ju6g")
 
 [node name="Ground" type="TileMap" parent="."]
 tile_set = ExtResource("2_u8tsc")

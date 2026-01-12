@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=3 uid="uid://cjsq0fmtq5oad"]
+
+[ext_resource type="Texture2D" uid="uid://8qk6m81nid34" path="res://art/stink.png" id="1_t8na5"]
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_8ut3u"]
+particle_flag_disable_z = true
+direction = Vector3(0, -1, 0)
+spread = 180.0
+initial_velocity_min = 2.0
+initial_velocity_max = 6.0
+gravity = Vector3(0, 0, 0)
+
+[node name="CropOverripeBuzz" type="Node2D"]
+
+[node name="Particles" type="GPUParticles2D" parent="."]
+position = Vector2(-8, 0)
+amount = 6
+texture = ExtResource("1_t8na5")
+lifetime = 1.3
+process_material = SubResource("ParticleProcessMaterial_8ut3u")

@@ -93,6 +93,54 @@ var item_db := {
 	# Tools later would be shippable: false
 }
 
+# -------------------------
+# Selected item (future hotbar will drive this)
+# -------------------------
+var selected_item_id: String = ""   # e.g. "Watermelon Seeds"
+
+# Seed mapping (fast/simple for now)
+var seed_to_crop := {
+	"Watermelon Seeds": "watermelon",
+	"Blueberry Seeds": "blueberry",
+	"Strawberry Seeds": "strawberry",
+	"Avocado Seeds": "avocado"
+}
+
+func is_seed_item(item_id: String) -> bool:
+	return seed_to_crop.has(item_id)
+
+func get_crop_for_seed(item_id: String) -> String:
+	return String(seed_to_crop.get(item_id, ""))
+
+func set_selected_item(item_id: String) -> void:
+	selected_item_id = item_id
+	print("Selected item:", selected_item_id)
+
+func get_all_seed_ids_in_inventory() -> Array[String]:
+	var seeds: Array[String] = []
+	for k in inventory.keys():
+		var id := String(k)
+		if inventory_has(id, 1) and is_seed_item(id):
+			seeds.append(id)
+	seeds.sort()
+	return seeds
+
+func cycle_seed_next() -> void:
+	var seeds := get_all_seed_ids_in_inventory()
+	if seeds.is_empty():
+		selected_item_id = ""
+		print("No seeds in inventory to select.")
+		return
+
+	# If current selection isn't a seed (or empty), pick first seed
+	if not is_seed_item(selected_item_id) or not seeds.has(selected_item_id):
+		set_selected_item(seeds[0])
+		return
+
+	var idx := seeds.find(selected_item_id)
+	idx = (idx + 1) % seeds.size()
+	set_selected_item(seeds[idx])
+
 func get_sell_price(item_name: String) -> int:
 	return ItemDb.get_sell_price(item_name)
 

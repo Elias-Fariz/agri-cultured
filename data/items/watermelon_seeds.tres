@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3 uid="uid://cpqugkkfq1n6e"]
+
+[ext_resource type="Script" uid="uid://dfoyyckymw8co" path="res://data/items/ItemData.gd" id="1_o37uw"]
+
+[resource]
+script = ExtResource("1_o37uw")
+id = "Watermelon Seeds"
+display_name = "Watermelon Seeds"
+sell_price = 3
+description = "Plant in soil and will grow in three days"
+metadata/_custom_type_script = "uid://dfoyyckymw8co"

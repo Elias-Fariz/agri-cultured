@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3 uid="uid://ngmfqgrs82vj"]
+
+[ext_resource type="Script" uid="uid://dfoyyckymw8co" path="res://data/items/ItemData.gd" id="1_3hwjo"]
+
+[resource]
+script = ExtResource("1_3hwjo")
+id = "Blueberry Seeds"
+display_name = "Blueberry Seeds"
+sell_price = 3
+description = "Plant in soil and will grow in four days, reharvestable"
+metadata/_custom_type_script = "uid://dfoyyckymw8co"

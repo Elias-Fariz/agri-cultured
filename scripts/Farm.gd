@@ -84,6 +84,9 @@ var crop_defs := {
 		# Rot should advance even if you don't water anymore once ripe:
 		# (when stage >= 1, ignore watering requirement)
 		"ignore_water_after_stage": 1,
+		
+		"ripe_stage": 1,
+		"overripe_stage": 2,
 	},
 }
 
@@ -120,6 +123,12 @@ var watered_today: Dictionary = {}  # cell_key -> true
 var rained_today: bool = false
 
 @export var water_splash_scene: PackedScene
+
+@export var ripe_indicator_scene: PackedScene
+@export var overripe_indicator_scene: PackedScene
+
+var _crop_indicators: Dictionary = {} 
+# cell_key -> { "state": String, "node": Node2D }
 
 func _ready() -> void:
 	_load_farm_state()
@@ -215,7 +224,37 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("tool"):
 		_tool_action()
 	if event.is_action_pressed("plant_seed"):
-		_try_plant_crop("avocado")
+		_try_plant_selected_seed()
+	if event.is_action_pressed("seed_next"):
+		GameState.cycle_seed_next()
+
+func _try_plant_selected_seed() -> void:
+	if GameState.is_gameplay_locked():
+		return
+
+	var seed_id := GameState.selected_item_id
+	if seed_id.is_empty():
+		print("No seed selected. (Tip: use your seed cycle key after buying seeds.)")
+		return
+
+	if not GameState.is_seed_item(seed_id):
+		print("Selected item is not a seed:", seed_id)
+		return
+
+	if not GameState.inventory_has(seed_id, 1):
+		print("You don't have any", seed_id, "left.")
+		return
+
+	var crop_name := GameState.get_crop_for_seed(seed_id)
+	if crop_name.is_empty():
+		print("Seed has no crop mapping:", seed_id)
+		return
+
+	# Attempt to plant crop first; only consume seed if planting succeeds
+	var planted := _try_plant_crop_return_success(crop_name)
+	if planted:
+		GameState.inventory_remove(seed_id, 1)
+		print("Planted", crop_name, "using", seed_id)
 
 func _tool_action() -> void:
 	if GameState.is_gameplay_locked():
@@ -336,37 +375,38 @@ func _hit_destructible(cell: Vector2i, key: String) -> void:
 			_:
 				GameState.report_action("break_object", 1)
 
-func _try_plant_crop(crop_name: String) -> void:
+func _try_plant_crop_return_success(crop_name: String) -> bool:
 	if GameState.is_gameplay_locked():
-		return
+		return false
 	if not crop_defs.has(crop_name):
 		print("Unknown crop: ", crop_name)
-		return
+		return false
 
 	var player_cell: Vector2i = ground.local_to_map(ground.to_local(player.global_position))
 	var step := Vector2i(int(player.facing.x), int(player.facing.y))
 	var cell := player_cell + step
 
-	# Must be tilled soil
+	# Must be tilled soil (dry OR wet tilled)
 	var src := ground.get_cell_source_id(0, cell)
 	var atlas := ground.get_cell_atlas_coords(0, cell)
+
 	var is_dry_tilled := (src == ground_source_id and atlas == tilled_coords)
-	var is_wet_tilled := (src == ground_source_id and atlas == wet_tilled_coords)
+	var is_wet_tilled := false
+	is_wet_tilled = (src == ground_source_id and atlas == wet_tilled_coords)
 
 	if not (is_dry_tilled or is_wet_tilled):
 		print("Not tilled soil; can't plant.")
-		return
+		return false
 
 	# Must not already have an object/crop there
 	if objects.get_cell_source_id(0, cell) != -1:
 		print("Something already on that tile.")
-		return
+		return false
 
 	var def: Dictionary = crop_defs[crop_name]
 	var stages: Array = def["stages"]
 	var days: Array = def["days"]
 
-	# Plant stage 0
 	objects.set_cell(0, cell, crops_source_id, stages[0])
 
 	crop_state[cell] = {
@@ -376,7 +416,8 @@ func _try_plant_crop(crop_name: String) -> void:
 	}
 
 	print("Planted ", crop_name, " at ", cell)
-
+	_update_crop_indicator(cell)
+	return true
 	
 func _advance_all_crops_one_day(raining: bool = false) -> void:
 	var cells := crop_state.keys()
@@ -431,6 +472,8 @@ func _advance_all_crops_one_day(raining: bool = false) -> void:
 
 		print(crop_name, " grew to stage ", next_stage, " at ", cell,
 			" (watered=", watered, ", needs_water=", needs_water, ")")
+		
+		_update_crop_indicator(cell)
 
 func _try_till_ground(cell: Vector2i) -> void:
 	var src := ground.get_cell_source_id(0, cell)
@@ -509,6 +552,7 @@ func _harvest_crop(cell: Vector2i) -> void:
 	GameState.inventory_add(item_name, qty)
 	print("Harvested ", crop_name, " at ", cell, " -> +", qty, " ", item_name)
 
+
 	# 2) Regrow or remove?
 	if def.has("regrow_to_stage"):
 		var regrow_stage := int(def["regrow_to_stage"])
@@ -522,11 +566,14 @@ func _harvest_crop(cell: Vector2i) -> void:
 		var stages: Array = def["stages"]
 		objects.set_cell(0, cell, crops_source_id, stages[regrow_stage])
 		print("Regrow: set ", crop_name, " back to stage ", regrow_stage, " for ", regrow_days, " day(s).")
+		_update_crop_indicator(cell)
 		return
 
 	# If not regrow, remove crop entirely
 	objects.erase_cell(0, cell)
 	crop_state.erase(cell)
+	
+	_update_crop_indicator(cell)
 	
 func _exit_tree() -> void:
 	_save_farm_state()
@@ -661,3 +708,92 @@ func _spawn_water_splash(cell: Vector2i) -> void:
 	var splash := water_splash_scene.instantiate() as Node2D
 	add_child(splash)
 	splash.global_position = world_pos
+	
+func _cell_to_world_center(cell: Vector2i) -> Vector2:
+	# map_to_local returns Vector2, tile_size is Vector2i → convert it
+	var tile_size: Vector2 = Vector2(ground.tile_set.tile_size)
+	return ground.to_global(ground.map_to_local(cell) + tile_size * 0.5)
+
+func _get_crop_readiness(cell: Vector2i) -> String:
+	if not crop_state.has(cell):
+		return ""
+
+	var data: Dictionary = crop_state[cell]
+	var crop_name := String(data.get("type", ""))
+	var stage := int(data.get("stage", 0))
+
+	if not crop_defs.has(crop_name):
+		return ""
+
+	var def: Dictionary = crop_defs[crop_name]
+	var stages: Array = def["stages"]
+	var final_stage := stages.size() - 1
+
+	# Default rule: final stage = ripe
+	var ripe_stage := int(def.get("ripe_stage", final_stage))
+	var overripe_stage := int(def.get("overripe_stage", -1))
+	
+	if crop_name == "avocado":
+		print("AVOCADO stage=", stage, " ripe=", ripe_stage, " overripe=", overripe_stage)
+
+	# If this crop supports overripe, check it
+	if overripe_stage >= 0 and stage >= overripe_stage:
+		return "overripe"
+
+	if stage >= ripe_stage:
+		return "ripe"
+
+	return ""
+
+func _update_crop_indicator(cell: Vector2i) -> void:
+	var key := _cell_key(cell)
+	var readiness := _get_crop_readiness(cell)  # "", "ripe", "overripe"
+
+	# --- Remove if not ready ---
+	if readiness == "":
+		if _crop_indicators.has(key):
+			var entry := _crop_indicators[key] as Dictionary
+			var node := entry.get("node", null) as Node2D
+			if node != null:
+				node.queue_free()
+			_crop_indicators.erase(key)
+		return
+
+	# --- Pick which scene to use ---
+	var desired_scene: PackedScene = null
+	if readiness == "overripe":
+		desired_scene = overripe_indicator_scene
+	else:
+		desired_scene = ripe_indicator_scene
+
+	if desired_scene == null:
+		return
+
+	var desired_pos := _cell_to_world_center(cell) + Vector2(0, -10)
+
+	# --- If we already have an indicator, decide whether to keep or swap ---
+	if _crop_indicators.has(key):
+		var entry := _crop_indicators[key] as Dictionary
+		var existing_state := String(entry.get("state", ""))
+		var existing_node := entry.get("node", null) as Node2D
+
+		# If the state matches, just move it
+		if existing_state == readiness and existing_node != null:
+			existing_node.global_position = desired_pos
+			return
+
+		# State changed (ripe -> overripe or overripe -> ripe): remove old node
+		if existing_node != null:
+			existing_node.queue_free()
+		_crop_indicators.erase(key)
+
+	# --- Spawn the correct indicator ---
+	var fx := desired_scene.instantiate() as Node2D
+	add_child(fx)
+	fx.global_position = desired_pos
+	fx.z_index = 100  # keeps it safely above crops
+
+	_crop_indicators[key] = {
+		"state": readiness,
+		"node": fx
+	}

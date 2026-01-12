@@ -10,7 +10,10 @@ extends BaseOverlay
 
 # Simple stock: each item has an id, name, and price
 var shop_items: Array = [
-	{ "id": "WatermelonSeed", "name": "Watermelon Seeds", "price": 20 },
+	{ "id": "Watermelon Seeds", "name": "Watermelon Seeds", "price": 10 },
+	{ "id": "Blueberry Seeds", "name": "Blueberry Seeds", "price": 25 },
+	{ "id": "Strawberry Seeds", "name": "Strawberry Seeds", "price": 20 },
+	{ "id": "Avocado Seeds", "name": "Avocado Seeds", "price": 40 },
 	{ "id": "Watermelon", "name": "Watermelon", "price": 60 },
 	{ "id": "Wood", "name": "Bundle of Wood", "price": 10 },
 	{ "id": "Animal Feed", "name": "All-Purpose Animal Feed", "price": 5 },

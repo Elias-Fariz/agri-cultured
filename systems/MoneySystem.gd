@@ -4,7 +4,7 @@ class_name MoneyManager
 
 signal money_changed(new_amount: int)
 
-var current_money: int = 0
+var current_money: int = 1000
 
 func add(amount: int) -> void:
 	if amount <= 0:
