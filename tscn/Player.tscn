@@ -1,9 +1,12 @@
-[gd_scene load_steps=7 format=3 uid="uid://dv7wem6ftpvdd"]
+[gd_scene load_steps=10 format=3 uid="uid://dv7wem6ftpvdd"]
 
 [ext_resource type="Script" uid="uid://lxxgykutkbm4" path="res://scripts/Player.gd" id="1_vvow5"]
+[ext_resource type="AudioStream" uid="uid://e7naj8iuf7u5" path="res://audio/sfx/sfx_talk_01.WAV" id="2_hdrus"]
 [ext_resource type="Texture2D" uid="uid://c0nmap1a7vh5i" path="res://art/player.PNG" id="2_kghmo"]
+[ext_resource type="AudioStream" uid="uid://btc7ht2yfjp03" path="res://audio/sfx/sfx_talk_02.WAV" id="3_7twa1"]
 [ext_resource type="Script" uid="uid://cr1r8q5m1ytb4" path="res://scripts/FacingIndicator.gd" id="3_gqu4d"]
 [ext_resource type="Texture2D" uid="uid://nan0sddf00hl" path="res://art/chest.png" id="4_kghmo"]
+[ext_resource type="AudioStream" uid="uid://ckvfyc5x8ss5w" path="res://audio/sfx/sfx_talk_03.WAV" id="4_knoa1"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_xfidv"]
 size = Vector2(31, 31)
@@ -14,6 +17,7 @@ size = Vector2(28, 28)
 [node name="Player" type="CharacterBody2D" groups=["player"]]
 collision_layer = 2
 script = ExtResource("1_vvow5")
+talk_blips = Array[AudioStream]([ExtResource("2_hdrus"), ExtResource("3_7twa1"), ExtResource("4_knoa1")])
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("2_kghmo")
@@ -38,3 +42,6 @@ texture = ExtResource("4_kghmo")
 [node name="Camera2D" type="Camera2D" parent="."]
 position_smoothing_enabled = true
 position_smoothing_speed = 6.0
+
+[node name="TalkSfx2D" type="AudioStreamPlayer2D" parent="."]
+bus = &"SFX"

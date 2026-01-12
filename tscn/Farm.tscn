@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=3 uid="uid://6ni01dvcs2m2"]
+[gd_scene load_steps=45 format=3 uid="uid://6ni01dvcs2m2"]
 
 [ext_resource type="Script" uid="uid://cevvm7fnmvrhe" path="res://scripts/Farm.gd" id="1_vobxb"]
 [ext_resource type="PackedScene" uid="uid://b0c10lgb0ivgd" path="res://tscn/WaterSplash.tscn" id="2_66215"]
@@ -10,13 +10,23 @@
 [ext_resource type="Texture2D" uid="uid://b6q6p1rqkpdec" path="res://art/crops.png" id="4_stcfw"]
 [ext_resource type="PackedScene" uid="uid://d3xqpf5v6a8cl" path="res://tscn/Chest.tscn" id="5_2ywwf"]
 [ext_resource type="Texture2D" uid="uid://1d6ygtxnkroh" path="res://art/rock.PNG" id="5_3h77f"]
+[ext_resource type="AudioStream" uid="uid://bo8vbuyt37bti" path="res://audio/sfx/sfx_water_splash_01.WAV" id="5_5ju6g"]
+[ext_resource type="AudioStream" uid="uid://dd08q6sbhq04r" path="res://audio/sfx/sfx_seed_plant_01.WAV" id="6_eei24"]
 [ext_resource type="Texture2D" uid="uid://bq8o1e8mbe7qm" path="res://art/door.PNG" id="6_mre8b"]
 [ext_resource type="Script" uid="uid://sh30tjkuwdh7" path="res://scripts/DoorToHouse.gd" id="7_d13le"]
+[ext_resource type="AudioStream" uid="uid://b3hqj80ovverl" path="res://audio/sfx/sfx_harvest_chime_01.WAV" id="7_tu1ii"]
 [ext_resource type="PackedScene" uid="uid://ci8kga43aovsx" path="res://ui/DayNightOverlay.tscn" id="8_2ywwf"]
 [ext_resource type="PackedScene" uid="uid://dtrn2d385g5ul" path="res://ui/InventoryUI.tscn" id="8_og6c6"]
+[ext_resource type="AudioStream" uid="uid://w8xlw7qbvgtu" path="res://audio/sfx/sfx_hit_tree_01.WAV" id="8_pcw26"]
+[ext_resource type="AudioStream" uid="uid://dmqutky1tc220" path="res://audio/sfx/sfx_hit_rock_01.WAV" id="9_gmfwv"]
 [ext_resource type="PackedScene" uid="uid://d1qqa5bygrbsp" path="res://ui/HUD.tscn" id="10_1mjdy"]
+[ext_resource type="AudioStream" uid="uid://c0vxwp7d85xq8" path="res://audio/ambience/life/sfx_bird_01.WAV" id="10_q5gas"]
+[ext_resource type="AudioStream" uid="uid://dby2jcrvk4ssy" path="res://audio/ambience/life/sfx_bird_02.WAV" id="11_wdtkt"]
 [ext_resource type="PackedScene" uid="uid://68vtjhtvdbhw" path="res://ui/ShippingUI.tscn" id="12_07b21"]
+[ext_resource type="AudioStream" uid="uid://b4kphj6d0xlxg" path="res://audio/ambience/life/sfx_bird_03.WAV" id="12_7ea1u"]
 [ext_resource type="PackedScene" uid="uid://be1wby7b2m0st" path="res://tscn/Bed.tscn" id="12_b7ap2"]
+[ext_resource type="AudioStream" uid="uid://cvxhlbrm7hew0" path="res://audio/ambience/life/sfx_leaves_01.WAV" id="13_kcrpu"]
+[ext_resource type="AudioStream" uid="uid://bd7fsofv05h57" path="res://audio/ambience/life/sfx_leaves_02.WAV" id="14_f2th2"]
 [ext_resource type="Script" uid="uid://di7h2a0pu2evb" path="res://scripts/FarmToTown.gd" id="14_u8tsc"]
 [ext_resource type="PackedScene" uid="uid://ded2abuo15uwh" path="res://ui/DialogueUI.tscn" id="15_k5exi"]
 [ext_resource type="PackedScene" uid="uid://8h44y4lood6w" path="res://tscn/SellBox.tscn" id="16_rgi15"]
@@ -26,6 +36,7 @@
 [ext_resource type="PackedScene" uid="uid://c3ksajlr1bllx" path="res://tscn/Chicken.tscn" id="21_65lcs"]
 [ext_resource type="PackedScene" uid="uid://b0rdgln1dko2v" path="res://tscn/Cow.tscn" id="22_u3713"]
 [ext_resource type="PackedScene" uid="uid://c5tput53xrui" path="res://ui/RainOverlay.tscn" id="23_f2050"]
+[ext_resource type="AudioStream" uid="uid://d28bo8p77va8y" path="res://audio/ambience/amb_farm_wind.WAV" id="32_tu1ii"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_og6c6"]
 texture = ExtResource("3_d13le")
@@ -75,6 +86,13 @@ script = ExtResource("1_vobxb")
 water_splash_scene = ExtResource("2_66215")
 ripe_indicator_scene = ExtResource("3_gn6mj")
 overripe_indicator_scene = ExtResource("4_5ju6g")
+sfx_water_splash = ExtResource("5_5ju6g")
+sfx_seed_plant = ExtResource("6_eei24")
+sfx_harvest = ExtResource("7_tu1ii")
+sfx_hit_tree = ExtResource("8_pcw26")
+sfx_hit_rock = ExtResource("9_gmfwv")
+bird_chirps = Array[AudioStream]([ExtResource("10_q5gas"), ExtResource("11_wdtkt"), ExtResource("12_7ea1u")])
+leaf_rustles = Array[AudioStream]([ExtResource("13_kcrpu"), ExtResource("14_f2th2")])
 
 [node name="Ground" type="TileMap" parent="."]
 tile_set = ExtResource("2_u8tsc")
@@ -171,3 +189,19 @@ position = Vector2(-593, -373)
 
 [node name="BottomRight" type="Marker2D" parent="CameraBounds"]
 position = Vector2(1598, 972)
+
+[node name="SfxPlayer2D" type="AudioStreamPlayer2D" parent="."]
+volume_db = -10.0
+bus = &"SFX"
+
+[node name="AmbiencePlayer" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("32_tu1ii")
+bus = &"Ambience"
+
+[node name="LifePlayer" type="AudioStreamPlayer2D" parent="."]
+volume_db = -12.0
+bus = &"Ambience"
+
+[node name="LifeTimer" type="Timer" parent="."]
+one_shot = true
+autostart = true

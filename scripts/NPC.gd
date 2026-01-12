@@ -105,6 +105,10 @@ func start_dialogue() -> void:
 		print("Found node:", ui.name, " type:", ui.get_class())
 		return
 	
+	var player := get_tree().get_first_node_in_group("player")
+	if player and player.has_method("play_talk_sfx"):
+		player.play_talk_sfx()
+		
 	var current_day := TimeManager.day  # <-- adjust to your project
 
 	# Gain friendship once per day on talk (recommended)
@@ -138,7 +142,6 @@ func start_dialogue() -> void:
 	
 	# --- I KNEW IT! Do it before the shop so that this focus thing only happens with communicating NPCs
 	
-	var player := get_tree().get_first_node_in_group("player")
 	if player == null:
 		print("NPC Dialogue: No node in group 'player' found.")
 	elif player.has_method("camera_focus_on_world_point"):

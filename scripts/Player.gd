@@ -39,7 +39,8 @@ var _cam_original_parent: Node = null
 var _cam_original_index: int = -1
 var _cam_original_transform: Transform2D
 
-
+@onready var talk_sfx: AudioStreamPlayer2D = $TalkSfx2D
+@export var talk_blips: Array[AudioStream] = []
 
 func _ready() -> void:
 	# Ensure the sensor starts in front of the player (down by default)
@@ -228,3 +229,10 @@ func _update_camera_focus_offset(delta: float) -> void:
 
 	# Apply as local camera offset
 	cam.position = _cam_focus_offset
+
+func play_talk_sfx() -> void:
+	if talk_blips.is_empty():
+		return
+	talk_sfx.stream = talk_blips[randi() % talk_blips.size()]
+	talk_sfx.pitch_scale = randf_range(0.98, 1.05)
+	talk_sfx.play()

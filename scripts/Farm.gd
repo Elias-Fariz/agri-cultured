@@ -130,8 +130,32 @@ var rained_today: bool = false
 var _crop_indicators: Dictionary = {} 
 # cell_key -> { "state": String, "node": Node2D }
 
+@onready var sfx_player: AudioStreamPlayer2D = $SfxPlayer2D
+
+@export var sfx_water_splash: AudioStream
+@export var sfx_seed_plant: AudioStream
+@export var sfx_harvest: AudioStream
+@export var sfx_hit_tree: AudioStream
+@export var sfx_hit_rock: AudioStream
+
+@onready var ambience_player: AudioStreamPlayer2D = $AmbiencePlayer
+
+@onready var life_player: AudioStreamPlayer2D = $LifePlayer
+@onready var life_timer: Timer = $LifeTimer
+
+@export var bird_chirps: Array[AudioStream] = []
+@export var leaf_rustles: Array[AudioStream] = []
+
+@export var life_interval_min: float = 10.0
+@export var life_interval_max: float = 30.0
+
 func _ready() -> void:
 	_load_farm_state()
+	if ambience_player and not ambience_player.playing:
+		ambience_player.play()
+	life_timer.timeout.connect(_on_life_timer_timeout)
+	_schedule_next_life_sound()
+	
 	TimeManager.day_changed.connect(_on_day_changed)
 	
 	if GameState.next_spawn_name != "":
@@ -357,6 +381,12 @@ func _hit_destructible(cell: Vector2i, key: String) -> void:
 	destructible_hits[cell] = current
 
 	print("Hit ", key, " ", current, "/", needed, " at ", cell)
+	
+	match key:
+		"tree":
+			_play_sfx(sfx_hit_tree, _cell_to_world_center(cell))
+		"rock":
+			_play_sfx(sfx_hit_rock, _cell_to_world_center(cell))
 
 	if current >= needed:
 		objects.erase_cell(0, cell)
@@ -416,6 +446,7 @@ func _try_plant_crop_return_success(crop_name: String) -> bool:
 	}
 
 	print("Planted ", crop_name, " at ", cell)
+	_play_sfx(sfx_seed_plant, _cell_to_world_center(cell))
 	_update_crop_indicator(cell)
 	return true
 	
@@ -551,6 +582,7 @@ func _harvest_crop(cell: Vector2i) -> void:
 
 	GameState.inventory_add(item_name, qty)
 	print("Harvested ", crop_name, " at ", cell, " -> +", qty, " ", item_name)
+	_play_sfx(sfx_harvest, _cell_to_world_center(cell))
 
 
 	# 2) Regrow or remove?
@@ -642,6 +674,12 @@ func water_cell(cell: Vector2i) -> void:
 	
 	# Optional: visual change (wet soil tile), particles, etc.
 	_spawn_water_splash(cell)
+	
+	# Position sound at the tile
+	if sfx_player and sfx_water_splash:
+		sfx_player.global_position = _cell_to_world_center(cell)
+		sfx_player.stream = sfx_water_splash
+		sfx_player.play()
 
 	print("Watered cell:", key)
 
@@ -797,3 +835,52 @@ func _update_crop_indicator(cell: Vector2i) -> void:
 		"state": readiness,
 		"node": fx
 	}
+
+func _play_sfx(stream: AudioStream, world_pos: Vector2) -> void:
+	if stream == null:
+		return
+	if sfx_player == null:
+		return
+
+	sfx_player.pitch_scale = randf_range(0.95, 1.05)
+	sfx_player.global_position = world_pos
+	sfx_player.stream = stream
+	sfx_player.play()
+
+func _schedule_next_life_sound() -> void:
+	var t := randf_range(life_interval_min, life_interval_max)
+	life_timer.wait_time = t
+	life_timer.start()
+
+func _on_life_timer_timeout() -> void:
+	if life_player == null:
+		return
+
+	# Optional: don’t do life sounds when gameplay is locked (menus/dialogue)
+	if GameState.is_gameplay_locked():
+		_schedule_next_life_sound()
+		return
+
+	var pool: Array[AudioStream] = []
+
+	# You can mix both, or choose based on time of day later
+	pool.append_array(bird_chirps)
+	pool.append_array(leaf_rustles)
+
+	if pool.is_empty():
+		_schedule_next_life_sound()
+		return
+
+	var stream: AudioStream = pool[randi() % pool.size()]
+	if stream == null:
+		_schedule_next_life_sound()
+		return
+
+	# Gentle variation makes it feel alive
+	life_player.pitch_scale = randf_range(0.95, 1.05)
+	life_player.volume_db = randf_range(-18.0, -12.0)
+
+	life_player.stream = stream
+	life_player.play()
+
+	_schedule_next_life_sound()

@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://b7y4cme4an3kb"]
+[gd_scene load_steps=28 format=3 uid="uid://b7y4cme4an3kb"]
 
 [ext_resource type="PackedScene" uid="uid://dv7wem6ftpvdd" path="res://tscn/Player.tscn" id="1_2feps"]
 [ext_resource type="Script" uid="uid://0ofb5xeer5m6" path="res://scripts/Town.gd" id="1_o31te"]
@@ -16,6 +16,15 @@
 [ext_resource type="PackedScene" uid="uid://b0fhots3ucty8" path="res://tscn/TownBoard.tscn" id="14_j34sm"]
 [ext_resource type="PackedScene" uid="uid://db3fa8eurisd7" path="res://tscn/FireflyLayer.tscn" id="15_j34sm"]
 [ext_resource type="PackedScene" uid="uid://c5tput53xrui" path="res://ui/RainOverlay.tscn" id="16_vlptm"]
+[ext_resource type="Script" uid="uid://bb5hy4eh3yd3h" path="res://scripts/TownAudio.gd" id="17_ewds8"]
+[ext_resource type="AudioStream" uid="uid://d28bo8p77va8y" path="res://audio/ambience/amb_farm_wind.WAV" id="17_wi8o3"]
+[ext_resource type="AudioStream" uid="uid://c0vxwp7d85xq8" path="res://audio/ambience/life/sfx_bird_01.WAV" id="18_jlwy3"]
+[ext_resource type="AudioStream" uid="uid://dby2jcrvk4ssy" path="res://audio/ambience/life/sfx_bird_02.WAV" id="19_m0mrq"]
+[ext_resource type="AudioStream" uid="uid://b4kphj6d0xlxg" path="res://audio/ambience/life/sfx_bird_03.WAV" id="20_fgqwr"]
+[ext_resource type="AudioStream" uid="uid://cvxhlbrm7hew0" path="res://audio/ambience/life/sfx_leaves_01.WAV" id="21_seor3"]
+[ext_resource type="AudioStream" uid="uid://bd7fsofv05h57" path="res://audio/ambience/life/sfx_leaves_02.WAV" id="22_4f1xo"]
+[ext_resource type="AudioStream" uid="uid://ddtmvpbosnor5" path="res://audio/ambience/life/sfx_murmur_01.WAV" id="23_ewvrf"]
+[ext_resource type="AudioStream" uid="uid://co4coq6x4nty5" path="res://audio/ambience/life/sfx_murmur_02.WAV" id="24_caym6"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ib40g"]
 
@@ -144,3 +153,24 @@ position = Vector2(282, 135)
 
 [node name="Shopkeeper_NightSpot" type="Marker2D" parent="NPCSpots"]
 position = Vector2(51, 129)
+
+[node name="TownAmbience2D" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("17_wi8o3")
+autoplay = true
+bus = &"Ambience"
+
+[node name="TownLife2D" type="AudioStreamPlayer2D" parent="."]
+volume_db = 24.0
+bus = &"Ambience"
+
+[node name="TownLifeTimer" type="Timer" parent="."]
+one_shot = true
+
+[node name="TownAudio" type="Node2D" parent="." groups=["town_audio"]]
+script = ExtResource("17_ewds8")
+ambience_path = NodePath("../TownAmbience2D")
+life_path = NodePath("../TownLife2D")
+life_timer_path = NodePath("../TownLifeTimer")
+town_birds = Array[AudioStream]([ExtResource("18_jlwy3"), ExtResource("19_m0mrq"), ExtResource("20_fgqwr")])
+town_leaves = Array[AudioStream]([ExtResource("21_seor3"), ExtResource("22_4f1xo")])
+town_murmurs = Array[AudioStream]([ExtResource("23_ewvrf"), ExtResource("24_caym6")])

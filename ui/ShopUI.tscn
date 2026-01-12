@@ -1,9 +1,13 @@
-[gd_scene load_steps=2 format=3 uid="uid://dexrjrr1c8jfb"]
+[gd_scene load_steps=5 format=3 uid="uid://dexrjrr1c8jfb"]
 
 [ext_resource type="Script" uid="uid://cq2f6i4fxuiu1" path="res://scripts/ShopUI.gd" id="1_p8e25"]
+[ext_resource type="AudioStream" uid="uid://dn6qldyiomxpv" path="res://audio/sfx/sfx_money_01.WAV" id="2_hbhm7"]
+[ext_resource type="AudioStream" uid="uid://b3rk55uri4r3q" path="res://audio/sfx/sfx_money_02.WAV" id="3_n586u"]
+[ext_resource type="AudioStream" uid="uid://bnt8rhl1uc6c8" path="res://audio/sfx/sfx_money_03.WAV" id="4_cl8rv"]
 
 [node name="ShopUI" type="CanvasLayer" groups=["shop_ui"]]
 script = ExtResource("1_p8e25")
+buy_sounds = Array[AudioStream]([ExtResource("2_hbhm7"), ExtResource("3_n586u"), ExtResource("4_cl8rv")])
 visual_node_path = NodePath("Panel")
 start_visible_in_game = false
 is_modal = true
@@ -80,3 +84,6 @@ text = "Total: 0g"
 [node name="BuyButton" type="Button" parent="Panel/Margin/Root/FooterRow"]
 layout_mode = 2
 text = "Buy"
+
+[node name="ShopSfx2D" type="AudioStreamPlayer2D" parent="."]
+bus = &"SFX"

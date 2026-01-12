@@ -25,6 +25,9 @@ var cart: Dictionary = {}
 var _cart_row_ids: Array[String] = []      # row index -> item_id
 var _last_cart_selected_id: String = ""    # currently selected item_id in cart
 
+@onready var shop_sfx: AudioStreamPlayer2D = $ShopSfx2D
+@export var buy_sounds: Array[AudioStream] = []
+
 
 func _ready() -> void:
 	close_button.pressed.connect(hide_overlay)
@@ -188,5 +191,15 @@ func _on_buy_pressed() -> void:
 		var inv_name := id  # or map via a dictionary later
 		GameState.inventory_add(inv_name, count)
 
+	play_buy_sfx()
+
 	cart.clear()
 	_refresh_cart()
+
+
+func play_buy_sfx() -> void:
+	if buy_sounds.is_empty():
+		return
+	shop_sfx.stream = buy_sounds[randi() % buy_sounds.size()]
+	shop_sfx.pitch_scale = randf_range(0.98, 1.03)
+	shop_sfx.play()

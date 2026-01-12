@@ -24,7 +24,7 @@ Phase 3: Stardew Feel
 * Sparkle System for Done Crops *CHECK*
 - Festivals/Weekly Events
 - Advanced Pathfinding
-- Audio/SFX
+- Audio/SFX *GETTING THERE!*
 - Save to Disk
 
 Phase 4: Inventory/UI Polish
