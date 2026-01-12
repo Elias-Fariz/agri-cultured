@@ -15,7 +15,7 @@ var facing: Vector2 = Vector2.DOWN
 @onready var indicator: Node2D = $FacingIndicator
 @onready var inventory_ui = get_tree().current_scene.get_node("InventoryUI")
 
-@onready var cam: Camera2D = $Camera2D
+@onready var cam: Camera2D = $ShakeOffset/Camera2D
 @export var camera_look_ahead_pixels: float = 28.0
 @export var camera_look_ahead_smooth: float = 8.0  # higher = snappier
 
@@ -42,14 +42,34 @@ var _cam_original_transform: Transform2D
 @onready var talk_sfx: AudioStreamPlayer2D = $TalkSfx2D
 @export var talk_blips: Array[AudioStream] = []
 
+@export var grass_steps: Array[AudioStream] = []
+@export var stone_steps: Array[AudioStream] = []
+
+@export var step_interval: float = 0.4  # seconds between steps
+@export var step_pitch_variation: float = 0.1
+
+var _step_timer: float = 0.0
+
+@export var footstep_tile_layer: int = 0
+
+@onready var shake_offset: Node2D = $ShakeOffset
+
+var _shake_time_left: float = 0.0
+var _shake_duration: float = 0.0
+var _shake_intensity: float = 0.0
+var _shake_frequency: float = 30.0
+var _shake_damping: float = 10.0
+
+var _shake_seed: float = 0.0
+
+
 func _ready() -> void:
 	# Ensure the sensor starts in front of the player (down by default)
 	_update_sensor_position()
 	indicator.set_direction(facing)
 	_apply_camera_bounds_if_present()
 	_target_zoom = cam.zoom.x
-
-
+	shake_offset.position = Vector2.ZERO
 
 func _enter_tree() -> void:
 	call_deferred("_apply_camera_bounds_if_present")
@@ -62,7 +82,8 @@ func _physics_process(delta: float) -> void:
 		_update_camera_lookahead(delta)
 		
 	_update_camera_zoom(delta)
-	
+	_update_camera_shake(delta)
+
 	if GameState.is_gameplay_locked():
 		velocity = Vector2.ZERO
 		move_and_slide()
@@ -86,6 +107,16 @@ func _physics_process(delta: float) -> void:
 	if GameState.exhausted:
 		mult = exhausted_speed_multiplier
 	velocity = input.normalized() * speed * mult
+	
+	var is_moving := velocity.length() > 5.0
+
+	if is_moving:
+		_step_timer -= delta
+		if _step_timer <= 0.0:
+			_play_footstep()
+			_step_timer = step_interval
+	else:
+		_step_timer = 0.0
 	
 	move_and_slide()
 
@@ -236,3 +267,85 @@ func play_talk_sfx() -> void:
 	talk_sfx.stream = talk_blips[randi() % talk_blips.size()]
 	talk_sfx.pitch_scale = randf_range(0.98, 1.05)
 	talk_sfx.play()
+
+func _get_footstep_type() -> String:
+	var town: Node = get_tree().get_first_node_in_group("world")
+	if town == null:
+		return "grass"
+
+	var ground: TileMap = get_tree().get_first_node_in_group("footstep_ground") as TileMap
+	if ground == null:
+		return "grass"
+
+	var cell: Vector2i = ground.local_to_map(ground.to_local(global_position))
+	var data: TileData = ground.get_cell_tile_data(footstep_tile_layer, cell)
+	
+	if data == null:
+		return "grass"
+
+	# TileSet custom data: key = "footstep", value = "grass" or "stone"
+	var v: Variant = data.get_custom_data("footstep")
+	if v == null:
+		return "grass"
+
+	return str(v)
+
+func _play_footstep() -> void:
+	var step_type: String = _get_footstep_type()
+	var s: AudioStream = _pick_step_stream(step_type)
+	if s == null:
+		return
+
+	var p: AudioStreamPlayer2D = $FootstepPlayer
+	p.stream = s
+	p.pitch_scale = 1.0 + randf_range(-step_pitch_variation, step_pitch_variation)
+	p.stop()
+	p.play()
+
+func _pick_step_stream(step_type: String) -> AudioStream:
+	var pool: Array[AudioStream] = grass_steps
+	if step_type == "stone":
+		pool = stone_steps
+
+	if pool.is_empty():
+		return null
+
+	return pool[randi() % pool.size()]
+
+func camera_shake(intensity: float = 6.0, duration: float = 0.12, frequency: float = 30.0, damping: float = 10.0) -> void:
+	# If a stronger shake is requested while already shaking, keep the stronger one.
+	_shake_intensity = max(_shake_intensity, intensity)
+
+	_shake_duration = max(_shake_duration, duration)
+	_shake_time_left = max(_shake_time_left, duration)
+
+	_shake_frequency = frequency
+	_shake_damping = damping
+
+	_shake_seed = randf() * 1000.0
+
+func _update_camera_shake(delta: float) -> void:
+	if _shake_time_left <= 0.0:
+		shake_offset.position = Vector2.ZERO
+		return
+
+	_shake_time_left -= delta
+
+	# 0..1 normalized time
+	var t: float = 1.0 - (_shake_time_left / max(_shake_duration, 0.001))
+
+	# Smoothly fade out (cozy)
+	var falloff: float = exp(-_shake_damping * t)
+
+	# Simple procedural jitter (stable, not too chaotic)
+	var phase: float = (_shake_seed + t * _shake_frequency) * TAU
+	var x: float = sin(phase) * _shake_intensity * falloff
+	var y: float = cos(phase * 1.13) * _shake_intensity * falloff
+
+	shake_offset.position = Vector2(x, y)
+
+	# When it's done, reset cleanly
+	if _shake_time_left <= 0.0:
+		_shake_intensity = 0.0
+		_shake_duration = 0.0
+		shake_offset.position = Vector2.ZERO

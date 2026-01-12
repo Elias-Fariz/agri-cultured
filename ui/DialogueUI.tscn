@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://ded2abuo15uwh"]
+[gd_scene load_steps=3 format=3 uid="uid://ded2abuo15uwh"]
 
 [ext_resource type="Script" uid="uid://cewvrkc6o3hdl" path="res://scripts/DialogueUI.gd" id="1_vvl2g"]
+[ext_resource type="AudioStream" uid="uid://e7naj8iuf7u5" path="res://audio/sfx/sfx_talk_01.WAV" id="2_qe7eq"]
 
 [node name="DialogueUI" type="CanvasLayer"]
 script = ExtResource("1_vvl2g")
@@ -37,3 +38,11 @@ text = "E: Next   Esc: Close"
 
 [node name="FriendshipLabel" type="Label" parent="Box/VBox"]
 layout_mode = 2
+
+[node name="TextLabel2" type="RichTextLabel" parent="Box/VBox"]
+visible = false
+layout_mode = 2
+
+[node name="TalkBlipPlayer" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("2_qe7eq")
+bus = &"SFX"

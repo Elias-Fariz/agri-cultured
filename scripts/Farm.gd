@@ -385,8 +385,10 @@ func _hit_destructible(cell: Vector2i, key: String) -> void:
 	match key:
 		"tree":
 			_play_sfx(sfx_hit_tree, _cell_to_world_center(cell))
+			player.camera_shake(200.0, 0.12, 32.0, 10.0)
 		"rock":
 			_play_sfx(sfx_hit_rock, _cell_to_world_center(cell))
+			player.camera_shake(300.0, 0.16, 35.0, 9.0)
 
 	if current >= needed:
 		objects.erase_cell(0, cell)
@@ -583,7 +585,7 @@ func _harvest_crop(cell: Vector2i) -> void:
 	GameState.inventory_add(item_name, qty)
 	print("Harvested ", crop_name, " at ", cell, " -> +", qty, " ", item_name)
 	_play_sfx(sfx_harvest, _cell_to_world_center(cell))
-
+	player.camera_shake(1.5, 0.08, 28.0, 12.0)
 
 	# 2) Regrow or remove?
 	if def.has("regrow_to_stage"):

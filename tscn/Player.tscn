@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://dv7wem6ftpvdd"]
+[gd_scene load_steps=16 format=3 uid="uid://dv7wem6ftpvdd"]
 
 [ext_resource type="Script" uid="uid://lxxgykutkbm4" path="res://scripts/Player.gd" id="1_vvow5"]
 [ext_resource type="AudioStream" uid="uid://e7naj8iuf7u5" path="res://audio/sfx/sfx_talk_01.WAV" id="2_hdrus"]
@@ -7,6 +7,12 @@
 [ext_resource type="Script" uid="uid://cr1r8q5m1ytb4" path="res://scripts/FacingIndicator.gd" id="3_gqu4d"]
 [ext_resource type="Texture2D" uid="uid://nan0sddf00hl" path="res://art/chest.png" id="4_kghmo"]
 [ext_resource type="AudioStream" uid="uid://ckvfyc5x8ss5w" path="res://audio/sfx/sfx_talk_03.WAV" id="4_knoa1"]
+[ext_resource type="AudioStream" uid="uid://b73vy6uxiybh" path="res://audio/footsteps/grass_steps_01.WAV" id="5_34em8"]
+[ext_resource type="AudioStream" uid="uid://dank4135uk8rh" path="res://audio/footsteps/grass_steps_02.WAV" id="6_56q24"]
+[ext_resource type="AudioStream" uid="uid://d0kvslx174oni" path="res://audio/footsteps/grass_steps_03.WAV" id="7_exuc5"]
+[ext_resource type="AudioStream" uid="uid://bdmecs377p8gx" path="res://audio/footsteps/stone_steps_01.WAV" id="8_7fkfc"]
+[ext_resource type="AudioStream" uid="uid://byfycenow50f8" path="res://audio/footsteps/stone_steps_02.WAV" id="9_5jfsi"]
+[ext_resource type="AudioStream" uid="uid://bxsrixmfhey82" path="res://audio/footsteps/stone_steps_03.WAV" id="10_r3dvn"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_xfidv"]
 size = Vector2(31, 31)
@@ -18,6 +24,8 @@ size = Vector2(28, 28)
 collision_layer = 2
 script = ExtResource("1_vvow5")
 talk_blips = Array[AudioStream]([ExtResource("2_hdrus"), ExtResource("3_7twa1"), ExtResource("4_knoa1")])
+grass_steps = Array[AudioStream]([ExtResource("5_34em8"), ExtResource("6_56q24"), ExtResource("7_exuc5")])
+stone_steps = Array[AudioStream]([ExtResource("8_7fkfc"), ExtResource("9_5jfsi"), ExtResource("10_r3dvn")])
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("2_kghmo")
@@ -39,9 +47,14 @@ script = ExtResource("3_gqu4d")
 visible = false
 texture = ExtResource("4_kghmo")
 
-[node name="Camera2D" type="Camera2D" parent="."]
+[node name="ShakeOffset" type="Node2D" parent="."]
+
+[node name="Camera2D" type="Camera2D" parent="ShakeOffset"]
 position_smoothing_enabled = true
 position_smoothing_speed = 6.0
 
 [node name="TalkSfx2D" type="AudioStreamPlayer2D" parent="."]
+bus = &"SFX"
+
+[node name="FootstepPlayer" type="AudioStreamPlayer2D" parent="."]
 bus = &"SFX"

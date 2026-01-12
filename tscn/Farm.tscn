@@ -81,7 +81,7 @@ sources/2 = SubResource("TileSetAtlasSource_u8tsc")
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_u3713"]
 
-[node name="Farm" type="Node2D"]
+[node name="Farm" type="Node2D" groups=["world"]]
 script = ExtResource("1_vobxb")
 water_splash_scene = ExtResource("2_66215")
 ripe_indicator_scene = ExtResource("3_gn6mj")
@@ -94,7 +94,7 @@ sfx_hit_rock = ExtResource("9_gmfwv")
 bird_chirps = Array[AudioStream]([ExtResource("10_q5gas"), ExtResource("11_wdtkt"), ExtResource("12_7ea1u")])
 leaf_rustles = Array[AudioStream]([ExtResource("13_kcrpu"), ExtResource("14_f2th2")])
 
-[node name="Ground" type="TileMap" parent="."]
+[node name="Ground" type="TileMap" parent="." groups=["footstep_ground"]]
 tile_set = ExtResource("2_u8tsc")
 format = 2
 layer_0/tile_data = PackedInt32Array(65537, 0, 0, 131073, 0, 0, 196609, 0, 0, 262145, 0, 0, 327681, 0, 0, 393217, 0, 0, 458753, 0, 0, 65538, 0, 0, 131074, 0, 0, 196610, 0, 0, 262146, 0, 0, 327682, 0, 0, 393218, 0, 0, 458754, 0, 0, 65539, 0, 0, 131075, 0, 0, 196611, 0, 0, 262147, 0, 0, 327683, 0, 0, 393219, 0, 0, 458755, 0, 0, 65540, 0, 0, 131076, 0, 0, 196612, 0, 0, 262148, 0, 0, 327684, 0, 0, 393220, 0, 0, 458756, 0, 0, 65541, 0, 0, 131077, 0, 0, 196613, 0, 0, 262149, 0, 0, 327685, 0, 0, 393221, 0, 0, 458757, 0, 0, 65542, 0, 0, 131078, 0, 0, 196614, 0, 0, 262150, 0, 0, 327686, 0, 0, 393222, 0, 0, 458758, 0, 0, 65543, 0, 0, 131079, 0, 0, 196615, 0, 0, 262151, 0, 0, 327687, 0, 0, 393223, 0, 0, 458759, 0, 0, 65544, 0, 0, 131080, 0, 0, 196616, 0, 0, 262152, 0, 0, 327688, 0, 0, 393224, 0, 0, 458760, 0, 0, 65545, 0, 0, 131081, 0, 0, 196617, 0, 0, 262153, 0, 0, 327689, 0, 0, 393225, 0, 0, 458761, 0, 0, 65546, 0, 0, 131082, 0, 0, 196618, 0, 0, 262154, 0, 0, 327690, 0, 0, 393226, 0, 0, 458762, 0, 0, 65547, 0, 0, 131083, 0, 0, 196619, 0, 0, 262155, 0, 0, 327691, 0, 0, 393227, 0, 0, 458763, 0, 0, 65548, 0, 0, 131084, 0, 0, 196620, 0, 0, 262156, 0, 0, 327692, 0, 0, 393228, 0, 0, 458764, 0, 0)
