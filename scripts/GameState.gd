@@ -158,19 +158,19 @@ func shipping_add(item_name: String, qty: int = 1) -> void:
 	shipping_bin[item_name] = int(shipping_bin.get(item_name, 0)) + qty
 	
 func report_item_shipped(item_name: String, qty: int) -> void:
-	for quest_any in active_quests.values():
-		var quest: Dictionary = quest_any
-		if String(quest.get("type", "")) == "ship" and String(quest.get("target", "")) == item_name:
-			quest["progress"] = int(quest.get("progress", 0)) + qty
-			if int(quest["progress"]) >= int(quest.get("amount", 0)):
-				complete_quest(String(quest.get("id", "")))
+	# OLD: directly increments quest progress
+	# NEW: emit the canonical quest event
+	QuestEvents.shipped.emit(item_name, qty)
 
 func report_action(action: String, amount: int = 1) -> void:
-	for quest in active_quests.values():
-		if quest["type"] == action:
-			quest["progress"] += amount
-			if quest["progress"] >= quest["amount"]:
-				complete_quest(quest["id"])
+	# If you used report_action("chop_tree"), map it to the new signal
+	if action == "chop_tree":
+		QuestEvents.chopped_tree.emit(amount)
+	elif action == "break_rock":
+		QuestEvents.broke_rock.emit(amount)
+	else:
+		# Optional: a generic event later, but for now:
+		print("Unknown quest action:", action)
 
 func shipping_remove(item_name: String, qty: int = 1) -> bool:
 	if item_name.is_empty() or qty <= 0:
@@ -278,6 +278,14 @@ var completed_quests: Dictionary = {} # id -> quest dict
 func _ready() -> void:
 	reset_energy()
 	current_tool = starting_tool
+	
+	QuestEvents.talked_to.connect(_on_quest_talked_to)
+	QuestEvents.went_to.connect(_on_quest_went_to)
+
+	QuestEvents.shipped.connect(_on_quest_shipped)
+	QuestEvents.chopped_tree.connect(_on_quest_chopped_tree)
+	QuestEvents.broke_rock.connect(_on_quest_broke_rock)
+	QuestEvents.harvested.connect(_on_quest_harvested)
 
 func cycle_tool_next() -> void:
 	current_tool = (int(current_tool) + 1) % TOOL_COUNT
@@ -356,10 +364,22 @@ func clear_warning() -> void:
 # ----------------------------
 
 func add_quest(quest: Dictionary) -> void:
-	if active_quests.has(quest["id"]):
+	var id := String(quest.get("id", ""))
+	if id == "":
 		return
-	active_quests[quest["id"]] = quest.duplicate(true)
-	print("Quest accepted: ", quest.get("id", ""))
+	if active_quests.has(id) or completed_quests.has(id):
+		return
+
+	var q := quest.duplicate(true)
+	q["progress"] = int(q.get("progress", 0))
+	q["amount"] = int(q.get("amount", 1))
+	q["completed"] = bool(q.get("completed", false))
+	q["claimed"] = bool(q.get("claimed", false))
+
+	active_quests[id] = q
+	print("Quest accepted: ", id)
+	
+	QuestEvents.quest_state_changed.emit()
 
 func complete_quest(quest_id: String) -> void:
 	if not active_quests.has(quest_id):
@@ -395,5 +415,177 @@ func claim_quest_reward(quest_id: String) -> void:
 			inventory_add(item_name, qty)
 
 	quest["claimed"] = true
+	
+	QuestEvents.quest_state_changed.emit()
 
 	print("Quest reward claimed for ", quest_id)
+
+func _on_quest_talked_to(npc_id: String) -> void:
+	_debug_chain("BEFORE talk " + npc_id)
+
+	_increment_matching_quests("talk_to", npc_id, 1)
+	_try_advance_chain_quest("main_mayor_strawberry", "talk_to", npc_id, 1)
+
+	_debug_chain("AFTER  talk " + npc_id)
+	# chain quests
+	#for qid in active_quests.keys():
+	#	_try_advance_chain_quest(String(qid), "talk_to", npc_id, 1)
+
+func _on_quest_went_to(location_id: String) -> void:
+	_debug_chain("BEFORE go_to " + location_id)
+
+	_increment_matching_quests("go_to", location_id, 1)
+	_try_advance_chain_quest("main_mayor_strawberry", "go_to", location_id, 1)
+
+	_debug_chain("AFTER  go_to " + location_id)
+	#for qid in active_quests.keys():
+	#	_try_advance_chain_quest(String(qid), "go_to", location_id, 1)
+
+func _on_quest_shipped(item_id: String, amount: int) -> void:
+	_debug_chain("BEFORE ship " + item_id)
+
+	_increment_matching_quests("ship", item_id, amount)
+	_try_advance_chain_quest("main_mayor_strawberry", "ship", item_id, amount)
+	#for qid in active_quests.keys():
+	#	_try_advance_chain_quest(String(qid), "ship", item_id, amount)
+
+func _on_quest_chopped_tree(amount: int) -> void:
+	_increment_matching_quests("chop_tree", "", amount)
+
+func _on_quest_broke_rock(amount: int) -> void:
+	_increment_matching_quests("break_rock", "", amount)
+
+func _on_quest_harvested(item_id: String, amount: int) -> void:
+	_increment_matching_quests("harvest", item_id, amount)
+
+func _increment_matching_quests(qtype: String, target: String, delta: int) -> void:
+	# active_quests is assumed to be a Dictionary: id -> quest Dictionary
+	for id in active_quests.keys():
+		var q: Dictionary = active_quests[id]
+
+		if String(q.get("type", "")) != qtype:
+			continue
+
+		# Some types use target, some don't (like chop_tree)
+		var q_target := String(q.get("target", ""))
+		if target != "" and q_target != target:
+			continue
+
+		var progress := int(q.get("progress", 0))
+		var amount := int(q.get("amount", 1))
+
+		progress = clamp(progress + delta, 0, amount)
+		q["progress"] = progress
+
+		if progress >= amount:
+			q["completed"] = true
+			# move to completed_quests
+			active_quests.erase(id)
+			completed_quests[id] = q
+
+		else:
+			# write back updated quest
+			active_quests[id] = q
+
+func _try_advance_chain_quest(qid: String, event_type: String, target: String, delta: int) -> void:
+	if not active_quests.has(qid):
+		return
+
+	var q: Dictionary = active_quests[qid]
+	if String(q.get("type", "")) != "chain":
+		return
+
+	var steps: Array = q.get("steps", [])
+	var step_index: int = int(q.get("step_index", 0))
+	if step_index < 0 or step_index >= steps.size():
+		return
+
+	var step: Dictionary = steps[step_index]
+
+	if String(step.get("type", "")) != event_type:
+		return
+
+	var step_target: String = String(step.get("target", ""))
+	if step_target != "" and step_target != target:
+		return
+
+	var progress: int = int(step.get("progress", 0))
+	var amount: int = int(step.get("amount", 1))
+
+	progress = clamp(progress + delta, 0, amount)
+	step["progress"] = progress
+	steps[step_index] = step
+
+	if progress >= amount:
+		step_index += 1
+		q["step_index"] = step_index
+
+	q["steps"] = steps
+	
+	QuestEvents.quest_state_changed.emit()
+
+	if step_index >= steps.size():
+		q["completed"] = true
+		active_quests.erase(qid)
+		completed_quests[qid] = q
+	else:
+		# ✅ THIS is the crucial persist line
+		active_quests[qid] = q
+
+func get_chain_step_text(qid: String) -> String:
+	if not active_quests.has(qid):
+		return ""
+	var q: Dictionary = active_quests[qid]
+	if String(q.get("type","")) != "chain":
+		return ""
+	var steps: Array = q.get("steps", [])
+	var idx: int = int(q.get("step_index", 0))
+	if idx < 0 or idx >= steps.size():
+		return ""
+	return String(steps[idx].get("text", ""))
+
+func _debug_chain(tag: String) -> void:
+	var q: Dictionary = active_quests.get("main_mayor_strawberry", {}) as Dictionary
+	if q.is_empty():
+		print(tag, " CHAIN not active")
+		return
+
+	var idx: int = int(q.get("step_index", -1))
+	var steps: Array = q.get("steps", [])
+	var step_desc := "(no step)"
+	if idx >= 0 and idx < steps.size():
+		var step: Dictionary = steps[idx]
+		step_desc = "%s %s (%d/%d)" % [
+			String(step.get("type","?")),
+			String(step.get("target","?")),
+			int(step.get("progress",0)),
+			int(step.get("amount",1))
+		]
+
+	print(tag, " step_index=", idx, " current=", step_desc)
+
+func is_quest_available_to_accept(quest_id: String) -> bool:
+	return not active_quests.has(quest_id) and not completed_quests.has(quest_id)
+
+func has_turn_in_ready(npc_id: String) -> bool:
+	for qid_any in completed_quests.keys():
+		var qid := String(qid_any)
+		var q: Dictionary = completed_quests[qid]
+
+		if bool(q.get("claimed", false)):
+			continue
+
+		# Preferred: explicit turn_in_id
+		var turn_in := String(q.get("turn_in_id", ""))
+		if turn_in != "" and turn_in == npc_id:
+			return true
+
+		# Fallback for chain quests: infer from last step if it’s a talk_to
+		if String(q.get("type", "")) == "chain":
+			var steps: Array = q.get("steps", [])
+			if steps.size() > 0:
+				var last: Dictionary = steps[steps.size() - 1]
+				if String(last.get("type", "")) == "talk_to" and String(last.get("target", "")) == npc_id:
+					return true
+
+	return false

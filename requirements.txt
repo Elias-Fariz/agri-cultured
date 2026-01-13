@@ -22,6 +22,7 @@ Phase 3: Stardew Feel
 * Camera Work *CHECK*
 * More Crops + Seed System *CHECK*
 * Sparkle System for Done Crops *CHECK*
+* FIRST MULTI-STEP QUEST *CHECK*
 - Festivals/Weekly Events
 - Advanced Pathfinding
 - Audio/SFX *GETTING THERE!*

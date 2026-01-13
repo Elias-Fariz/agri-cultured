@@ -44,6 +44,30 @@ func _ready() -> void:
 			"completed": false,
 			"claimed": false,
 		},
+		{
+			"id": "talk_to_lia",
+			"title": "Say Hello",
+			"description": "Talk to Lia in town.",
+			"type": "talk_to",
+			"target": "npc_lia",
+			"amount": 1,
+			"progress": 0,
+			"reward": { "money": 40 },
+			"completed": false,
+			"claimed": false,
+		},
+		{
+			"id": "go_to_farm",
+			"title": "A Walk Outside",
+			"description": "Go to the Farm.",
+			"type": "go_to",
+			"target": "farm",
+			"amount": 1,
+			"progress": 0,
+			"reward": { "money": 60 },
+			"completed": false,
+			"claimed": false,
+		},
 	]
 	_refresh()
  

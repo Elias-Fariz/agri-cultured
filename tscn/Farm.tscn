@@ -1,4 +1,4 @@
-[gd_scene load_steps=45 format=3 uid="uid://6ni01dvcs2m2"]
+[gd_scene load_steps=47 format=3 uid="uid://6ni01dvcs2m2"]
 
 [ext_resource type="Script" uid="uid://cevvm7fnmvrhe" path="res://scripts/Farm.gd" id="1_vobxb"]
 [ext_resource type="PackedScene" uid="uid://b0c10lgb0ivgd" path="res://tscn/WaterSplash.tscn" id="2_66215"]
@@ -37,6 +37,7 @@
 [ext_resource type="PackedScene" uid="uid://b0rdgln1dko2v" path="res://tscn/Cow.tscn" id="22_u3713"]
 [ext_resource type="PackedScene" uid="uid://c5tput53xrui" path="res://ui/RainOverlay.tscn" id="23_f2050"]
 [ext_resource type="AudioStream" uid="uid://d28bo8p77va8y" path="res://audio/ambience/amb_farm_wind.WAV" id="32_tu1ii"]
+[ext_resource type="Script" uid="uid://b7n4wv6k3k33k" path="res://scripts/QuestLocation.gd" id="38_wdtkt"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_og6c6"]
 texture = ExtResource("3_d13le")
@@ -80,6 +81,8 @@ sources/2 = SubResource("TileSetAtlasSource_u8tsc")
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_k5exi"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_u3713"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_7ea1u"]
 
 [node name="Farm" type="Node2D" groups=["world"]]
 script = ExtResource("1_vobxb")
@@ -205,3 +208,12 @@ bus = &"Ambience"
 [node name="LifeTimer" type="Timer" parent="."]
 one_shot = true
 autostart = true
+
+[node name="QuestLocation" type="Area2D" parent="."]
+position = Vector2(-48, 391)
+scale = Vector2(15.905272, 15.905272)
+collision_mask = 3
+script = ExtResource("38_wdtkt")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="QuestLocation"]
+shape = SubResource("RectangleShape2D_7ea1u")

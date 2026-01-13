@@ -22,6 +22,7 @@ TimeManager="*res://scripts/TimeManager.gd"
 MoneySystem="*res://systems/MoneySystem.gd"
 ItemDb="*res://autoloads/ItemDB.gd"
 WeatherChange="*res://autoloads/WeatherManager.gd"
+QuestEvents="*res://autoloads/QuestEvents.gd"
 
 [input]
 

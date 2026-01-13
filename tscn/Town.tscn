@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=3 uid="uid://b7y4cme4an3kb"]
+[gd_scene load_steps=30 format=3 uid="uid://b7y4cme4an3kb"]
 
 [ext_resource type="PackedScene" uid="uid://dv7wem6ftpvdd" path="res://tscn/Player.tscn" id="1_2feps"]
 [ext_resource type="Script" uid="uid://0ofb5xeer5m6" path="res://scripts/Town.gd" id="1_o31te"]
@@ -25,6 +25,7 @@
 [ext_resource type="AudioStream" uid="uid://bd7fsofv05h57" path="res://audio/ambience/life/sfx_leaves_02.WAV" id="22_4f1xo"]
 [ext_resource type="AudioStream" uid="uid://ddtmvpbosnor5" path="res://audio/ambience/life/sfx_murmur_01.WAV" id="23_ewvrf"]
 [ext_resource type="AudioStream" uid="uid://co4coq6x4nty5" path="res://audio/ambience/life/sfx_murmur_02.WAV" id="24_caym6"]
+[ext_resource type="Script" uid="uid://b7n4wv6k3k33k" path="res://scripts/QuestLocation.gd" id="26_lyu0f"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ib40g"]
 
@@ -32,6 +33,8 @@
 vertices = PackedVector2Array(27.78125, 234.96875, 24.21875, 72, 77.09375, 72, 78.09375, 179.15625, 397.07813, 234.02344, 225.27344, 176.84375, 223.27344, 101.89844, 336, 100.90625, 398.90625, 15.0234375, 336, 49.28125, 18.773438, 15.96875, 18.21875, 40.28125)
 polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3), PackedInt32Array(4, 0, 3, 5), PackedInt32Array(5, 6, 7, 4), PackedInt32Array(8, 4, 7, 9), PackedInt32Array(10, 8, 9, 11)])
 outlines = Array[PackedVector2Array]([PackedVector2Array(9, 6, 409, 5, 407, 244, 18, 245, 14, 62, 87, 62, 88, 169, 215, 167, 213, 92, 326, 91, 326, 59, 8, 50)])
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_dvr77"]
 
 [node name="Town" type="Node2D" groups=["world"]]
 script = ExtResource("1_o31te")
@@ -126,6 +129,18 @@ night_spot_path = NodePath("../NPCSpots/Shopkeeper_NightSpot")
 [node name="FireflyLayer" parent="." groups=["firefly_layer"] instance=ExtResource("15_j34sm")]
 position = Vector2(-97, -35)
 
+[node name="Mayor" parent="." instance=ExtResource("10_va2fq")]
+display_name = "Mayor"
+overhead_greeting_lines = Array[String](["Welcome!"])
+overhead_idle_lines = Array[String](["Wonderful day..."])
+quest_title = "A Mayor’s Request"
+quest_reward_money = 100
+quest_request_lines = Array[String](["Oh, hi! If you don't mind, I have some stuff to ask."])
+quest_in_progress_lines = Array[String](["Still waiting, take your time!"])
+quest_completed_lines = Array[String](["Oh, thank you! Here, something for your troubles!"])
+quest_after_thanks_lines = Array[String](["I knew I could count on you!"])
+offered_quest_ids = Array[String](["main_mayor_strawberry"])
+
 [node name="NavigationRegion2D" type="NavigationRegion2D" parent="."]
 navigation_polygon = SubResource("NavigationPolygon_j34sm")
 
@@ -174,3 +189,23 @@ life_timer_path = NodePath("../TownLifeTimer")
 town_birds = Array[AudioStream]([ExtResource("18_jlwy3"), ExtResource("19_m0mrq"), ExtResource("20_fgqwr")])
 town_leaves = Array[AudioStream]([ExtResource("21_seor3"), ExtResource("22_4f1xo")])
 town_murmurs = Array[AudioStream]([ExtResource("23_ewvrf"), ExtResource("24_caym6")])
+
+[node name="TownQuestLocation" type="Area2D" parent="."]
+position = Vector2(-293, 612)
+scale = Vector2(-35.93926, -35.93926)
+collision_mask = 3
+script = ExtResource("26_lyu0f")
+location_id = "town_square"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TownQuestLocation"]
+shape = SubResource("RectangleShape2D_dvr77")
+
+[node name="ShopQuestLocation" type="Area2D" parent="."]
+position = Vector2(443, -40.99997)
+scale = Vector2(15.905272, 15.905272)
+collision_mask = 3
+script = ExtResource("26_lyu0f")
+location_id = "shop"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ShopQuestLocation"]
+shape = SubResource("RectangleShape2D_dvr77")

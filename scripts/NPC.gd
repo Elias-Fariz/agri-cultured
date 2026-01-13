@@ -1,6 +1,6 @@
 extends CharacterBody2D
 
-@export var npc_id: String = ""
+@export var npc_id: String = "npc_mayor"
 
 @export var display_name: String
 @export var dialogue_lines: Array[String] = []
@@ -77,9 +77,30 @@ var _anchor_position: Vector2         # where this NPC “belongs” right now
 
 @onready var _wander_timer: Timer = $WanderTimer
 
+var quest_mayor_intro: Dictionary = {
+	"id": "main_mayor_strawberry",
+	"title": "A Mayor’s Request",
+	"description": "Help the Mayor get the town moving again.",
+	"type": "chain",
+	"giver_id": "npc_mayor",
+	"turn_in_id": "npc_mayor",
+	"step_index": 0,
+	"steps": [
+		{ "type": "talk_to", "target": "npc_alex",  "amount": 1, "progress": 0, "text": "Talk to Alex." },
+		{ "type": "go_to",   "target": "farm",      "amount": 1, "progress": 0, "text": "Go to the Farm." },
+		{ "type": "ship",    "target": "Strawberry","amount": 1, "progress": 0, "text": "Ship 1 Strawberry." },
+	],
+	"reward": { "money": 250 },
+	"completed": false,
+	"claimed": false,
+}
+
+@export var offered_quest_ids: Array[String] = []
+
 func _ready() -> void:
 	# ... your existing NPC init ...
 	_update_quest_icon()
+	print("NPC ready:", npc_id)
 	if nav_agent:
 		nav_agent.path_desired_distance = 4.0
 		nav_agent.target_desired_distance = 4.0
@@ -90,10 +111,16 @@ func _ready() -> void:
 		TimeManager.time_changed.connect(_on_time_changed_for_schedule)
 		_on_time_changed_for_schedule(TimeManager.minutes)
 		
+		if QuestEvents:
+			print("Yeah, I'm in here!")
+			QuestEvents.quest_state_changed.connect(_on_quest_state_changed)
+		
 	_wander_timer.timeout.connect(_on_wander_timer_timeout)
 	_schedule_next_wander()
 
 func start_dialogue() -> void:
+	_update_quest_icon()
+	
 	var ui := get_tree().get_first_node_in_group("dialogue_ui")
 	if ui== null:
 		print("No DialogueUI found in group 'dialogue_ui'. Add DialogueUI.tscn to the scene and put it in that group.")
@@ -149,6 +176,41 @@ func start_dialogue() -> void:
 		player.camera_focus_on_world_point(global_position + Vector2(0, -10))
 	else:
 		print("NPC Dialogue: Player has no camera_focus_on_world_point()")
+	
+	QuestEvents.talked_to.emit(npc_id)
+	
+	# --- MAYOR CHAIN QUEST OFFER ---
+	if npc_id == "npc_mayor":
+		var chain_id := "main_mayor_strawberry"
+		if not GameState.active_quests.has(chain_id) and not GameState.completed_quests.has(chain_id):
+			# 1) Add quest first
+			GameState.add_quest(quest_mayor_intro)
+			_update_quest_icon()
+
+			# 2) Now immediately count THIS conversation as step 0
+			QuestEvents.talked_to.emit("npc_mayor")
+
+			# 3) Show dialogue
+			if quest_request_lines.size() > 0:
+				ui.show_dialogue(display_name, quest_request_lines, f)
+			else:
+				ui.show_dialogue(display_name, ["Could you help me with something important?"], f)
+			return
+	
+	# --- CHAIN QUEST TURN-IN (minimal integration) ---
+	# If this NPC is the Mayor, allow turning in the mayor chain quest here.
+	# Later you can generalize this, but this is safe for now.
+	var chain_id := "main_mayor_strawberry"
+	if npc_id == "npc_mayor" and GameState.completed_quests.has(chain_id):
+		var cq: Dictionary = GameState.completed_quests[chain_id]
+		if not bool(cq.get("claimed", false)):
+			GameState.claim_quest_reward(chain_id)
+			_update_quest_icon()
+			if quest_completed_lines.size() > 0:
+				ui.show_dialogue(display_name, quest_completed_lines, f)
+			else:
+				ui.show_dialogue(display_name, ["You did it! The town thanks you — here’s your reward."], f)
+			return
 	
 	# If this NPC doesn’t have a quest attached, use normal dialogue.
 	if quest_id == "":
@@ -236,12 +298,24 @@ func _update_quest_icon() -> void:
 		return
 
 	var show := false
+	
+	print(GameState.has_turn_in_ready(npc_id))
+	print(npc_id)
+	# 1) New: turn-in ready for this NPC? (shows ? icon)
+	if GameState.has_turn_in_ready(npc_id):
+		show = true
 
-	if quest_id != "":
-		# Quest not yet accepted and not completed → available
+	# 2) New: can this NPC offer any quests right now? (shows ! icon)
+	if not show:
+		for qid in offered_quest_ids:
+			if GameState.is_quest_available_to_accept(qid):
+				show = true
+				break
+
+	# 3) Old system fallback: single quest fields still supported
+	if not show and quest_id != "":
 		if not GameState.active_quests.has(quest_id) and not GameState.completed_quests.has(quest_id):
 			show = true
-		# Quest completed but reward not claimed → ready to turn in
 		elif GameState.completed_quests.has(quest_id):
 			var q: Dictionary = GameState.completed_quests[quest_id]
 			if not bool(q.get("claimed", false)):
@@ -482,3 +556,7 @@ func _can_wander_to(world_pos: Vector2) -> bool:
 	#  - Check collisions
 	#  - Avoid water, walls, etc.
 	return true
+
+func _on_quest_state_changed() -> void:
+	print("ran it!")
+	_update_quest_icon()
