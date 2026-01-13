@@ -84,6 +84,7 @@ var quest_mayor_intro: Dictionary = {
 	"type": "chain",
 	"giver_id": "npc_mayor",
 	"turn_in_id": "npc_mayor",
+	"turn_in_text": "Return to the Mayor to collect your reward.",	
 	"step_index": 0,
 	"steps": [
 		{ "type": "talk_to", "target": "npc_alex",  "amount": 1, "progress": 0, "text": "Talk to Alex." },

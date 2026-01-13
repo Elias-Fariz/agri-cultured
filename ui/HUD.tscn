@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://d1qqa5bygrbsp"]
+[gd_scene load_steps=3 format=3 uid="uid://d1qqa5bygrbsp"]
 
 [ext_resource type="Script" uid="uid://c7wv6ccc8b6td" path="res://scripts/HUD.gd" id="1_1x8ju"]
+[ext_resource type="Script" uid="uid://d27li4whs6pcd" path="res://scripts/QuestTrackerHUD.gd" id="2_aaqae"]
 
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1_1x8ju")
@@ -37,4 +38,29 @@ layout_mode = 2
 text = "Tool: Hoe"
 
 [node name="MoneyLabel" type="Label" parent="TopRightPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="QuestTracker" type="PanelContainer" parent="TopRightPanel/VBoxContainer"]
+layout_mode = 2
+script = ExtResource("2_aaqae")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TopRightPanel/VBoxContainer/QuestTracker"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="TopRightPanel/VBoxContainer/QuestTracker/VBoxContainer"]
+layout_mode = 2
+
+[node name="ObjectiveLabel" type="Label" parent="TopRightPanel/VBoxContainer/QuestTracker/VBoxContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="TopRightPanel/VBoxContainer/QuestTracker/VBoxContainer"]
+layout_mode = 2
+
+[node name="PrevButton" type="Button" parent="TopRightPanel/VBoxContainer/QuestTracker/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="NextButton" type="Button" parent="TopRightPanel/VBoxContainer/QuestTracker/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="NoneButton" type="Button" parent="TopRightPanel/VBoxContainer/QuestTracker/VBoxContainer/HBoxContainer"]
 layout_mode = 2

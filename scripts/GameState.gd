@@ -106,6 +106,8 @@ var seed_to_crop := {
 	"Avocado Seeds": "avocado"
 }
 
+var tracked_quest_id: String = ""  # "" means no quest tracked
+
 func is_seed_item(item_id: String) -> bool:
 	return seed_to_crop.has(item_id)
 
@@ -161,6 +163,7 @@ func report_item_shipped(item_name: String, qty: int) -> void:
 	# OLD: directly increments quest progress
 	# NEW: emit the canonical quest event
 	QuestEvents.shipped.emit(item_name, qty)
+	QuestEvents.quest_state_changed.emit()
 
 func report_action(action: String, amount: int = 1) -> void:
 	# If you used report_action("chop_tree"), map it to the new signal
@@ -379,6 +382,8 @@ func add_quest(quest: Dictionary) -> void:
 	active_quests[id] = q
 	print("Quest accepted: ", id)
 	
+	if tracked_quest_id == "":
+		tracked_quest_id = String(quest.get("id",""))
 	QuestEvents.quest_state_changed.emit()
 
 func complete_quest(quest_id: String) -> void:
@@ -427,6 +432,9 @@ func _on_quest_talked_to(npc_id: String) -> void:
 	_try_advance_chain_quest("main_mayor_strawberry", "talk_to", npc_id, 1)
 
 	_debug_chain("AFTER  talk " + npc_id)
+	
+	GameState.apply_quest_event("talk_to", npc_id, 1)
+	QuestEvents.quest_state_changed.emit()
 	# chain quests
 	#for qid in active_quests.keys():
 	#	_try_advance_chain_quest(String(qid), "talk_to", npc_id, 1)
@@ -438,6 +446,9 @@ func _on_quest_went_to(location_id: String) -> void:
 	_try_advance_chain_quest("main_mayor_strawberry", "go_to", location_id, 1)
 
 	_debug_chain("AFTER  go_to " + location_id)
+	
+	GameState.apply_quest_event("go_to", location_id, 1)
+	QuestEvents.quest_state_changed.emit()
 	#for qid in active_quests.keys():
 	#	_try_advance_chain_quest(String(qid), "go_to", location_id, 1)
 
@@ -448,6 +459,9 @@ func _on_quest_shipped(item_id: String, amount: int) -> void:
 	_try_advance_chain_quest("main_mayor_strawberry", "ship", item_id, amount)
 	#for qid in active_quests.keys():
 	#	_try_advance_chain_quest(String(qid), "ship", item_id, amount)
+	
+	GameState.apply_quest_event("ship", item_id, amount)
+	QuestEvents.quest_state_changed.emit()
 
 func _on_quest_chopped_tree(amount: int) -> void:
 	_increment_matching_quests("chop_tree", "", amount)
@@ -522,15 +536,22 @@ func _try_advance_chain_quest(qid: String, event_type: String, target: String, d
 
 	q["steps"] = steps
 	
-	QuestEvents.quest_state_changed.emit()
+	var changed := true  # set this only when a match occurs
 
 	if step_index >= steps.size():
 		q["completed"] = true
 		active_quests.erase(qid)
 		completed_quests[qid] = q
+
+		# ✅ Emit AFTER moving to completed
+		QuestEvents.quest_state_changed.emit()
+		return
 	else:
-		# ✅ THIS is the crucial persist line
 		active_quests[qid] = q
+
+		# ✅ Emit AFTER writing back
+		QuestEvents.quest_state_changed.emit()
+		return
 
 func get_chain_step_text(qid: String) -> String:
 	if not active_quests.has(qid):
@@ -589,3 +610,142 @@ func has_turn_in_ready(npc_id: String) -> bool:
 					return true
 
 	return false
+
+func get_all_active_quest_ids() -> Array[String]:
+	var ids: Array[String] = []
+	for k in active_quests.keys():
+		ids.append(String(k))
+	ids.sort()
+	return ids
+
+func set_tracked_quest(id: String) -> void:
+	tracked_quest_id = id
+	QuestEvents.quest_state_changed.emit()
+
+func clear_tracked_quest() -> void:
+	tracked_quest_id = ""
+	QuestEvents.quest_state_changed.emit()
+
+func get_tracked_quest() -> Dictionary:
+	if tracked_quest_id == "":
+		return {}
+
+	if active_quests.has(tracked_quest_id):
+		return active_quests[tracked_quest_id]
+
+	if completed_quests.has(tracked_quest_id):
+		return completed_quests[tracked_quest_id]
+
+	return {}
+
+func get_quest_objective_text(q: Dictionary) -> String:
+	if q.is_empty():
+		return ""
+
+	# If completed but not claimed → show turn-in instruction
+	if bool(q.get("completed", false)) and not bool(q.get("claimed", false)):
+		var t: String = String(q.get("turn_in_text", ""))
+		if t != "":
+			return t
+
+		# fallback if text not set
+		var turn_in_id := String(q.get("turn_in_id", ""))
+		if turn_in_id != "":
+			return "Return to %s to collect your reward." % turn_in_id
+		return "Collect your reward."
+
+	# Chain quest: show current step text
+	if String(q.get("type","")) == "chain":
+		var steps: Array = q.get("steps", [])
+		var idx: int = int(q.get("step_index", 0))
+		if idx >= 0 and idx < steps.size():
+			return String(steps[idx].get("text", ""))
+		return ""
+
+	# Single-step quest: show description or progress
+	var title := String(q.get("title", "Quest"))
+	var progress := int(q.get("progress", 0))
+	var amount := int(q.get("amount", 0))
+	if amount > 0:
+		return "%s (%d/%d)" % [String(q.get("description", title)), progress, amount]
+	return String(q.get("description", title))
+
+func get_all_trackable_quest_ids() -> Array[String]:
+	var ids: Array[String] = []
+
+	# active quests
+	for k in active_quests.keys():
+		ids.append(String(k))
+
+	# completed but unclaimed quests (turn-ins)
+	for k in completed_quests.keys():
+		var qid := String(k)
+		var q: Dictionary = completed_quests[qid]
+		if not bool(q.get("claimed", false)):
+			ids.append(qid)
+
+	ids.sort()
+	return ids
+
+func apply_quest_event(action: String, target: String = "", amount: int = 1) -> void:
+	var changed: bool = false
+	var to_complete: Array[String] = []
+
+	# Iterate over KEYS (stable) instead of values (can break if dict mutates)
+	for qid_any in active_quests.keys():
+		var qid: String = String(qid_any)
+		var quest: Dictionary = active_quests[qid]
+
+		# ----- CHAIN QUESTS -----
+		if String(quest.get("type", "")) == "chain":
+			var steps: Array = quest.get("steps", [])
+			var step_index: int = int(quest.get("step_index", 0))
+			if step_index < 0 or step_index >= steps.size():
+				continue
+
+			var step: Dictionary = steps[step_index]
+
+			if String(step.get("type", "")) != action:
+				continue
+			if target != "" and String(step.get("target", "")) != target:
+				continue
+
+			# We matched a valid step → changed!
+			changed = true
+
+			step["progress"] = int(step.get("progress", 0)) + amount
+			steps[step_index] = step
+			quest["steps"] = steps
+
+			if int(step["progress"]) >= int(step.get("amount", 0)):
+				quest["step_index"] = step_index + 1
+
+				# Done with all steps?
+				if int(quest["step_index"]) >= steps.size():
+					to_complete.append(qid)
+
+			# write back (important!)
+			active_quests[qid] = quest
+			continue
+
+		# ----- ONESHOT QUESTS -----
+		if String(quest.get("type", "")) != action:
+			continue
+		if target != "" and String(quest.get("target", "")) != target:
+			continue
+
+		changed = true
+
+		quest["progress"] = int(quest.get("progress", 0)) + amount
+		if int(quest["progress"]) >= int(quest.get("amount", 0)):
+			to_complete.append(qid)
+
+		active_quests[qid] = quest
+
+	# Complete AFTER iteration (safe)
+	for qid in to_complete:
+		complete_quest(qid)
+		changed = true
+
+	if changed:
+		QuestEvents.quest_state_changed.emit()

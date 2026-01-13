@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=3 format=3 uid="uid://b57jpls82qfiu"]
+
+[ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="1_nou41"]
+[ext_resource type="Script" uid="uid://bolxtchvrfo0y" path="res://data/quests/QuestStepData.gd" id="2_syul0"]
+
+[resource]
+script = ExtResource("1_nou41")
+id = "go_to_farm"
+title = "A Walk Outside"
+description = "Go to the Farm."
+oneshot_action = "go_to"
+oneshot_target = "farm"
+oneshot_text = "Go to the Farm."
+reward_money = 60
+metadata/_custom_type_script = "uid://cg0ailnic1w71"

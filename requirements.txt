@@ -26,6 +26,7 @@ Phase 3: Stardew Feel
 - Festivals/Weekly Events
 - Advanced Pathfinding
 - Audio/SFX *GETTING THERE!*
+* Quest Resource and Tracking UI *CHECK*
 - Save to Disk
 
 Phase 4: Inventory/UI Polish

@@ -1,10 +1,8 @@
 extends Node
 class_name QuestEvent
 
-signal talked_to(npc_id: String)
 signal went_to(location_id: String)
 
-signal shipped(item_id: String, amount: int)
 signal chopped_tree(amount: int)
 signal broke_rock(amount: int)
 
@@ -13,7 +11,28 @@ signal pet_animal(animal_id: String)
 signal fed_animal(animal_id: String)
 signal collected_product(product_id: String, amount: int)
 
-signal quest_state_changed()
+
+signal talked_to(npc_id: String)
+signal entered_location(location_id: String)
+signal shipped(item_id: String, qty: int)
+signal action_done(action: String, amount: int)
+
+signal quest_state_changed
 
 func _ready() -> void:
-	quest_state_changed.connect(func(): print("QUEST STATE CHANGED"))
+	talked_to.connect(func(npc_id: String):
+		GameState.apply_quest_event("talk_to", npc_id, 1)
+	)
+
+	entered_location.connect(func(loc_id: String):
+		GameState.apply_quest_event("go_to", loc_id, 1)
+	)
+
+	shipped.connect(func(item_id: String, qty: int):
+		GameState.apply_quest_event("ship", item_id, qty)
+	)
+
+	action_done.connect(func(action: String, amount: int):
+		# For things like "chop_tree"
+		GameState.apply_quest_event(action, "", amount)
+	)

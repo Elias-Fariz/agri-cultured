@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=3 uid="uid://b7y4cme4an3kb"]
+[gd_scene load_steps=36 format=3 uid="uid://b7y4cme4an3kb"]
 
 [ext_resource type="PackedScene" uid="uid://dv7wem6ftpvdd" path="res://tscn/Player.tscn" id="1_2feps"]
 [ext_resource type="Script" uid="uid://0ofb5xeer5m6" path="res://scripts/Town.gd" id="1_o31te"]
@@ -12,9 +12,14 @@
 [ext_resource type="PackedScene" uid="uid://ded2abuo15uwh" path="res://ui/DialogueUI.tscn" id="9_xf6b5"]
 [ext_resource type="PackedScene" uid="uid://bfaurdf2mucr2" path="res://tscn/NPC.tscn" id="10_va2fq"]
 [ext_resource type="PackedScene" uid="uid://dk1aaefcs7nwf" path="res://ui/QuestBoardUI.tscn" id="12_15yes"]
+[ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="12_fgqwr"]
 [ext_resource type="PackedScene" uid="uid://dexrjrr1c8jfb" path="res://ui/ShopUI.tscn" id="12_j34sm"]
+[ext_resource type="Resource" uid="uid://daedf3dq8citt" path="res://data/quests/ship_watermelon.tres" id="13_seor3"]
+[ext_resource type="Resource" uid="uid://djdebqx5ukejx" path="res://data/quests/chop_3_trees.tres" id="14_4f1xo"]
 [ext_resource type="PackedScene" uid="uid://b0fhots3ucty8" path="res://tscn/TownBoard.tscn" id="14_j34sm"]
+[ext_resource type="Resource" uid="uid://cpqt3h0esaby7" path="res://data/quests/talk_to_lia.tres" id="15_ewvrf"]
 [ext_resource type="PackedScene" uid="uid://db3fa8eurisd7" path="res://tscn/FireflyLayer.tscn" id="15_j34sm"]
+[ext_resource type="Resource" uid="uid://b57jpls82qfiu" path="res://data/quests/go_to_farm.tres" id="16_caym6"]
 [ext_resource type="PackedScene" uid="uid://c5tput53xrui" path="res://ui/RainOverlay.tscn" id="16_vlptm"]
 [ext_resource type="Script" uid="uid://bb5hy4eh3yd3h" path="res://scripts/TownAudio.gd" id="17_ewds8"]
 [ext_resource type="AudioStream" uid="uid://d28bo8p77va8y" path="res://audio/ambience/amb_farm_wind.WAV" id="17_wi8o3"]
@@ -26,6 +31,7 @@
 [ext_resource type="AudioStream" uid="uid://ddtmvpbosnor5" path="res://audio/ambience/life/sfx_murmur_01.WAV" id="23_ewvrf"]
 [ext_resource type="AudioStream" uid="uid://co4coq6x4nty5" path="res://audio/ambience/life/sfx_murmur_02.WAV" id="24_caym6"]
 [ext_resource type="Script" uid="uid://b7n4wv6k3k33k" path="res://scripts/QuestLocation.gd" id="26_lyu0f"]
+[ext_resource type="PackedScene" uid="uid://qxjawwee60n1" path="res://ui/QuestMenuUI.tscn" id="27_dvr77"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ib40g"]
 
@@ -73,6 +79,7 @@ position = Vector2(90, 33)
 [node name="DialogueUI" parent="." groups=["dialogue_ui"] instance=ExtResource("9_xf6b5")]
 
 [node name="QuestBoardUI" parent="." instance=ExtResource("12_15yes")]
+available_quests = Array[ExtResource("12_fgqwr")]([ExtResource("13_seor3"), ExtResource("14_4f1xo"), ExtResource("15_ewvrf"), ExtResource("16_caym6")])
 
 [node name="ShopUI" parent="." instance=ExtResource("12_j34sm")]
 
@@ -199,6 +206,8 @@ location_id = "town_square"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="TownQuestLocation"]
 shape = SubResource("RectangleShape2D_dvr77")
+
+[node name="QuestMenuUI" parent="." instance=ExtResource("27_dvr77")]
 
 [node name="ShopQuestLocation" type="Area2D" parent="."]
 position = Vector2(443, -40.99997)

@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=3 format=3 uid="uid://djdebqx5ukejx"]
+
+[ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="1_u4vrt"]
+[ext_resource type="Script" uid="uid://bolxtchvrfo0y" path="res://data/quests/QuestStepData.gd" id="2_c5o38"]
+
+[resource]
+script = ExtResource("1_u4vrt")
+id = "chop_3_trees"
+title = "Lumber Request"
+description = "Chop down 3 trees"
+oneshot_action = "chop_tree"
+oneshot_amount = 3
+oneshot_text = "Chop down 3 trees."
+reward_money = 120
+metadata/_custom_type_script = "uid://cg0ailnic1w71"

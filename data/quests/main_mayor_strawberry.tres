@@ -1,0 +1,37 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=6 format=3 uid="uid://cw4m17hab13da"]
+
+[ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="1_cpycv"]
+[ext_resource type="Script" uid="uid://bolxtchvrfo0y" path="res://data/quests/QuestStepData.gd" id="2_u2day"]
+
+[sub_resource type="Resource" id="Resource_cpycv"]
+script = ExtResource("2_u2day")
+type = "talk_to"
+target = "npc_alex"
+text = "Talk to Alex."
+metadata/_custom_type_script = "uid://bolxtchvrfo0y"
+
+[sub_resource type="Resource" id="Resource_u2day"]
+script = ExtResource("2_u2day")
+type = "go_to"
+target = "farm"
+text = "Go to the Farm."
+metadata/_custom_type_script = "uid://bolxtchvrfo0y"
+
+[sub_resource type="Resource" id="Resource_gbj6u"]
+script = ExtResource("2_u2day")
+target = "Strawberry"
+text = "Ship 1 Strawberry."
+metadata/_custom_type_script = "uid://bolxtchvrfo0y"
+
+[resource]
+script = ExtResource("1_cpycv")
+id = "main_mayor_strawberry"
+title = "A Mayor's Request"
+description = "Help the Mayor get the town moving again."
+quest_type = "chain"
+oneshot_action = ""
+steps = Array[ExtResource("2_u2day")]([SubResource("Resource_cpycv"), SubResource("Resource_u2day"), SubResource("Resource_gbj6u")])
+turn_in_id = "npc_mayor"
+turn_in_text = "Return to the Mayor to collect your reward."
+reward_money = 250
+metadata/_custom_type_script = "uid://cg0ailnic1w71"

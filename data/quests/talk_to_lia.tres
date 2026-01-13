@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=3 format=3 uid="uid://cpqt3h0esaby7"]
+
+[ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="1_ctnyx"]
+[ext_resource type="Script" uid="uid://bolxtchvrfo0y" path="res://data/quests/QuestStepData.gd" id="2_g1ldn"]
+
+[resource]
+script = ExtResource("1_ctnyx")
+id = "talk_to_lia"
+title = "Say Hello"
+description = "Talk to Lia in town."
+oneshot_action = "talk_to"
+oneshot_target = "npc_lia"
+oneshot_text = "Talk to Lia in town."
+reward_money = 40
+metadata/_custom_type_script = "uid://cg0ailnic1w71"

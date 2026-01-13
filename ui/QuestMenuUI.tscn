@@ -1,0 +1,68 @@
+[gd_scene load_steps=2 format=3 uid="uid://qxjawwee60n1"]
+
+[ext_resource type="Script" uid="uid://bj6m7ptk06kva" path="res://scripts/QuestMenuUI.gd" id="1_8al2d"]
+
+[node name="QuestMenuUI" type="CanvasLayer" groups=["quest_menu_ui"]]
+script = ExtResource("1_8al2d")
+visual_node_path = NodePath("Panel")
+start_visible_in_game = false
+is_modal = true
+
+[node name="Panel" type="PanelContainer" parent="."]
+visible = false
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Margin" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+
+[node name="Root" type="VBoxContainer" parent="Panel/Margin"]
+layout_mode = 2
+
+[node name="HeaderRow" type="HBoxContainer" parent="Panel/Margin/Root"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="Panel/Margin/Root/HeaderRow"]
+layout_mode = 2
+text = "Quests"
+
+[node name="CloseButton" type="Button" parent="Panel/Margin/Root/HeaderRow"]
+layout_mode = 2
+text = "Close"
+
+[node name="BodyRow" type="HBoxContainer" parent="Panel/Margin/Root"]
+layout_mode = 2
+
+[node name="LeftCol" type="VBoxContainer" parent="Panel/Margin/Root/BodyRow"]
+layout_mode = 2
+
+[node name="ActiveLabel" type="Label" parent="Panel/Margin/Root/BodyRow/LeftCol"]
+layout_mode = 2
+text = "Track a Quest"
+
+[node name="QuestList" type="ItemList" parent="Panel/Margin/Root/BodyRow/LeftCol"]
+custom_minimum_size = Vector2(0, 200)
+layout_mode = 2
+
+[node name="TrackNoneButton" type="Button" parent="Panel/Margin/Root/BodyRow/LeftCol"]
+layout_mode = 2
+text = "Track None"
+
+[node name="RightCol" type="VBoxContainer" parent="Panel/Margin/Root/BodyRow"]
+layout_mode = 2
+
+[node name="DetailsTitle" type="Label" parent="Panel/Margin/Root/BodyRow/RightCol"]
+layout_mode = 2
+text = "Details"
+
+[node name="DetailsText" type="Label" parent="Panel/Margin/Root/BodyRow/RightCol"]
+custom_minimum_size = Vector2(200, 200)
+layout_mode = 2
+autowrap_mode = 2
+
+[node name="FooterRow" type="HBoxContainer" parent="Panel/Margin/Root"]
+layout_mode = 2
+
+[node name="HintLabel" type="Label" parent="Panel/Margin/Root/FooterRow"]
+layout_mode = 2
+text = "V: Close     Enter: Track Selected"

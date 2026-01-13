@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=3 format=3 uid="uid://daedf3dq8citt"]
+
+[ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="1_1036r"]
+[ext_resource type="Script" uid="uid://bolxtchvrfo0y" path="res://data/quests/QuestStepData.gd" id="2_3yqeh"]
+
+[resource]
+script = ExtResource("1_1036r")
+id = "ship_watermelon"
+title = "Fresh Produce Needed"
+description = "Ship 1 Watermelon"
+oneshot_target = "Watermelon"
+oneshot_text = "Ship 1 Watermelon"
+reward_money = 100
+metadata/_custom_type_script = "uid://cg0ailnic1w71"

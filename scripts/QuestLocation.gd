@@ -8,3 +8,4 @@ func _ready() -> void:
 func _on_body_entered(body: Node) -> void:
 	if body.is_in_group("player"):
 		QuestEvents.went_to.emit(location_id)
+		QuestEvents.entered_location.emit(location_id)
