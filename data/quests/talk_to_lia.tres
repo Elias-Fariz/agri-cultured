@@ -11,5 +11,7 @@ description = "Talk to Lia in town."
 oneshot_action = "talk_to"
 oneshot_target = "npc_lia"
 oneshot_text = "Talk to Lia in town."
+turn_in_id = "townboard"
+turn_in_text = "Return to the townboard."
 reward_money = 40
 metadata/_custom_type_script = "uid://cg0ailnic1w71"

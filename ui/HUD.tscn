@@ -64,3 +64,7 @@ layout_mode = 2
 
 [node name="NoneButton" type="Button" parent="TopRightPanel/VBoxContainer/QuestTracker/VBoxContainer/HBoxContainer"]
 layout_mode = 2
+
+[node name="HelpHintLabel" type="Label" parent="TopRightPanel/VBoxContainer"]
+layout_mode = 2
+text = "Press H for Help"

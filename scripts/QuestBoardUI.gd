@@ -54,6 +54,10 @@ func _refresh_available() -> void:
 	for qres: QuestData in available_quests:
 		if qres == null:
 			continue
+		
+		# NEW: prerequisite gate
+		if not qres.is_unlocked():
+			continue
 
 		var id: String = qres.id
 		if id == "":

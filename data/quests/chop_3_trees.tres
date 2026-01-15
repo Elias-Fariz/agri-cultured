@@ -11,5 +11,7 @@ description = "Chop down 3 trees"
 oneshot_action = "chop_tree"
 oneshot_amount = 3
 oneshot_text = "Chop down 3 trees."
+turn_in_id = "townboard"
+turn_in_text = "Return to the townboard."
 reward_money = 120
 metadata/_custom_type_script = "uid://cg0ailnic1w71"

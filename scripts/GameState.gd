@@ -1,8 +1,6 @@
 # GameState.gd
 extends Node
 
-var next_spawn_name: String = ""
-
 enum ToolType { AXE, PICKAXE, HOE, BUCKET, HAND, WATERING_CAN }
 const TOOL_COUNT := 6  # <- THIS MUST BE UPDATED
 
@@ -107,6 +105,11 @@ var seed_to_crop := {
 }
 
 var tracked_quest_id: String = ""  # "" means no quest tracked
+
+# --- Scene spawning ---
+var next_spawn_name: String = ""      # your existing system
+var pending_spawn_tag: String = ""    # optional future tag system
+
 
 func is_seed_item(item_id: String) -> bool:
 	return seed_to_crop.has(item_id)
@@ -278,6 +281,9 @@ var active_quests: Dictionary = {}    # id -> quest dict
 var completed_quests: Dictionary = {} # id -> quest dict
 
 
+var _talked_block_by_npc: Dictionary = {}  # npc_id -> String "day:morning" etc.
+
+
 func _ready() -> void:
 	reset_energy()
 	current_tool = starting_tool
@@ -428,7 +434,7 @@ func claim_quest_reward(quest_id: String) -> void:
 func _on_quest_talked_to(npc_id: String) -> void:
 	_debug_chain("BEFORE talk " + npc_id)
 
-	_increment_matching_quests("talk_to", npc_id, 1)
+	#_increment_matching_quests("talk_to", npc_id, 1)
 	_try_advance_chain_quest("main_mayor_strawberry", "talk_to", npc_id, 1)
 
 	_debug_chain("AFTER  talk " + npc_id)
@@ -442,7 +448,7 @@ func _on_quest_talked_to(npc_id: String) -> void:
 func _on_quest_went_to(location_id: String) -> void:
 	_debug_chain("BEFORE go_to " + location_id)
 
-	_increment_matching_quests("go_to", location_id, 1)
+	#_increment_matching_quests("go_to", location_id, 1)
 	_try_advance_chain_quest("main_mayor_strawberry", "go_to", location_id, 1)
 
 	_debug_chain("AFTER  go_to " + location_id)
@@ -455,7 +461,7 @@ func _on_quest_went_to(location_id: String) -> void:
 func _on_quest_shipped(item_id: String, amount: int) -> void:
 	_debug_chain("BEFORE ship " + item_id)
 
-	_increment_matching_quests("ship", item_id, amount)
+	#_increment_matching_quests("ship", item_id, amount)
 	_try_advance_chain_quest("main_mayor_strawberry", "ship", item_id, amount)
 	#for qid in active_quests.keys():
 	#	_try_advance_chain_quest(String(qid), "ship", item_id, amount)
@@ -464,13 +470,19 @@ func _on_quest_shipped(item_id: String, amount: int) -> void:
 	QuestEvents.quest_state_changed.emit()
 
 func _on_quest_chopped_tree(amount: int) -> void:
-	_increment_matching_quests("chop_tree", "", amount)
+	#_increment_matching_quests("chop_tree", "", amount)
+	GameState.apply_quest_event("chop_tree", "", amount)
+	QuestEvents.quest_state_changed.emit()
 
 func _on_quest_broke_rock(amount: int) -> void:
-	_increment_matching_quests("break_rock", "", amount)
+	#_increment_matching_quests("break_rock", "", amount)
+	GameState.apply_quest_event("break_rock", "", amount)
+	QuestEvents.quest_state_changed.emit()
 
 func _on_quest_harvested(item_id: String, amount: int) -> void:
-	_increment_matching_quests("harvest", item_id, amount)
+	#_increment_matching_quests("harvest", item_id, amount)
+	GameState.apply_quest_event("harvest", item_id, amount)
+	QuestEvents.quest_state_changed.emit()
 
 func _increment_matching_quests(qtype: String, target: String, delta: int) -> void:
 	# active_quests is assumed to be a Dictionary: id -> quest Dictionary
@@ -650,9 +662,12 @@ func get_quest_objective_text(q: Dictionary) -> String:
 
 		# fallback if text not set
 		var turn_in_id := String(q.get("turn_in_id", ""))
-		if turn_in_id != "":
+		if turn_in_id == "townboard":
+			return "Return to the Town Board to claim your reward."
+		elif turn_in_id != "":
 			return "Return to %s to collect your reward." % turn_in_id
-		return "Collect your reward."
+		else:
+			return "Collect your reward."
 
 	# Chain quest: show current step text
 	if String(q.get("type","")) == "chain":
@@ -749,3 +764,23 @@ func apply_quest_event(action: String, target: String = "", amount: int = 1) -> 
 
 	if changed:
 		QuestEvents.quest_state_changed.emit()
+
+func get_first_turn_in_ready_id_for(npc_id: String) -> String:
+	for qid_any in completed_quests.keys():
+		var qid: String = String(qid_any)
+		var q: Dictionary = completed_quests[qid]
+		if bool(q.get("claimed", false)):
+			continue
+		if String(q.get("turn_in_id", "")) == npc_id:
+			return qid
+	return ""
+
+func _current_talk_block_stamp() -> String:
+	return "%d:%s" % [int(TimeManager.day), TimeManager.get_time_block_key(TimeManager.minutes)]
+
+func can_talk_to_npc(npc_id: String) -> bool:
+	var stamp: String = _current_talk_block_stamp()
+	return String(_talked_block_by_npc.get(npc_id, "")) != stamp
+
+func mark_talked_to_npc(npc_id: String) -> void:
+	_talked_block_by_npc[npc_id] = _current_talk_block_stamp()

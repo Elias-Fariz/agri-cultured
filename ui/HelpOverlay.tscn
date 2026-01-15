@@ -1,0 +1,44 @@
+[gd_scene load_steps=2 format=3 uid="uid://cde8sgn45urws"]
+
+[ext_resource type="Script" uid="uid://7u6wckjiyuo1" path="res://scripts/HelpOverlay.gd" id="1_khrh3"]
+
+[node name="HelpOverlay" type="CanvasLayer" groups=["help_overlay"]]
+script = ExtResource("1_khrh3")
+visual_node_path = NodePath("Panel")
+start_visible_in_game = false
+is_modal = true
+
+[node name="Panel" type="Panel" parent="."]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Margin" type="MarginContainer" parent="Panel"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="VBox" type="VBoxContainer" parent="Panel/Margin"]
+layout_mode = 2
+alignment = 1
+
+[node name="TitleLabel" type="Label" parent="Panel/Margin/VBox"]
+layout_mode = 2
+text = "Help"
+horizontal_alignment = 1
+
+[node name="BodyText" type="RichTextLabel" parent="Panel/Margin/VBox"]
+custom_minimum_size = Vector2(200, 520)
+layout_mode = 2
+size_flags_vertical = 3
+bbcode_enabled = true
+
+[node name="ButtonsRow" type="HBoxContainer" parent="Panel/Margin/VBox"]
+layout_mode = 2
+
+[node name="CloseButton" type="Button" parent="Panel/Margin/VBox/ButtonsRow"]
+layout_mode = 2
+text = "Close (Esc)"

@@ -1,10 +1,8 @@
 # Farm.gd (Godot 4.x) - Ground TileMap + Objects TileMap
 extends Node2D
 
-@onready var spawn_from_town := $Spawn_FromTown
-
-@onready var ground: TileMap = $Ground
-@onready var objects: TileMap = $Objects
+@onready var ground: TileMap = $TileMaps/Ground
+@onready var objects: TileMap = $TileMaps/Objects
 @onready var player := $Player as CharacterBody2D  # you said this cast works
 
 # --- Tile IDs / atlas coords ---

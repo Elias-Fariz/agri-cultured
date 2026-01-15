@@ -1,10 +1,9 @@
-[gd_scene load_steps=36 format=3 uid="uid://b7y4cme4an3kb"]
+[gd_scene load_steps=41 format=3 uid="uid://b7y4cme4an3kb"]
 
 [ext_resource type="PackedScene" uid="uid://dv7wem6ftpvdd" path="res://tscn/Player.tscn" id="1_2feps"]
 [ext_resource type="Script" uid="uid://0ofb5xeer5m6" path="res://scripts/Town.gd" id="1_o31te"]
 [ext_resource type="TileSet" uid="uid://bqs5ruk6pejpc" path="res://tiles/GroundTileset.tres" id="2_ib40g"]
 [ext_resource type="Texture2D" uid="uid://bq8o1e8mbe7qm" path="res://art/door.PNG" id="2_mua0x"]
-[ext_resource type="Script" uid="uid://csqfi4j0hvvnt" path="res://scripts/TownToFarm.gd" id="2_o31te"]
 [ext_resource type="PackedScene" uid="uid://ci8kga43aovsx" path="res://ui/DayNightOverlay.tscn" id="6_6scx0"]
 [ext_resource type="PackedScene" uid="uid://d1qqa5bygrbsp" path="res://ui/HUD.tscn" id="7_xf6b5"]
 [ext_resource type="PackedScene" uid="uid://dtrn2d385g5ul" path="res://ui/InventoryUI.tscn" id="8_va2fq"]
@@ -26,12 +25,19 @@
 [ext_resource type="AudioStream" uid="uid://c0vxwp7d85xq8" path="res://audio/ambience/life/sfx_bird_01.WAV" id="18_jlwy3"]
 [ext_resource type="AudioStream" uid="uid://dby2jcrvk4ssy" path="res://audio/ambience/life/sfx_bird_02.WAV" id="19_m0mrq"]
 [ext_resource type="AudioStream" uid="uid://b4kphj6d0xlxg" path="res://audio/ambience/life/sfx_bird_03.WAV" id="20_fgqwr"]
+[ext_resource type="Resource" uid="uid://cw4m17hab13da" path="res://data/quests/main_mayor_strawberry.tres" id="21_4f1xo"]
 [ext_resource type="AudioStream" uid="uid://cvxhlbrm7hew0" path="res://audio/ambience/life/sfx_leaves_01.WAV" id="21_seor3"]
 [ext_resource type="AudioStream" uid="uid://bd7fsofv05h57" path="res://audio/ambience/life/sfx_leaves_02.WAV" id="22_4f1xo"]
 [ext_resource type="AudioStream" uid="uid://ddtmvpbosnor5" path="res://audio/ambience/life/sfx_murmur_01.WAV" id="23_ewvrf"]
 [ext_resource type="AudioStream" uid="uid://co4coq6x4nty5" path="res://audio/ambience/life/sfx_murmur_02.WAV" id="24_caym6"]
 [ext_resource type="Script" uid="uid://b7n4wv6k3k33k" path="res://scripts/QuestLocation.gd" id="26_lyu0f"]
 [ext_resource type="PackedScene" uid="uid://qxjawwee60n1" path="res://ui/QuestMenuUI.tscn" id="27_dvr77"]
+[ext_resource type="PackedScene" uid="uid://cde8sgn45urws" path="res://ui/HelpOverlay.tscn" id="34_4f1xo"]
+[ext_resource type="Script" uid="uid://xl6estd3noyu" path="res://scripts/SceneTravelArea.gd" id="34_ewvrf"]
+[ext_resource type="Script" uid="uid://dxx68q28fdnvv" path="res://scripts/SpawnPoint.gd" id="36_caym6"]
+[ext_resource type="Script" uid="uid://dvg0ynlpgst4t" path="res://scripts/WorldSpawn.gd" id="37_xdkop"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_caym6"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ib40g"]
 
@@ -45,45 +51,17 @@ outlines = Array[PackedVector2Array]([PackedVector2Array(9, 6, 409, 5, 407, 244,
 [node name="Town" type="Node2D" groups=["world"]]
 script = ExtResource("1_o31te")
 
-[node name="Ground" type="TileMap" parent="." groups=["footstep_ground"]]
+[node name="TileMaps" type="Node2D" parent="."]
+
+[node name="Ground" type="TileMap" parent="TileMaps" groups=["footstep_ground"]]
 position = Vector2(1, 0)
 tile_set = ExtResource("2_ib40g")
 format = 2
 layer_0/tile_data = PackedInt32Array(6, 196608, 0, 65542, 196608, 0, 131078, 196608, 0, 196614, 196608, 0, 262150, 196608, 0, 327686, 196608, 0, 393222, 196608, 0, 458758, 196608, 0, 524294, 196608, 0, 589830, 196608, 0, 589831, 196608, 0, 589832, 196608, 0, 589833, 196608, 0, 589834, 196608, 0, 589835, 196608, 0, 589836, 196608, 0, 524300, 196608, 0, 458764, 196608, 0, 393228, 196608, 0, 327692, 196608, 0, 262156, 196608, 0, 196620, 196608, 0, 131084, 196608, 0, 65548, 196608, 0, 12, 196608, 0, 11, 196608, 0, 10, 196608, 0, 65546, 196608, 0, 65547, 196608, 0, 131083, 196608, 0, 196619, 196608, 0, 262155, 196608, 0, 327691, 196608, 0, 393227, 196608, 0, 458763, 196608, 0, 524299, 196608, 0, 524298, 196608, 0, 524297, 196608, 0, 524296, 196608, 0, 524295, 196608, 0, 458760, 196608, 0, 458761, 196608, 0, 458762, 196608, 0, 458759, 196608, 0, 393223, 196608, 0, 393224, 196608, 0, 393225, 196608, 0, 393226, 196608, 0, 327690, 196608, 0, 327689, 196608, 0, 327688, 196608, 0, 327687, 196608, 0, 262154, 196608, 0, 262153, 196608, 0, 262152, 196608, 0, 262151, 196608, 0, 196616, 196608, 0, 196617, 196608, 0, 196618, 196608, 0, 131081, 196608, 0, 131080, 196608, 0, 131079, 196608, 0, 196615, 196608, 0, 65544, 196608, 0, 65545, 196608, 0, 8, 196608, 0, 9, 196608, 0, 131082, 196608, 0, 65543, 196608, 0, 7, 196608, 0, 589829, 0, 0, 524293, 0, 0, 458757, 0, 0, 393221, 0, 0, 327685, 0, 0, 262149, 0, 0, 196613, 0, 0, 131077, 0, 0, 65541, 0, 0, 5, 0, 0, 4, 0, 0, 3, 0, 0, 2, 0, 0, 1, 0, 0, 0, 0, 0, 65536, 0, 0, 131072, 0, 0, 196608, 0, 0, 262144, 0, 0, 327680, 0, 0, 393216, 0, 0, 458752, 0, 0, 524288, 0, 0, 589824, 0, 0, 589825, 0, 0, 589826, 0, 0, 589827, 0, 0, 589828, 0, 0, 524292, 0, 0, 458756, 0, 0, 393220, 0, 0, 327684, 0, 0, 262148, 0, 0, 196612, 0, 0, 131076, 0, 0, 65540, 0, 0, 65539, 0, 0, 65538, 0, 0, 65537, 0, 0, 131073, 0, 0, 196609, 0, 0, 262145, 0, 0, 327681, 0, 0, 393217, 0, 0, 458753, 0, 0, 524289, 0, 0, 524290, 0, 0, 524291, 0, 0, 393219, 0, 0, 327683, 0, 0, 262147, 0, 0, 196611, 0, 0, 131075, 0, 0, 131074, 0, 0, 196610, 0, 0, 262146, 0, 0, 458755, 0, 0, 393218, 0, 0, 327682, 0, 0, 458754, 0, 0)
 
-[node name="ExitToFarm" type="Area2D" parent="."]
-position = Vector2(48, 64)
-script = ExtResource("2_o31te")
+[node name="NPCs" type="Node2D" parent="."]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="ExitToFarm"]
-shape = SubResource("RectangleShape2D_ib40g")
-
-[node name="Sprite2D" type="Sprite2D" parent="ExitToFarm"]
-position = Vector2(-1, 0)
-texture = ExtResource("2_mua0x")
-
-[node name="Spawn_FromFarm" type="Marker2D" parent="."]
-position = Vector2(44, 93)
-
-[node name="Player" parent="." instance=ExtResource("1_2feps")]
-position = Vector2(90, 33)
-
-[node name="DayNightOverlay" parent="." instance=ExtResource("6_6scx0")]
-
-[node name="HUD" parent="." instance=ExtResource("7_xf6b5")]
-
-[node name="ShippingUI" parent="." instance=ExtResource("8_vr3p6")]
-
-[node name="InventoryUI" parent="." instance=ExtResource("8_va2fq")]
-
-[node name="DialogueUI" parent="." groups=["dialogue_ui"] instance=ExtResource("9_xf6b5")]
-
-[node name="QuestBoardUI" parent="." instance=ExtResource("12_15yes")]
-available_quests = Array[ExtResource("12_fgqwr")]([ExtResource("13_seor3"), ExtResource("14_4f1xo"), ExtResource("15_ewvrf"), ExtResource("16_caym6")])
-
-[node name="ShopUI" parent="." instance=ExtResource("12_j34sm")]
-
-[node name="Alex" parent="." instance=ExtResource("10_va2fq")]
+[node name="Alex" parent="NPCs" instance=ExtResource("10_va2fq")]
 position = Vector2(236, 137)
 npc_id = "npc_alex"
 display_name = "Alex"
@@ -98,10 +76,7 @@ day_overhead_lines = Array[String](["THE SUN!"])
 evening_overhead_lines = Array[String](["Oof..."])
 night_overhead_lines = Array[String](["Zzz..."])
 
-[node name="TownBoard" parent="." instance=ExtResource("14_j34sm")]
-position = Vector2(270, 42)
-
-[node name="Lia" parent="." instance=ExtResource("10_va2fq")]
+[node name="Lia" parent="NPCs" instance=ExtResource("10_va2fq")]
 position = Vector2(116, 193)
 npc_id = "npc_lia"
 display_name = "Lia"
@@ -121,23 +96,24 @@ quest_in_progress_lines = Array[String](["Still waiting on that watermelon! No r
 quest_completed_lines = Array[String](["You shipped the watermelon! Thank you! Here, have one for yourself."])
 quest_after_thanks_lines = Array[String](["That watermelon was delicious. Thanks again for helping me out!"])
 
-[node name="Pierre" parent="." instance=ExtResource("10_va2fq")]
+[node name="Pierre" parent="NPCs" instance=ExtResource("10_va2fq")]
 position = Vector2(349, 58)
 npc_id = "npc_pierre"
 display_name = "Pierre"
 overhead_greeting_lines = Array[String](["Welcome to my shop!"])
 opens_shop = true
 shop_title = "General Store"
-morning_spot_path = NodePath("../NPCSpots/Shopkeeper_MorningSpot")
-day_spot_path = NodePath("../NPCSpots/Shopkeeper_DaySpot")
-evening_spot_path = NodePath("../NPCSpots/Shopkeeper_EveningSpot")
-night_spot_path = NodePath("../NPCSpots/Shopkeeper_NightSpot")
+morning_spot_path = NodePath("../../NPCSpots/Shopkeeper_MorningSpot")
+day_spot_path = NodePath("../../NPCSpots/Shopkeeper_DaySpot")
+evening_spot_path = NodePath("../../NPCSpots/Shopkeeper_EveningSpot")
+night_spot_path = NodePath("../../NPCSpots/Shopkeeper_NightSpot")
 
-[node name="FireflyLayer" parent="." groups=["firefly_layer"] instance=ExtResource("15_j34sm")]
-position = Vector2(-97, -35)
-
-[node name="Mayor" parent="." instance=ExtResource("10_va2fq")]
+[node name="Mayor" parent="NPCs" instance=ExtResource("10_va2fq")]
 display_name = "Mayor"
+dialogue_lines = Array[String](["Hey! How are you doing?"])
+morning_dialogue_lines = Array[String](["Sure is bright today!"])
+evening_dialogue_lines = Array[String](["Winding down now..."])
+night_dialogue_lines = Array[String](["Time to get some shuteye!"])
 overhead_greeting_lines = Array[String](["Welcome!"])
 overhead_idle_lines = Array[String](["Wonderful day..."])
 quest_title = "A Mayor’s Request"
@@ -146,7 +122,70 @@ quest_request_lines = Array[String](["Oh, hi! If you don't mind, I have some stu
 quest_in_progress_lines = Array[String](["Still waiting, take your time!"])
 quest_completed_lines = Array[String](["Oh, thank you! Here, something for your troubles!"])
 quest_after_thanks_lines = Array[String](["I knew I could count on you!"])
-offered_quest_ids = Array[String](["main_mayor_strawberry"])
+mayor_main_quest = ExtResource("21_4f1xo")
+quest_offers = Array[ExtResource("12_fgqwr")]([ExtResource("21_4f1xo")])
+
+[node name="Player" parent="." instance=ExtResource("1_2feps")]
+position = Vector2(90, 33)
+
+[node name="TravelPoints" type="Node2D" parent="."]
+
+[node name="ToAnimalKeeperArea" type="Area2D" parent="TravelPoints"]
+position = Vector2(104, 295)
+collision_mask = 3
+script = ExtResource("34_ewvrf")
+target_scene_path = "uid://dcq7dmqwwrac8"
+spawn_tag = "from_town"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TravelPoints/ToAnimalKeeperArea"]
+shape = SubResource("RectangleShape2D_caym6")
+
+[node name="Sprite2D" type="Sprite2D" parent="TravelPoints/ToAnimalKeeperArea"]
+texture = ExtResource("2_mua0x")
+
+[node name="ToFarm" type="Area2D" parent="TravelPoints"]
+position = Vector2(48, 64)
+script = ExtResource("34_ewvrf")
+target_scene_path = "res://tscn/Farm.tscn"
+spawn_tag = "from_town"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TravelPoints/ToFarm"]
+shape = SubResource("RectangleShape2D_ib40g")
+
+[node name="Sprite2D" type="Sprite2D" parent="TravelPoints/ToFarm"]
+position = Vector2(-1, 0)
+texture = ExtResource("2_mua0x")
+
+[node name="SpawnFromFarm" type="Marker2D" parent="TravelPoints" groups=["spawn_points"]]
+position = Vector2(43, 105)
+script = ExtResource("36_caym6")
+tag = "from_farm"
+
+[node name="SpawnFromAnimalKeeper" type="Marker2D" parent="TravelPoints" groups=["spawn_points"]]
+position = Vector2(151, 291)
+script = ExtResource("36_caym6")
+tag = "from_keeper"
+
+[node name="DayNightOverlay" parent="." instance=ExtResource("6_6scx0")]
+
+[node name="HUD" parent="." instance=ExtResource("7_xf6b5")]
+
+[node name="ShippingUI" parent="." instance=ExtResource("8_vr3p6")]
+
+[node name="InventoryUI" parent="." instance=ExtResource("8_va2fq")]
+
+[node name="DialogueUI" parent="." groups=["dialogue_ui"] instance=ExtResource("9_xf6b5")]
+
+[node name="QuestBoardUI" parent="." instance=ExtResource("12_15yes")]
+available_quests = Array[ExtResource("12_fgqwr")]([ExtResource("13_seor3"), ExtResource("14_4f1xo"), ExtResource("15_ewvrf"), ExtResource("16_caym6")])
+
+[node name="ShopUI" parent="." instance=ExtResource("12_j34sm")]
+
+[node name="TownBoard" parent="." instance=ExtResource("14_j34sm")]
+position = Vector2(270, 42)
+
+[node name="FireflyLayer" parent="." groups=["firefly_layer"] instance=ExtResource("15_j34sm")]
+position = Vector2(-97, -35)
 
 [node name="NavigationRegion2D" type="NavigationRegion2D" parent="."]
 navigation_polygon = SubResource("NavigationPolygon_j34sm")
@@ -209,6 +248,8 @@ shape = SubResource("RectangleShape2D_dvr77")
 
 [node name="QuestMenuUI" parent="." instance=ExtResource("27_dvr77")]
 
+[node name="HelpOverlay" parent="." instance=ExtResource("34_4f1xo")]
+
 [node name="ShopQuestLocation" type="Area2D" parent="."]
 position = Vector2(443, -40.99997)
 scale = Vector2(15.905272, 15.905272)
@@ -218,3 +259,6 @@ location_id = "shop"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ShopQuestLocation"]
 shape = SubResource("RectangleShape2D_dvr77")
+
+[node name="SpawnManager" type="Node" parent="."]
+script = ExtResource("37_xdkop")

@@ -77,26 +77,34 @@ var _anchor_position: Vector2         # where this NPC “belongs” right now
 
 @onready var _wander_timer: Timer = $WanderTimer
 
-var quest_mayor_intro: Dictionary = {
-	"id": "main_mayor_strawberry",
-	"title": "A Mayor’s Request",
-	"description": "Help the Mayor get the town moving again.",
-	"type": "chain",
-	"giver_id": "npc_mayor",
-	"turn_in_id": "npc_mayor",
-	"turn_in_text": "Return to the Mayor to collect your reward.",	
-	"step_index": 0,
-	"steps": [
-		{ "type": "talk_to", "target": "npc_alex",  "amount": 1, "progress": 0, "text": "Talk to Alex." },
-		{ "type": "go_to",   "target": "farm",      "amount": 1, "progress": 0, "text": "Go to the Farm." },
-		{ "type": "ship",    "target": "Strawberry","amount": 1, "progress": 0, "text": "Ship 1 Strawberry." },
-	],
-	"reward": { "money": 250 },
-	"completed": false,
-	"claimed": false,
-}
+@export var mayor_main_quest: QuestData
+
+
+#var quest_mayor_intro: Dictionary = {
+	#"id": "main_mayor_strawberry",
+	#"title": "A Mayor’s Request",
+	#"description": "Help the Mayor get the town moving again.",
+	#"type": "chain",
+	#"giver_id": "npc_mayor",
+	#"turn_in_id": "npc_mayor",
+	#"turn_in_text": "Return to the Mayor to collect your reward.",	
+	#"step_index": 0,
+	#"steps": [
+		#{ "type": "talk_to", "target": "npc_alex",  "amount": 1, "progress": 0, "text": "Talk to Alex." },
+		#{ "type": "go_to",   "target": "farm",      "amount": 1, "progress": 0, "text": "Go to the Farm." },
+		#{ "type": "ship",    "target": "Strawberry","amount": 1, "progress": 0, "text": "Ship 1 Strawberry." },
+	#],
+	#"reward": { "money": 250 },
+	#"completed": false,
+	#"claimed": false,
+#}
+
 
 @export var offered_quest_ids: Array[String] = []
+
+@export var quest_offers: Array[QuestData] = []
+
+var _talked_block_by_npc: Dictionary = {}  # npc_id -> String "day:morning" etc.
 
 func _ready() -> void:
 	# ... your existing NPC init ...
@@ -132,6 +140,15 @@ func start_dialogue() -> void:
 		print("Node in group 'dialogue_ui' does not have show_dialogue(). Reattach DialogueUI.gd to the DialogueUI CanvasLayer.")
 		print("Found node:", ui.name, " type:", ui.get_class())
 		return
+		
+	# --- TALK COOLDOWN: once per time block ---
+	if not GameState.can_talk_to_npc(npc_id):
+		# Make them feel "uninteractable" during this block.
+		# You can optionally show overhead chatter instead, but no UI pop.
+		return
+
+	# Mark talked NOW so spam clicking doesn't reopen.
+	GameState.mark_talked_to_npc(npc_id)
 	
 	var player := get_tree().get_first_node_in_group("player")
 	if player and player.has_method("play_talk_sfx"):
@@ -180,38 +197,70 @@ func start_dialogue() -> void:
 	
 	QuestEvents.talked_to.emit(npc_id)
 	
-	# --- MAYOR CHAIN QUEST OFFER ---
-	if npc_id == "npc_mayor":
-		var chain_id := "main_mayor_strawberry"
-		if not GameState.active_quests.has(chain_id) and not GameState.completed_quests.has(chain_id):
-			# 1) Add quest first
-			GameState.add_quest(quest_mayor_intro)
-			_update_quest_icon()
+	# --- QUESTDATA-BASED QUEST FLOW (GENERAL) ---
 
-			# 2) Now immediately count THIS conversation as step 0
-			QuestEvents.talked_to.emit("npc_mayor")
+	# --- QUEST PRIORITY 1: TURN-IN READY ---
+	if GameState.has_turn_in_ready(npc_id):
+		var ready_id: String = GameState.get_first_turn_in_ready_id_for(npc_id) # you already discussed this helper
 
-			# 3) Show dialogue
-			if quest_request_lines.size() > 0:
-				ui.show_dialogue(display_name, quest_request_lines, f)
-			else:
-				ui.show_dialogue(display_name, ["Could you help me with something important?"], f)
+		# Find matching QuestData so we can use its turn_in_lines
+		var qd_ready: QuestData = _find_questdata_by_id(ready_id)
+
+		var turnin_lines: Array[String] = []
+		if qd_ready != null and not qd_ready.turn_in_lines.is_empty():
+			turnin_lines = qd_ready.turn_in_lines
+		else:
+			turnin_lines = ["You did it! Here’s your reward."]
+
+		GameState.claim_quest_reward(ready_id)
+		QuestEvents.quest_state_changed.emit()
+		_update_quest_icon()
+
+		ui.show_dialogue(display_name, turnin_lines, f)
+		return
+
+
+	# --- QUEST PRIORITY 2: OFFER FIRST UNLOCKED QUEST ---
+	var offer_q: QuestData = _get_offerable_questdata()
+	if offer_q != null:
+		GameState.add_quest(offer_q.to_dict())
+		QuestEvents.quest_state_changed.emit()
+		_update_quest_icon()
+
+		var offer_lines: Array[String] = offer_q.offer_lines
+		if offer_lines.is_empty():
+			offer_lines = ["Could you help me with something?"]
+
+		ui.show_dialogue(display_name, offer_lines, f)
+		return
+		
+	# --- QUEST PRIORITY 3: LOCKED BARK (low chance), else NORMAL DIALOGUE ---
+	var locked_q: QuestData = _get_first_locked_questdata_not_done()
+	if locked_q != null:
+		if randf() < locked_q.locked_bark_chance:
+			var bark_lines: Array[String] = locked_q.locked_lines
+			if bark_lines.is_empty():
+				bark_lines = ["Not yet… but soon."]  # tiny fallback
+			ui.show_dialogue(display_name, bark_lines, f)
 			return
-	
-	# --- CHAIN QUEST TURN-IN (minimal integration) ---
-	# If this NPC is the Mayor, allow turning in the mayor chain quest here.
-	# Later you can generalize this, but this is safe for now.
-	var chain_id := "main_mayor_strawberry"
-	if npc_id == "npc_mayor" and GameState.completed_quests.has(chain_id):
-		var cq: Dictionary = GameState.completed_quests[chain_id]
-		if not bool(cq.get("claimed", false)):
-			GameState.claim_quest_reward(chain_id)
-			_update_quest_icon()
-			if quest_completed_lines.size() > 0:
-				ui.show_dialogue(display_name, quest_completed_lines, f)
-			else:
-				ui.show_dialogue(display_name, ["You did it! The town thanks you — here’s your reward."], f)
-			return
+
+	# 3) If they already accepted a quest from this NPC, optionally show in-progress lines
+	# (We’ll leave the “randomize with normal speech” idea for later like you asked 💛)
+	for qd in quest_offers:
+		if qd == null:
+			continue
+		if GameState.active_quests.has(qd.id):
+			var inprog_lines: Array[String] = []
+			if not qd.in_progress_lines.is_empty():
+				inprog_lines = qd.in_progress_lines
+			
+			if not qd.in_progress_lines.is_empty():
+				ui.show_dialogue(display_name, qd.in_progress_lines, f)
+				return
+
+			if not inprog_lines.is_empty():
+				ui.show_dialogue(display_name, inprog_lines, f)
+				return
 	
 	# If this NPC doesn’t have a quest attached, use normal dialogue.
 	if quest_id == "":
@@ -302,9 +351,25 @@ func _update_quest_icon() -> void:
 	
 	print(GameState.has_turn_in_ready(npc_id))
 	print(npc_id)
+	
+	# Turn-in ready takes priority
+	if GameState.has_turn_in_ready(npc_id):
+		show = true
+	# Else show if NPC has a quest offer ready
+	elif _has_offerable_quest():
+		show = true
+	
 	# 1) New: turn-in ready for this NPC? (shows ? icon)
 	if GameState.has_turn_in_ready(npc_id):
 		show = true
+	else:
+		# NEW: show icon if any QuestData offer is available
+		if _get_offerable_questdata() != null:
+			show = true
+		# BACKWARD COMPAT: old single quest_id behavior
+		elif quest_id != "":
+			if not GameState.active_quests.has(quest_id) and not GameState.completed_quests.has(quest_id):
+				show = true
 
 	# 2) New: can this NPC offer any quests right now? (shows ! icon)
 	if not show:
@@ -461,17 +526,17 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 
 func _get_schedule_target_for_time(minutes: int) -> Node2D:
-	var hour := int(minutes / 60)
+	var block: int = TimeManager.get_time_block(minutes)
 
-	# Simple ranges – tune how you like
-	if hour >= 6 and hour < 10:
-		return _get_node_from_path(morning_spot_path)
-	if hour >= 10 and hour < 18:
-		return _get_node_from_path(day_spot_path)
-	if hour >= 18 and hour < 22:
-		return _get_node_from_path(evening_spot_path)
-	# Late night / very early morning
-	return _get_node_from_path(night_spot_path)
+	match block:
+		TimeManager.TimeBlock.MORNING:
+			return _get_node_from_path(morning_spot_path)
+		TimeManager.TimeBlock.DAY:
+			return _get_node_from_path(day_spot_path)
+		TimeManager.TimeBlock.EVENING:
+			return _get_node_from_path(evening_spot_path)
+		_:
+			return _get_node_from_path(night_spot_path)
 
 func _get_node_from_path(path: NodePath) -> Node2D:
 	if path == NodePath(""):
@@ -559,5 +624,58 @@ func _can_wander_to(world_pos: Vector2) -> bool:
 	return true
 
 func _on_quest_state_changed() -> void:
-	print("ran it!")
 	_update_quest_icon()
+
+func _get_first_questdata_not_done() -> QuestData:
+	for q in quest_offers:
+		if q == null or q.id == "":
+			continue
+		if GameState.active_quests.has(q.id):
+			continue
+		if GameState.completed_quests.has(q.id):
+			continue
+		return q
+	return null
+
+func _has_offerable_quest() -> bool:
+	# Mayor special quest resource
+	if npc_id == "npc_mayor" and mayor_main_quest != null:
+		if mayor_main_quest.is_unlocked():
+			var qid: String = mayor_main_quest.id
+			if not GameState.active_quests.has(qid) and not GameState.completed_quests.has(qid):
+				return true
+
+	# General multi-offer quests (if you use quest_offers too)
+	var q_offer: QuestData = _get_offerable_questdata()
+	return q_offer != null
+
+func _find_questdata_by_id(qid: String) -> QuestData:
+	for q in quest_offers:
+		if q != null and q.id == qid:
+			return q
+	return null
+
+func _get_offerable_questdata() -> QuestData:
+	for q in quest_offers:
+		if q == null or q.id == "":
+			continue
+		if not q.is_unlocked():
+			continue
+		if GameState.active_quests.has(q.id):
+			continue
+		if GameState.completed_quests.has(q.id):
+			continue
+		return q
+	return null
+
+func _get_first_locked_questdata_not_done() -> QuestData:
+	for q in quest_offers:
+		if q == null or q.id == "":
+			continue
+		if GameState.active_quests.has(q.id):
+			continue
+		if GameState.completed_quests.has(q.id):
+			continue
+		if not q.is_unlocked():
+			return q
+	return null

@@ -27,6 +27,10 @@ Phase 3: Stardew Feel
 - Advanced Pathfinding
 - Audio/SFX *GETTING THERE!*
 * Quest Resource and Tracking UI *CHECK*
+* Quest Prerequisites *CHECK*
+* Reworked Dialogue Storage/Cooldowns *CHECK*
+* Help Overlay *CHECK*
+* Spawn Points / Animal Keeper *CHECK*
 - Save to Disk
 
 Phase 4: Inventory/UI Polish

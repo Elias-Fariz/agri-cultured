@@ -25,6 +25,24 @@ class_name QuestData
 @export var reward_money: int = 0
 @export var reward_items: Dictionary[String, int] = {}
 
+# --- NEW: prerequisites ---
+@export var requires_completed: Array[String] = []   # quest IDs that must be completed first
+@export var requires_day: int = 0                    # 0 = no day gate, else day must be >= this
+@export var requires_friendship: Dictionary = {}     # { "npc_mayor": 10, "npc_alex": 5 }
+
+# Optional nice-to-have: who offers / who turn-in (future-friendly)
+@export var giver_id: String = ""       # NPC or board id (optional)
+
+@export var offer_lines: Array[String] = []
+@export var in_progress_lines: Array[String] = []
+@export var turn_in_lines: Array[String] = []
+@export var after_thanks_lines: Array[String] = []
+
+# Optional (nice for prerequisites like day lock)
+@export var locked_lines: Array[String] = []
+
+@export_range(0.0, 1.0) var locked_bark_chance: float = 0.2
+
 func to_dict() -> Dictionary:
 	var reward: Dictionary = {}
 	if reward_money > 0:
@@ -69,3 +87,22 @@ func to_dict() -> Dictionary:
 		"completed": false,
 		"claimed": false,
 	}
+
+func is_unlocked() -> bool:
+	# Day gate
+	if requires_day > 0 and TimeManager.day < requires_day:
+		return false
+
+	# Completed quest prereqs
+	for qid in requires_completed:
+		if not GameState.completed_quests.has(qid):
+			return false
+
+	# Friendship prereqs
+	for npc_id_any in requires_friendship.keys():
+		var npc_id: String = String(npc_id_any)
+		var needed: int = int(requires_friendship[npc_id_any])
+		if GameState.get_friendship(npc_id) < needed:
+			return false
+
+	return true

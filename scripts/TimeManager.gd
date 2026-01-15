@@ -15,6 +15,13 @@ var day: int = 1
 var minutes_float: float = start_minutes
 var minutes: int = start_minutes
 
+enum TimeBlock { MORNING, DAY, EVENING, NIGHT }
+
+@export var morning_start_hour: int = 6
+@export var day_start_hour: int = 10
+@export var evening_start_hour: int = 18
+@export var night_start_hour: int = 22
+
 func _process(delta: float) -> void:
 	if not running:
 		return
@@ -64,3 +71,21 @@ func resume_time() -> void:
 
 func set_paused(paused: bool) -> void:
 	running = not paused
+
+func get_time_block(minutes: int) -> int:
+	var hour: int = int(minutes / 60)
+
+	if hour >= morning_start_hour and hour < day_start_hour:
+		return TimeBlock.MORNING
+	if hour >= day_start_hour and hour < evening_start_hour:
+		return TimeBlock.DAY
+	if hour >= evening_start_hour and hour < night_start_hour:
+		return TimeBlock.EVENING
+	return TimeBlock.NIGHT
+
+func get_time_block_key(minutes: int) -> String:
+	match get_time_block(minutes):
+		TimeBlock.MORNING: return "morning"
+		TimeBlock.DAY: return "day"
+		TimeBlock.EVENING: return "evening"
+		_: return "night"
