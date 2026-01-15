@@ -31,6 +31,7 @@ Phase 3: Stardew Feel
 * Reworked Dialogue Storage/Cooldowns *CHECK*
 * Help Overlay *CHECK*
 * Spawn Points / Animal Keeper *CHECK*
+* Tutorial *CHECK*
 - Save to Disk
 
 Phase 4: Inventory/UI Polish

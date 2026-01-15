@@ -7,3 +7,12 @@ func interact() -> void:
 		if ui.has_method("debug_print_available_quests"):
 			ui.debug_print_available_quests()
 		ui.show_overlay()
+
+func can_player_interact(player: Node) -> bool:
+	return true
+
+func get_interact_prompt(player: Node) -> String:
+	return "E: Read Board"
+
+func get_interact_priority() -> int:
+	return 5

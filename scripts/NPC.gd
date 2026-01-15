@@ -679,3 +679,25 @@ func _get_first_locked_questdata_not_done() -> QuestData:
 		if not q.is_unlocked():
 			return q
 	return null
+
+func can_player_interact(player: Node) -> bool:
+	# If you already have a cooldown / time-block lock, use that.
+	# Examples: _can_talk_now, interactable, is_interactable, locked_until_timeblock, etc.
+	# Replace the condition below with your real one.
+	if not GameState.can_talk_to_npc(npc_id):
+		# Make them feel "uninteractable" during this block.
+		# You can optionally show overhead chatter instead, but no UI pop.
+		return false
+
+	# Default: allow
+	return true
+
+
+func get_interact_prompt(player: Node) -> String:
+	# Only show talk if they can actually talk right now
+	if not can_player_interact(player):
+		return ""
+	return "E: Talk"
+
+func get_npc_id() -> String:
+	return npc_id

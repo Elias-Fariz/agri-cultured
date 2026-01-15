@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=3 uid="uid://dcq7dmqwwrac8"]
+[gd_scene load_steps=24 format=3 uid="uid://dcq7dmqwwrac8"]
 
 [ext_resource type="TileSet" uid="uid://bqs5ruk6pejpc" path="res://tiles/GroundTileset.tres" id="1_a8y6s"]
 [ext_resource type="Texture2D" uid="uid://caerjv5h3fdyv" path="res://art/tree.png" id="2_vnc70"]
@@ -16,6 +16,7 @@
 [ext_resource type="PackedScene" uid="uid://cde8sgn45urws" path="res://ui/HelpOverlay.tscn" id="12_22afs"]
 [ext_resource type="PackedScene" uid="uid://d1qqa5bygrbsp" path="res://ui/HUD.tscn" id="13_1ihrq"]
 [ext_resource type="Script" uid="uid://dvg0ynlpgst4t" path="res://scripts/WorldSpawn.gd" id="16_6qbnr"]
+[ext_resource type="PackedScene" uid="uid://ci8kga43aovsx" path="res://ui/DayNightOverlay.tscn" id="16_22afs"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_vvco1"]
 texture = ExtResource("2_vnc70")
@@ -137,6 +138,8 @@ position = Vector2(1598, 972)
 [node name="HelpOverlay" parent="." instance=ExtResource("12_22afs")]
 
 [node name="HUD" parent="." instance=ExtResource("13_1ihrq")]
+
+[node name="DayNightOverlay" parent="." instance=ExtResource("16_22afs")]
 
 [node name="SpawnManager" type="Node" parent="."]
 script = ExtResource("16_6qbnr")

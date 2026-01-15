@@ -283,6 +283,9 @@ var completed_quests: Dictionary = {} # id -> quest dict
 
 var _talked_block_by_npc: Dictionary = {}  # npc_id -> String "day:morning" etc.
 
+const TUTORIAL_QUEST_ID := "tutorial_day1"
+const TUTORIAL_QUEST_RES_PATH := "res://data/quests/tutorial_day1.tres"
+
 
 func _ready() -> void:
 	reset_energy()
@@ -295,6 +298,11 @@ func _ready() -> void:
 	QuestEvents.chopped_tree.connect(_on_quest_chopped_tree)
 	QuestEvents.broke_rock.connect(_on_quest_broke_rock)
 	QuestEvents.harvested.connect(_on_quest_harvested)
+	
+	QuestEvents.ui_opened.connect(_on_quest_ui_opened)
+	var tm := get_node_or_null("/root/TimeManager")
+	if tm:
+		tm.day_changed.connect(_on_day_changed)
 
 func cycle_tool_next() -> void:
 	current_tool = (int(current_tool) + 1) % TOOL_COUNT
@@ -398,6 +406,7 @@ func complete_quest(quest_id: String) -> void:
 
 	var quest: Dictionary = active_quests[quest_id]
 	quest["completed"] = true
+	quest["claimed"] = false
 	active_quests.erase(quest_id)
 	completed_quests[quest_id] = quest
 	print("Quest completed: ", quest_id)
@@ -483,6 +492,10 @@ func _on_quest_harvested(item_id: String, amount: int) -> void:
 	#_increment_matching_quests("harvest", item_id, amount)
 	GameState.apply_quest_event("harvest", item_id, amount)
 	QuestEvents.quest_state_changed.emit()
+	
+func _on_quest_ui_opened(ui_id: String) -> void:
+	GameState.apply_quest_event("ui_open", ui_id, 1)
+	QuestEvents.quest_state_changed.emit()
 
 func _increment_matching_quests(qtype: String, target: String, delta: int) -> void:
 	# active_quests is assumed to be a Dictionary: id -> quest Dictionary
@@ -527,6 +540,8 @@ func _try_advance_chain_quest(qid: String, event_type: String, target: String, d
 		return
 
 	var step: Dictionary = steps[step_index]
+	if qid == "tutorial_day1":
+		print("[Tutorial] waiting step_index=", step_index, " step_type=", String(step.get("type","")), " step_target=", String(step.get("target","")))
 
 	if String(step.get("type", "")) != event_type:
 		return
@@ -649,6 +664,64 @@ func get_tracked_quest() -> Dictionary:
 		return completed_quests[tracked_quest_id]
 
 	return {}
+	
+func get_tracked_objective_text() -> String:
+	var quest := get_tracked_quest()
+	if quest.is_empty():
+		return ""
+
+	# If completed but unclaimed -> show turn-in guidance
+	var is_completed := bool(quest.get("completed", false))
+	var claimed := bool(quest.get("claimed", false))
+	if is_completed and not claimed:
+		# Prefer explicit turn_in_text
+		var turn_text := String(quest.get("turn_in_text", ""))
+		if turn_text.strip_edges() != "":
+			return turn_text
+
+		# Otherwise, build something sensible from turn_in_id
+		var turn_id := String(quest.get("turn_in_id", ""))
+		if turn_id.strip_edges() != "":
+			return "Turn in: " + turn_id
+
+		return "Turn in to claim your reward."
+
+	# Otherwise (active quest) -> show current step objective
+	if String(quest.get("type", "")) == "chain":
+		var steps: Array = quest.get("steps", [])
+		var step_index: int = int(quest.get("step_index", 0))
+		if step_index >= 0 and step_index < steps.size():
+			var step: Dictionary = steps[step_index]
+			# Prefer step text if you store it
+			var step_text := String(step.get("text", ""))
+			if step_text.strip_edges() != "":
+				return step_text
+
+			# Fallback: generate from type/target
+			var t := String(step.get("type", ""))
+			var target := String(step.get("target", ""))
+			return _format_objective_fallback(t, target, int(step.get("amount", 1)), int(step.get("progress", 0)))
+
+	# Oneshot fallback
+	var t2 := String(quest.get("type", ""))
+	var target2 := String(quest.get("target", ""))
+	return _format_objective_fallback(t2, target2, int(quest.get("amount", 1)), int(quest.get("progress", 0)))
+
+func _format_objective_fallback(t: String, target: String, amount: int, progress: int) -> String:
+	match t:
+		"ui_open":
+			return "Open: " + target
+		"talk_to":
+			return "Talk to: " + target
+		"go_to":
+			return "Go to: " + target
+		"ship":
+			return "Ship: %s (%d/%d)" % [target, progress, amount]
+		"action":
+			return "Do: " + target
+		_:
+			return "Objective: "
+
 
 func get_quest_objective_text(q: Dictionary) -> String:
 	if q.is_empty():
@@ -703,6 +776,8 @@ func get_all_trackable_quest_ids() -> Array[String]:
 	return ids
 
 func apply_quest_event(action: String, target: String = "", amount: int = 1) -> void:
+	print("[QuestEvent] apply_quest_event action=", action, " target=", target, " amount=", amount)
+	
 	var changed: bool = false
 	var to_complete: Array[String] = []
 
@@ -784,3 +859,50 @@ func can_talk_to_npc(npc_id: String) -> bool:
 
 func mark_talked_to_npc(npc_id: String) -> void:
 	_talked_block_by_npc[npc_id] = _current_talk_block_stamp()
+
+func _on_day_started(day: int) -> void:
+	if day == 1:
+		ensure_tutorial_day1_started()
+
+func ensure_tutorial_day1_started() -> void:
+	# If already active or completed, do nothing.
+	if _is_quest_active(TUTORIAL_QUEST_ID) or _is_quest_completed(TUTORIAL_QUEST_ID):
+		return
+
+	var qres := load(TUTORIAL_QUEST_RES_PATH)
+	if qres == null:
+		push_warning("Tutorial quest resource not found at: " + TUTORIAL_QUEST_RES_PATH)
+		return
+
+	# qres is QuestData
+	var qdict: Dictionary = qres.to_dict()
+
+	add_quest(qdict)
+	set_tracked_quest(TUTORIAL_QUEST_ID)
+
+	QuestEvents.quest_state_changed.emit()
+
+func _is_quest_active(quest_id: String) -> bool:
+	return active_quests.has(quest_id)
+
+func _is_quest_completed(quest_id: String) -> bool:
+	return completed_quests.has(quest_id)
+
+func _on_day_changed(new_day: int) -> void:
+	print("Day changed:", new_day)
+	if new_day != 1:
+		return
+
+	# Only add once: if already active or completed, do nothing.
+	if active_quests.has(TUTORIAL_QUEST_ID) or completed_quests.has(TUTORIAL_QUEST_ID):
+		return
+
+	var qres := load(TUTORIAL_QUEST_RES_PATH)
+	if qres == null:
+		push_warning("Tutorial quest resource missing: " + TUTORIAL_QUEST_RES_PATH)
+		return
+
+	add_quest(qres.to_dict())
+	set_tracked_quest(TUTORIAL_QUEST_ID)
+
+	QuestEvents.quest_state_changed.emit()

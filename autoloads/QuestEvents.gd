@@ -16,6 +16,7 @@ signal talked_to(npc_id: String)
 signal entered_location(location_id: String)
 signal shipped(item_id: String, qty: int)
 signal action_done(action: String, amount: int)
+signal ui_opened(ui_id: String)
 
 signal quest_state_changed
 
@@ -35,4 +36,8 @@ func _ready() -> void:
 	action_done.connect(func(action: String, amount: int):
 		# For things like "chop_tree"
 		GameState.apply_quest_event(action, "", amount)
+	)
+	
+	ui_opened.connect(func(ui_id: String):
+		GameState.apply_quest_event("ui_open", ui_id, 1)
 	)

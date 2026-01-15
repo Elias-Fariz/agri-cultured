@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://dv7wem6ftpvdd"]
+[gd_scene load_steps=18 format=3 uid="uid://dv7wem6ftpvdd"]
 
 [ext_resource type="Script" uid="uid://lxxgykutkbm4" path="res://scripts/Player.gd" id="1_vvow5"]
 [ext_resource type="AudioStream" uid="uid://e7naj8iuf7u5" path="res://audio/sfx/sfx_talk_01.WAV" id="2_hdrus"]
@@ -13,12 +13,16 @@
 [ext_resource type="AudioStream" uid="uid://bdmecs377p8gx" path="res://audio/footsteps/stone_steps_01.WAV" id="8_7fkfc"]
 [ext_resource type="AudioStream" uid="uid://byfycenow50f8" path="res://audio/footsteps/stone_steps_02.WAV" id="9_5jfsi"]
 [ext_resource type="AudioStream" uid="uid://bxsrixmfhey82" path="res://audio/footsteps/stone_steps_03.WAV" id="10_r3dvn"]
+[ext_resource type="Script" uid="uid://br7sbrrhxpw40" path="res://scripts/PlayerInteractPrompt.gd" id="14_56q24"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_xfidv"]
 size = Vector2(31, 31)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_vobxb"]
 size = Vector2(28, 28)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_34em8"]
+radius = 134.00374
 
 [node name="Player" type="CharacterBody2D" groups=["player"]]
 collision_layer = 2
@@ -58,3 +62,25 @@ bus = &"SFX"
 
 [node name="FootstepPlayer" type="AudioStreamPlayer2D" parent="."]
 bus = &"SFX"
+
+[node name="InteractSense" type="Area2D" parent="."]
+collision_layer = 3
+collision_mask = 5
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractSense"]
+shape = SubResource("CircleShape2D_34em8")
+
+[node name="InteractPrompt" type="Node2D" parent="."]
+position = Vector2(-25, -38)
+
+[node name="PromptLabel" type="Label" parent="InteractPrompt"]
+offset_right = 40.0
+offset_bottom = 23.0
+text = "E: Talk"
+horizontal_alignment = 1
+
+[node name="InteractPromptController" type="Node" parent="."]
+script = ExtResource("14_56q24")
+sense_area_path = NodePath("../InteractSense")
+prompt_label_path = NodePath("../InteractPrompt/PromptLabel")
+prompt_anchor_path = NodePath("../InteractPrompt")

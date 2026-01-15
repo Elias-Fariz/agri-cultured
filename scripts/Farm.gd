@@ -169,7 +169,6 @@ func _ready() -> void:
 	# If we enter the scene and it's already raining, wet the visuals now
 	if _is_raining_today():
 		_apply_rain_wet_visuals_today()
-
 	
 func _on_day_changed(_day: int) -> void:
 	var grew_from_rain := rained_today  # rain that happened during the previous day

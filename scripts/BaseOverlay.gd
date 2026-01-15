@@ -12,6 +12,7 @@ class_name BaseOverlay
 # If true, opening this overlay locks gameplay + pauses time.
 # HUD should be false. Inventory/Shipping/QuestBoard should be true.
 @export var is_modal: bool = false
+@export var tutorial_ui_id: String = ""
 
 var _is_open: bool = false
 
@@ -40,12 +41,18 @@ func _apply_visibility() -> void:
 
 func show_overlay() -> void:
 	_set_overlay_visible(true)
+	if tutorial_ui_id != "":
+		print("[Overlay] opened tutorial_ui_id=", tutorial_ui_id, " node=", name)
+		QuestEvents.ui_opened.emit(tutorial_ui_id)
 
 func hide_overlay() -> void:
 	_set_overlay_visible(false)
 
 func toggle_overlay() -> void:
-	_set_overlay_visible(not _is_open)
+	if is_open():
+		hide_overlay()
+	else:
+		show_overlay()
 
 func is_open() -> bool:
 	return _is_open

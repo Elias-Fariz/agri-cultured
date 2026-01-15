@@ -37,12 +37,13 @@ func _refresh() -> void:
 
 	# If tracked quest is not active anymore, fall back (optional)
 	# (This happens when a quest completes or is removed)
-	if not GameState.active_quests.has(tracked):
-		tracked = ""
+	# If the tracked quest isn't trackable anymore (missing or claimed), clear it.
+	if not _is_trackable(tracked):
 		GameState.tracked_quest_id = ""
 		_index = -1
 		_render_none("No quest tracked")
 		return
+
 
 	_index = _active_ids.find(tracked)
 	if _index == -1:
@@ -52,9 +53,14 @@ func _refresh() -> void:
 		_render_none("No quest tracked")
 		return
 
-	var q: Dictionary = GameState.get_tracked_quest()
+	var q: Dictionary = {}
+	if GameState.active_quests.has(tracked):
+		q = GameState.active_quests[tracked]
+	elif GameState.completed_quests.has(tracked):
+		q = GameState.completed_quests[tracked]
+
 	var title := String(q.get("title", "Quest"))
-	var objective := GameState.get_quest_objective_text(q)
+	var objective := GameState.get_tracked_objective_text()
 
 	title_label.text = title
 	objective_label.text = objective if objective != "" else "…"
@@ -84,3 +90,18 @@ func _on_next() -> void:
 
 func _on_none() -> void:
 	GameState.clear_tracked_quest()
+
+func _is_trackable(qid: String) -> bool:
+	if qid == "":
+		return false
+
+	# Active quests are always trackable
+	if GameState.active_quests.has(qid):
+		return true
+
+	# Completed quests are trackable only if not claimed
+	if GameState.completed_quests.has(qid):
+		var q: Dictionary = GameState.completed_quests[qid]
+		return not bool(q.get("claimed", false))
+
+	return false

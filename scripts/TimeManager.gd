@@ -22,6 +22,11 @@ enum TimeBlock { MORNING, DAY, EVENING, NIGHT }
 @export var evening_start_hour: int = 18
 @export var night_start_hour: int = 22
 
+func _ready() -> void:
+	# Bootstrap: let listeners (HUD, quests, etc.) know the initial day.
+	emit_signal("day_changed", day)
+	emit_signal("time_changed", minutes)
+
 func _process(delta: float) -> void:
 	if not running:
 		return

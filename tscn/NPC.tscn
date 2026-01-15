@@ -24,7 +24,7 @@ texture = ExtResource("1_u040o")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_8j625")
 
-[node name="InteractArea" type="Area2D" parent="."]
+[node name="InteractArea" type="Area2D" parent="." groups=["interactables"]]
 collision_layer = 3
 script = ExtResource("3_7xv34")
 

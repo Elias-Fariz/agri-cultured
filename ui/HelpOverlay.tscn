@@ -7,6 +7,7 @@ script = ExtResource("1_khrh3")
 visual_node_path = NodePath("Panel")
 start_visible_in_game = false
 is_modal = true
+tutorial_ui_id = "help"
 
 [node name="Panel" type="Panel" parent="."]
 visible = false
