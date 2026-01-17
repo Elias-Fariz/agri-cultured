@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3 uid="uid://dcq7dmqwwrac8"]
+[gd_scene load_steps=29 format=3 uid="uid://dcq7dmqwwrac8"]
 
 [ext_resource type="TileSet" uid="uid://bqs5ruk6pejpc" path="res://tiles/GroundTileset.tres" id="1_a8y6s"]
 [ext_resource type="Texture2D" uid="uid://caerjv5h3fdyv" path="res://art/tree.png" id="2_vnc70"]
@@ -6,6 +6,8 @@
 [ext_resource type="Texture2D" uid="uid://1d6ygtxnkroh" path="res://art/rock.PNG" id="4_hw5sw"]
 [ext_resource type="PackedScene" uid="uid://bfaurdf2mucr2" path="res://tscn/NPC.tscn" id="5_3a5ef"]
 [ext_resource type="PackedScene" uid="uid://dv7wem6ftpvdd" path="res://tscn/Player.tscn" id="6_hw5sw"]
+[ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="6_y8126"]
+[ext_resource type="Resource" uid="uid://d1rk16thm6q8l" path="res://data/quests/keeper_cow_quest.tres" id="7_3mm4q"]
 [ext_resource type="Texture2D" uid="uid://bq8o1e8mbe7qm" path="res://art/door.PNG" id="7_hw5sw"]
 [ext_resource type="Script" uid="uid://xl6estd3noyu" path="res://scripts/SceneTravelArea.gd" id="7_ubk8s"]
 [ext_resource type="PackedScene" uid="uid://ded2abuo15uwh" path="res://ui/DialogueUI.tscn" id="8_tdhpq"]
@@ -17,6 +19,8 @@
 [ext_resource type="PackedScene" uid="uid://d1qqa5bygrbsp" path="res://ui/HUD.tscn" id="13_1ihrq"]
 [ext_resource type="Script" uid="uid://dvg0ynlpgst4t" path="res://scripts/WorldSpawn.gd" id="16_6qbnr"]
 [ext_resource type="PackedScene" uid="uid://ci8kga43aovsx" path="res://ui/DayNightOverlay.tscn" id="16_22afs"]
+[ext_resource type="Script" uid="uid://d2qqt57kupo3n" path="res://scripts/AnimalKeeperGate.gd" id="18_1ihrq"]
+[ext_resource type="Script" uid="uid://b7n4wv6k3k33k" path="res://scripts/QuestLocation.gd" id="19_jornh"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_vvco1"]
 texture = ExtResource("2_vnc70")
@@ -59,6 +63,8 @@ sources/2 = SubResource("TileSetAtlasSource_pn73e")
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ubk8s"]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_eq7mh"]
+
 [node name="AnimalKeeperArea" type="Node2D" groups=["world"]]
 
 [node name="TileMaps" type="Node2D" parent="."]
@@ -75,8 +81,17 @@ layer_0/tile_data = PackedInt32Array(196610, 0, 0, 393219, 0, 0, 327685, 0, 0, 4
 
 [node name="NPCs" type="Node2D" parent="."]
 
-[node name="NPC" parent="NPCs" instance=ExtResource("5_3a5ef")]
+[node name="Rancher" parent="NPCs" instance=ExtResource("5_3a5ef")]
 position = Vector2(347, 122)
+npc_id = "npc_keeper"
+display_name = "Rancher"
+dialogue_lines = Array[String](["Howdy! Nice to see you in these parts!"])
+morning_dialogue_lines = Array[String](["The rooster crows and I gotta goes!"])
+evening_dialogue_lines = Array[String](["Time that I start hittin' the hay!"])
+night_dialogue_lines = Array[String](["Don't mind me, just grabbin' some water."])
+overhead_greeting_lines = Array[String](["Howdy!"])
+overhead_idle_lines = Array[String](["Chickens..."])
+quest_offers = Array[ExtResource("6_y8126")]([ExtResource("7_3mm4q")])
 
 [node name="Player" parent="." instance=ExtResource("6_hw5sw")]
 position = Vector2(228, 111)
@@ -143,3 +158,16 @@ position = Vector2(1598, 972)
 
 [node name="SpawnManager" type="Node" parent="."]
 script = ExtResource("16_6qbnr")
+
+[node name="AnimalKeeperGate" type="Node" parent="."]
+script = ExtResource("18_1ihrq")
+
+[node name="QuestLocation" type="Area2D" parent="."]
+position = Vector2(252, 147.00003)
+scale = Vector2(15.905272, 15.905272)
+collision_mask = 3
+script = ExtResource("19_jornh")
+location_id = "keeper"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="QuestLocation"]
+shape = SubResource("RectangleShape2D_eq7mh")

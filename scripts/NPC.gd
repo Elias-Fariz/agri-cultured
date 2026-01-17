@@ -198,6 +198,8 @@ func start_dialogue() -> void:
 	QuestEvents.talked_to.emit(npc_id)
 	
 	# --- QUESTDATA-BASED QUEST FLOW (GENERAL) ---
+	
+	# --- Legacy quest flow below (kept for compatibility) ---
 
 	# --- QUEST PRIORITY 1: TURN-IN READY ---
 	if GameState.has_turn_in_ready(npc_id):

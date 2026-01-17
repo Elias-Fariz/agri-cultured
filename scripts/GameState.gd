@@ -286,6 +286,10 @@ var _talked_block_by_npc: Dictionary = {}  # npc_id -> String "day:morning" etc.
 const TUTORIAL_QUEST_ID := "tutorial_day1"
 const TUTORIAL_QUEST_RES_PATH := "res://data/quests/tutorial_day1.tres"
 
+var unlocked_travel: Dictionary = {}  # e.g. "animal_keeper" -> true
+
+var pending_spawns: Array[Dictionary] = []
+
 
 func _ready() -> void:
 	reset_energy()
@@ -298,6 +302,7 @@ func _ready() -> void:
 	QuestEvents.chopped_tree.connect(_on_quest_chopped_tree)
 	QuestEvents.broke_rock.connect(_on_quest_broke_rock)
 	QuestEvents.harvested.connect(_on_quest_harvested)
+	QuestEvents.item_purchased.connect(_on_item_purchased)
 	
 	QuestEvents.ui_opened.connect(_on_quest_ui_opened)
 	var tm := get_node_or_null("/root/TimeManager")
@@ -398,6 +403,12 @@ func add_quest(quest: Dictionary) -> void:
 	
 	if tracked_quest_id == "":
 		tracked_quest_id = String(quest.get("id",""))
+	
+	# Unlock travel when accepting specific quest(s)
+	var qid := String(q.get("id", ""))
+	if qid == "unlock_animal_keeper":
+		unlock_travel("animal_keeper")
+	
 	QuestEvents.quest_state_changed.emit()
 
 func complete_quest(quest_id: String) -> void:
@@ -412,6 +423,8 @@ func complete_quest(quest_id: String) -> void:
 	print("Quest completed: ", quest_id)
 	
 func claim_quest_reward(quest_id: String) -> void:
+	print("[Reward] claim_quest_reward:", quest_id)
+	
 	if not completed_quests.has(quest_id):
 		return
 
@@ -435,6 +448,11 @@ func claim_quest_reward(quest_id: String) -> void:
 			inventory_add(item_name, qty)
 
 	quest["claimed"] = true
+	
+	if quest_id == "keeper_cow_quest":
+		print("[Reward] Queuing cow spawn!")
+		queue_spawn_reward("farm", "res://tscn/Cow.tscn", "cow_pen_spawn")
+		print("[Reward] pending_spawns now:", pending_spawns)
 	
 	QuestEvents.quest_state_changed.emit()
 
@@ -477,6 +495,11 @@ func _on_quest_shipped(item_id: String, amount: int) -> void:
 	
 	GameState.apply_quest_event("ship", item_id, amount)
 	QuestEvents.quest_state_changed.emit()
+
+func _on_item_purchased(item_id: String, qty: int) -> void:
+	apply_quest_event("buy", item_id, qty)
+	QuestEvents.quest_state_changed.emit()
+	# apply_quest_event already emits quest_state_changed when changed
 
 func _on_quest_chopped_tree(amount: int) -> void:
 	#_increment_matching_quests("chop_tree", "", amount)
@@ -674,38 +697,58 @@ func get_tracked_objective_text() -> String:
 	var is_completed := bool(quest.get("completed", false))
 	var claimed := bool(quest.get("claimed", false))
 	if is_completed and not claimed:
-		# Prefer explicit turn_in_text
 		var turn_text := String(quest.get("turn_in_text", ""))
 		if turn_text.strip_edges() != "":
 			return turn_text
 
-		# Otherwise, build something sensible from turn_in_id
 		var turn_id := String(quest.get("turn_in_id", ""))
 		if turn_id.strip_edges() != "":
 			return "Turn in: " + turn_id
 
 		return "Turn in to claim your reward."
 
-	# Otherwise (active quest) -> show current step objective
+	# Otherwise (active quest) -> show current step objective with progress when relevant
 	if String(quest.get("type", "")) == "chain":
 		var steps: Array = quest.get("steps", [])
 		var step_index: int = int(quest.get("step_index", 0))
 		if step_index >= 0 and step_index < steps.size():
 			var step: Dictionary = steps[step_index]
-			# Prefer step text if you store it
-			var step_text := String(step.get("text", ""))
-			if step_text.strip_edges() != "":
-				return step_text
 
-			# Fallback: generate from type/target
-			var t := String(step.get("type", ""))
-			var target := String(step.get("target", ""))
-			return _format_objective_fallback(t, target, int(step.get("amount", 1)), int(step.get("progress", 0)))
+			var amount := int(step.get("amount", 1))
+			var progress := int(step.get("progress", 0))
 
-	# Oneshot fallback
-	var t2 := String(quest.get("type", ""))
-	var target2 := String(quest.get("target", ""))
-	return _format_objective_fallback(t2, target2, int(quest.get("amount", 1)), int(quest.get("progress", 0)))
+			# Base text: prefer stored step text, otherwise fallback
+			var base_text := String(step.get("text", ""))
+			if base_text.strip_edges() == "":
+				var t := String(step.get("type", ""))
+				var target := String(step.get("target", ""))
+				base_text = _format_objective_fallback(t, target, amount, progress)
+
+			# Append (x/y) if it’s a counted objective
+			if amount > 1:
+				return "%s (%d/%d)" % [base_text, progress, amount]
+			return base_text
+
+		# If step_index is out of range, show something gentle
+		return "…"
+
+	# ONESHOT fallback (also support progress display)
+	var amount2 := int(quest.get("amount", 1))
+	var progress2 := int(quest.get("progress", 0))
+
+	# Prefer a stored text if your quest dict includes one
+	var base2 := String(quest.get("text", ""))
+	if base2.strip_edges() == "":
+		# optional: if your oneshot dict uses a different field name sometimes
+		base2 = String(quest.get("oneshot_text", ""))
+	if base2.strip_edges() == "":
+		var t2 := String(quest.get("type", ""))
+		var target2 := String(quest.get("target", ""))
+		base2 = _format_objective_fallback(t2, target2, amount2, progress2)
+
+	if amount2 > 1:
+		return "%s (%d/%d)" % [base2, progress2, amount2]
+	return base2
 
 func _format_objective_fallback(t: String, target: String, amount: int, progress: int) -> String:
 	match t:
@@ -727,36 +770,50 @@ func get_quest_objective_text(q: Dictionary) -> String:
 	if q.is_empty():
 		return ""
 
-	# If completed but not claimed → show turn-in instruction
-	if bool(q.get("completed", false)) and not bool(q.get("claimed", false)):
-		var t: String = String(q.get("turn_in_text", ""))
-		if t != "":
-			return t
+	# Completed but unclaimed -> show turn-in guidance
+	var is_completed := bool(q.get("completed", false))
+	var claimed := bool(q.get("claimed", false))
+	if is_completed and not claimed:
+		var turn_text := String(q.get("turn_in_text", ""))
+		if turn_text.strip_edges() != "":
+			return turn_text
+		var turn_id := String(q.get("turn_in_id", ""))
+		if turn_id.strip_edges() != "":
+			return "Turn in: " + turn_id
+		return "Turn in to claim your reward."
 
-		# fallback if text not set
-		var turn_in_id := String(q.get("turn_in_id", ""))
-		if turn_in_id == "townboard":
-			return "Return to the Town Board to claim your reward."
-		elif turn_in_id != "":
-			return "Return to %s to collect your reward." % turn_in_id
-		else:
-			return "Collect your reward."
-
-	# Chain quest: show current step text
-	if String(q.get("type","")) == "chain":
+	# Chain quest -> show current step text + progress
+	if String(q.get("type", "")) == "chain":
 		var steps: Array = q.get("steps", [])
-		var idx: int = int(q.get("step_index", 0))
-		if idx >= 0 and idx < steps.size():
-			return String(steps[idx].get("text", ""))
-		return ""
+		var step_index: int = int(q.get("step_index", 0))
+		if step_index < 0 or step_index >= steps.size():
+			return "…"
 
-	# Single-step quest: show description or progress
-	var title := String(q.get("title", "Quest"))
-	var progress := int(q.get("progress", 0))
-	var amount := int(q.get("amount", 0))
-	if amount > 0:
-		return "%s (%d/%d)" % [String(q.get("description", title)), progress, amount]
-	return String(q.get("description", title))
+		var step: Dictionary = steps[step_index]
+
+		var base_text := String(step.get("text", ""))
+		if base_text.strip_edges() == "":
+			# fallback if no custom text
+			base_text = _format_step_fallback(step)
+
+		var amount := int(step.get("amount", 1))
+		var progress := int(step.get("progress", 0))
+
+		# Only show x/y when it actually makes sense
+		if amount > 1:
+			return "%s (%d/%d)" % [base_text, progress, amount]
+		return base_text
+
+	# Oneshot -> similar progress formatting
+	var base := String(q.get("text", ""))
+	if base.strip_edges() == "":
+		base = _format_oneshot_fallback(q)
+
+	var amt := int(q.get("amount", 1))
+	var prog := int(q.get("progress", 0))
+	if amt > 1:
+		return "%s (%d/%d)" % [base, prog, amt]
+	return base
 
 func get_all_trackable_quest_ids() -> Array[String]:
 	var ids: Array[String] = []
@@ -906,3 +963,42 @@ func _on_day_changed(new_day: int) -> void:
 	set_tracked_quest(TUTORIAL_QUEST_ID)
 
 	QuestEvents.quest_state_changed.emit()
+
+func is_travel_unlocked(travel_id: String) -> bool:
+	return bool(unlocked_travel.get(travel_id, false))
+
+func unlock_travel(travel_id: String) -> void:
+	unlocked_travel[travel_id] = true
+
+func queue_spawn_reward(scene_id: String, prefab_path: String, marker_tag: String) -> void:
+	pending_spawns.append({
+		"scene_id": scene_id,
+		"prefab": prefab_path,
+		"marker_tag": marker_tag,
+	})
+
+func _format_step_fallback(step: Dictionary) -> String:
+	var t := String(step.get("type", ""))
+	var target := String(step.get("target", ""))
+	match t:
+		"chop_wood":
+			return "Chop wood"
+		"buy":
+			return "Buy: " + target
+		"go_to":
+			return "Go to: " + target
+		"talk_to":
+			return "Talk to: " + target
+		_:
+			return "Objective"
+
+func _format_oneshot_fallback(q: Dictionary) -> String:
+	var t := String(q.get("type", ""))
+	var target := String(q.get("target", ""))
+	match t:
+		"buy":
+			return "Buy: " + target
+		"ship":
+			return "Ship: " + target
+		_:
+			return "Objective"

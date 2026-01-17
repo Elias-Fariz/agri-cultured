@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=5 format=3 uid="uid://d1rk16thm6q8l"]
+
+[ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="1_7yrps"]
+[ext_resource type="Script" uid="uid://bolxtchvrfo0y" path="res://data/quests/QuestStepData.gd" id="2_nv8ym"]
+
+[sub_resource type="Resource" id="Resource_7yrps"]
+script = ExtResource("2_nv8ym")
+type = "chop_tree"
+amount = 3
+text = "Chop 3 trees."
+metadata/_custom_type_script = "uid://bolxtchvrfo0y"
+
+[sub_resource type="Resource" id="Resource_nv8ym"]
+script = ExtResource("2_nv8ym")
+type = "buy"
+target = "Animal Feed"
+text = "Buy animal feed from the shopkeeper."
+metadata/_custom_type_script = "uid://bolxtchvrfo0y"
+
+[resource]
+script = ExtResource("1_7yrps")
+id = "keeper_cow_quest"
+title = "A Place for a Cow"
+description = "Help the Animal Keeper prepare your farm for a new friend."
+quest_type = "chain"
+oneshot_action = ""
+steps = Array[ExtResource("2_nv8ym")]([SubResource("Resource_7yrps"), SubResource("Resource_nv8ym")])
+turn_in_id = "npc_keeper"
+turn_in_text = "Return to the Animal Keeper for your reward."
+requires_completed = Array[String](["unlock_animal_keeper"])
+metadata/_custom_type_script = "uid://cg0ailnic1w71"

@@ -1,4 +1,4 @@
-[gd_scene load_steps=41 format=3 uid="uid://b7y4cme4an3kb"]
+[gd_scene load_steps=42 format=3 uid="uid://b7y4cme4an3kb"]
 
 [ext_resource type="PackedScene" uid="uid://dv7wem6ftpvdd" path="res://tscn/Player.tscn" id="1_2feps"]
 [ext_resource type="Script" uid="uid://0ofb5xeer5m6" path="res://scripts/Town.gd" id="1_o31te"]
@@ -25,6 +25,7 @@
 [ext_resource type="AudioStream" uid="uid://c0vxwp7d85xq8" path="res://audio/ambience/life/sfx_bird_01.WAV" id="18_jlwy3"]
 [ext_resource type="AudioStream" uid="uid://dby2jcrvk4ssy" path="res://audio/ambience/life/sfx_bird_02.WAV" id="19_m0mrq"]
 [ext_resource type="AudioStream" uid="uid://b4kphj6d0xlxg" path="res://audio/ambience/life/sfx_bird_03.WAV" id="20_fgqwr"]
+[ext_resource type="Resource" uid="uid://dqhj0ydtgm043" path="res://data/quests/unlock_animal_keeper.tres" id="20_xdkop"]
 [ext_resource type="Resource" uid="uid://cw4m17hab13da" path="res://data/quests/main_mayor_strawberry.tres" id="21_4f1xo"]
 [ext_resource type="AudioStream" uid="uid://cvxhlbrm7hew0" path="res://audio/ambience/life/sfx_leaves_01.WAV" id="21_seor3"]
 [ext_resource type="AudioStream" uid="uid://bd7fsofv05h57" path="res://audio/ambience/life/sfx_leaves_02.WAV" id="22_4f1xo"]
@@ -136,6 +137,9 @@ collision_mask = 3
 script = ExtResource("34_ewvrf")
 target_scene_path = "uid://dcq7dmqwwrac8"
 spawn_tag = "from_town"
+requires_travel_unlock = true
+travel_unlock_id = "animal_keeper"
+locked_prompt_text = "Locked (Check Town Board)"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="TravelPoints/ToAnimalKeeperArea"]
 shape = SubResource("RectangleShape2D_caym6")
@@ -177,7 +181,7 @@ tag = "from_keeper"
 [node name="DialogueUI" parent="." groups=["dialogue_ui"] instance=ExtResource("9_xf6b5")]
 
 [node name="QuestBoardUI" parent="." instance=ExtResource("12_15yes")]
-available_quests = Array[ExtResource("12_fgqwr")]([ExtResource("13_seor3"), ExtResource("14_4f1xo"), ExtResource("15_ewvrf"), ExtResource("16_caym6")])
+available_quests = Array[ExtResource("12_fgqwr")]([ExtResource("13_seor3"), ExtResource("14_4f1xo"), ExtResource("15_ewvrf"), ExtResource("16_caym6"), ExtResource("20_xdkop")])
 
 [node name="ShopUI" parent="." instance=ExtResource("12_j34sm")]
 

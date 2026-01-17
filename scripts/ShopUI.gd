@@ -190,6 +190,7 @@ func _on_buy_pressed() -> void:
 		# You can map "WatermelonSeed" → "Watermelon Seed" inventory key, etc.
 		var inv_name := id  # or map via a dictionary later
 		GameState.inventory_add(inv_name, count)
+		QuestEvents.item_purchased.emit(inv_name, count)
 
 	play_buy_sfx()
 

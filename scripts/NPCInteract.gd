@@ -47,3 +47,6 @@ func interact() -> void:
 	var npc := get_parent()
 	if npc and npc.has_method("start_dialogue"):
 		npc.start_dialogue()
+
+func get_interact_priority() -> int:
+	return 10

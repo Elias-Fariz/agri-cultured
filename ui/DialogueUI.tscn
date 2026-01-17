@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://cewvrkc6o3hdl" path="res://scripts/DialogueUI.gd" id="1_vvl2g"]
 [ext_resource type="AudioStream" uid="uid://e7naj8iuf7u5" path="res://audio/sfx/sfx_talk_01.WAV" id="2_qe7eq"]
 
-[node name="DialogueUI" type="CanvasLayer"]
+[node name="DialogueUI" type="CanvasLayer" groups=["dialogue_ui"]]
 script = ExtResource("1_vvl2g")
 visual_node_path = NodePath("Box")
 start_visible_in_game = false

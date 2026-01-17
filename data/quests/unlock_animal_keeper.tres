@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=3 format=3 uid="uid://dqhj0ydtgm043"]
+
+[ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="1_4p8kg"]
+[ext_resource type="Script" uid="uid://bolxtchvrfo0y" path="res://data/quests/QuestStepData.gd" id="2_sjx27"]
+
+[resource]
+script = ExtResource("1_4p8kg")
+id = "unlock_animal_keeper"
+title = "Meet the Animals!"
+description = "Travel to the ranch and get access to animals!"
+oneshot_action = "go_to"
+oneshot_target = "keeper"
+oneshot_text = "Go to the Animal Keeper Area."
+turn_in_id = "npc_keeper"
+turn_in_text = "Talk to the Animal Keeper over there."
+reward_money = 50
+requires_completed = Array[String](["tutorial_day1"])
+metadata/_custom_type_script = "uid://cg0ailnic1w71"

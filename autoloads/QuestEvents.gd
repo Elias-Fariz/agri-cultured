@@ -17,6 +17,7 @@ signal entered_location(location_id: String)
 signal shipped(item_id: String, qty: int)
 signal action_done(action: String, amount: int)
 signal ui_opened(ui_id: String)
+signal item_purchased(item_id: String, qty: int)
 
 signal quest_state_changed
 
@@ -41,3 +42,11 @@ func _ready() -> void:
 	ui_opened.connect(func(ui_id: String):
 		GameState.apply_quest_event("ui_open", ui_id, 1)
 	)
+
+	item_purchased.connect(func(item_id: String, qty: int):
+		GameState.apply_quest_event("buy", item_id, qty)
+	)
+#
+	#chopped_tree.connect(func(qty: int):
+		#GameState.apply_quest_event("chop_tree", "", qty)
+	#)

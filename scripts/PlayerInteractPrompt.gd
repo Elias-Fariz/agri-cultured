@@ -66,13 +66,9 @@ func _process(delta: float) -> void:
 		return
 
 	# Respect target gate
+	var can_now := true
 	if best.has_method("can_player_interact"):
-		var can_now := bool(best.call("can_player_interact", get_parent()))
-		if not can_now:
-			if debug_enabled:
-				print("[Prompt] target says cannot interact now:", best.name)
-			_hide()
-			return
+		can_now = bool(best.call("can_player_interact", get_parent()))
 
 	# Get prompt text
 	var text := ""

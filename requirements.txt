@@ -32,6 +32,8 @@ Phase 3: Stardew Feel
 * Help Overlay *CHECK*
 * Spawn Points / Animal Keeper *CHECK*
 * Tutorial *CHECK*
+* Animal Quest *CHECK*
+* Dynamic Tracker Text *CHECK*
 - Save to Disk
 
 Phase 4: Inventory/UI Polish
