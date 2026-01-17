@@ -1,4 +1,4 @@
-[gd_scene load_steps=29 format=3 uid="uid://dcq7dmqwwrac8"]
+[gd_scene load_steps=30 format=3 uid="uid://dcq7dmqwwrac8"]
 
 [ext_resource type="TileSet" uid="uid://bqs5ruk6pejpc" path="res://tiles/GroundTileset.tres" id="1_a8y6s"]
 [ext_resource type="Texture2D" uid="uid://caerjv5h3fdyv" path="res://art/tree.png" id="2_vnc70"]
@@ -20,6 +20,7 @@
 [ext_resource type="Script" uid="uid://dvg0ynlpgst4t" path="res://scripts/WorldSpawn.gd" id="16_6qbnr"]
 [ext_resource type="PackedScene" uid="uid://ci8kga43aovsx" path="res://ui/DayNightOverlay.tscn" id="16_22afs"]
 [ext_resource type="Script" uid="uid://d2qqt57kupo3n" path="res://scripts/AnimalKeeperGate.gd" id="18_1ihrq"]
+[ext_resource type="PackedScene" uid="uid://dfcn8oje3hko1" path="res://ui/EndOfDaySummaryUI.tscn" id="18_3mm4q"]
 [ext_resource type="Script" uid="uid://b7n4wv6k3k33k" path="res://scripts/QuestLocation.gd" id="19_jornh"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_vvco1"]
@@ -153,6 +154,8 @@ position = Vector2(1598, 972)
 [node name="HelpOverlay" parent="." instance=ExtResource("12_22afs")]
 
 [node name="HUD" parent="." instance=ExtResource("13_1ihrq")]
+
+[node name="EndOfDaySummaryUI" parent="." instance=ExtResource("18_3mm4q")]
 
 [node name="DayNightOverlay" parent="." instance=ExtResource("16_22afs")]
 

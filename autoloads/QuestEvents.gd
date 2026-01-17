@@ -20,6 +20,7 @@ signal ui_opened(ui_id: String)
 signal item_purchased(item_id: String, qty: int)
 
 signal quest_state_changed
+signal toast_requested(text: String, kind: String, duration: float)
 
 func _ready() -> void:
 	talked_to.connect(func(npc_id: String):

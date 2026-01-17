@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://d1qqa5bygrbsp"]
+[gd_scene load_steps=4 format=3 uid="uid://d1qqa5bygrbsp"]
 
 [ext_resource type="Script" uid="uid://c7wv6ccc8b6td" path="res://scripts/HUD.gd" id="1_1x8ju"]
 [ext_resource type="Script" uid="uid://d27li4whs6pcd" path="res://scripts/QuestTrackerHUD.gd" id="2_aaqae"]
+[ext_resource type="Script" uid="uid://du0y27a1sy66o" path="res://scripts/ToastManager.gd" id="3_jd13s"]
 
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1_1x8ju")
@@ -68,3 +69,17 @@ layout_mode = 2
 [node name="HelpHintLabel" type="Label" parent="TopRightPanel/VBoxContainer"]
 layout_mode = 2
 text = "Press H for Help"
+
+[node name="ToastLayer" type="Control" parent="."]
+custom_minimum_size = Vector2(600, 200)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("3_jd13s")
+
+[node name="ToastVBox" type="VBoxContainer" parent="ToastLayer"]
+custom_minimum_size = Vector2(600, 200)
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0

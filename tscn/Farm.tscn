@@ -1,4 +1,4 @@
-[gd_scene load_steps=53 format=3 uid="uid://6ni01dvcs2m2"]
+[gd_scene load_steps=54 format=3 uid="uid://6ni01dvcs2m2"]
 
 [ext_resource type="Script" uid="uid://cevvm7fnmvrhe" path="res://scripts/Farm.gd" id="1_vobxb"]
 [ext_resource type="PackedScene" uid="uid://b0c10lgb0ivgd" path="res://tscn/WaterSplash.tscn" id="2_66215"]
@@ -37,6 +37,7 @@
 [ext_resource type="PackedScene" uid="uid://c5tput53xrui" path="res://ui/RainOverlay.tscn" id="23_f2050"]
 [ext_resource type="Script" uid="uid://xl6estd3noyu" path="res://scripts/SceneTravelArea.gd" id="29_f2th2"]
 [ext_resource type="AudioStream" uid="uid://d28bo8p77va8y" path="res://audio/ambience/amb_farm_wind.WAV" id="32_tu1ii"]
+[ext_resource type="PackedScene" uid="uid://dfcn8oje3hko1" path="res://ui/EndOfDaySummaryUI.tscn" id="33_bw7tx"]
 [ext_resource type="PackedScene" uid="uid://qxjawwee60n1" path="res://ui/QuestMenuUI.tscn" id="38_7ea1u"]
 [ext_resource type="Script" uid="uid://b7n4wv6k3k33k" path="res://scripts/QuestLocation.gd" id="38_wdtkt"]
 [ext_resource type="PackedScene" uid="uid://cde8sgn45urws" path="res://ui/HelpOverlay.tscn" id="39_kcrpu"]
@@ -176,10 +177,6 @@ tag = "from_keeper"
 
 [node name="DayNightOverlay" parent="." instance=ExtResource("8_2ywwf")]
 
-[node name="InventoryUI" parent="." instance=ExtResource("8_og6c6")]
-
-[node name="ShippingUI" parent="." instance=ExtResource("12_07b21")]
-
 [node name="HUD" parent="." instance=ExtResource("10_1mjdy")]
 
 [node name="Bed" parent="." instance=ExtResource("12_b7ap2")]
@@ -192,7 +189,13 @@ position = Vector2(376, 58)
 
 [node name="QuestBoardUI" parent="." instance=ExtResource("18_kqnqu")]
 
+[node name="EndOfDaySummaryUI" parent="." instance=ExtResource("33_bw7tx")]
+
 [node name="ShopUI" parent="." instance=ExtResource("19_4nmas")]
+
+[node name="InventoryUI" parent="." instance=ExtResource("8_og6c6")]
+
+[node name="ShippingUI" parent="." instance=ExtResource("12_07b21")]
 
 [node name="FireflyLayer" parent="." groups=["firefly_layer"] instance=ExtResource("20_8lty6")]
 

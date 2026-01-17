@@ -1,4 +1,4 @@
-[gd_scene load_steps=42 format=3 uid="uid://b7y4cme4an3kb"]
+[gd_scene load_steps=43 format=3 uid="uid://b7y4cme4an3kb"]
 
 [ext_resource type="PackedScene" uid="uid://dv7wem6ftpvdd" path="res://tscn/Player.tscn" id="1_2feps"]
 [ext_resource type="Script" uid="uid://0ofb5xeer5m6" path="res://scripts/Town.gd" id="1_o31te"]
@@ -28,6 +28,7 @@
 [ext_resource type="Resource" uid="uid://dqhj0ydtgm043" path="res://data/quests/unlock_animal_keeper.tres" id="20_xdkop"]
 [ext_resource type="Resource" uid="uid://cw4m17hab13da" path="res://data/quests/main_mayor_strawberry.tres" id="21_4f1xo"]
 [ext_resource type="AudioStream" uid="uid://cvxhlbrm7hew0" path="res://audio/ambience/life/sfx_leaves_01.WAV" id="21_seor3"]
+[ext_resource type="PackedScene" uid="uid://dfcn8oje3hko1" path="res://ui/EndOfDaySummaryUI.tscn" id="22_2rtqk"]
 [ext_resource type="AudioStream" uid="uid://bd7fsofv05h57" path="res://audio/ambience/life/sfx_leaves_02.WAV" id="22_4f1xo"]
 [ext_resource type="AudioStream" uid="uid://ddtmvpbosnor5" path="res://audio/ambience/life/sfx_murmur_01.WAV" id="23_ewvrf"]
 [ext_resource type="AudioStream" uid="uid://co4coq6x4nty5" path="res://audio/ambience/life/sfx_murmur_02.WAV" id="24_caym6"]
@@ -178,12 +179,14 @@ tag = "from_keeper"
 
 [node name="InventoryUI" parent="." instance=ExtResource("8_va2fq")]
 
-[node name="DialogueUI" parent="." groups=["dialogue_ui"] instance=ExtResource("9_xf6b5")]
+[node name="DialogueUI" parent="." instance=ExtResource("9_xf6b5")]
 
 [node name="QuestBoardUI" parent="." instance=ExtResource("12_15yes")]
 available_quests = Array[ExtResource("12_fgqwr")]([ExtResource("13_seor3"), ExtResource("14_4f1xo"), ExtResource("15_ewvrf"), ExtResource("16_caym6"), ExtResource("20_xdkop")])
 
 [node name="ShopUI" parent="." instance=ExtResource("12_j34sm")]
+
+[node name="EndOfDaySummaryUI" parent="." instance=ExtResource("22_2rtqk")]
 
 [node name="TownBoard" parent="." instance=ExtResource("14_j34sm")]
 position = Vector2(270, 42)

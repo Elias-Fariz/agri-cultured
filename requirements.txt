@@ -34,6 +34,8 @@ Phase 3: Stardew Feel
 * Tutorial *CHECK*
 * Animal Quest *CHECK*
 * Dynamic Tracker Text *CHECK*
+* Toast Notifications *CHECK*
+* End-of-Day Summary *CHECK*
 - Save to Disk
 
 Phase 4: Inventory/UI Polish

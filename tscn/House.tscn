@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://bjx6v0gjfwt2h"]
+[gd_scene load_steps=19 format=3 uid="uid://bjx6v0gjfwt2h"]
 
 [ext_resource type="Texture2D" uid="uid://bvwrrj2bcxwqh" path="res://art/wood.PNG" id="1_4ogyy"]
 [ext_resource type="Script" uid="uid://kt4as8ri4s71" path="res://scripts/House.gd" id="1_hk67c"]
@@ -14,6 +14,7 @@
 [ext_resource type="PackedScene" uid="uid://dexrjrr1c8jfb" path="res://ui/ShopUI.tscn" id="12_ur3p0"]
 [ext_resource type="PackedScene" uid="uid://qxjawwee60n1" path="res://ui/QuestMenuUI.tscn" id="13_cud0w"]
 [ext_resource type="PackedScene" uid="uid://cde8sgn45urws" path="res://ui/HelpOverlay.tscn" id="14_0ot87"]
+[ext_resource type="PackedScene" uid="uid://dfcn8oje3hko1" path="res://ui/EndOfDaySummaryUI.tscn" id="15_xgfmo"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_bfwu5"]
 texture = ExtResource("1_4ogyy")
@@ -67,3 +68,5 @@ position = Vector2(135, 87)
 [node name="QuestMenuUI" parent="." instance=ExtResource("13_cud0w")]
 
 [node name="HelpOverlay" parent="." instance=ExtResource("14_0ot87")]
+
+[node name="EndOfDaySummaryUI" parent="." instance=ExtResource("15_xgfmo")]

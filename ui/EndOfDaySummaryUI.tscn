@@ -1,0 +1,62 @@
+[gd_scene load_steps=2 format=3 uid="uid://dfcn8oje3hko1"]
+
+[ext_resource type="Script" uid="uid://dqt2dmw00al2h" path="res://scripts/EndOfDaySummaryUI.gd" id="1_o2is7"]
+
+[node name="EndOfDaySummaryUI" type="CanvasLayer" groups=["end_of_day_ui"]]
+script = ExtResource("1_o2is7")
+visual_node_path = NodePath("Panel")
+start_visible_in_game = false
+is_modal = true
+
+[node name="Panel" type="PanelContainer" parent="."]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="VBox" type="VBoxContainer" parent="Panel"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="Panel/VBox"]
+layout_mode = 2
+text = "End of Day Summary"
+
+[node name="DayLabel" type="Label" parent="Panel/VBox"]
+layout_mode = 2
+
+[node name="MoneyLabel" type="Label" parent="Panel/VBox"]
+layout_mode = 2
+
+[node name="ShippedRichText" type="RichTextLabel" parent="Panel/VBox"]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+
+[node name="QuestsScroll" type="ScrollContainer" parent="Panel/VBox"]
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="QuestRichText" type="RichTextLabel" parent="Panel/VBox/QuestsScroll"]
+custom_minimum_size = Vector2(50, 20)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+bbcode_enabled = true
+
+[node name="CompletedScroll" type="ScrollContainer" parent="Panel/VBox"]
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="CompletedRichText" type="RichTextLabel" parent="Panel/VBox/CompletedScroll"]
+custom_minimum_size = Vector2(50, 20)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+bbcode_enabled = true
+
+[node name="UnlockedRichText" type="RichTextLabel" parent="Panel/VBox"]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+
+[node name="ContinueButton" type="Button" parent="Panel/VBox"]
+layout_mode = 2
+text = "Continue"

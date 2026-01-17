@@ -219,6 +219,14 @@ func shipping_calculate_payout() -> int:
 	return total
 
 func shipping_payout_and_clear() -> int:
+	# --- Capture shipped items BEFORE we clear the bin ---
+	var shipped_copy: Dictionary = {}
+	for item_name_any in shipping_bin.keys():
+		var item_name := String(item_name_any)
+		var qty := int(shipping_bin[item_name_any])
+		if qty > 0:
+			shipped_copy[item_name] = qty
+
 	# 1) Report shipping for quests FIRST (based on what is actually in the bin overnight)
 	for item_name_any in shipping_bin.keys():
 		var item_name := String(item_name_any)
@@ -230,6 +238,14 @@ func shipping_payout_and_clear() -> int:
 	var payout := shipping_calculate_payout()
 	if payout > 0:
 		MoneySystem.add(payout)
+
+	# --- Finalize yesterday summary BEFORE clearing ---
+	# TimeManager.day has already been incremented in start_new_day(),
+	# so "yesterday" is (TimeManager.day - 1)
+	finalize_yesterday_summary(TimeManager.day, payout, shipped_copy)
+
+	# Prepare tracking for the NEW day
+	reset_today_tracking()
 
 	# 3) Clear the bin
 	shipping_bin.clear()
@@ -290,6 +306,17 @@ var unlocked_travel: Dictionary = {}  # e.g. "animal_keeper" -> true
 
 var pending_spawns: Array[Dictionary] = []
 
+var today_tracking: Dictionary = {
+	"shipped": {},              # item_id -> qty
+	"money_earned": 0,
+	"quests_accepted": [],
+	"quests_completed": [],
+	"areas_unlocked": [],
+	"pass_out": false,
+	"energy_penalty": 0,
+}
+
+var yesterday_summary: Dictionary = {}  # what the overlay displays
 
 func _ready() -> void:
 	reset_energy()
@@ -409,6 +436,12 @@ func add_quest(quest: Dictionary) -> void:
 	if qid == "unlock_animal_keeper":
 		unlock_travel("animal_keeper")
 	
+	var title := String(q.get("title", "Quest"))
+	QuestEvents.toast_requested.emit("New Quest: " + title, "info", 2.5)
+	
+	if qid != "":
+		(today_tracking["quests_accepted"] as Array).append(title)
+	
 	QuestEvents.quest_state_changed.emit()
 
 func complete_quest(quest_id: String) -> void:
@@ -421,6 +454,13 @@ func complete_quest(quest_id: String) -> void:
 	active_quests.erase(quest_id)
 	completed_quests[quest_id] = quest
 	print("Quest completed: ", quest_id)
+	
+	var q: Dictionary = completed_quests.get(quest_id, {})
+	var title := String(q.get("title", "Quest"))
+	
+	(today_tracking["quests_completed"] as Array).append(title)
+	QuestEvents.toast_requested.emit("Quest Completed: " + title, "success", 3.0)
+
 	
 func claim_quest_reward(quest_id: String) -> void:
 	print("[Reward] claim_quest_reward:", quest_id)
@@ -969,6 +1009,14 @@ func is_travel_unlocked(travel_id: String) -> bool:
 
 func unlock_travel(travel_id: String) -> void:
 	unlocked_travel[travel_id] = true
+	
+	(today_tracking["areas_unlocked"] as Array).append(travel_id)
+
+	var msg := "New area unlocked!"
+	if travel_id == "animal_keeper":
+		msg = "New area unlocked: Animal Keeper"
+
+	QuestEvents.toast_requested.emit(msg, "success", 3.0)
 
 func queue_spawn_reward(scene_id: String, prefab_path: String, marker_tag: String) -> void:
 	pending_spawns.append({
@@ -1002,3 +1050,27 @@ func _format_oneshot_fallback(q: Dictionary) -> String:
 			return "Ship: " + target
 		_:
 			return "Objective"
+
+func reset_today_tracking() -> void:
+	today_tracking = {
+		"shipped": {},
+		"money_earned": 0,
+		"quests_accepted": [],
+		"quests_completed": [],
+		"areas_unlocked": [],
+		"pass_out": false,
+		"energy_penalty": 0,
+	}
+
+func finalize_yesterday_summary(new_day: int, payout: int, shipped_copy: Dictionary) -> void:
+	# This summary represents the day that just ended.
+	yesterday_summary = {
+		"day_ended": new_day - 1,
+		"money_earned": payout,
+		"shipped": shipped_copy,
+		"quests_accepted": today_tracking.get("quests_accepted", []),
+		"quests_completed": today_tracking.get("quests_completed", []),
+		"areas_unlocked": today_tracking.get("areas_unlocked", []),
+		"pass_out": today_tracking.get("pass_out", false),
+		"energy_penalty": today_tracking.get("energy_penalty", 0),
+	}
