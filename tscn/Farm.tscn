@@ -1,4 +1,4 @@
-[gd_scene load_steps=54 format=3 uid="uid://6ni01dvcs2m2"]
+[gd_scene load_steps=55 format=3 uid="uid://6ni01dvcs2m2"]
 
 [ext_resource type="Script" uid="uid://cevvm7fnmvrhe" path="res://scripts/Farm.gd" id="1_vobxb"]
 [ext_resource type="PackedScene" uid="uid://b0c10lgb0ivgd" path="res://tscn/WaterSplash.tscn" id="2_66215"]
@@ -45,6 +45,7 @@
 [ext_resource type="Script" uid="uid://dvg0ynlpgst4t" path="res://scripts/WorldSpawn.gd" id="43_3h7oh"]
 [ext_resource type="Script" uid="uid://cx0lg4ua6qvj7" path="res://scripts/RewardSpawner.gd" id="43_6jl04"]
 [ext_resource type="Script" uid="uid://c0wb6p01vhywa" path="res://scripts/RewardSpawnPoint.gd" id="44_6jl04"]
+[ext_resource type="PackedScene" uid="uid://cbaw8nhel818e" path="res://tscn/Bench.tscn" id="46_5apsn"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_hm1ss"]
 texture = ExtResource("3_d13le")
@@ -270,3 +271,11 @@ script = ExtResource("43_6jl04")
 position = Vector2(450, 143)
 script = ExtResource("44_6jl04")
 tag = "cow_pen_spawn"
+
+[node name="Bench" parent="." instance=ExtResource("46_5apsn")]
+position = Vector2(291, 247)
+
+[node name="PassoutSpawn" type="Marker2D" parent="." groups=["spawn_points"]]
+position = Vector2(60, 148)
+script = ExtResource("42_hm1ss")
+tag = "passout_spawn"

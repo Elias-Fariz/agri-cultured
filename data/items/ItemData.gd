@@ -12,3 +12,5 @@ class_name ItemData
 @export var tags: Array[String] = []      # ["animal_product", "food"]
 
 @export var stack_limit: int = 999
+
+@export var energy_restore: int = 0  # 0 = not food, >0 = restores energy when consumed

@@ -1,0 +1,20 @@
+[gd_scene load_steps=4 format=3 uid="uid://cbaw8nhel818e"]
+
+[ext_resource type="Texture2D" uid="uid://bvwrrj2bcxwqh" path="res://art/wood.PNG" id="1_8a8t5"]
+[ext_resource type="Script" uid="uid://cwm3k2uj7jjrj" path="res://scripts/BenchInteract.gd" id="2_k2eof"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_k2eof"]
+
+[node name="Bench" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_8a8t5")
+
+[node name="InteractArea" type="Area2D" parent="." groups=["interactables"]]
+collision_layer = 5
+collision_mask = 3
+script = ExtResource("2_k2eof")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractArea"]
+scale = Vector2(-1.7008085, -1.7008085)
+shape = SubResource("RectangleShape2D_k2eof")

@@ -1,4 +1,4 @@
-[gd_scene load_steps=43 format=3 uid="uid://b7y4cme4an3kb"]
+[gd_scene load_steps=44 format=3 uid="uid://b7y4cme4an3kb"]
 
 [ext_resource type="PackedScene" uid="uid://dv7wem6ftpvdd" path="res://tscn/Player.tscn" id="1_2feps"]
 [ext_resource type="Script" uid="uid://0ofb5xeer5m6" path="res://scripts/Town.gd" id="1_o31te"]
@@ -38,6 +38,7 @@
 [ext_resource type="Script" uid="uid://xl6estd3noyu" path="res://scripts/SceneTravelArea.gd" id="34_ewvrf"]
 [ext_resource type="Script" uid="uid://dxx68q28fdnvv" path="res://scripts/SpawnPoint.gd" id="36_caym6"]
 [ext_resource type="Script" uid="uid://dvg0ynlpgst4t" path="res://scripts/WorldSpawn.gd" id="37_xdkop"]
+[ext_resource type="PackedScene" uid="uid://cbaw8nhel818e" path="res://tscn/Bench.tscn" id="39_ehdlx"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_caym6"]
 
@@ -269,3 +270,6 @@ shape = SubResource("RectangleShape2D_dvr77")
 
 [node name="SpawnManager" type="Node" parent="."]
 script = ExtResource("37_xdkop")
+
+[node name="Bench" parent="." instance=ExtResource("39_ehdlx")]
+position = Vector2(277, 267)

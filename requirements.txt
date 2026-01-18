@@ -36,6 +36,8 @@ Phase 3: Stardew Feel
 * Dynamic Tracker Text *CHECK*
 * Toast Notifications *CHECK*
 * End-of-Day Summary *CHECK*
+* Food and Benches for Energy *CHECK*
+* Passing Out / Next-Day Penalty *CHECK*
 - Save to Disk
 
 Phase 4: Inventory/UI Polish

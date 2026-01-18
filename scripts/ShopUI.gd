@@ -17,6 +17,7 @@ var shop_items: Array = [
 	{ "id": "Watermelon", "name": "Watermelon", "price": 60 },
 	{ "id": "Wood", "name": "Bundle of Wood", "price": 10 },
 	{ "id": "Animal Feed", "name": "All-Purpose Animal Feed", "price": 5 },
+	{ "id": "Apple", "name": "Energizing Apple", "price": 15 },
 ]
 
 # cart[item_id] = count

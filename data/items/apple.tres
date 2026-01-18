@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3 uid="uid://djgq1lqkx7dyj"]
+
+[ext_resource type="Script" uid="uid://dfoyyckymw8co" path="res://data/items/ItemData.gd" id="1_hpaic"]
+
+[resource]
+script = ExtResource("1_hpaic")
+id = "Apple"
+display_name = "Apple"
+sell_price = 10
+description = "Ooh, shiny~"
+energy_restore = 1
+metadata/_custom_type_script = "uid://dfoyyckymw8co"

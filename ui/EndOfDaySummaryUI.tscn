@@ -9,6 +9,7 @@ start_visible_in_game = false
 is_modal = true
 
 [node name="Panel" type="PanelContainer" parent="."]
+visible = false
 offset_right = 40.0
 offset_bottom = 40.0
 

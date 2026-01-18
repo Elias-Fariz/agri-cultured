@@ -12,12 +12,34 @@ extends BaseOverlay
 
 @export var max_listed_items: int = 8
 
+var opened: bool = false
+
 func _ready() -> void:
-	continue_button.pressed.connect(hide_overlay)
+	super._ready()
+	if Engine.is_editor_hint():
+		return
+	continue_button.pressed.connect(_on_continue_pressed)
 
 func show_summary() -> void:
 	_refresh()
-	show_overlay()
+	opened = true
+	super.show_overlay()
+
+func _on_continue_pressed() -> void:
+	# Close the overlay first
+	opened = false
+	super.hide_overlay()
+
+	# Flush on the next frame so the toast isn't "consumed" behind the UI
+	call_deferred("_flush_day_start_toasts_deferred")
+
+func _flush_day_start_toasts_deferred() -> void:
+	# Wait 1 frame to ensure UI is really gone
+	await get_tree().process_frame
+	GameState.flush_day_start_toasts()
+
+func is_open() -> bool:
+	return opened
 
 func _refresh() -> void:
 	var s: Dictionary = GameState.yesterday_summary

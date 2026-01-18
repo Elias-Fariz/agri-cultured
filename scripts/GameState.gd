@@ -39,6 +39,51 @@ func inventory_remove(item_name: String, qty: int = 1) -> bool:
 		inventory[item_name] = new_qty
 	return true
 
+func consume_item(item_id: String) -> bool:
+	item_id = item_id.strip_edges()
+	if item_id == "":
+		return false
+
+	# Must have item
+	if not inventory_has(item_id, 1):
+		return false
+
+	# Look up ItemData
+	var data = null
+	if ItemDb != null and ItemDb.has_method("get_item"):
+		data = ItemDb.get_item(item_id)
+
+	if data == null:
+		print("consume_item: No ItemData found for:", item_id)
+		return false
+
+	# Must be edible
+	var restore := int(data.energy_restore)
+	if restore <= 0:
+		return false
+
+	# If already full, don't waste it (feels nicer)
+	if energy >= max_energy:
+		return false
+
+	var before := energy
+	energy = min(max_energy, energy + restore)
+
+	# If no change, do not consume
+	if energy == before:
+		return false
+
+	# Consume one
+	var removed := inventory_remove(item_id, 1)
+	if not removed:
+		return false
+
+	# Optional toast (only if you have it)
+	if QuestEvents != null and QuestEvents.has_signal("toast_requested"):
+		QuestEvents.toast_requested.emit("+" + str(restore) + " Energy")
+
+	return true
+
 # --- Shipping / Sell Box global state ---
 var shipping_bin: Dictionary = {}  # { "Wood": 5, "Watermelon": 2 }
 
@@ -317,6 +362,12 @@ var today_tracking: Dictionary = {
 }
 
 var yesterday_summary: Dictionary = {}  # what the overlay displays
+
+var _rested_block_by_id: Dictionary = {}  # rest_id -> "day:morning" etc.
+
+@export var farm_scene_path: String = "res://tscn/Farm.tscn"
+@export var passout_spawn_tag: String = "passout_spawn"
+var _day_start_toast_queue: Array[Dictionary] = []
 
 func _ready() -> void:
 	reset_energy()
@@ -1074,3 +1125,87 @@ func finalize_yesterday_summary(new_day: int, payout: int, shipped_copy: Diction
 		"pass_out": today_tracking.get("pass_out", false),
 		"energy_penalty": today_tracking.get("energy_penalty", 0),
 	}
+
+func _current_time_block_stamp() -> String:
+	# Same idea as your talk block stamp: day + timeblock key
+	var block_key := TimeManager.get_time_block_key(TimeManager.minutes)
+	return str(TimeManager.day) + ":" + block_key
+
+
+func can_rest_at(rest_id: String) -> bool:
+	if rest_id.strip_edges() == "":
+		return false
+	var stamp := _current_time_block_stamp()
+	return String(_rested_block_by_id.get(rest_id, "")) != stamp
+
+func mark_rested_at(rest_id: String) -> void:
+	if rest_id.strip_edges() == "":
+		return
+	_rested_block_by_id[rest_id] = _current_time_block_stamp()
+
+func apply_passout_penalty() -> void:
+	# Half energy next day
+	energy = int(floor(max_energy * 0.5))
+	if energy < 1:
+		energy = 1
+
+	# Being passed out shouldn't permanently lock you
+	exhausted = false
+
+func warp_to_farm_after_passout() -> void:
+	# If you don’t want warping yet, just return here.
+	# return
+
+	if farm_scene_path.strip_edges() == "":
+		return
+
+	# Use your existing spawn-tag system
+	pending_spawn_tag = passout_spawn_tag
+
+	var tree := get_tree()
+	if tree != null:
+		tree.change_scene_to_file(farm_scene_path)
+
+func request_end_of_day_summary() -> void:
+	# Defer so it works even if we're in the middle of a scene change.
+	call_deferred("_show_end_of_day_summary_deferred")
+
+
+func _show_end_of_day_summary_deferred() -> void:
+	# Wait 1–2 frames so the new scene + HUD overlays are fully in the tree.
+	await get_tree().process_frame
+	await get_tree().process_frame
+
+	var ui := get_tree().get_first_node_in_group("end_of_day_ui")
+	if ui != null and ui.has_method("show_overlay"):
+		ui.show_summary()
+
+func queue_day_start_toast(msg: String, kind: String = "warning", duration: float = 3.0) -> void:
+	if msg.strip_edges() == "":
+		return
+	_day_start_toast_queue.append({
+		"msg": msg,
+		"kind": kind,
+		"duration": duration
+	})
+
+func flush_day_start_toasts() -> void:
+	if _day_start_toast_queue.is_empty():
+		return
+
+	var eod := get_tree().get_first_node_in_group("end_of_day_ui")
+	if eod != null and eod.has_method("is_open") and bool(eod.call("is_open")):
+		# Summary is open — try again later
+		call_deferred("flush_day_start_toasts")
+		return
+
+	# Emit all queued day-start toasts
+	for t in _day_start_toast_queue:
+		var msg := String(t.get("msg", ""))
+		var kind := String(t.get("kind", "info"))
+		var duration := float(t.get("duration", 2.5))
+
+		if QuestEvents != null and QuestEvents.has_signal("toast_requested"):
+			QuestEvents.toast_requested.emit(msg, kind, duration)
+
+	_day_start_toast_queue.clear()

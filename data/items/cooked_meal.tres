@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3 uid="uid://bbu2l8xqdepqy"]
+
+[ext_resource type="Script" uid="uid://dfoyyckymw8co" path="res://data/items/ItemData.gd" id="1_ibl6v"]
+
+[resource]
+script = ExtResource("1_ibl6v")
+id = "Cooked Meal"
+display_name = "Cooked Meal"
+sell_price = 25
+description = "Your generic end-of-day dinner"
+energy_restore = 4
+metadata/_custom_type_script = "uid://dfoyyckymw8co"
