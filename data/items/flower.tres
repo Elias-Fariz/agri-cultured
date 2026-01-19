@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3 uid="uid://bjqx78wfthj2n"]
+
+[ext_resource type="Script" uid="uid://dfoyyckymw8co" path="res://data/items/ItemData.gd" id="1_0aqxk"]
+
+[resource]
+script = ExtResource("1_0aqxk")
+id = "Flower"
+display_name = "Flower"
+sell_price = 5
+description = "She loves me, she loves me not"
+metadata/_custom_type_script = "uid://dfoyyckymw8co"

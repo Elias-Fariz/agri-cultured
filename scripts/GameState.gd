@@ -369,6 +369,48 @@ var _rested_block_by_id: Dictionary = {}  # rest_id -> "day:morning" etc.
 @export var passout_spawn_tag: String = "passout_spawn"
 var _day_start_toast_queue: Array[Dictionary] = []
 
+# --- World pickup persistence (per-day) ---
+var _picked_up_day_by_id: Dictionary = {}  # pickup_id -> int day number
+
+func mark_pickup_collected(pickup_id: String) -> void:
+	if pickup_id.strip_edges() == "":
+		return
+	_picked_up_day_by_id[pickup_id] = int(TimeManager.day)
+
+func was_pickup_collected_today(pickup_id: String) -> bool:
+	if pickup_id.strip_edges() == "":
+		return false
+	var d := int(_picked_up_day_by_id.get(pickup_id, -1))
+	return d == int(TimeManager.day)
+
+# Optional: you can call this at day start if you ever want to clean old entries
+func cleanup_old_pickup_records(keep_days: int = 7) -> void:
+	var today := int(TimeManager.day)
+	for k in _picked_up_day_by_id.keys():
+		var d := int(_picked_up_day_by_id.get(k, -999999))
+		if today - d > keep_days:
+			_picked_up_day_by_id.erase(k)
+			
+# --- Crafting recipe unlocks ---
+var unlocked_recipes: Dictionary = {}  # recipe_id -> true
+
+func unlock_recipe(recipe_id: String) -> void:
+	if recipe_id.strip_edges() == "":
+		return
+	unlocked_recipes[recipe_id] = true
+	print("Unlocked: " + recipe_id)
+
+func get_unlocked_recipe_ids() -> Dictionary:
+	# Return dictionary so we can do unlocked.has(id)
+	return unlocked_recipes
+
+# --- Small toast helper (uses your existing toast system) ---
+func toast_info(msg: String, duration: float = 2.0) -> void:
+	if msg.strip_edges() == "":
+		return
+	if QuestEvents != null and QuestEvents.has_signal("toast_requested"):
+		QuestEvents.toast_requested.emit(msg, "info", duration)
+
 func _ready() -> void:
 	reset_energy()
 	current_tool = starting_tool
@@ -386,6 +428,10 @@ func _ready() -> void:
 	var tm := get_node_or_null("/root/TimeManager")
 	if tm:
 		tm.day_changed.connect(_on_day_changed)
+	
+	unlock_recipe("shell_necklace")
+	unlock_recipe("flower_headband")
+
 
 func cycle_tool_next() -> void:
 	current_tool = (int(current_tool) + 1) % TOOL_COUNT

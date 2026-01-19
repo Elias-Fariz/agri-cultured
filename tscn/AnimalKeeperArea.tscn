@@ -1,4 +1,4 @@
-[gd_scene load_steps=39 format=3 uid="uid://dcq7dmqwwrac8"]
+[gd_scene load_steps=41 format=3 uid="uid://dcq7dmqwwrac8"]
 
 [ext_resource type="TileSet" uid="uid://bqs5ruk6pejpc" path="res://tiles/GroundTileset.tres" id="1_a8y6s"]
 [ext_resource type="Texture2D" uid="uid://caerjv5h3fdyv" path="res://art/tree.png" id="2_vnc70"]
@@ -21,6 +21,7 @@
 [ext_resource type="PackedScene" uid="uid://ci8kga43aovsx" path="res://ui/DayNightOverlay.tscn" id="16_22afs"]
 [ext_resource type="Script" uid="uid://d2qqt57kupo3n" path="res://scripts/AnimalKeeperGate.gd" id="18_1ihrq"]
 [ext_resource type="PackedScene" uid="uid://dfcn8oje3hko1" path="res://ui/EndOfDaySummaryUI.tscn" id="18_3mm4q"]
+[ext_resource type="PackedScene" uid="uid://c48msaiodeqan" path="res://ui/CraftingUI.tscn" id="19_0hb3f"]
 [ext_resource type="Script" uid="uid://b7n4wv6k3k33k" path="res://scripts/QuestLocation.gd" id="19_jornh"]
 [ext_resource type="Script" uid="uid://dwtg0fdx0i363" path="res://scripts/AreaAudio.gd" id="23_d3sab"]
 [ext_resource type="AudioStream" uid="uid://c0vxwp7d85xq8" path="res://audio/ambience/life/sfx_bird_01.WAV" id="24_ko6g4"]
@@ -31,6 +32,7 @@
 [ext_resource type="AudioStream" uid="uid://bd7fsofv05h57" path="res://audio/ambience/life/sfx_leaves_02.WAV" id="28_jtagl"]
 [ext_resource type="AudioStream" uid="uid://ddtmvpbosnor5" path="res://audio/ambience/life/sfx_murmur_01.WAV" id="29_hqvdf"]
 [ext_resource type="AudioStream" uid="uid://co4coq6x4nty5" path="res://audio/ambience/life/sfx_murmur_02.WAV" id="30_b3m5l"]
+[ext_resource type="PackedScene" uid="uid://cfyepca1wp5kc" path="res://tscn/Flower.tscn" id="32_th51b"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_3mm4q"]
 texture = ExtResource("2_vnc70")
@@ -185,6 +187,8 @@ position = Vector2(1598, 972)
 
 [node name="EndOfDaySummaryUI" parent="." instance=ExtResource("18_3mm4q")]
 
+[node name="CraftingUI" parent="." instance=ExtResource("19_0hb3f")]
+
 [node name="DayNightOverlay" parent="." instance=ExtResource("16_22afs")]
 
 [node name="SpawnManager" type="Node" parent="."]
@@ -220,3 +224,15 @@ volume_db = 24.0
 
 [node name="LifeTimer" type="Timer" parent="KeeperAudio"]
 one_shot = true
+
+[node name="Flower" parent="." instance=ExtResource("32_th51b")]
+position = Vector2(236, 200)
+pickup_id = "flower_01"
+
+[node name="Flower2" parent="." instance=ExtResource("32_th51b")]
+position = Vector2(73, 155)
+pickup_id = "flower_02"
+
+[node name="Flower3" parent="." instance=ExtResource("32_th51b")]
+position = Vector2(161, 97)
+pickup_id = "flower_03"

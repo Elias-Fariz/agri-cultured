@@ -1,0 +1,17 @@
+[gd_scene load_steps=4 format=3 uid="uid://cfyepca1wp5kc"]
+
+[ext_resource type="Script" uid="uid://cmvxcx8kgn0ds" path="res://scripts/ItemPickup.gd" id="1_4ybhg"]
+[ext_resource type="Texture2D" uid="uid://418yhr48janp" path="res://art/flower.png" id="1_wjg4c"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4ybhg"]
+
+[node name="Flower" type="Area2D"]
+script = ExtResource("1_4ybhg")
+item_id = "Flower"
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_wjg4c")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+scale = Vector2(1.6437682, 1.6437682)
+shape = SubResource("RectangleShape2D_4ybhg")

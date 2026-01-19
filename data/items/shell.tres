@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3 uid="uid://8tgaoilefipn"]
+
+[ext_resource type="Script" uid="uid://dfoyyckymw8co" path="res://data/items/ItemData.gd" id="1_b1wrb"]
+
+[resource]
+script = ExtResource("1_b1wrb")
+id = "Shell"
+display_name = "Shell"
+sell_price = 5
+description = "Sally sells sea shells on the seashore"
+metadata/_custom_type_script = "uid://dfoyyckymw8co"

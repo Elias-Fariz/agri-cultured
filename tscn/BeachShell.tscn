@@ -1,0 +1,16 @@
+[gd_scene load_steps=4 format=3 uid="uid://7rmls8hs1gyd"]
+
+[ext_resource type="Script" uid="uid://cmvxcx8kgn0ds" path="res://scripts/ItemPickup.gd" id="1_8cxbi"]
+[ext_resource type="Texture2D" uid="uid://dpix31klgunjt" path="res://art/shell.png" id="1_mvafl"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_8cxbi"]
+
+[node name="BeachShell" type="Area2D"]
+script = ExtResource("1_8cxbi")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_mvafl")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+scale = Vector2(-1.8040388, -1.8040388)
+shape = SubResource("RectangleShape2D_8cxbi")

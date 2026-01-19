@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3 uid="uid://li5jklot85ik"]
+
+[ext_resource type="Script" uid="uid://dfoyyckymw8co" path="res://data/items/ItemData.gd" id="1_hgrcm"]
+
+[resource]
+script = ExtResource("1_hgrcm")
+id = "Flower Headband"
+display_name = "Flower Headband"
+sell_price = 50
+description = "A floral headpiece with the smell of morning sunshine"
+metadata/_custom_type_script = "uid://dfoyyckymw8co"

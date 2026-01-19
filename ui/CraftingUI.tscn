@@ -1,0 +1,63 @@
+[gd_scene load_steps=5 format=3 uid="uid://c48msaiodeqan"]
+
+[ext_resource type="Script" uid="uid://rxico8wq2kyv" path="res://scripts/CraftingUI.gd" id="1_rgtvg"]
+[ext_resource type="Script" uid="uid://op5n7gi3ylir" path="res://scripts/CraftingRecipeData.gd" id="2_g16mu"]
+[ext_resource type="Resource" uid="uid://m1rx1kppqsff" path="res://data/recipes/flower_headband.tres" id="3_kvwqq"]
+[ext_resource type="Resource" uid="uid://djri5k6qddgmm" path="res://data/recipes/shell_necklace.tres" id="4_yl738"]
+
+[node name="CraftingUI" type="CanvasLayer" groups=["crafting_ui"]]
+script = ExtResource("1_rgtvg")
+recipes = Array[ExtResource("2_g16mu")]([ExtResource("3_kvwqq"), ExtResource("4_yl738")])
+visual_node_path = NodePath("Panel")
+start_visible_in_game = false
+is_modal = true
+
+[node name="Panel" type="Panel" parent="."]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="Panel"]
+custom_minimum_size = Vector2(600, 600)
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="TitleLabel" type="Label" parent="Panel/VBox"]
+layout_mode = 2
+
+[node name="Content" type="HBoxContainer" parent="Panel/VBox"]
+layout_mode = 2
+
+[node name="RecipesList" type="ItemList" parent="Panel/VBox/Content"]
+custom_minimum_size = Vector2(50, 600)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Right" type="VBoxContainer" parent="Panel/VBox/Content"]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="SelectedTitle" type="Label" parent="Panel/VBox/Content/Right"]
+layout_mode = 2
+
+[node name="SelectedDesc" type="RichTextLabel" parent="Panel/VBox/Content/Right"]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Requirements" type="RichTextLabel" parent="Panel/VBox/Content/Right"]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="CraftButton" type="Button" parent="Panel/VBox/Content/Right"]
+layout_mode = 2
+text = "Craft"
+
+[node name="HintLabel" type="Label" parent="Panel/VBox"]
+layout_mode = 2

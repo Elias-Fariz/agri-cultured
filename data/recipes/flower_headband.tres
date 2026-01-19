@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="CraftingRecipeData" load_steps=2 format=3 uid="uid://m1rx1kppqsff"]
+
+[ext_resource type="Script" uid="uid://op5n7gi3ylir" path="res://scripts/CraftingRecipeData.gd" id="1_jqsml"]
+
+[resource]
+script = ExtResource("1_jqsml")
+id = "flower_headband"
+display_name = "Flower Headband"
+requires = {
+"Flower": 5
+}
+output_item_id = "Flower Headband"
+description = "A floral headpiece with the smell of morning sunshine"
+metadata/_custom_type_script = "uid://op5n7gi3ylir"

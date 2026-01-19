@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3 uid="uid://bchy5dvqpcjle"]
+
+[ext_resource type="Script" uid="uid://dfoyyckymw8co" path="res://data/items/ItemData.gd" id="1_6mguy"]
+
+[resource]
+script = ExtResource("1_6mguy")
+id = "Shell Necklace"
+display_name = "Shell Necklace"
+sell_price = 30
+description = "A cute handmade necklace from beach shells"
+metadata/_custom_type_script = "uid://dfoyyckymw8co"

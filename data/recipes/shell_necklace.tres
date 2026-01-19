@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="CraftingRecipeData" load_steps=2 format=3 uid="uid://djri5k6qddgmm"]
+
+[ext_resource type="Script" uid="uid://op5n7gi3ylir" path="res://scripts/CraftingRecipeData.gd" id="1_2665k"]
+
+[resource]
+script = ExtResource("1_2665k")
+id = "shell_necklace"
+display_name = "Shell Necklace"
+requires = {
+"Shell": 3
+}
+output_item_id = "Shell Necklace"
+description = "A cute handmade necklace from beach shells"
+metadata/_custom_type_script = "uid://op5n7gi3ylir"

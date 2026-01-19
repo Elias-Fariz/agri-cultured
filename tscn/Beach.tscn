@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=3 uid="uid://6xr8sk7sok3p"]
+[gd_scene load_steps=28 format=3 uid="uid://6xr8sk7sok3p"]
 
 [ext_resource type="TileSet" uid="uid://bqs5ruk6pejpc" path="res://tiles/GroundTileset.tres" id="1_xg4aa"]
 [ext_resource type="Script" uid="uid://xl6estd3noyu" path="res://scripts/SceneTravelArea.gd" id="2_77khv"]
@@ -22,8 +22,10 @@
 [ext_resource type="PackedScene" uid="uid://ci8kga43aovsx" path="res://ui/DayNightOverlay.tscn" id="13_nxqwr"]
 [ext_resource type="AudioStream" uid="uid://co4coq6x4nty5" path="res://audio/ambience/life/sfx_murmur_02.WAV" id="13_wdy64"]
 [ext_resource type="Script" uid="uid://dvg0ynlpgst4t" path="res://scripts/WorldSpawn.gd" id="14_6qd0e"]
+[ext_resource type="PackedScene" uid="uid://c48msaiodeqan" path="res://ui/CraftingUI.tscn" id="14_7sna2"]
 [ext_resource type="PackedScene" uid="uid://cbaw8nhel818e" path="res://tscn/Bench.tscn" id="15_4vvm7"]
 [ext_resource type="Script" uid="uid://dwtg0fdx0i363" path="res://scripts/AreaAudio.gd" id="16_om0ow"]
+[ext_resource type="PackedScene" uid="uid://7rmls8hs1gyd" path="res://tscn/BeachShell.tscn" id="25_xcr3t"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_vnqom"]
 
@@ -83,6 +85,8 @@ position = Vector2(332, 129)
 
 [node name="DayNightOverlay" parent="." instance=ExtResource("13_nxqwr")]
 
+[node name="CraftingUI" parent="." instance=ExtResource("14_7sna2")]
+
 [node name="SpawnManager" type="Node" parent="."]
 script = ExtResource("14_6qd0e")
 
@@ -106,3 +110,15 @@ volume_db = 24.0
 
 [node name="LifeTimer" type="Timer" parent="BeachAudio"]
 one_shot = true
+
+[node name="BeachShell" parent="." instance=ExtResource("25_xcr3t")]
+position = Vector2(81, 200)
+pickup_id = "beach_shell_01"
+
+[node name="BeachShell2" parent="." instance=ExtResource("25_xcr3t")]
+position = Vector2(151, 232)
+pickup_id = "beach_shell_02"
+
+[node name="BeachShell3" parent="." instance=ExtResource("25_xcr3t")]
+position = Vector2(159, 162)
+pickup_id = "beach_shell_03"

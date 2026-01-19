@@ -1,4 +1,4 @@
-[gd_scene load_steps=55 format=3 uid="uid://6ni01dvcs2m2"]
+[gd_scene load_steps=56 format=3 uid="uid://6ni01dvcs2m2"]
 
 [ext_resource type="Script" uid="uid://cevvm7fnmvrhe" path="res://scripts/Farm.gd" id="1_vobxb"]
 [ext_resource type="PackedScene" uid="uid://b0c10lgb0ivgd" path="res://tscn/WaterSplash.tscn" id="2_66215"]
@@ -41,6 +41,7 @@
 [ext_resource type="PackedScene" uid="uid://qxjawwee60n1" path="res://ui/QuestMenuUI.tscn" id="38_7ea1u"]
 [ext_resource type="Script" uid="uid://b7n4wv6k3k33k" path="res://scripts/QuestLocation.gd" id="38_wdtkt"]
 [ext_resource type="PackedScene" uid="uid://cde8sgn45urws" path="res://ui/HelpOverlay.tscn" id="39_kcrpu"]
+[ext_resource type="PackedScene" uid="uid://c48msaiodeqan" path="res://ui/CraftingUI.tscn" id="41_gww3b"]
 [ext_resource type="Script" uid="uid://dxx68q28fdnvv" path="res://scripts/SpawnPoint.gd" id="42_hm1ss"]
 [ext_resource type="Script" uid="uid://dvg0ynlpgst4t" path="res://scripts/WorldSpawn.gd" id="43_3h7oh"]
 [ext_resource type="Script" uid="uid://cx0lg4ua6qvj7" path="res://scripts/RewardSpawner.gd" id="43_6jl04"]
@@ -247,6 +248,8 @@ one_shot = true
 autostart = true
 
 [node name="QuestMenuUI" parent="." instance=ExtResource("38_7ea1u")]
+
+[node name="CraftingUI" parent="." instance=ExtResource("41_gww3b")]
 
 [node name="HelpOverlay" parent="." instance=ExtResource("39_kcrpu")]
 
