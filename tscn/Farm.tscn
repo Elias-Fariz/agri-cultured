@@ -142,7 +142,7 @@ shape = SubResource("RectangleShape2D_og6c6")
 position = Vector2(400, 131)
 script = ExtResource("29_f2th2")
 target_scene_path = "res://tscn/Town.tscn"
-spawn_tag = "from_farm"
+target_spawn_tag = "from_farm"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="TravelPoints/ToTown"]
 shape = SubResource("RectangleShape2D_k5exi")
@@ -154,11 +154,9 @@ texture = ExtResource("6_mre8b")
 position = Vector2(53, 241)
 collision_mask = 3
 script = ExtResource("29_f2th2")
-target_scene_path = "uid://dcq7dmqwwrac8"
-spawn_tag = "from_farm"
-requires_travel_unlock = true
-travel_unlock_id = "animal_keeper"
-locked_prompt_text = "Locked (Check Town Board)"
+target_scene_path = "res://tscn/AnimalKeeperArea.tscn"
+target_spawn_tag = "from_farm"
+required_completed_quests = Array[String](["tutorial_day1"])
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="TravelPoints/ToAnimalKeeperArea"]
 shape = SubResource("RectangleShape2D_k5exi")

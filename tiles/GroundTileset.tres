@@ -11,6 +11,10 @@ texture_region_size = Vector2i(32, 32)
 2:0/0 = 0
 3:0/0 = 0
 3:0/0/custom_data_0 = "stone"
+4:0/0 = 0
+4:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
+5:0/0 = 0
+5:0/0/custom_data_0 = "sand"
 
 [resource]
 tile_size = Vector2i(32, 32)

@@ -67,7 +67,7 @@ func _ready() -> void:
 	# Ensure the sensor starts in front of the player (down by default)
 	_update_sensor_position()
 	indicator.set_direction(facing)
-	_apply_camera_bounds_if_present()
+	call_deferred("_apply_camera_bounds_if_present")
 	_target_zoom = cam.zoom.x
 	shake_offset.position = Vector2.ZERO
 
@@ -157,7 +157,15 @@ func _try_interact() -> void:
 func _apply_camera_bounds_if_present() -> void:
 	# Looks for a Node2D called "CameraBounds" in the current scene,
 	# with Marker2D children "TopLeft" and "BottomRight".
-	var scene_root := get_tree().current_scene
+	# If we're not inside the tree yet (or we're being removed), don't do anything.
+	if not is_inside_tree():
+		return
+
+	var tree := get_tree()
+	if tree == null:
+		return
+
+	var scene_root := tree.current_scene
 	if scene_root == null:
 		return
 

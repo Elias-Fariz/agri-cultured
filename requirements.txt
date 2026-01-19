@@ -38,6 +38,8 @@ Phase 3: Stardew Feel
 * End-of-Day Summary *CHECK*
 * Food and Benches for Energy *CHECK*
 * Passing Out / Next-Day Penalty *CHECK*
+* Generalized Audio Players *CHECK*
+* Beach *GETTING DONE*
 - Save to Disk
 
 Phase 4: Inventory/UI Polish

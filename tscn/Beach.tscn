@@ -1,0 +1,108 @@
+[gd_scene load_steps=26 format=3 uid="uid://6xr8sk7sok3p"]
+
+[ext_resource type="TileSet" uid="uid://bqs5ruk6pejpc" path="res://tiles/GroundTileset.tres" id="1_xg4aa"]
+[ext_resource type="Script" uid="uid://xl6estd3noyu" path="res://scripts/SceneTravelArea.gd" id="2_77khv"]
+[ext_resource type="Texture2D" uid="uid://bq8o1e8mbe7qm" path="res://art/door.PNG" id="3_udil2"]
+[ext_resource type="Script" uid="uid://dxx68q28fdnvv" path="res://scripts/SpawnPoint.gd" id="4_sjhdg"]
+[ext_resource type="AudioStream" uid="uid://d28bo8p77va8y" path="res://audio/ambience/amb_farm_wind.WAV" id="5_8ebig"]
+[ext_resource type="PackedScene" uid="uid://dv7wem6ftpvdd" path="res://tscn/Player.tscn" id="5_udil2"]
+[ext_resource type="PackedScene" uid="uid://ded2abuo15uwh" path="res://ui/DialogueUI.tscn" id="6_8ebig"]
+[ext_resource type="AudioStream" uid="uid://c0vxwp7d85xq8" path="res://audio/ambience/life/sfx_bird_01.WAV" id="7_4vvm7"]
+[ext_resource type="PackedScene" uid="uid://qxjawwee60n1" path="res://ui/QuestMenuUI.tscn" id="7_6qd0e"]
+[ext_resource type="PackedScene" uid="uid://dk1aaefcs7nwf" path="res://ui/QuestBoardUI.tscn" id="8_4vvm7"]
+[ext_resource type="AudioStream" uid="uid://dby2jcrvk4ssy" path="res://audio/ambience/life/sfx_bird_02.WAV" id="8_om0ow"]
+[ext_resource type="PackedScene" uid="uid://dtrn2d385g5ul" path="res://ui/InventoryUI.tscn" id="9_om0ow"]
+[ext_resource type="AudioStream" uid="uid://b4kphj6d0xlxg" path="res://audio/ambience/life/sfx_bird_03.WAV" id="9_xl85j"]
+[ext_resource type="AudioStream" uid="uid://cvxhlbrm7hew0" path="res://audio/ambience/life/sfx_leaves_01.WAV" id="10_1wqoc"]
+[ext_resource type="PackedScene" uid="uid://cde8sgn45urws" path="res://ui/HelpOverlay.tscn" id="10_xl85j"]
+[ext_resource type="PackedScene" uid="uid://d1qqa5bygrbsp" path="res://ui/HUD.tscn" id="11_1wqoc"]
+[ext_resource type="AudioStream" uid="uid://bd7fsofv05h57" path="res://audio/ambience/life/sfx_leaves_02.WAV" id="11_adidw"]
+[ext_resource type="PackedScene" uid="uid://dfcn8oje3hko1" path="res://ui/EndOfDaySummaryUI.tscn" id="12_adidw"]
+[ext_resource type="AudioStream" uid="uid://ddtmvpbosnor5" path="res://audio/ambience/life/sfx_murmur_01.WAV" id="12_nxqwr"]
+[ext_resource type="PackedScene" uid="uid://ci8kga43aovsx" path="res://ui/DayNightOverlay.tscn" id="13_nxqwr"]
+[ext_resource type="AudioStream" uid="uid://co4coq6x4nty5" path="res://audio/ambience/life/sfx_murmur_02.WAV" id="13_wdy64"]
+[ext_resource type="Script" uid="uid://dvg0ynlpgst4t" path="res://scripts/WorldSpawn.gd" id="14_6qd0e"]
+[ext_resource type="PackedScene" uid="uid://cbaw8nhel818e" path="res://tscn/Bench.tscn" id="15_4vvm7"]
+[ext_resource type="Script" uid="uid://dwtg0fdx0i363" path="res://scripts/AreaAudio.gd" id="16_om0ow"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_vnqom"]
+
+[node name="Beach" type="Node2D"]
+
+[node name="TileMaps" type="Node2D" parent="."]
+
+[node name="Ground" type="TileMap" parent="TileMaps" groups=["footstep_ground"]]
+tile_set = ExtResource("1_xg4aa")
+format = 2
+layer_0/tile_data = PackedInt32Array(65537, 327680, 0, 65538, 327680, 0, 65539, 327680, 0, 65540, 327680, 0, 65541, 327680, 0, 65542, 327680, 0, 65543, 327680, 0, 65544, 327680, 0, 65545, 327680, 0, 65546, 327680, 0, 65547, 327680, 0, 65548, 327680, 0, 65549, 327680, 0, 131085, 327680, 0, 131086, 327680, 0, 131084, 327680, 0, 131083, 327680, 0, 65550, 327680, 0, 196622, 327680, 0, 262158, 327680, 0, 327694, 262144, 0, 393230, 262144, 0, 458766, 262144, 0, 524302, 262144, 0, 524301, 262144, 0, 524300, 262144, 0, 524299, 262144, 0, 524298, 262144, 0, 524297, 262144, 0, 524296, 262144, 0, 524295, 262144, 0, 524294, 262144, 0, 524293, 262144, 0, 524292, 262144, 0, 524291, 262144, 0, 524290, 262144, 0, 458753, 327680, 0, 393217, 327680, 0, 327681, 327680, 0, 262145, 327680, 0, 196609, 327680, 0, 131073, 327680, 0, 131074, 327680, 0, 131075, 327680, 0, 131076, 327680, 0, 131077, 327680, 0, 131078, 327680, 0, 131079, 327680, 0, 131080, 327680, 0, 131081, 327680, 0, 131082, 327680, 0, 196620, 327680, 0, 196621, 327680, 0, 262156, 327680, 0, 262155, 327680, 0, 262154, 327680, 0, 262153, 327680, 0, 196617, 327680, 0, 196616, 327680, 0, 196615, 327680, 0, 196614, 327680, 0, 196613, 327680, 0, 196612, 327680, 0, 196611, 327680, 0, 262147, 327680, 0, 262146, 327680, 0, 327682, 327680, 0, 327683, 327680, 0, 262148, 327680, 0, 196610, 327680, 0, 393218, 327680, 0, 458754, 327680, 0, 458755, 327680, 0, 458756, 327680, 0, 458757, 327680, 0, 458758, 327680, 0, 458759, 327680, 0, 458760, 262144, 0, 458761, 262144, 0, 458762, 262144, 0, 458763, 262144, 0, 458764, 262144, 0, 458765, 262144, 0, 393229, 262144, 0, 393228, 327680, 0, 393227, 327680, 0, 393226, 327680, 0, 393225, 327680, 0, 393224, 327680, 0, 393223, 327680, 0, 393222, 327680, 0, 393221, 327680, 0, 393220, 327680, 0, 393219, 327680, 0, 327684, 327680, 0, 327685, 327680, 0, 327686, 327680, 0, 327687, 327680, 0, 327688, 327680, 0, 327689, 327680, 0, 327690, 327680, 0, 327691, 327680, 0, 327692, 327680, 0, 262157, 327680, 0, 327693, 327680, 0, 196619, 327680, 0, 196618, 327680, 0, 262151, 327680, 0, 262150, 327680, 0, 262149, 327680, 0, 262152, 327680, 0, 589825, 262144, 0, 589826, 262144, 0, 589827, 262144, 0, 589828, 262144, 0, 589829, 262144, 0, 589830, 262144, 0, 589831, 262144, 0, 589832, 262144, 0, 589833, 262144, 0, 589834, 262144, 0, 589835, 262144, 0, 589836, 262144, 0, 589837, 262144, 0, 589838, 262144, 0, 524289, 262144, 0)
+
+[node name="TravelPoints" type="Node2D" parent="."]
+
+[node name="ToAnimalKeeper" type="Area2D" parent="TravelPoints"]
+position = Vector2(137, 58)
+collision_mask = 3
+script = ExtResource("2_77khv")
+target_scene_path = "res://tscn/AnimalKeeperArea.tscn"
+target_spawn_tag = "from_beach"
+
+[node name="Sprite2D" type="Sprite2D" parent="TravelPoints/ToAnimalKeeper"]
+texture = ExtResource("3_udil2")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TravelPoints/ToAnimalKeeper"]
+shape = SubResource("RectangleShape2D_vnqom")
+
+[node name="SpawnFromKeeper" type="Marker2D" parent="TravelPoints" groups=["spawn_points"]]
+position = Vector2(98, 79)
+script = ExtResource("4_sjhdg")
+tag = "from_keeper"
+
+[node name="CameraBounds" type="Node2D" parent="."]
+
+[node name="TopLeft" type="Marker2D" parent="CameraBounds"]
+position = Vector2(-593, -373)
+
+[node name="BottomRight" type="Marker2D" parent="CameraBounds"]
+position = Vector2(1598, 972)
+
+[node name="Player" parent="." instance=ExtResource("5_udil2")]
+position = Vector2(332, 129)
+
+[node name="DialogueUI" parent="." instance=ExtResource("6_8ebig")]
+
+[node name="QuestMenuUI" parent="." instance=ExtResource("7_6qd0e")]
+
+[node name="QuestBoardUI" parent="." instance=ExtResource("8_4vvm7")]
+
+[node name="InventoryUI" parent="." instance=ExtResource("9_om0ow")]
+
+[node name="HelpOverlay" parent="." instance=ExtResource("10_xl85j")]
+
+[node name="HUD" parent="." instance=ExtResource("11_1wqoc")]
+
+[node name="EndOfDaySummaryUI" parent="." instance=ExtResource("12_adidw")]
+
+[node name="DayNightOverlay" parent="." instance=ExtResource("13_nxqwr")]
+
+[node name="SpawnManager" type="Node" parent="."]
+script = ExtResource("14_6qd0e")
+
+[node name="Bench" parent="." instance=ExtResource("15_4vvm7")]
+position = Vector2(260, 68)
+
+[node name="BeachAudio" type="Node" parent="."]
+script = ExtResource("16_om0ow")
+ambience_path = NodePath("Ambience")
+life_path = NodePath("Life")
+life_timer_path = NodePath("LifeTimer")
+life_pool_a = Array[AudioStream]([ExtResource("7_4vvm7"), ExtResource("8_om0ow"), ExtResource("9_xl85j")])
+life_pool_b = Array[AudioStream]([ExtResource("10_1wqoc"), ExtResource("11_adidw")])
+life_pool_c = Array[AudioStream]([ExtResource("12_nxqwr"), ExtResource("13_wdy64")])
+
+[node name="Ambience" type="AudioStreamPlayer2D" parent="BeachAudio"]
+stream = ExtResource("5_8ebig")
+
+[node name="Life" type="AudioStreamPlayer2D" parent="BeachAudio"]
+volume_db = 24.0
+
+[node name="LifeTimer" type="Timer" parent="BeachAudio"]
+one_shot = true

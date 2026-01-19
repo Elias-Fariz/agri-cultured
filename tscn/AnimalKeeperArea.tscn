@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=3 uid="uid://dcq7dmqwwrac8"]
+[gd_scene load_steps=39 format=3 uid="uid://dcq7dmqwwrac8"]
 
 [ext_resource type="TileSet" uid="uid://bqs5ruk6pejpc" path="res://tiles/GroundTileset.tres" id="1_a8y6s"]
 [ext_resource type="Texture2D" uid="uid://caerjv5h3fdyv" path="res://art/tree.png" id="2_vnc70"]
@@ -22,14 +22,23 @@
 [ext_resource type="Script" uid="uid://d2qqt57kupo3n" path="res://scripts/AnimalKeeperGate.gd" id="18_1ihrq"]
 [ext_resource type="PackedScene" uid="uid://dfcn8oje3hko1" path="res://ui/EndOfDaySummaryUI.tscn" id="18_3mm4q"]
 [ext_resource type="Script" uid="uid://b7n4wv6k3k33k" path="res://scripts/QuestLocation.gd" id="19_jornh"]
+[ext_resource type="Script" uid="uid://dwtg0fdx0i363" path="res://scripts/AreaAudio.gd" id="23_d3sab"]
+[ext_resource type="AudioStream" uid="uid://c0vxwp7d85xq8" path="res://audio/ambience/life/sfx_bird_01.WAV" id="24_ko6g4"]
+[ext_resource type="AudioStream" uid="uid://d28bo8p77va8y" path="res://audio/ambience/amb_farm_wind.WAV" id="24_l8e2a"]
+[ext_resource type="AudioStream" uid="uid://dby2jcrvk4ssy" path="res://audio/ambience/life/sfx_bird_02.WAV" id="25_th51b"]
+[ext_resource type="AudioStream" uid="uid://b4kphj6d0xlxg" path="res://audio/ambience/life/sfx_bird_03.WAV" id="26_0hb3f"]
+[ext_resource type="AudioStream" uid="uid://cvxhlbrm7hew0" path="res://audio/ambience/life/sfx_leaves_01.WAV" id="27_u1543"]
+[ext_resource type="AudioStream" uid="uid://bd7fsofv05h57" path="res://audio/ambience/life/sfx_leaves_02.WAV" id="28_jtagl"]
+[ext_resource type="AudioStream" uid="uid://ddtmvpbosnor5" path="res://audio/ambience/life/sfx_murmur_01.WAV" id="29_hqvdf"]
+[ext_resource type="AudioStream" uid="uid://co4coq6x4nty5" path="res://audio/ambience/life/sfx_murmur_02.WAV" id="30_b3m5l"]
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_vvco1"]
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_3mm4q"]
 texture = ExtResource("2_vnc70")
 texture_region_size = Vector2i(32, 32)
 0:0/0 = 0
 0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_h5ckc"]
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_d3sab"]
 texture = ExtResource("3_3a5ef")
 texture_region_size = Vector2i(32, 32)
 0:0/0 = 0
@@ -47,7 +56,7 @@ texture_region_size = Vector2i(32, 32)
 1:3/0 = 0
 2:3/0 = 0
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_pn73e"]
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_l8e2a"]
 texture = ExtResource("4_hw5sw")
 texture_region_size = Vector2i(32, 32)
 0:0/0 = 0
@@ -56,9 +65,9 @@ texture_region_size = Vector2i(32, 32)
 [sub_resource type="TileSet" id="TileSet_o7yas"]
 tile_size = Vector2i(32, 32)
 physics_layer_0/collision_layer = 1
-sources/0 = SubResource("TileSetAtlasSource_vvco1")
-sources/1 = SubResource("TileSetAtlasSource_h5ckc")
-sources/2 = SubResource("TileSetAtlasSource_pn73e")
+sources/0 = SubResource("TileSetAtlasSource_3mm4q")
+sources/1 = SubResource("TileSetAtlasSource_d3sab")
+sources/2 = SubResource("TileSetAtlasSource_l8e2a")
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_tdhpq"]
 
@@ -103,8 +112,8 @@ position = Vector2(228, 111)
 position = Vector2(440, 139)
 collision_mask = 3
 script = ExtResource("7_ubk8s")
-target_scene_path = "uid://b7y4cme4an3kb"
-spawn_tag = "from_keeper"
+target_scene_path = "res://tscn/Town.tscn"
+target_spawn_tag = "from_keeper"
 
 [node name="Sprite2D" type="Sprite2D" parent="TravelPoints/ToTown"]
 texture = ExtResource("7_hw5sw")
@@ -116,13 +125,27 @@ shape = SubResource("RectangleShape2D_tdhpq")
 position = Vector2(152, 37)
 collision_mask = 3
 script = ExtResource("7_ubk8s")
-target_scene_path = "uid://6ni01dvcs2m2"
-spawn_tag = "from_keeper"
+target_scene_path = "res://tscn/Farm.tscn"
+target_spawn_tag = "from_keeper"
 
 [node name="Sprite2D" type="Sprite2D" parent="TravelPoints/ToFarm"]
 texture = ExtResource("7_hw5sw")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="TravelPoints/ToFarm"]
+shape = SubResource("RectangleShape2D_ubk8s")
+
+[node name="ToBeach" type="Area2D" parent="TravelPoints"]
+position = Vector2(65, 239)
+collision_mask = 3
+script = ExtResource("7_ubk8s")
+target_scene_path = "res://tscn/Beach.tscn"
+target_spawn_tag = "from_keeper"
+required_completed_quests = Array[String](["keeper_cow_quest"])
+
+[node name="Sprite2D" type="Sprite2D" parent="TravelPoints/ToBeach"]
+texture = ExtResource("7_hw5sw")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TravelPoints/ToBeach"]
 shape = SubResource("RectangleShape2D_ubk8s")
 
 [node name="SpawnFromFarm" type="Marker2D" parent="TravelPoints" groups=["spawn_points"]]
@@ -134,6 +157,11 @@ tag = "from_farm"
 position = Vector2(400, 203)
 script = ExtResource("9_8k0p7")
 tag = "from_town"
+
+[node name="SpawnFromBeach" type="Marker2D" parent="TravelPoints" groups=["spawn_points"]]
+position = Vector2(58, 198)
+script = ExtResource("9_8k0p7")
+tag = "from_beach"
 
 [node name="CameraBounds" type="Node2D" parent="."]
 
@@ -174,3 +202,21 @@ location_id = "keeper"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="QuestLocation"]
 shape = SubResource("RectangleShape2D_eq7mh")
+
+[node name="KeeperAudio" type="Node" parent="."]
+script = ExtResource("23_d3sab")
+ambience_path = NodePath("Ambience")
+life_path = NodePath("Life")
+life_timer_path = NodePath("LifeTimer")
+life_pool_a = Array[AudioStream]([ExtResource("24_ko6g4"), ExtResource("25_th51b"), ExtResource("26_0hb3f")])
+life_pool_b = Array[AudioStream]([ExtResource("27_u1543"), ExtResource("28_jtagl")])
+life_pool_c = Array[AudioStream]([ExtResource("29_hqvdf"), ExtResource("30_b3m5l")])
+
+[node name="Ambience" type="AudioStreamPlayer2D" parent="KeeperAudio"]
+stream = ExtResource("24_l8e2a")
+
+[node name="Life" type="AudioStreamPlayer2D" parent="KeeperAudio"]
+volume_db = 24.0
+
+[node name="LifeTimer" type="Timer" parent="KeeperAudio"]
+one_shot = true
