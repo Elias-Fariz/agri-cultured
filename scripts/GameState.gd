@@ -424,6 +424,9 @@ func _ready() -> void:
 	QuestEvents.harvested.connect(_on_quest_harvested)
 	QuestEvents.item_purchased.connect(_on_item_purchased)
 	
+	QuestEvents.item_picked_up.connect(_on_item_picked_up)
+	QuestEvents.item_crafted.connect(_on_item_crafted)
+	
 	QuestEvents.ui_opened.connect(_on_quest_ui_opened)
 	var tm := get_node_or_null("/root/TimeManager")
 	if tm:
@@ -656,6 +659,27 @@ func _on_quest_harvested(item_id: String, amount: int) -> void:
 func _on_quest_ui_opened(ui_id: String) -> void:
 	GameState.apply_quest_event("ui_open", ui_id, 1)
 	QuestEvents.quest_state_changed.emit()
+
+func _on_item_picked_up(item_id: String, qty: int) -> void:
+	GameState.apply_quest_event("pickup", item_id, qty)
+	QuestEvents.quest_state_changed.emit()
+	# If your apply_quest_event already emits quest_state_changed (it does),
+	# you do NOT need to emit it again here.
+
+func _on_item_crafted(item_id: String, qty: int) -> void:
+	GameState.apply_quest_event("craft", item_id, qty)
+	QuestEvents.quest_state_changed.emit()
+	# If your apply_quest_event already emits quest_state_changed (it does),
+	# you do NOT need to emit it again here.
+
+func _on_item_gifted(npc_id: String, item_id: String, qty: int) -> void:
+	# You can choose the target format you prefer.
+	# Option A (simple): target is item_id only, use a separate "talk_to" step for NPC.
+	GameState.apply_quest_event("gift", item_id, qty)
+	QuestEvents.quest_state_changed.emit()
+
+	# Option B (more specific): target includes npc and item:
+	# GameState.apply_quest_event("gift", npc_id + ":" + item_id, qty)
 
 func _increment_matching_quests(qtype: String, target: String, delta: int) -> void:
 	# active_quests is assumed to be a Dictionary: id -> quest Dictionary

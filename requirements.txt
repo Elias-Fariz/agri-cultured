@@ -41,7 +41,8 @@ Phase 3: Stardew Feel
 * Generalized Audio Players *CHECK*
 * Beach *GETTING DONE*
 * Item Pickups *CHECK*
-* Crafting + Unlockable Recipes *CHECK*
+* Crafting + Unlockable Recipes *CHECK* 
+* Gifting *GETTING DONE*
 - Save to Disk
 
 Phase 4: Inventory/UI Polish

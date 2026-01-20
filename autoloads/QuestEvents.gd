@@ -22,6 +22,10 @@ signal item_purchased(item_id: String, qty: int)
 signal quest_state_changed
 signal toast_requested(text: String, kind: String, duration: float)
 
+signal item_picked_up(item_id: String, qty: int)
+signal item_crafted(item_id: String, qty: int)
+signal item_gifted(npc_id: String, item_id: String, qty: int)
+
 func _ready() -> void:
 	talked_to.connect(func(npc_id: String):
 		GameState.apply_quest_event("talk_to", npc_id, 1)

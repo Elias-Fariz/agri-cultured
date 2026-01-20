@@ -33,6 +33,7 @@ func interact() -> void:
 
 	# Give item
 	GameState.inventory_add(item_id, qty)
+	QuestEvents.item_picked_up.emit(item_id, qty)
 
 	# Mark collected today (so it won't respawn on scene reload)
 	if pickup_id.strip_edges() != "":

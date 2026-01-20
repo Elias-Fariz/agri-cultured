@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=5 format=3 uid="uid://cntqbb2vy4mrp"]
+
+[ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="1_f8u51"]
+[ext_resource type="Script" uid="uid://bolxtchvrfo0y" path="res://data/quests/QuestStepData.gd" id="2_o1cdf"]
+
+[sub_resource type="Resource" id="Resource_f8u51"]
+script = ExtResource("2_o1cdf")
+type = "pickup"
+target = "Shell"
+amount = 3
+text = "Pick up 3 Shells."
+metadata/_custom_type_script = "uid://bolxtchvrfo0y"
+
+[sub_resource type="Resource" id="Resource_o1cdf"]
+script = ExtResource("2_o1cdf")
+type = "craft"
+target = "Shell Necklace"
+text = "Press C to open the crafting menu, then craft a Shell Necklace."
+metadata/_custom_type_script = "uid://bolxtchvrfo0y"
+
+[resource]
+script = ExtResource("1_f8u51")
+id = "fisher_craft_quest"
+title = "Crafting a Gift"
+description = "The shells on the beach look nice! They'd make a lovely necklace..."
+quest_type = "chain"
+oneshot_action = ""
+steps = Array[ExtResource("2_o1cdf")]([SubResource("Resource_f8u51"), SubResource("Resource_o1cdf")])
+turn_in_id = "npc_fisher"
+turn_in_text = "Go back to the Fisherman to show your new necklace!"
+reward_money = 100
+offer_lines = Array[String](["These shells look cool. Hey, I got an idea... Can you help?"])
+in_progress_lines = Array[String](["Let the sea breeze guide you, there's no rush..."])
+turn_in_lines = Array[String](["Woah, that looks radical! That would make a wonderful gift!"])
+after_thanks_lines = Array[String](["I hope your lucky somebody feels really good once they get your necklace!"])
+metadata/_custom_type_script = "uid://cg0ailnic1w71"

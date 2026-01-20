@@ -167,6 +167,7 @@ func _on_craft_pressed() -> void:
 
 	# Add output
 	GameState.inventory_add(r.output_item_id, int(r.output_qty))
+	QuestEvents.item_crafted.emit(r.output_item_id, int(r.output_qty))
 	GameState.toast_info("Crafted: %s x%d" % [r.output_item_id, int(r.output_qty)])
 
 	_refresh_list()

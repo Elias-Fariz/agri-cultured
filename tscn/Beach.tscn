@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=3 uid="uid://6xr8sk7sok3p"]
+[gd_scene load_steps=31 format=3 uid="uid://6xr8sk7sok3p"]
 
 [ext_resource type="TileSet" uid="uid://bqs5ruk6pejpc" path="res://tiles/GroundTileset.tres" id="1_xg4aa"]
 [ext_resource type="Script" uid="uid://xl6estd3noyu" path="res://scripts/SceneTravelArea.gd" id="2_77khv"]
@@ -6,9 +6,12 @@
 [ext_resource type="Script" uid="uid://dxx68q28fdnvv" path="res://scripts/SpawnPoint.gd" id="4_sjhdg"]
 [ext_resource type="AudioStream" uid="uid://d28bo8p77va8y" path="res://audio/ambience/amb_farm_wind.WAV" id="5_8ebig"]
 [ext_resource type="PackedScene" uid="uid://dv7wem6ftpvdd" path="res://tscn/Player.tscn" id="5_udil2"]
+[ext_resource type="PackedScene" uid="uid://bfaurdf2mucr2" path="res://tscn/NPC.tscn" id="5_uodw0"]
+[ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="6_3sblc"]
 [ext_resource type="PackedScene" uid="uid://ded2abuo15uwh" path="res://ui/DialogueUI.tscn" id="6_8ebig"]
 [ext_resource type="AudioStream" uid="uid://c0vxwp7d85xq8" path="res://audio/ambience/life/sfx_bird_01.WAV" id="7_4vvm7"]
 [ext_resource type="PackedScene" uid="uid://qxjawwee60n1" path="res://ui/QuestMenuUI.tscn" id="7_6qd0e"]
+[ext_resource type="Resource" uid="uid://cntqbb2vy4mrp" path="res://data/quests/fisher_craft_quest.tres" id="7_qpl2v"]
 [ext_resource type="PackedScene" uid="uid://dk1aaefcs7nwf" path="res://ui/QuestBoardUI.tscn" id="8_4vvm7"]
 [ext_resource type="AudioStream" uid="uid://dby2jcrvk4ssy" path="res://audio/ambience/life/sfx_bird_02.WAV" id="8_om0ow"]
 [ext_resource type="PackedScene" uid="uid://dtrn2d385g5ul" path="res://ui/InventoryUI.tscn" id="9_om0ow"]
@@ -57,6 +60,20 @@ shape = SubResource("RectangleShape2D_vnqom")
 position = Vector2(98, 79)
 script = ExtResource("4_sjhdg")
 tag = "from_keeper"
+
+[node name="NPCs" type="Node2D" parent="."]
+
+[node name="Fisher" parent="NPCs" instance=ExtResource("5_uodw0")]
+position = Vector2(272, 184)
+npc_id = "npc_fisher"
+display_name = "Fisherman"
+dialogue_lines = Array[String](["Hey, dude! Welcome to the beach!"])
+morning_dialogue_lines = Array[String](["The sun's rays are radical right now!"])
+evening_dialogue_lines = Array[String](["Listening to the shore speak is soothing..."])
+night_dialogue_lines = Array[String](["Man, the twinkling stars are beautiful~"])
+overhead_greeting_lines = Array[String](["Yo!"])
+overhead_idle_lines = Array[String](["Radical!"])
+quest_offers = Array[ExtResource("6_3sblc")]([ExtResource("7_qpl2v")])
 
 [node name="CameraBounds" type="Node2D" parent="."]
 
