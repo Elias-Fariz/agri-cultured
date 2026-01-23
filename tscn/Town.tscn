@@ -1,20 +1,25 @@
-[gd_scene load_steps=45 format=3 uid="uid://b7y4cme4an3kb"]
+[gd_scene load_steps=50 format=3 uid="uid://b7y4cme4an3kb"]
 
 [ext_resource type="PackedScene" uid="uid://dv7wem6ftpvdd" path="res://tscn/Player.tscn" id="1_2feps"]
 [ext_resource type="Script" uid="uid://0ofb5xeer5m6" path="res://scripts/Town.gd" id="1_o31te"]
 [ext_resource type="TileSet" uid="uid://bqs5ruk6pejpc" path="res://tiles/GroundTileset.tres" id="2_ib40g"]
 [ext_resource type="Texture2D" uid="uid://bq8o1e8mbe7qm" path="res://art/door.PNG" id="2_mua0x"]
+[ext_resource type="Resource" uid="uid://bjlwpkjeuyq0h" path="res://data/gifts/gifts_alex.tres" id="4_y2ho6"]
+[ext_resource type="Resource" uid="uid://dpyp6b7vm8uwb" path="res://data/gifts/gifts_lia.tres" id="5_m1lx8"]
 [ext_resource type="PackedScene" uid="uid://ci8kga43aovsx" path="res://ui/DayNightOverlay.tscn" id="6_6scx0"]
+[ext_resource type="Resource" uid="uid://be33627y75dr5" path="res://data/gifts/gifts_pierre.tres" id="6_aojjs"]
 [ext_resource type="PackedScene" uid="uid://d1qqa5bygrbsp" path="res://ui/HUD.tscn" id="7_xf6b5"]
 [ext_resource type="PackedScene" uid="uid://dtrn2d385g5ul" path="res://ui/InventoryUI.tscn" id="8_va2fq"]
 [ext_resource type="PackedScene" uid="uid://68vtjhtvdbhw" path="res://ui/ShippingUI.tscn" id="8_vr3p6"]
 [ext_resource type="PackedScene" uid="uid://ded2abuo15uwh" path="res://ui/DialogueUI.tscn" id="9_xf6b5"]
+[ext_resource type="Resource" uid="uid://bvric8xdsbabb" path="res://data/gifts/gifts_mayor.tres" id="9_y30ru"]
 [ext_resource type="PackedScene" uid="uid://bfaurdf2mucr2" path="res://tscn/NPC.tscn" id="10_va2fq"]
 [ext_resource type="PackedScene" uid="uid://dk1aaefcs7nwf" path="res://ui/QuestBoardUI.tscn" id="12_15yes"]
 [ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="12_fgqwr"]
 [ext_resource type="PackedScene" uid="uid://dexrjrr1c8jfb" path="res://ui/ShopUI.tscn" id="12_j34sm"]
 [ext_resource type="Resource" uid="uid://daedf3dq8citt" path="res://data/quests/ship_watermelon.tres" id="13_seor3"]
 [ext_resource type="Resource" uid="uid://djdebqx5ukejx" path="res://data/quests/chop_3_trees.tres" id="14_4f1xo"]
+[ext_resource type="PackedScene" uid="uid://ixx7e0mb3ds4" path="res://ui/GiftUI.tscn" id="14_ff2fo"]
 [ext_resource type="PackedScene" uid="uid://b0fhots3ucty8" path="res://tscn/TownBoard.tscn" id="14_j34sm"]
 [ext_resource type="Resource" uid="uid://cpqt3h0esaby7" path="res://data/quests/talk_to_lia.tres" id="15_ewvrf"]
 [ext_resource type="PackedScene" uid="uid://db3fa8eurisd7" path="res://tscn/FireflyLayer.tscn" id="15_j34sm"]
@@ -79,6 +84,7 @@ morning_overhead_lines = Array[String](["Birds chirping..."])
 day_overhead_lines = Array[String](["THE SUN!"])
 evening_overhead_lines = Array[String](["Oof..."])
 night_overhead_lines = Array[String](["Zzz..."])
+gift_prefs = ExtResource("4_y2ho6")
 
 [node name="Lia" parent="NPCs" instance=ExtResource("10_va2fq")]
 position = Vector2(116, 193)
@@ -99,6 +105,7 @@ quest_request_lines = Array[String](["Hey, I’ve been craving a watermelon. Cou
 quest_in_progress_lines = Array[String](["Still waiting on that watermelon! No rush, but I’d really appreciate it."])
 quest_completed_lines = Array[String](["You shipped the watermelon! Thank you! Here, have one for yourself."])
 quest_after_thanks_lines = Array[String](["That watermelon was delicious. Thanks again for helping me out!"])
+gift_prefs = ExtResource("5_m1lx8")
 
 [node name="Pierre" parent="NPCs" instance=ExtResource("10_va2fq")]
 position = Vector2(349, 58)
@@ -111,6 +118,7 @@ morning_spot_path = NodePath("../../NPCSpots/Shopkeeper_MorningSpot")
 day_spot_path = NodePath("../../NPCSpots/Shopkeeper_DaySpot")
 evening_spot_path = NodePath("../../NPCSpots/Shopkeeper_EveningSpot")
 night_spot_path = NodePath("../../NPCSpots/Shopkeeper_NightSpot")
+gift_prefs = ExtResource("6_aojjs")
 
 [node name="Mayor" parent="NPCs" instance=ExtResource("10_va2fq")]
 display_name = "Mayor"
@@ -128,6 +136,7 @@ quest_completed_lines = Array[String](["Oh, thank you! Here, something for your 
 quest_after_thanks_lines = Array[String](["I knew I could count on you!"])
 mayor_main_quest = ExtResource("21_4f1xo")
 quest_offers = Array[ExtResource("12_fgqwr")]([ExtResource("21_4f1xo")])
+gift_prefs = ExtResource("9_y30ru")
 
 [node name="Player" parent="." instance=ExtResource("1_2feps")]
 position = Vector2(90, 33)
@@ -178,6 +187,8 @@ tag = "from_keeper"
 [node name="ShippingUI" parent="." instance=ExtResource("8_vr3p6")]
 
 [node name="InventoryUI" parent="." instance=ExtResource("8_va2fq")]
+
+[node name="GiftUI" parent="." instance=ExtResource("14_ff2fo")]
 
 [node name="DialogueUI" parent="." instance=ExtResource("9_xf6b5")]
 

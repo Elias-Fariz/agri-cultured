@@ -8,4 +8,5 @@ id = "Shell Necklace"
 display_name = "Shell Necklace"
 sell_price = 30
 description = "A cute handmade necklace from beach shells"
+tags = Array[String](["gift"])
 metadata/_custom_type_script = "uid://dfoyyckymw8co"

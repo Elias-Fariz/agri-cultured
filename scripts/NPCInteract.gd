@@ -50,3 +50,7 @@ func interact() -> void:
 
 func get_interact_priority() -> int:
 	return 10
+
+# GiftUI / prompt helper: who receives the gift?
+func get_gift_receiver() -> Node:
+	return get_parent()

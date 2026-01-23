@@ -49,8 +49,20 @@ func load_items_from_folder() -> void:
 
 	print("ItemDB: Loaded items:", items.keys())
 
+# --- Existing API (keep) ---
 func get_item(id: String) -> ItemData:
 	return items.get(id, null)
+
+# --- NEW: Alias API (for scripts that call "get_item_data") ---
+func get_item_data(id: String) -> ItemData:
+	return get_item(id)
+
+# --- NEW: Convenience (returns tags safely) ---
+func get_tags(id: String) -> Array[String]:
+	var d := get_item(id)
+	if d == null:
+		return []
+	return d.tags
 
 func get_sell_price(id: String) -> int:
 	var d := get_item(id)

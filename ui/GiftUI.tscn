@@ -1,12 +1,21 @@
-[gd_scene format=3 uid="uid://ixx7e0mb3ds4"]
+[gd_scene load_steps=2 format=3 uid="uid://ixx7e0mb3ds4"]
 
-[node name="GiftUI" type="CanvasLayer"]
+[ext_resource type="Script" uid="uid://crpjaq43ans0n" path="res://scripts/GiftUI.gd" id="1_muf7i"]
+
+[node name="GiftUI" type="CanvasLayer" groups=["gift_ui"]]
+script = ExtResource("1_muf7i")
+visual_node_path = NodePath("Panel")
+start_visible_in_game = false
+is_modal = true
 
 [node name="Panel" type="Panel" parent="."]
+visible = false
+custom_minimum_size = Vector2(200, 500)
 offset_right = 40.0
 offset_bottom = 40.0
 
 [node name="VBox" type="VBoxContainer" parent="Panel"]
+custom_minimum_size = Vector2(200, 500)
 layout_mode = 0
 offset_right = 40.0
 offset_bottom = 40.0
@@ -19,6 +28,7 @@ text = "Give a Gift"
 layout_mode = 2
 
 [node name="ItemList" type="ItemList" parent="Panel/VBox"]
+custom_minimum_size = Vector2(50, 300)
 layout_mode = 2
 
 [node name="ReactionPreview" type="RichTextLabel" parent="Panel/VBox"]
@@ -26,6 +36,8 @@ layout_mode = 2
 
 [node name="GiveButton" type="Button" parent="Panel/VBox"]
 layout_mode = 2
+text = "Give"
 
 [node name="CancelButton" type="Button" parent="Panel/VBox"]
 layout_mode = 2
+text = "Cancel"

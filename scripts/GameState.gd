@@ -411,6 +411,10 @@ func toast_info(msg: String, duration: float = 2.0) -> void:
 	if QuestEvents != null and QuestEvents.has_signal("toast_requested"):
 		QuestEvents.toast_requested.emit(msg, "info", duration)
 
+var _gifted_day_by_npc: Dictionary = {}      # npc_id -> int day last gifted
+var _gifted_week_count_by_npc: Dictionary = {} # npc_id -> Dictionary{ week_key: int count }
+
+
 func _ready() -> void:
 	reset_energy()
 	current_tool = starting_tool
@@ -426,6 +430,7 @@ func _ready() -> void:
 	
 	QuestEvents.item_picked_up.connect(_on_item_picked_up)
 	QuestEvents.item_crafted.connect(_on_item_crafted)
+	QuestEvents.item_gifted.connect(_on_item_gifted)
 	
 	QuestEvents.ui_opened.connect(_on_quest_ui_opened)
 	var tm := get_node_or_null("/root/TimeManager")
@@ -675,7 +680,7 @@ func _on_item_crafted(item_id: String, qty: int) -> void:
 func _on_item_gifted(npc_id: String, item_id: String, qty: int) -> void:
 	# You can choose the target format you prefer.
 	# Option A (simple): target is item_id only, use a separate "talk_to" step for NPC.
-	GameState.apply_quest_event("gift", item_id, qty)
+	GameState.apply_quest_event("gift", item_id, qty, npc_id)
 	QuestEvents.quest_state_changed.emit()
 
 	# Option B (more specific): target includes npc and item:
@@ -993,13 +998,10 @@ func get_all_trackable_quest_ids() -> Array[String]:
 	ids.sort()
 	return ids
 
-func apply_quest_event(action: String, target: String = "", amount: int = 1) -> void:
-	print("[QuestEvent] apply_quest_event action=", action, " target=", target, " amount=", amount)
-	
+func apply_quest_event(action: String, target: String = "", amount: int = 1, target2: String = "") -> void:
 	var changed: bool = false
 	var to_complete: Array[String] = []
 
-	# Iterate over KEYS (stable) instead of values (can break if dict mutates)
 	for qid_any in active_quests.keys():
 		var qid: String = String(qid_any)
 		var quest: Dictionary = active_quests[qid]
@@ -1015,10 +1017,30 @@ func apply_quest_event(action: String, target: String = "", amount: int = 1) -> 
 
 			if String(step.get("type", "")) != action:
 				continue
-			if target != "" and String(step.get("target", "")) != target:
-				continue
 
-			# We matched a valid step → changed!
+			# --- Matching rules ---
+			# For most actions, only target matters.
+			# For "gift", we support matching item_id (target) and npc_id (target2).
+			var step_target := String(step.get("target", ""))
+			var step_target2 := String(step.get("target2", ""))
+
+			if action == "gift":
+				# target = item_id (optional), target2 = npc_id (optional)
+				if step_target != "" and target != "" and step_target != target:
+					continue
+				if step_target2 != "" and target2 != "" and step_target2 != target2:
+					continue
+				# If caller passed empty target/target2, that means "any" on that axis.
+				# If step requires something but caller didn't provide it, don't match.
+				if step_target != "" and target == "":
+					continue
+				if step_target2 != "" and target2 == "":
+					continue
+			else:
+				# Existing behavior
+				if target != "" and step_target != target:
+					continue
+
 			changed = true
 
 			step["progress"] = int(step.get("progress", 0)) + amount
@@ -1027,20 +1049,31 @@ func apply_quest_event(action: String, target: String = "", amount: int = 1) -> 
 
 			if int(step["progress"]) >= int(step.get("amount", 0)):
 				quest["step_index"] = step_index + 1
-
-				# Done with all steps?
 				if int(quest["step_index"]) >= steps.size():
 					to_complete.append(qid)
 
-			# write back (important!)
 			active_quests[qid] = quest
 			continue
 
 		# ----- ONESHOT QUESTS -----
 		if String(quest.get("type", "")) != action:
 			continue
-		if target != "" and String(quest.get("target", "")) != target:
-			continue
+
+		var q_target := String(quest.get("target", ""))
+		var q_target2 := String(quest.get("target2", ""))
+
+		if action == "gift":
+			if q_target != "" and target != "" and q_target != target:
+				continue
+			if q_target2 != "" and target2 != "" and q_target2 != target2:
+				continue
+			if q_target != "" and target == "":
+				continue
+			if q_target2 != "" and target2 == "":
+				continue
+		else:
+			if target != "" and q_target != target:
+				continue
 
 		changed = true
 
@@ -1050,7 +1083,6 @@ func apply_quest_event(action: String, target: String = "", amount: int = 1) -> 
 
 		active_quests[qid] = quest
 
-	# Complete AFTER iteration (safe)
 	for qid in to_complete:
 		complete_quest(qid)
 		changed = true
@@ -1279,3 +1311,37 @@ func flush_day_start_toasts() -> void:
 			QuestEvents.toast_requested.emit(msg, kind, duration)
 
 	_day_start_toast_queue.clear()
+
+func _current_week_key() -> int:
+	# Week 1 = days 1-7, week 2 = 8-14, etc.
+	return int(((TimeManager.day - 1) / 7) + 1)
+
+func can_gift_to_npc(npc_id: String) -> bool:
+	npc_id = npc_id.strip_edges()
+	if npc_id == "":
+		return false
+
+	var today := TimeManager.day
+	if int(_gifted_day_by_npc.get(npc_id, -1)) == today:
+		return false  # already gifted today
+
+	var wk := _current_week_key()
+	var wk_map: Dictionary = _gifted_week_count_by_npc.get(npc_id, {})
+	var count_this_week := int(wk_map.get(wk, 0))
+
+	# 2 gifts per week max
+	return count_this_week < 2
+
+func mark_gifted_to_npc(npc_id: String) -> void:
+	npc_id = npc_id.strip_edges()
+	if npc_id == "":
+		return
+
+	var today := TimeManager.day
+	_gifted_day_by_npc[npc_id] = today
+
+	var wk := _current_week_key()
+	var wk_map: Dictionary = _gifted_week_count_by_npc.get(npc_id, {})
+	var count_this_week := int(wk_map.get(wk, 0))
+	wk_map[wk] = count_this_week + 1
+	_gifted_week_count_by_npc[npc_id] = wk_map

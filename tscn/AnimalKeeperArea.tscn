@@ -1,4 +1,4 @@
-[gd_scene load_steps=41 format=3 uid="uid://dcq7dmqwwrac8"]
+[gd_scene load_steps=43 format=3 uid="uid://dcq7dmqwwrac8"]
 
 [ext_resource type="TileSet" uid="uid://bqs5ruk6pejpc" path="res://tiles/GroundTileset.tres" id="1_a8y6s"]
 [ext_resource type="Texture2D" uid="uid://caerjv5h3fdyv" path="res://art/tree.png" id="2_vnc70"]
@@ -10,6 +10,7 @@
 [ext_resource type="Resource" uid="uid://d1rk16thm6q8l" path="res://data/quests/keeper_cow_quest.tres" id="7_3mm4q"]
 [ext_resource type="Texture2D" uid="uid://bq8o1e8mbe7qm" path="res://art/door.PNG" id="7_hw5sw"]
 [ext_resource type="Script" uid="uid://xl6estd3noyu" path="res://scripts/SceneTravelArea.gd" id="7_ubk8s"]
+[ext_resource type="Resource" uid="uid://bycuetshjflh" path="res://data/gifts/gifts_keeper.tres" id="8_jtagl"]
 [ext_resource type="PackedScene" uid="uid://ded2abuo15uwh" path="res://ui/DialogueUI.tscn" id="8_tdhpq"]
 [ext_resource type="Script" uid="uid://dxx68q28fdnvv" path="res://scripts/SpawnPoint.gd" id="9_8k0p7"]
 [ext_resource type="PackedScene" uid="uid://qxjawwee60n1" path="res://ui/QuestMenuUI.tscn" id="9_ubk8s"]
@@ -23,6 +24,7 @@
 [ext_resource type="PackedScene" uid="uid://dfcn8oje3hko1" path="res://ui/EndOfDaySummaryUI.tscn" id="18_3mm4q"]
 [ext_resource type="PackedScene" uid="uid://c48msaiodeqan" path="res://ui/CraftingUI.tscn" id="19_0hb3f"]
 [ext_resource type="Script" uid="uid://b7n4wv6k3k33k" path="res://scripts/QuestLocation.gd" id="19_jornh"]
+[ext_resource type="PackedScene" uid="uid://ixx7e0mb3ds4" path="res://ui/GiftUI.tscn" id="20_u1543"]
 [ext_resource type="Script" uid="uid://dwtg0fdx0i363" path="res://scripts/AreaAudio.gd" id="23_d3sab"]
 [ext_resource type="AudioStream" uid="uid://c0vxwp7d85xq8" path="res://audio/ambience/life/sfx_bird_01.WAV" id="24_ko6g4"]
 [ext_resource type="AudioStream" uid="uid://d28bo8p77va8y" path="res://audio/ambience/amb_farm_wind.WAV" id="24_l8e2a"]
@@ -104,6 +106,7 @@ night_dialogue_lines = Array[String](["Don't mind me, just grabbin' some water."
 overhead_greeting_lines = Array[String](["Howdy!"])
 overhead_idle_lines = Array[String](["Chickens..."])
 quest_offers = Array[ExtResource("6_y8126")]([ExtResource("7_3mm4q")])
+gift_prefs = ExtResource("8_jtagl")
 
 [node name="Player" parent="." instance=ExtResource("6_hw5sw")]
 position = Vector2(228, 111)
@@ -188,6 +191,8 @@ position = Vector2(1598, 972)
 [node name="EndOfDaySummaryUI" parent="." instance=ExtResource("18_3mm4q")]
 
 [node name="CraftingUI" parent="." instance=ExtResource("19_0hb3f")]
+
+[node name="GiftUI" parent="." instance=ExtResource("20_u1543")]
 
 [node name="DayNightOverlay" parent="." instance=ExtResource("16_22afs")]
 

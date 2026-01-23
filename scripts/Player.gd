@@ -62,6 +62,8 @@ var _shake_damping: float = 10.0
 
 var _shake_seed: float = 0.0
 
+@onready var interact_prompt: Node = $InteractPromptController
+@onready var gift_ui: Node = get_tree().get_first_node_in_group("gift_ui")
 
 func _ready() -> void:
 	# Ensure the sensor starts in front of the player (down by default)
@@ -123,6 +125,10 @@ func _physics_process(delta: float) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("interact"):
 		_try_interact()
+	
+	if event.is_action_pressed("open_gift"):
+		_try_gift()
+		return
 		
 	if event.is_action_pressed("open_inventory"):
 		# Refresh UI content then toggle
@@ -141,11 +147,6 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("camera_zoom_reset"):
 		_target_zoom = 1.0
 
-
-func _update_sensor_position() -> void:
-	# Keep sensor one "step" in front of the player
-	sensor.position = facing * interact_offset
-
 func _try_interact() -> void:
 	# Interact with the first Area2D we overlap that supports interact()
 	var areas := sensor.get_overlapping_areas()
@@ -153,6 +154,10 @@ func _try_interact() -> void:
 		if a.has_method("interact"):
 			a.interact()
 			return
+
+func _update_sensor_position() -> void:
+	# Keep sensor one "step" in front of the player
+	sensor.position = facing * interact_offset
 
 func _apply_camera_bounds_if_present() -> void:
 	# Looks for a Node2D called "CameraBounds" in the current scene,
@@ -357,3 +362,16 @@ func _update_camera_shake(delta: float) -> void:
 		_shake_intensity = 0.0
 		_shake_duration = 0.0
 		shake_offset.position = Vector2.ZERO
+
+func _try_gift() -> void:
+	# Gift the closest NPC interact area we overlap
+	var areas := sensor.get_overlapping_areas()
+	for a in areas:
+		# NPCInteract.gd is an Area2D on the NPC, so we can get parent NPC
+		var npc := a.get_parent()
+		if npc != null and npc.has_method("receive_gift"):
+			# Open GiftUI and point it at this npc
+			var gift_ui := get_tree().get_first_node_in_group("gift_ui")
+			if gift_ui != null and gift_ui.has_method("open_for_npc"):
+				gift_ui.call("open_for_npc", npc)
+			return

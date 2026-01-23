@@ -183,3 +183,6 @@ func _hide() -> void:
 		_label.visible = false
 	if _anchor:
 		_anchor.visible = false
+
+func get_best_target() -> Node:
+	return _pick_best_target()

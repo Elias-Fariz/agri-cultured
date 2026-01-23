@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=3 uid="uid://6xr8sk7sok3p"]
+[gd_scene load_steps=33 format=3 uid="uid://6xr8sk7sok3p"]
 
 [ext_resource type="TileSet" uid="uid://bqs5ruk6pejpc" path="res://tiles/GroundTileset.tres" id="1_xg4aa"]
 [ext_resource type="Script" uid="uid://xl6estd3noyu" path="res://scripts/SceneTravelArea.gd" id="2_77khv"]
@@ -14,6 +14,7 @@
 [ext_resource type="Resource" uid="uid://cntqbb2vy4mrp" path="res://data/quests/fisher_craft_quest.tres" id="7_qpl2v"]
 [ext_resource type="PackedScene" uid="uid://dk1aaefcs7nwf" path="res://ui/QuestBoardUI.tscn" id="8_4vvm7"]
 [ext_resource type="AudioStream" uid="uid://dby2jcrvk4ssy" path="res://audio/ambience/life/sfx_bird_02.WAV" id="8_om0ow"]
+[ext_resource type="Resource" uid="uid://dyftxqjlgk7ew" path="res://data/gifts/gifts_fisher.tres" id="8_rafxk"]
 [ext_resource type="PackedScene" uid="uid://dtrn2d385g5ul" path="res://ui/InventoryUI.tscn" id="9_om0ow"]
 [ext_resource type="AudioStream" uid="uid://b4kphj6d0xlxg" path="res://audio/ambience/life/sfx_bird_03.WAV" id="9_xl85j"]
 [ext_resource type="AudioStream" uid="uid://cvxhlbrm7hew0" path="res://audio/ambience/life/sfx_leaves_01.WAV" id="10_1wqoc"]
@@ -28,6 +29,7 @@
 [ext_resource type="PackedScene" uid="uid://c48msaiodeqan" path="res://ui/CraftingUI.tscn" id="14_7sna2"]
 [ext_resource type="PackedScene" uid="uid://cbaw8nhel818e" path="res://tscn/Bench.tscn" id="15_4vvm7"]
 [ext_resource type="Script" uid="uid://dwtg0fdx0i363" path="res://scripts/AreaAudio.gd" id="16_om0ow"]
+[ext_resource type="PackedScene" uid="uid://ixx7e0mb3ds4" path="res://ui/GiftUI.tscn" id="18_qpl2v"]
 [ext_resource type="PackedScene" uid="uid://7rmls8hs1gyd" path="res://tscn/BeachShell.tscn" id="25_xcr3t"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_vnqom"]
@@ -74,6 +76,7 @@ night_dialogue_lines = Array[String](["Man, the twinkling stars are beautiful~"]
 overhead_greeting_lines = Array[String](["Yo!"])
 overhead_idle_lines = Array[String](["Radical!"])
 quest_offers = Array[ExtResource("6_3sblc")]([ExtResource("7_qpl2v")])
+gift_prefs = ExtResource("8_rafxk")
 
 [node name="CameraBounds" type="Node2D" parent="."]
 
@@ -103,6 +106,8 @@ position = Vector2(332, 129)
 [node name="DayNightOverlay" parent="." instance=ExtResource("13_nxqwr")]
 
 [node name="CraftingUI" parent="." instance=ExtResource("14_7sna2")]
+
+[node name="GiftUI" parent="." instance=ExtResource("18_qpl2v")]
 
 [node name="SpawnManager" type="Node" parent="."]
 script = ExtResource("14_6qd0e")

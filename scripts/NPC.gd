@@ -106,6 +106,8 @@ var _anchor_position: Vector2         # where this NPC “belongs” right now
 
 var _talked_block_by_npc: Dictionary = {}  # npc_id -> String "day:morning" etc.
 
+@export var gift_prefs: NPCGiftPreferences
+
 func _ready() -> void:
 	# ... your existing NPC init ...
 	_update_quest_icon()
@@ -703,3 +705,93 @@ func get_interact_prompt(player: Node) -> String:
 
 func get_npc_id() -> String:
 	return npc_id
+
+func receive_gift(item_id: String, qty: int = 1) -> void:
+	# Basic safety
+	item_id = item_id.strip_edges()
+	if item_id == "" or qty <= 0:
+		return
+	
+	# Gift limits (separate from talk cooldown)
+	if not GameState.can_gift_to_npc(npc_id):
+		QuestEvents.toast_requested.emit(display_name + " can't accept more gifts right now.")
+		return
+	
+	var d := ItemDb.get_item(item_id)
+	print("[Gift] item:", item_id, " data:", d, " tags:", [] if d == null else d.tags)
+
+	# Remove item from inventory
+	if not GameState.inventory_remove(item_id, qty):
+		return
+	
+	GameState.mark_gifted_to_npc(npc_id)
+
+	# Determine reaction tier
+	var tier := _gift_reaction_tier(item_id)
+
+	# Friendship delta (tune freely)
+	var delta := 0
+	match tier:
+		"love": delta = 8
+		"like": delta = 4
+		"neutral": delta = 2
+		"dislike": delta = 0
+		"hate": delta = -2
+
+	GameState.add_friendship(npc_id, delta)
+
+	# Emit quest event (gift action)
+	QuestEvents.item_gifted.emit(npc_id, item_id, qty)
+	QuestEvents.quest_state_changed.emit() # if you want immediate UI refresh
+
+	# Toast feedback
+	if tier == "love":
+		QuestEvents.toast_requested.emit(display_name + " loved your gift!")
+	elif tier == "like":
+		QuestEvents.toast_requested.emit(display_name + " liked your gift!")
+	elif tier == "dislike":
+		QuestEvents.toast_requested.emit(display_name + " didn’t seem to like that…")
+	elif tier == "hate":
+		QuestEvents.toast_requested.emit(display_name + " hated that…")
+	else:
+		QuestEvents.toast_requested.emit(display_name + " accepted your gift.")
+
+	# Dialogue response (keep it short and sweet)
+	var ui := get_tree().get_first_node_in_group("dialogue_ui")
+	if ui and ui.has_method("show_dialogue"):
+		var f := GameState.get_friendship(npc_id)
+		var lines: Array[String] = _gift_reaction_lines(tier)
+		ui.show_dialogue(display_name, lines, f)
+
+func _gift_reaction_tier(item_id: String) -> String:
+	if gift_prefs == null:
+		return "neutral"
+
+	# Get tags from ItemDb (safe if not found)
+	var tags: Array[String] = []
+	if ItemDb != null and ItemDb.has_method("get_item_data"):
+		var data = ItemDb.call("get_item_data", item_id)
+		if data != null:
+			# ItemData.tags is Array[String]
+			tags = data.tags
+
+	# Use preferences (items override tags)
+	if gift_prefs.has_method("get_reaction_tier_for_item"):
+		return String(gift_prefs.call("get_reaction_tier_for_item", item_id, tags))
+
+	# Fallback to old behavior if needed
+	if gift_prefs.loves.has(item_id):
+		return "love"
+	if gift_prefs.likes.has(item_id):
+		return "like"
+	if gift_prefs.hates.has(item_id):
+		return "hate"
+	if gift_prefs.dislikes.has(item_id):
+		return "dislike"
+	return "neutral"
+
+
+func _gift_reaction_lines(tier: String) -> Array[String]:
+	if gift_prefs != null and gift_prefs.has_method("get_lines_for_tier"):
+		return gift_prefs.call("get_lines_for_tier", tier)
+	return ["Thanks!"]

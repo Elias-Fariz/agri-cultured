@@ -42,7 +42,7 @@ Phase 3: Stardew Feel
 * Beach *GETTING DONE*
 * Item Pickups *CHECK*
 * Crafting + Unlockable Recipes *CHECK* 
-* Gifting *GETTING DONE*
+* Gifting *CHECK*
 - Save to Disk
 
 Phase 4: Inventory/UI Polish

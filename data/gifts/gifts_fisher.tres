@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="NPCGiftPreferences" load_steps=2 format=3 uid="uid://dyftxqjlgk7ew"]
+
+[ext_resource type="Script" uid="uid://byel3dorq73on" path="res://data/gifts/NPCGiftPreferences.gd" id="1_gnoya"]
+
+[resource]
+script = ExtResource("1_gnoya")
+metadata/_custom_type_script = "uid://byel3dorq73on"

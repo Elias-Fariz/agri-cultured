@@ -8,4 +8,5 @@ id = "Flower Headband"
 display_name = "Flower Headband"
 sell_price = 50
 description = "A floral headpiece with the smell of morning sunshine"
+tags = Array[String](["gift"])
 metadata/_custom_type_script = "uid://dfoyyckymw8co"

@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="NPCGiftPreferences" load_steps=2 format=3 uid="uid://bvric8xdsbabb"]
+
+[ext_resource type="Script" uid="uid://byel3dorq73on" path="res://data/gifts/NPCGiftPreferences.gd" id="1_6uq07"]
+
+[resource]
+script = ExtResource("1_6uq07")
+loves_tags = Array[String](["forage"])
+metadata/_custom_type_script = "uid://byel3dorq73on"

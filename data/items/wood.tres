@@ -8,4 +8,5 @@ id = "Wood"
 display_name = "Wood"
 sell_price = 2
 description = "Knock on wood"
+tags = Array[String](["forage"])
 metadata/_custom_type_script = "uid://dfoyyckymw8co"
