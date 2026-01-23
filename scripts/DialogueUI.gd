@@ -24,6 +24,8 @@ var _char_accum: float = 0.0
 var _blip_accum: float = 0.0
 var _last_blip_char: String = ""
 
+signal dialogue_closed
+
 func _ready() -> void:
 	# Start hidden in play (and stay visible in editor if you want).
 	# If you want it hidden in editor too, you can also apply your BaseOverlay pattern later.
@@ -58,6 +60,8 @@ func hide_dialogue() -> void:
 	_lines = []
 	_index = 0
 	super.hide_overlay()
+	
+	emit_signal("dialogue_closed")
 	
 	var player := get_tree().get_first_node_in_group("player")
 	if player != null and player.has_method("camera_clear_focus"):

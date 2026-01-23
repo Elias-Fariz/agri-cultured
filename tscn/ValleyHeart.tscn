@@ -1,0 +1,188 @@
+[gd_scene load_steps=39 format=3 uid="uid://cwspce5y4tb13"]
+
+[ext_resource type="TileSet" uid="uid://bqs5ruk6pejpc" path="res://tiles/GroundTileset.tres" id="1_vkoen"]
+[ext_resource type="Texture2D" uid="uid://caerjv5h3fdyv" path="res://art/tree.png" id="2_05sqv"]
+[ext_resource type="Texture2D" uid="uid://b6q6p1rqkpdec" path="res://art/crops.png" id="3_jex6b"]
+[ext_resource type="Texture2D" uid="uid://1d6ygtxnkroh" path="res://art/rock.PNG" id="4_se66s"]
+[ext_resource type="Script" uid="uid://xl6estd3noyu" path="res://scripts/SceneTravelArea.gd" id="5_se66s"]
+[ext_resource type="Texture2D" uid="uid://bq8o1e8mbe7qm" path="res://art/door.PNG" id="6_qprux"]
+[ext_resource type="Script" uid="uid://dxx68q28fdnvv" path="res://scripts/SpawnPoint.gd" id="7_opw5b"]
+[ext_resource type="Texture2D" uid="uid://cpkecnwhl7wbm" path="res://art/bed.PNG" id="8_qprux"]
+[ext_resource type="Script" uid="uid://dwtg0fdx0i363" path="res://scripts/AreaAudio.gd" id="9_0awav"]
+[ext_resource type="AudioStream" uid="uid://c0vxwp7d85xq8" path="res://audio/ambience/life/sfx_bird_01.WAV" id="10_qpypx"]
+[ext_resource type="AudioStream" uid="uid://dby2jcrvk4ssy" path="res://audio/ambience/life/sfx_bird_02.WAV" id="11_wrwcu"]
+[ext_resource type="AudioStream" uid="uid://b4kphj6d0xlxg" path="res://audio/ambience/life/sfx_bird_03.WAV" id="12_2nu52"]
+[ext_resource type="AudioStream" uid="uid://cvxhlbrm7hew0" path="res://audio/ambience/life/sfx_leaves_01.WAV" id="13_dyf4m"]
+[ext_resource type="AudioStream" uid="uid://bd7fsofv05h57" path="res://audio/ambience/life/sfx_leaves_02.WAV" id="14_k38wn"]
+[ext_resource type="AudioStream" uid="uid://ddtmvpbosnor5" path="res://audio/ambience/life/sfx_murmur_01.WAV" id="15_h0wiq"]
+[ext_resource type="AudioStream" uid="uid://co4coq6x4nty5" path="res://audio/ambience/life/sfx_murmur_02.WAV" id="16_1klpk"]
+[ext_resource type="AudioStream" uid="uid://d28bo8p77va8y" path="res://audio/ambience/amb_farm_wind.WAV" id="17_yms3f"]
+[ext_resource type="Script" uid="uid://cinqkatw85qnh" path="res://scripts/BaseOverlay.gd" id="18_qpypx"]
+[ext_resource type="Script" uid="uid://dvg0ynlpgst4t" path="res://scripts/WorldSpawn.gd" id="19_vuwqn"]
+[ext_resource type="PackedScene" uid="uid://dv7wem6ftpvdd" path="res://tscn/Player.tscn" id="19_wrwcu"]
+[ext_resource type="PackedScene" uid="uid://qxjawwee60n1" path="res://ui/QuestMenuUI.tscn" id="20_k38wn"]
+[ext_resource type="PackedScene" uid="uid://c48msaiodeqan" path="res://ui/CraftingUI.tscn" id="21_h0wiq"]
+[ext_resource type="PackedScene" uid="uid://cde8sgn45urws" path="res://ui/HelpOverlay.tscn" id="22_1klpk"]
+[ext_resource type="PackedScene" uid="uid://ci8kga43aovsx" path="res://ui/DayNightOverlay.tscn" id="23_d3m4b"]
+[ext_resource type="PackedScene" uid="uid://d1qqa5bygrbsp" path="res://ui/HUD.tscn" id="24_vuwqn"]
+[ext_resource type="PackedScene" uid="uid://ded2abuo15uwh" path="res://ui/DialogueUI.tscn" id="25_7x0e2"]
+[ext_resource type="PackedScene" uid="uid://dk1aaefcs7nwf" path="res://ui/QuestBoardUI.tscn" id="26_nyydk"]
+[ext_resource type="PackedScene" uid="uid://dfcn8oje3hko1" path="res://ui/EndOfDaySummaryUI.tscn" id="27_iiyss"]
+[ext_resource type="PackedScene" uid="uid://dexrjrr1c8jfb" path="res://ui/ShopUI.tscn" id="28_ye5kf"]
+[ext_resource type="PackedScene" uid="uid://dtrn2d385g5ul" path="res://ui/InventoryUI.tscn" id="29_cix88"]
+[ext_resource type="PackedScene" uid="uid://68vtjhtvdbhw" path="res://ui/ShippingUI.tscn" id="30_teva3"]
+[ext_resource type="PackedScene" uid="uid://ixx7e0mb3ds4" path="res://ui/GiftUI.tscn" id="31_hxn5l"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_qprux"]
+texture = ExtResource("2_05sqv")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_opw5b"]
+texture = ExtResource("3_jex6b")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+3:2/0 = 0
+0:3/0 = 0
+1:3/0 = 0
+2:3/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_62bci"]
+texture = ExtResource("4_se66s")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
+
+[sub_resource type="TileSet" id="TileSet_oc1rt"]
+tile_size = Vector2i(32, 32)
+physics_layer_0/collision_layer = 1
+sources/0 = SubResource("TileSetAtlasSource_qprux")
+sources/1 = SubResource("TileSetAtlasSource_opw5b")
+sources/2 = SubResource("TileSetAtlasSource_62bci")
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_62bci"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_opw5b"]
+
+[node name="ValleyHeart" type="Node2D"]
+
+[node name="World" type="Node2D" parent="."]
+
+[node name="TileMaps" type="Node2D" parent="World"]
+
+[node name="Ground" type="TileMap" parent="World/TileMaps" groups=["footstep_ground"]]
+tile_set = ExtResource("1_vkoen")
+format = 2
+layer_0/tile_data = PackedInt32Array(65537, 0, 0, 131073, 0, 0, 196609, 0, 0, 262145, 0, 0, 327681, 0, 0, 393217, 0, 0, 458753, 0, 0, 65538, 0, 0, 131074, 0, 0, 196610, 0, 0, 262146, 0, 0, 327682, 0, 0, 393218, 0, 0, 458754, 0, 0, 65539, 0, 0, 131075, 0, 0, 196611, 0, 0, 262147, 0, 0, 327683, 0, 0, 393219, 0, 0, 458755, 0, 0, 65540, 0, 0, 131076, 0, 0, 196612, 0, 0, 262148, 0, 0, 327684, 0, 0, 393220, 0, 0, 458756, 0, 0, 65541, 0, 0, 131077, 0, 0, 196613, 0, 0, 262149, 0, 0, 327685, 0, 0, 393221, 0, 0, 458757, 0, 0, 65542, 0, 0, 131078, 0, 0, 196614, 0, 0, 262150, 0, 0, 327686, 0, 0, 393222, 0, 0, 458758, 0, 0, 65543, 0, 0, 131079, 0, 0, 196615, 0, 0, 262151, 0, 0, 327687, 0, 0, 393223, 0, 0, 458759, 0, 0, 65544, 0, 0, 131080, 0, 0, 196616, 0, 0, 262152, 0, 0, 327688, 0, 0, 393224, 0, 0, 458760, 0, 0, 65545, 0, 0, 131081, 0, 0, 196617, 0, 0, 262153, 0, 0, 327689, 0, 0, 393225, 0, 0, 458761, 0, 0, 65546, 0, 0, 131082, 0, 0, 196618, 0, 0, 262154, 0, 0, 327690, 0, 0, 393226, 0, 0, 458762, 0, 0, 65547, 0, 0, 131083, 0, 0, 196619, 0, 0, 262155, 0, 0, 327691, 0, 0, 393227, 0, 0, 458763, 0, 0, 65548, 0, 0, 131084, 0, 0, 196620, 0, 0, 262156, 0, 0, 327692, 0, 0, 393228, 0, 0, 458764, 0, 0)
+
+[node name="Objects" type="TileMap" parent="World/TileMaps"]
+tile_set = SubResource("TileSet_oc1rt")
+format = 2
+layer_0/tile_data = PackedInt32Array(393226, 0, 0, 262152, 0, 0, 458756, 2, 0, 131078, 2, 0, 327685, 0, 0)
+
+[node name="CameraBounds" type="Node2D" parent="World"]
+
+[node name="TopLeft" type="Marker2D" parent="World/CameraBounds"]
+position = Vector2(-593, -373)
+
+[node name="BottomRight" type="Marker2D" parent="World/CameraBounds"]
+position = Vector2(1598, 972)
+
+[node name="TravelPoints" type="Node2D" parent="World"]
+
+[node name="ToFarm" type="Area2D" parent="World/TravelPoints"]
+position = Vector2(60, 227)
+collision_mask = 3
+script = ExtResource("5_se66s")
+target_scene_path = "res://tscn/Farm.tscn"
+target_spawn_tag = "from_heart"
+
+[node name="Sprite2D" type="Sprite2D" parent="World/TravelPoints/ToFarm"]
+texture = ExtResource("6_qprux")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="World/TravelPoints/ToFarm"]
+shape = SubResource("RectangleShape2D_62bci")
+
+[node name="SpawnFromFarm" type="Marker2D" parent="World/TravelPoints" groups=["spawn_points"]]
+position = Vector2(95, 224)
+script = ExtResource("7_opw5b")
+tag = "from_farm"
+
+[node name="Interactables" type="Node2D" parent="World"]
+
+[node name="HeartPedestal" type="Area2D" parent="World/Interactables"]
+position = Vector2(91, 91)
+collision_mask = 3
+
+[node name="Sprite2D" type="Sprite2D" parent="World/Interactables/HeartPedestal"]
+texture = ExtResource("8_qprux")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="World/Interactables/HeartPedestal"]
+scale = Vector2(1.6558535, 1.6558535)
+shape = SubResource("RectangleShape2D_opw5b")
+
+[node name="HeartAudio" type="Node" parent="World"]
+script = ExtResource("9_0awav")
+ambience_path = NodePath("Ambience")
+life_path = NodePath("Life")
+life_timer_path = NodePath("LifeTimer")
+life_pool_a = Array[AudioStream]([ExtResource("10_qpypx"), ExtResource("11_wrwcu"), ExtResource("12_2nu52")])
+life_pool_b = Array[AudioStream]([ExtResource("13_dyf4m"), ExtResource("14_k38wn")])
+life_pool_c = Array[AudioStream]([ExtResource("15_h0wiq"), ExtResource("16_1klpk")])
+
+[node name="Ambience" type="AudioStreamPlayer2D" parent="World/HeartAudio"]
+stream = ExtResource("17_yms3f")
+
+[node name="Life" type="AudioStreamPlayer2D" parent="World/HeartAudio"]
+volume_db = 24.0
+
+[node name="LifeTimer" type="Timer" parent="World/HeartAudio"]
+one_shot = true
+
+[node name="Player" parent="World" instance=ExtResource("19_wrwcu")]
+position = Vector2(231, 237)
+
+[node name="SpawnManager" type="Node" parent="World"]
+script = ExtResource("19_vuwqn")
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="HeartProgressUI" type="CanvasLayer" parent="UI" groups=["heart_ui"]]
+script = ExtResource("18_qpypx")
+metadata/_custom_type_script = "uid://cinqkatw85qnh"
+
+[node name="QuestMenuUI" parent="UI" instance=ExtResource("20_k38wn")]
+
+[node name="CraftingUI" parent="UI" instance=ExtResource("21_h0wiq")]
+
+[node name="HelpOverlay" parent="UI" instance=ExtResource("22_1klpk")]
+
+[node name="DayNightOverlay" parent="UI" instance=ExtResource("23_d3m4b")]
+
+[node name="HUD" parent="UI" instance=ExtResource("24_vuwqn")]
+
+[node name="DialogueUI" parent="UI" instance=ExtResource("25_7x0e2")]
+
+[node name="QuestBoardUI" parent="UI" instance=ExtResource("26_nyydk")]
+
+[node name="EndOfDaySummaryUI" parent="UI" instance=ExtResource("27_iiyss")]
+
+[node name="ShopUI" parent="UI" instance=ExtResource("28_ye5kf")]
+
+[node name="InventoryUI" parent="UI" instance=ExtResource("29_cix88")]
+
+[node name="ShippingUI" parent="UI" instance=ExtResource("30_teva3")]
+
+[node name="GiftUI" parent="UI" instance=ExtResource("31_hxn5l")]
+
+[node name="SceneBootstrap" type="Node" parent="."]

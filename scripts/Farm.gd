@@ -581,6 +581,10 @@ func _harvest_crop(cell: Vector2i) -> void:
 
 	GameState.inventory_add(item_name, qty)
 	print("Harvested ", crop_name, " at ", cell, " -> +", qty, " ", item_name)
+	
+	# NEW: Heart / quest / analytics hook
+	QuestEvents.crop_harvested.emit(item_name, qty)
+
 	_play_sfx(sfx_harvest, _cell_to_world_center(cell))
 	player.camera_shake(1.5, 0.08, 28.0, 12.0)
 

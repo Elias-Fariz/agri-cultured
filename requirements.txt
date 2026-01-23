@@ -45,6 +45,12 @@ Phase 3: Stardew Feel
 * Gifting *CHECK*
 - Save to Disk
 
+Phase 3.5: Valley Heart
+* New Area *CHECK*
+* Progress Tracker
+* Milestone Rewards
+* Visual Changes
+
 Phase 4: Inventory/UI Polish
 
 Phase 5: Expanding

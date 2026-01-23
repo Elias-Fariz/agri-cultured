@@ -414,6 +414,8 @@ func toast_info(msg: String, duration: float = 2.0) -> void:
 var _gifted_day_by_npc: Dictionary = {}      # npc_id -> int day last gifted
 var _gifted_week_count_by_npc: Dictionary = {} # npc_id -> Dictionary{ week_key: int count }
 
+var pending_cutscene_id: String = ""
+var _heart_intro_queued: bool = false
 
 func _ready() -> void:
 	reset_energy()
@@ -425,12 +427,13 @@ func _ready() -> void:
 	QuestEvents.shipped.connect(_on_quest_shipped)
 	QuestEvents.chopped_tree.connect(_on_quest_chopped_tree)
 	QuestEvents.broke_rock.connect(_on_quest_broke_rock)
-	QuestEvents.harvested.connect(_on_quest_harvested)
 	QuestEvents.item_purchased.connect(_on_item_purchased)
 	
 	QuestEvents.item_picked_up.connect(_on_item_picked_up)
 	QuestEvents.item_crafted.connect(_on_item_crafted)
 	QuestEvents.item_gifted.connect(_on_item_gifted)
+	
+	QuestEvents.crop_harvested.connect(_on_crop_harvested)
 	
 	QuestEvents.ui_opened.connect(_on_quest_ui_opened)
 	var tm := get_node_or_null("/root/TimeManager")
@@ -656,11 +659,21 @@ func _on_quest_broke_rock(amount: int) -> void:
 	GameState.apply_quest_event("break_rock", "", amount)
 	QuestEvents.quest_state_changed.emit()
 
-func _on_quest_harvested(item_id: String, amount: int) -> void:
-	#_increment_matching_quests("harvest", item_id, amount)
-	GameState.apply_quest_event("harvest", item_id, amount)
+func _on_crop_harvested(item_id: String, qty: int) -> void:
+	apply_quest_event("harvest", item_id, qty)
 	QuestEvents.quest_state_changed.emit()
 	
+	# Only queue once, ever (or you can reset later if you want)
+	if _heart_intro_queued:
+		return
+	_heart_intro_queued = true
+
+	# Queue the cutscene for the next morning
+	pending_cutscene_id = "heart_intro"
+
+	# Optional: a tiny hint toast (can be subtle)
+	QuestEvents.toast_requested.emit("Something stirs in the valley...")
+
 func _on_quest_ui_opened(ui_id: String) -> void:
 	GameState.apply_quest_event("ui_open", ui_id, 1)
 	QuestEvents.quest_state_changed.emit()
@@ -1168,6 +1181,8 @@ func unlock_travel(travel_id: String) -> void:
 	var msg := "New area unlocked!"
 	if travel_id == "animal_keeper":
 		msg = "New area unlocked: Animal Keeper"
+	elif travel_id == "valley_heart":
+		msg = "New area unlocked: Valley Heart"
 
 	QuestEvents.toast_requested.emit(msg, "success", 3.0)
 
@@ -1345,3 +1360,58 @@ func mark_gifted_to_npc(npc_id: String) -> void:
 	var count_this_week := int(wk_map.get(wk, 0))
 	wk_map[wk] = count_this_week + 1
 	_gifted_week_count_by_npc[npc_id] = wk_map
+
+func try_play_pending_cutscene() -> void:
+	if pending_cutscene_id == "":
+		return
+
+	var id := pending_cutscene_id
+	pending_cutscene_id = ""
+
+	# For now: dialogue-only cutscene stub.
+	# We'll replace this later with a proper CutsceneDirector.
+	if id == "heart_intro":
+		_play_heart_intro_stub()
+
+func _play_heart_intro_stub() -> void:
+	lock_gameplay()
+	
+	var lines: Array[String] = []
+	lines.append("Good morning…")
+	lines.append("I need to show you something special.")
+	lines.append("Meet me at the Heart of the Valley.")
+	
+	var mayor_id := "npc_mayor" # or whatever ID you use consistently
+	var f := GameState.get_friendship(mayor_id) # should return int
+
+	# Show dialogue through your existing dialogue UI
+	var ui := get_tree().get_first_node_in_group("dialogue_ui")
+	if ui and ui.has_method("show_dialogue"):
+		ui.show_dialogue("Mayor", lines, f)
+
+	# SAFEST: unlock after a short delay for now.
+	# Later we'll unlock exactly when dialogue ends (via a dialogue_finished signal).
+	await get_tree().create_timer(0.25).timeout
+
+	# Unlock Heart travel now (or after quest add)
+	unlock_travel("valley_heart") # rename to match your travel unlock API
+	unlock_gameplay()
+
+func _connect_cutscene_finish(ui: Node) -> void:
+	# Only connect if the UI actually has the signal
+	if ui.has_signal("dialogue_closed"):
+		# Avoid double-connecting if something weird happens
+		var cb := Callable(self, "_on_heart_intro_dialogue_closed")
+		if not ui.is_connected("dialogue_closed", cb):
+			ui.connect("dialogue_closed", cb, CONNECT_ONE_SHOT)
+	else:
+		# Fallback: if no signal exists, just clear pending so you don’t soft-lock
+		_clear_pending_cutscene()
+
+func _on_heart_intro_dialogue_closed() -> void:
+	GameState.unlock_travel("valley_heart")
+	_clear_pending_cutscene()
+
+
+func _clear_pending_cutscene() -> void:
+	pending_cutscene_id = ""

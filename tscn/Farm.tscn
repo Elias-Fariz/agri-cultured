@@ -49,13 +49,13 @@
 [ext_resource type="Script" uid="uid://c0wb6p01vhywa" path="res://scripts/RewardSpawnPoint.gd" id="44_6jl04"]
 [ext_resource type="PackedScene" uid="uid://cbaw8nhel818e" path="res://tscn/Bench.tscn" id="46_5apsn"]
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_hm1ss"]
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_hxf25"]
 texture = ExtResource("3_d13le")
 texture_region_size = Vector2i(32, 32)
 0:0/0 = 0
 0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_3h7oh"]
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_qt7bv"]
 texture = ExtResource("4_stcfw")
 texture_region_size = Vector2i(32, 32)
 0:0/0 = 0
@@ -73,7 +73,7 @@ texture_region_size = Vector2i(32, 32)
 1:3/0 = 0
 2:3/0 = 0
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_6jl04"]
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_6t02o"]
 texture = ExtResource("5_3h77f")
 texture_region_size = Vector2i(32, 32)
 0:0/0 = 0
@@ -82,9 +82,9 @@ texture_region_size = Vector2i(32, 32)
 [sub_resource type="TileSet" id="TileSet_2ywwf"]
 tile_size = Vector2i(32, 32)
 physics_layer_0/collision_layer = 1
-sources/0 = SubResource("TileSetAtlasSource_hm1ss")
-sources/1 = SubResource("TileSetAtlasSource_3h7oh")
-sources/2 = SubResource("TileSetAtlasSource_6jl04")
+sources/0 = SubResource("TileSetAtlasSource_hxf25")
+sources/1 = SubResource("TileSetAtlasSource_qt7bv")
+sources/2 = SubResource("TileSetAtlasSource_6t02o")
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_og6c6"]
 
@@ -166,6 +166,20 @@ shape = SubResource("RectangleShape2D_k5exi")
 [node name="Sprite2D" type="Sprite2D" parent="TravelPoints/ToAnimalKeeperArea"]
 texture = ExtResource("6_mre8b")
 
+[node name="ToHeart" type="Area2D" parent="TravelPoints"]
+position = Vector2(143, 61)
+collision_mask = 3
+script = ExtResource("29_f2th2")
+target_scene_path = "res://tscn/ValleyHeart.tscn"
+target_spawn_tag = "from_farm"
+travel_id = "valley_heart"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TravelPoints/ToHeart"]
+shape = SubResource("RectangleShape2D_k5exi")
+
+[node name="Sprite2D" type="Sprite2D" parent="TravelPoints/ToHeart"]
+texture = ExtResource("6_mre8b")
+
 [node name="SpawnFromTown" type="Marker2D" parent="TravelPoints" groups=["spawn_points"]]
 position = Vector2(401, 170)
 script = ExtResource("42_hm1ss")
@@ -175,6 +189,11 @@ tag = "from_town"
 position = Vector2(93, 249)
 script = ExtResource("42_hm1ss")
 tag = "from_keeper"
+
+[node name="SpawnFromHeart" type="Marker2D" parent="TravelPoints" groups=["spawn_points"]]
+position = Vector2(112, 61)
+script = ExtResource("42_hm1ss")
+tag = "from_heart"
 
 [node name="DayNightOverlay" parent="." instance=ExtResource("8_2ywwf")]
 

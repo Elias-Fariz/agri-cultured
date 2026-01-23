@@ -36,7 +36,14 @@ func _on_continue_pressed() -> void:
 func _flush_day_start_toasts_deferred() -> void:
 	# Wait 1 frame to ensure UI is really gone
 	await get_tree().process_frame
+
+	# 1) Show any queued "day start" toasts first
 	GameState.flush_day_start_toasts()
+
+	# 2) Next frame, try cutscene (so it doesn't fight with toasts)
+	await get_tree().process_frame
+	if GameState.has_method("try_play_pending_cutscene"):
+		GameState.try_play_pending_cutscene()
 
 func is_open() -> bool:
 	return opened

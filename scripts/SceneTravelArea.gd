@@ -3,6 +3,10 @@ extends Area2D
 @export var target_scene_path: String = ""
 @export var target_spawn_tag: String = ""
 
+# NEW: Travel unlock ID (optional)
+# If set, this pad can be unlocked by GameState.unlock_travel(travel_id)
+@export var travel_id: String = ""   # e.g. "valley_heart", "animal_keeper"
+
 # Locking rules
 @export var required_completed_quests: Array[String] = []
 @export var require_claimed: bool = true
@@ -38,8 +42,17 @@ func interact() -> void:
 
 
 func _is_unlocked() -> bool:
+	# 1) If a travel_id is set, it can unlock via GameState.unlock_travel()
+	var tid := travel_id.strip_edges()
+	if tid != "":
+		if GameState != null and GameState.has_method("is_travel_unlocked"):
+			if bool(GameState.call("is_travel_unlocked", tid)):
+				return true
+
+	# 2) Otherwise (or additionally), fall back to quest-based gating
 	if required_completed_quests.is_empty():
-		return true
+		# If there is no travel_id unlock AND no quest requirements, it's open
+		return tid == ""  # if tid is set but not unlocked, keep it locked
 
 	for qid in required_completed_quests:
 		var id := String(qid).strip_edges()
