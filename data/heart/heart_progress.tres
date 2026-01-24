@@ -1,0 +1,38 @@
+[gd_resource type="Resource" script_class="HeartProgressData" load_steps=7 format=3 uid="uid://do8w2plt3b36n"]
+
+[ext_resource type="Script" uid="uid://cj1wn7rax28o2" path="res://data/heart/HeartDomainData.gd" id="1_rwjmw"]
+[ext_resource type="Script" uid="uid://cpqqxprylercm" path="res://data/heart/HeartProgressData.gd" id="2_8f7dt"]
+
+[sub_resource type="Resource" id="Resource_rwjmw"]
+script = ExtResource("1_rwjmw")
+next_hint = "Harvest crops to awaken the soil."
+metadata/_custom_type_script = "uid://cj1wn7rax28o2"
+
+[sub_resource type="Resource" id="Resource_8f7dt"]
+script = ExtResource("1_rwjmw")
+id = "sea"
+display_name = "Tide Heart"
+next_hint = "Pick up the gifts the sea leaves behind."
+metadata/_custom_type_script = "uid://cj1wn7rax28o2"
+
+[sub_resource type="Resource" id="Resource_iimjv"]
+script = ExtResource("1_rwjmw")
+id = "people"
+display_name = "Kindling Heart"
+next_hint = "Make friends with the local populus."
+metadata/_custom_type_script = "uid://cj1wn7rax28o2"
+
+[sub_resource type="Resource" id="Resource_xdufd"]
+script = ExtResource("1_rwjmw")
+id = "craft"
+display_name = "Ember Heart"
+next_hint = "Spark your motivation by crafting your imagination."
+metadata/_custom_type_script = "uid://cj1wn7rax28o2"
+
+[resource]
+script = ExtResource("2_8f7dt")
+domains = Array[ExtResource("1_rwjmw")]([SubResource("Resource_rwjmw"), SubResource("Resource_8f7dt"), SubResource("Resource_iimjv"), SubResource("Resource_xdufd")])
+counters = {
+"harvest": 3
+}
+metadata/_custom_type_script = "uid://cpqqxprylercm"

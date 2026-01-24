@@ -1,0 +1,38 @@
+[gd_scene load_steps=2 format=3 uid="uid://lx466cy4gjau"]
+
+[ext_resource type="Script" uid="uid://bny8egpct8uh2" path="res://scripts/HeartProgressUI.gd" id="1_ewudu"]
+
+[node name="HeartProgressUI" type="CanvasLayer" groups=["heart_ui"]]
+script = ExtResource("1_ewudu")
+visual_node_path = NodePath("Panel")
+start_visible_in_game = false
+is_modal = true
+
+[node name="Panel" type="Panel" parent="."]
+visible = false
+custom_minimum_size = Vector2(400, 500)
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="VBox" type="VBoxContainer" parent="Panel"]
+custom_minimum_size = Vector2(400, 450)
+layout_mode = 0
+offset_left = -1.0
+offset_right = 399.0
+offset_bottom = 450.0
+
+[node name="Title" type="Label" parent="Panel/VBox"]
+layout_mode = 2
+text = "Valley Heart"
+
+[node name="Hint" type="Label" parent="Panel/VBox"]
+layout_mode = 2
+text = "Walk to wings..."
+
+[node name="Domains" type="VBoxContainer" parent="Panel/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="CloseHint" type="Label" parent="Panel/VBox"]
+layout_mode = 2
+text = "Sprouts are quick... Roots take time..."

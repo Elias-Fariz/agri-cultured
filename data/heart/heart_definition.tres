@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="HeartDefinitionData" load_steps=5 format=3 uid="uid://dlnyv515cd3bl"]
+
+[ext_resource type="Script" uid="uid://c885adlv5mv1" path="res://data/heart/HeartMilestoneData.gd" id="1_72vlk"]
+[ext_resource type="Script" uid="uid://b4rc10u3xe6yh" path="res://data/heart/HeartDefinitionData.gd" id="2_5buww"]
+
+[sub_resource type="Resource" id="Resource_72vlk"]
+script = ExtResource("1_72vlk")
+id = "land_sprout_1"
+counter_key = "harvest"
+hint = "Harvest a few crops to help the soil remember."
+metadata/_custom_type_script = "uid://c885adlv5mv1"
+
+[sub_resource type="Resource" id="Resource_5buww"]
+script = ExtResource("1_72vlk")
+id = "land_sprout_2"
+order = 2
+counter_key = "harvest"
+required_amount = 10
+hint = "A stronger rhythm... keep harvesting."
+metadata/_custom_type_script = "uid://c885adlv5mv1"
+
+[resource]
+script = ExtResource("2_5buww")
+milestones = Array[ExtResource("1_72vlk")]([SubResource("Resource_72vlk"), SubResource("Resource_5buww")])
+metadata/_custom_type_script = "uid://b4rc10u3xe6yh"

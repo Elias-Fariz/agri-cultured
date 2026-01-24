@@ -27,15 +27,22 @@ enum TimeBlock { MORNING, DAY, EVENING, NIGHT }
 
 var _did_passout_today: bool = false
 
+# NEW: Timeless zone support (pause time, keep gameplay)
+var _timeless_lock_count: int = 0
+var _time_was_running_before_timeless: bool = true
+
+
 func _ready() -> void:
 	# Bootstrap: let listeners (HUD, quests, etc.) know the initial day.
 	emit_signal("day_changed", day)
 	emit_signal("time_changed", minutes)
 
+
 func _process(delta: float) -> void:
 	if not running:
 		return
 	advance_time(delta * minutes_per_real_second)
+
 
 func advance_time(delta_minutes: float) -> void:
 	minutes_float += delta_minutes
@@ -52,15 +59,16 @@ func advance_time(delta_minutes: float) -> void:
 	if display_minutes != minutes:
 		minutes = display_minutes
 		emit_signal("time_changed", minutes)
-		
+
+
 func start_new_day() -> void:
 	day += 1
 	minutes_float = morning_start_minutes
 	minutes = int(minutes_float)
-	
+
 	WeatherChange.roll_new_day_weather()
 	print("Weather today:", WeatherChange.get_weather_name())
-	
+
 	emit_signal("day_changed", day)
 	emit_signal("time_changed", minutes)
 
@@ -68,19 +76,53 @@ func start_new_day() -> void:
 	GameState.shipping_payout_and_clear()
 	_did_passout_today = false
 
+
 func get_time_string() -> String:
 	var h := minutes / 60
 	var m := minutes % 60
 	return "%02d:%02d" % [h, m]
 
+
 func pause_time() -> void:
 	running = false
 
+
 func resume_time() -> void:
+	# Respect timeless zones: if we are in timeless mode, keep time paused.
+	if _timeless_lock_count > 0:
+		running = false
+		return
 	running = true
 
+
 func set_paused(paused: bool) -> void:
-	running = not paused
+	if paused:
+		pause_time()
+	else:
+		resume_time()
+
+
+# NEW: Pause time but do NOT lock gameplay. Great for Valley Heart serenity.
+func enter_timeless_zone() -> void:
+	_timeless_lock_count += 1
+	if _timeless_lock_count == 1:
+		_time_was_running_before_timeless = running
+		pause_time()
+
+
+func exit_timeless_zone() -> void:
+	_timeless_lock_count = max(0, _timeless_lock_count - 1)
+	if _timeless_lock_count == 0:
+		# Restore time only if it was running before we entered timeless mode.
+		if _time_was_running_before_timeless:
+			resume_time()
+		else:
+			pause_time()
+
+
+func is_timeless() -> bool:
+	return _timeless_lock_count > 0
+
 
 func get_time_block(minutes: int) -> int:
 	var hour: int = int(minutes / 60)
@@ -93,6 +135,7 @@ func get_time_block(minutes: int) -> int:
 		return TimeBlock.EVENING
 	return TimeBlock.NIGHT
 
+
 func get_time_block_key(minutes: int) -> String:
 	match get_time_block(minutes):
 		TimeBlock.MORNING: return "morning"
@@ -100,12 +143,15 @@ func get_time_block_key(minutes: int) -> String:
 		TimeBlock.EVENING: return "evening"
 		_: return "night"
 
+
 func _passout_cutoff_minutes() -> int:
 	return (24 * 60) + (passout_hour * 60)  # e.g. 1440 + 120 = 1560
+
 
 func _trigger_passout() -> void:
 	# Run the passout sequence as a coroutine
 	_passout_sequence()
+
 
 func _passout_sequence() -> void:
 	# Lock everything so the player can't move during the "oops" moment
@@ -129,13 +175,12 @@ func _passout_sequence() -> void:
 	# Warp home (your existing function)
 	GameState.warp_to_farm_after_passout()
 
-	# Show summary (you said your method is show_summary, and group is end_of_day_ui)
+	# Show summary (your method is show_summary; group is end_of_day_ui)
 	GameState.request_end_of_day_summary()
-	
+
 	GameState.unlock_gameplay()
 
-	# Unlock + resume time AFTER the summary closes (we'll do that in Part B)
-	# For now, keep it locked; the summary is modal anyway.
+	# Note: time resumes after summary closes, handled elsewhere.
 
 
 func _flush_day_start_toasts_deferred() -> void:
