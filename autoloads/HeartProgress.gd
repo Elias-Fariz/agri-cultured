@@ -5,18 +5,28 @@ extends Node
 signal changed
 signal milestone_completed(domain_id: String, milestone_id: String)
 
-# You said these paths are correct in your project
 const DEF_PATH := "res://data/heart/heart_definition.tres"
 const SAVE_PATH := "res://data/heart/heart_progress.tres"
+
+# -------------------------------------------------------------------------
+# DEV / TESTING SWITCHES (flip these while you iterate)
+# -------------------------------------------------------------------------
+# If true: never save progress to disk. (Your reveal can be tested repeatedly.)
+const DEV_DISABLE_SAVE := true
+
+# If true: ignore what's in heart_progress.tres and start fresh each run.
+# (Useful when the file already has old data.)
+const DEV_FORCE_FRESH_ON_START := false
+
+# If true: when starting fresh, also clear milestone completion.
+const DEV_CLEAR_MILESTONES_ON_FRESH := true
+
+# -------------------------------------------------------------------------
 
 var definition: Resource = null
 var progress: Resource = null
 
-# Canonical action counters (match Quest system action ids!)
-# e.g. "harvest", "ship", "craft", "gift", "chop_tree", etc.
 var counters: Dictionary = {}
-
-# Optional: per-item breakdown (handy later for milestones like "harvest 10 strawberries")
 var item_counters: Dictionary = {} # item_id -> int
 
 
@@ -38,7 +48,17 @@ func _load_resources() -> void:
 	if progress == null:
 		push_warning("HeartProgress: Could not load progress: %s (runtime only for now)" % SAVE_PATH)
 
-	# Pull existing counters if your progress resource has them
+	# Ensure revealed_milestones exists if the resource supports it
+	if progress != null and not ("revealed_milestones" in progress):
+		progress.set("revealed_milestones", {})
+
+	# Optionally force a fresh start (for testing)
+	if DEV_FORCE_FRESH_ON_START:
+		_reset_progress_in_memory()
+		print("[HeartProgress] DEV_FORCE_FRESH_ON_START enabled: starting with fresh progress.")
+		return
+
+	# Pull existing counters from progress resource
 	if progress != null:
 		if "counters" in progress:
 			counters = progress.get("counters")
@@ -53,13 +73,44 @@ func _load_resources() -> void:
 	if item_counters == null:
 		item_counters = {}
 
-	# Normalize to ints
+	# Normalize numeric counters only (avoid breaking any arrays you store)
 	for k in counters.keys():
-		counters[k] = int(counters[k])
+		if typeof(counters[k]) in [TYPE_INT, TYPE_FLOAT, TYPE_STRING]:
+			counters[k] = int(counters[k])
+
 	for k2 in item_counters.keys():
 		item_counters[k2] = int(item_counters[k2])
 
 	print("[HeartProgress] Loaded. counters=", counters, " item_counters=", item_counters)
+
+
+func _reset_progress_in_memory() -> void:
+	counters = {}
+	item_counters = {}
+
+	if progress != null:
+		# Clear persisted dictionaries (in-memory only unless you save)
+		if "counters" in progress:
+			progress.set("counters", {})
+		if "item_counters" in progress:
+			progress.set("item_counters", {})
+		if "revealed_milestones" in progress:
+			progress.set("revealed_milestones", {})
+
+		if DEV_CLEAR_MILESTONES_ON_FRESH and ("completed_milestones" in progress):
+			progress.set("completed_milestones", {})
+
+	emit_signal("changed")
+
+
+# -----------------------------------------------------------------------------
+# Public: reset (for testing)
+# -----------------------------------------------------------------------------
+func reset_progress_runtime(save_after: bool = false) -> void:
+	_reset_progress_in_memory()
+	if save_after:
+		_save_progress_if_possible()
+	print("[HeartProgress] reset_progress_runtime(save_after=%s)" % str(save_after))
 
 
 # -----------------------------------------------------------------------------
@@ -71,17 +122,16 @@ func _connect_signals() -> void:
 		push_warning("HeartProgress: QuestEvents autoload not found at /root/QuestEvents")
 		return
 
-	# ✅ This is your real harvest signal
 	if qe.has_signal("crop_harvested"):
 		var cb := Callable(self, "_on_crop_harvested")
 		if not qe.is_connected("crop_harvested", cb):
 			qe.connect("crop_harvested", cb)
 			print("[HeartProgress] Connected: QuestEvents.crop_harvested")
 
-	# Optional: future-proof hooks (only connect if they exist)
-	_try_connect(qe, "item_shipped", "_on_item_shipped")     # (item_id, qty)
-	_try_connect(qe, "item_crafted", "_on_item_crafted")     # (item_id, qty)
-	_try_connect(qe, "item_gifted", "_on_item_gifted")       # (npc_id, item_id, qty)
+	_try_connect(qe, "item_shipped", "_on_item_shipped")
+	_try_connect(qe, "item_crafted", "_on_item_crafted")
+	_try_connect(qe, "item_gifted", "_on_item_gifted")
+
 
 func _try_connect(obj: Object, sig: String, method: String) -> void:
 	if obj == null:
@@ -99,26 +149,27 @@ func _try_connect(obj: Object, sig: String, method: String) -> void:
 # Incoming events -> canonical action ids
 # -----------------------------------------------------------------------------
 func _on_crop_harvested(item_id: String, amount: int) -> void:
-	# Your quest system uses action id "harvest"
 	_add_action("harvest", amount)
 	_add_item(item_id, amount)
 
-	# Minimal “first sprout” rule (safe starter)
-	# Once your heart_definition milestones are fully wired, we can remove this.
+	# Starter milestone hook (keep as-is)
 	if get_count("harvest") >= 1:
 		_mark_milestone_done_if_supported("land", "sprout_1_harvest_1")
 
 	emit_signal("changed")
+
 
 func _on_item_shipped(item_id: String, amount: int) -> void:
 	_add_action("ship", amount)
 	_add_item(item_id, amount)
 	emit_signal("changed")
 
+
 func _on_item_crafted(item_id: String, amount: int) -> void:
 	_add_action("craft", amount)
 	_add_item(item_id, amount)
 	emit_signal("changed")
+
 
 func _on_item_gifted(_npc_id: String, item_id: String, amount: int) -> void:
 	_add_action("gift", amount)
@@ -138,6 +189,7 @@ func _add_action(action_id: String, amount: int) -> void:
 	_mirror_into_progress()
 	_save_progress_if_possible()
 
+
 func _add_item(item_id: String, amount: int) -> void:
 	item_id = item_id.strip_edges()
 	if item_id == "" or amount <= 0:
@@ -147,21 +199,22 @@ func _add_item(item_id: String, amount: int) -> void:
 	_mirror_into_progress()
 	_save_progress_if_possible()
 
+
 func get_count(action_id: String) -> int:
 	return int(counters.get(action_id, 0))
+
 
 func get_item_count(item_id: String) -> int:
 	return int(item_counters.get(item_id, 0))
 
 
 # -----------------------------------------------------------------------------
-# Milestone tracking (compatible with your “completed_milestones” style if present)
+# Milestone tracking
 # -----------------------------------------------------------------------------
 func _mark_milestone_done_if_supported(domain_id: String, milestone_id: String) -> void:
 	if domain_id == "" or milestone_id == "":
 		return
 
-	# Preferred: progress.completed_milestones[domain_id] = [milestone_ids...]
 	if progress != null and ("completed_milestones" in progress):
 		var cm: Dictionary = progress.get("completed_milestones")
 		if cm == null:
@@ -189,6 +242,7 @@ func _mark_milestone_done_if_supported(domain_id: String, milestone_id: String) 
 		counters[key] = done
 		emit_signal("milestone_completed", domain_id, milestone_id)
 
+
 func has_milestone(domain_id: String, milestone_id: String) -> bool:
 	if progress != null and ("completed_milestones" in progress):
 		var cm: Dictionary = progress.get("completed_milestones")
@@ -202,6 +256,49 @@ func has_milestone(domain_id: String, milestone_id: String) -> bool:
 
 
 # -----------------------------------------------------------------------------
+# Reveal history (presentation layer)
+# -----------------------------------------------------------------------------
+func _make_reveal_key(domain_id: String, milestone_id: String) -> String:
+	return "%s:%s" % [domain_id, milestone_id]
+
+
+func is_revealed(domain_id: String, milestone_id: String) -> bool:
+	if progress == null:
+		return false
+	if not ("revealed_milestones" in progress):
+		progress.set("revealed_milestones", {})
+
+	var rm: Dictionary = progress.get("revealed_milestones")
+	if rm == null:
+		rm = {}
+		progress.set("revealed_milestones", rm)
+
+	var key := _make_reveal_key(domain_id, milestone_id)
+	return rm.get(key, false) == true
+
+
+func mark_revealed(domain_id: String, milestone_id: String) -> void:
+	if progress == null:
+		return
+	if not ("revealed_milestones" in progress):
+		progress.set("revealed_milestones", {})
+
+	var rm: Dictionary = progress.get("revealed_milestones")
+	if rm == null:
+		rm = {}
+		progress.set("revealed_milestones", rm)
+
+	var key := _make_reveal_key(domain_id, milestone_id)
+	if rm.get(key, false) == true:
+		return
+
+	rm[key] = true
+	progress.set("revealed_milestones", rm)
+	_save_progress_if_possible()
+	emit_signal("changed")
+
+
+# -----------------------------------------------------------------------------
 # Persist (editor-friendly; later we migrate to user://)
 # -----------------------------------------------------------------------------
 func _mirror_into_progress() -> void:
@@ -212,9 +309,14 @@ func _mirror_into_progress() -> void:
 	if "item_counters" in progress:
 		progress.set("item_counters", item_counters)
 
+
 func _save_progress_if_possible() -> void:
 	if progress == null:
 		return
+	if DEV_DISABLE_SAVE:
+		# DEV: do not persist while testing
+		return
+
 	var err := ResourceSaver.save(progress, SAVE_PATH)
 	if err != OK:
 		push_warning("HeartProgress: Could not save progress to %s (err=%s)" % [SAVE_PATH, str(err)])

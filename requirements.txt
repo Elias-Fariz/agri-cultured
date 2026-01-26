@@ -49,8 +49,8 @@ Phase 3.5: Valley Heart
 * New Area *CHECK*
 * Progress Tracker
 * Milestone Rewards
-* Visual Changes
-* Cutscenes
+* Visual Changes *BASELINE*
+* Cutscenes *BASELINE*
 * Moving Tools out of Farm.gd
 
 Phase 4: Inventory/UI Polish

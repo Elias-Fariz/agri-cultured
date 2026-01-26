@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="HeartProgressData" load_steps=7 format=3 uid="uid://do8w2plt3b36n"]
+[gd_resource type="Resource" script_class="HeartProgressData" load_steps=7 format=3 uid="uid://72j2fl4kyioq"]
 
 [ext_resource type="Script" uid="uid://cj1wn7rax28o2" path="res://data/heart/HeartDomainData.gd" id="1_rwjmw"]
 [ext_resource type="Script" uid="uid://cpqqxprylercm" path="res://data/heart/HeartProgressData.gd" id="2_8f7dt"]
@@ -32,7 +32,4 @@ metadata/_custom_type_script = "uid://cj1wn7rax28o2"
 [resource]
 script = ExtResource("2_8f7dt")
 domains = Array[ExtResource("1_rwjmw")]([SubResource("Resource_rwjmw"), SubResource("Resource_8f7dt"), SubResource("Resource_iimjv"), SubResource("Resource_xdufd")])
-counters = {
-"harvest": 3
-}
 metadata/_custom_type_script = "uid://cpqqxprylercm"

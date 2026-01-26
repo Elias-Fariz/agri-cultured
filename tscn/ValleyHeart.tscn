@@ -1,8 +1,9 @@
-[gd_scene load_steps=47 format=3 uid="uid://cwspce5y4tb13"]
+[gd_scene load_steps=49 format=3 uid="uid://cwspce5y4tb13"]
 
 [ext_resource type="TileSet" uid="uid://bqs5ruk6pejpc" path="res://tiles/GroundTileset.tres" id="1_vkoen"]
 [ext_resource type="Script" uid="uid://bywlb7k2vtqr" path="res://scripts/ValleyHeart.gd" id="1_ye5kf"]
 [ext_resource type="Texture2D" uid="uid://caerjv5h3fdyv" path="res://art/tree.png" id="2_05sqv"]
+[ext_resource type="Resource" uid="uid://72j2fl4kyioq" path="res://data/heart/heart_progress.tres" id="2_818gh"]
 [ext_resource type="Texture2D" uid="uid://b6q6p1rqkpdec" path="res://art/crops.png" id="3_jex6b"]
 [ext_resource type="Texture2D" uid="uid://1d6ygtxnkroh" path="res://art/rock.PNG" id="4_se66s"]
 [ext_resource type="Texture2D" uid="uid://bwudms0hgr4q7" path="res://art/grass.png" id="5_iiyss"]
@@ -38,6 +39,7 @@
 [ext_resource type="PackedScene" uid="uid://ixx7e0mb3ds4" path="res://ui/GiftUI.tscn" id="31_hxn5l"]
 [ext_resource type="Script" uid="uid://dtnt771y54j77" path="res://scripts/HeartVisualController.gd" id="37_cix88"]
 [ext_resource type="Script" uid="uid://db23ydj4dqo8r" path="res://data/heart/HeartVisualBinding.gd" id="38_teva3"]
+[ext_resource type="Script" uid="uid://b8h23vsvf630b" path="res://scripts/HeartRevealDirector.gd" id="39_hxn5l"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_qprux"]
 texture = ExtResource("2_05sqv")
@@ -91,6 +93,8 @@ metadata/_custom_type_script = "uid://db23ydj4dqo8r"
 
 [node name="ValleyHeart" type="Node2D"]
 script = ExtResource("1_ye5kf")
+heart_progress_res = ExtResource("2_818gh")
+reveal_director_path = NodePath("HeartRevealDirector")
 
 [node name="TileMaps" type="Node2D" parent="."]
 
@@ -115,6 +119,8 @@ layer_0/tile_data = PackedInt32Array(393226, 0, 0, 262152, 0, 0, 458756, 2, 0, 1
 [node name="Sprout1" type="Sprite2D" parent="Sections/LandWing/Visuals"]
 visible = false
 texture = ExtResource("5_iiyss")
+
+[node name="Sprout1Focus" type="Marker2D" parent="Sections/LandWing/Visuals"]
 
 [node name="TriggerArea" type="Area2D" parent="Sections/LandWing"]
 
@@ -229,7 +235,7 @@ volume_db = 24.0
 one_shot = true
 
 [node name="Player" parent="." instance=ExtResource("19_wrwcu")]
-position = Vector2(231, 237)
+position = Vector2(96, 224)
 
 [node name="SpawnManager" type="Node" parent="."]
 script = ExtResource("19_vuwqn")
@@ -265,3 +271,13 @@ script = ExtResource("19_vuwqn")
 [node name="HeartVisualController" type="Node" parent="."]
 script = ExtResource("37_cix88")
 bindings = Array[ExtResource("38_teva3")]([SubResource("Resource_hxn5l")])
+
+[node name="HeartCamera2D" type="Camera2D" parent="."]
+enabled = false
+
+[node name="HeartRevealDirector" type="Node" parent="."]
+script = ExtResource("39_hxn5l")
+heart_camera_path = NodePath("../HeartCamera2D")
+visual_controller_path = NodePath("../HeartVisualController")
+bounds_top_left_path = NodePath("../CameraBounds/TopLeft")
+bounds_bottom_right_path = NodePath("../CameraBounds/BottomRight")
