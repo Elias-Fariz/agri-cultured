@@ -4,6 +4,7 @@
 
 [resource]
 script = ExtResource("1_qcw0u")
+id = "Watermelon"
 display_name = "Watermelon"
 sell_price = 35
 description = "Yummy, delicious"

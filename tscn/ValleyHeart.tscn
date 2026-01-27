@@ -1,4 +1,4 @@
-[gd_scene load_steps=50 format=3 uid="uid://cwspce5y4tb13"]
+[gd_scene load_steps=54 format=3 uid="uid://cwspce5y4tb13"]
 
 [ext_resource type="TileSet" uid="uid://bqs5ruk6pejpc" path="res://tiles/GroundTileset.tres" id="1_vkoen"]
 [ext_resource type="Script" uid="uid://bywlb7k2vtqr" path="res://scripts/ValleyHeart.gd" id="1_ye5kf"]
@@ -34,8 +34,11 @@
 [ext_resource type="Script" uid="uid://b58bb81l27nno" path="res://ui/HeartCutsceneOverlay.gd" id="25_tokjd"]
 [ext_resource type="PackedScene" uid="uid://dk1aaefcs7nwf" path="res://ui/QuestBoardUI.tscn" id="26_nyydk"]
 [ext_resource type="PackedScene" uid="uid://dfcn8oje3hko1" path="res://ui/EndOfDaySummaryUI.tscn" id="27_iiyss"]
+[ext_resource type="AudioStream" uid="uid://dn6qldyiomxpv" path="res://audio/sfx/sfx_money_01.WAV" id="28_tufxq"]
 [ext_resource type="PackedScene" uid="uid://dexrjrr1c8jfb" path="res://ui/ShopUI.tscn" id="28_ye5kf"]
+[ext_resource type="AudioStream" uid="uid://b3hqj80ovverl" path="res://audio/sfx/sfx_harvest_chime_01.WAV" id="29_81ihf"]
 [ext_resource type="PackedScene" uid="uid://dtrn2d385g5ul" path="res://ui/InventoryUI.tscn" id="29_cix88"]
+[ext_resource type="AudioStream" uid="uid://bo8vbuyt37bti" path="res://audio/sfx/sfx_water_splash_01.WAV" id="30_c5fuf"]
 [ext_resource type="PackedScene" uid="uid://68vtjhtvdbhw" path="res://ui/ShippingUI.tscn" id="30_teva3"]
 [ext_resource type="PackedScene" uid="uid://ixx7e0mb3ds4" path="res://ui/GiftUI.tscn" id="31_hxn5l"]
 [ext_resource type="Script" uid="uid://dtnt771y54j77" path="res://scripts/HeartVisualController.gd" id="37_cix88"]
@@ -92,6 +95,14 @@ action_id = "harvest"
 amount_required = 1
 metadata/_custom_type_script = "uid://db23ydj4dqo8r"
 
+[sub_resource type="Resource" id="Resource_tokjd"]
+script = ExtResource("38_teva3")
+node_path = NodePath("../Sections/LandWing/Visuals/Sprout2")
+action_id = "harvest"
+amount_required = 2
+reveal_tier = 1
+metadata/_custom_type_script = "uid://db23ydj4dqo8r"
+
 [node name="ValleyHeart" type="Node2D"]
 script = ExtResource("1_ye5kf")
 heart_progress_res = ExtResource("2_818gh")
@@ -123,6 +134,13 @@ texture = ExtResource("5_iiyss")
 
 [node name="Sprout1Focus" type="Marker2D" parent="Sections/LandWing/Visuals"]
 position = Vector2(-79, 40)
+
+[node name="Sprout2" type="Sprite2D" parent="Sections/LandWing/Visuals"]
+position = Vector2(-184, 113)
+texture = ExtResource("5_iiyss")
+
+[node name="Sprout1Focus2" type="Marker2D" parent="Sections/LandWing/Visuals"]
+position = Vector2(-185, 109)
 
 [node name="TriggerArea" type="Area2D" parent="Sections/LandWing"]
 
@@ -242,9 +260,25 @@ position = Vector2(96, 224)
 [node name="SpawnManager" type="Node" parent="."]
 script = ExtResource("19_vuwqn")
 
+[node name="HeartVisualController" type="Node" parent="."]
+script = ExtResource("37_cix88")
+bindings = Array[ExtResource("38_teva3")]([SubResource("Resource_hxn5l"), SubResource("Resource_tokjd")])
+
+[node name="HeartRevealDirector" type="Node" parent="."]
+script = ExtResource("39_hxn5l")
+heart_camera_path = NodePath("../HeartCamera2D")
+visual_controller_path = NodePath("../HeartVisualController")
+bounds_top_left_path = NodePath("../CameraBounds/TopLeft")
+bounds_bottom_right_path = NodePath("../CameraBounds/BottomRight")
+cutscene_overlay_path = NodePath("../UI/HeartCutsceneOverlay")
+sprout_reveal_sfx = ExtResource("28_tufxq")
+root_reveal_sfx = ExtResource("29_81ihf")
+root_swell_sfx = ExtResource("30_c5fuf")
+
 [node name="UI" type="CanvasLayer" parent="."]
 
 [node name="HeartProgressUI" parent="UI" instance=ExtResource("24_ye5kf")]
+progress_data = ExtResource("2_818gh")
 
 [node name="HeartCutsceneOverlay" type="CanvasLayer" parent="UI"]
 script = ExtResource("25_tokjd")
@@ -303,17 +337,5 @@ grow_vertical = 2
 
 [node name="SceneBootstrap" type="Node" parent="."]
 
-[node name="HeartVisualController" type="Node" parent="."]
-script = ExtResource("37_cix88")
-bindings = Array[ExtResource("38_teva3")]([SubResource("Resource_hxn5l")])
-
 [node name="HeartCamera2D" type="Camera2D" parent="."]
 enabled = false
-
-[node name="HeartRevealDirector" type="Node" parent="."]
-script = ExtResource("39_hxn5l")
-heart_camera_path = NodePath("../HeartCamera2D")
-visual_controller_path = NodePath("../HeartVisualController")
-bounds_top_left_path = NodePath("../CameraBounds/TopLeft")
-bounds_bottom_right_path = NodePath("../CameraBounds/BottomRight")
-cutscene_overlay_path = NodePath("../UI/HeartCutsceneOverlay")

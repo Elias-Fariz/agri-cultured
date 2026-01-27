@@ -327,6 +327,8 @@ func get_friendship(npc_id: String) -> int:
 
 func add_friendship(npc_id: String, amount: int) -> void:
 	npc_friendship[npc_id] = get_friendship(npc_id) + amount
+	var new_level := clampi(npc_friendship[npc_id] / 10, 0, 10)
+	HeartProgress.set_friendship_level(npc_id, new_level)
 
 func can_gain_talk_friendship(npc_id: String, current_day: int) -> bool:
 	return int(npc_last_talk_day.get(npc_id, -999999)) != current_day

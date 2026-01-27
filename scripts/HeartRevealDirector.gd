@@ -50,6 +50,39 @@ var _reveal_tween: Tween = null
 var _current_entry: Dictionary = {}
 var _current_entry_active := false
 
+var _sfx_player: AudioStreamPlayer
+var _swell_player: AudioStreamPlayer
+
+# --- Tier tuning (NEW) -------------------------------------------------------
+@export var sprout_zoom_in := Vector2(0.90, 0.90)
+@export var root_zoom_in := Vector2(0.82, 0.82) # closer for roots
+
+@export var sprout_hold_time := 0.20
+@export var root_hold_time := 0.45
+
+@export var sprout_pan_time := 0.90
+@export var root_pan_time := 1.15
+
+@export var sprout_fade_time_override := 0.80
+@export var root_fade_time_override := 1.10
+
+@export var sprout_scale_from_override := 0.85
+@export var root_scale_from_override := 0.75
+
+@export var sprout_scale_time_override := 0.80
+@export var root_scale_time_override := 1.10
+
+# --- Audio (NEW) -------------------------------------------------------------
+@export var sprout_reveal_sfx: AudioStream
+@export var root_reveal_sfx: AudioStream
+
+# Optional: a soft swell for roots (if you want later)
+@export var root_swell_sfx: AudioStream
+
+@export var sfx_bus_name: StringName = &"SFX"
+
+@export var root_post_reveal_linger := 0.35  # cozy pause after the root ping finishes
+@export var sfx_poll_interval := 0.03        # how often we check if sound finished
 
 func _ready() -> void:
 	_heart_camera = get_node_or_null(heart_camera_path) as Camera2D
@@ -66,7 +99,15 @@ func _ready() -> void:
 	_overlay = get_node_or_null(cutscene_overlay_path)
 	set_process_unhandled_input(true)
 	
-	set_process(true) # allow _process() to run
+	set_process(true) # allow _process() to run 
+	
+	_sfx_player = AudioStreamPlayer.new()
+	_sfx_player.bus = sfx_bus_name
+	add_child(_sfx_player)
+
+	_swell_player = AudioStreamPlayer.new()
+	_swell_player.bus = sfx_bus_name
+	add_child(_swell_player)
 
 func _process(_delta: float) -> void:
 	if not _is_running:
@@ -164,6 +205,7 @@ func run_reveals_if_any() -> void:
 
 	# If skipped: fade to black, apply remaining instantly, fade back
 	if _skip_requested:
+		_stop_reveal_audio()
 		if _overlay and _overlay.has_method("fade_to"):
 			_overlay.call("fade_to", 1.0, 0.10)
 			await get_tree().create_timer(0.10).timeout
@@ -196,6 +238,7 @@ func run_reveals_if_any() -> void:
 		gs2.call("unlock_gameplay")
 
 	_is_running = false
+	_stop_reveal_audio()
 	reveal_finished.emit()
 
 	if debug_enabled:
@@ -210,9 +253,6 @@ func _apply_camera_bounds(cam: Camera2D, tl: Vector2, br: Vector2) -> void:
 
 
 func _reveal_one(entry: Dictionary) -> void:
-	_current_entry = entry
-	_current_entry_active = true
-
 	if not entry.has("node") or not entry.has("key"):
 		if debug_enabled:
 			print("[HeartRevealDirector] Bad pending entry:", entry)
@@ -222,36 +262,116 @@ func _reveal_one(entry: Dictionary) -> void:
 	var reveal_key: String = entry["key"]
 
 	if not is_instance_valid(target_node):
-		if debug_enabled:
-			print("[HeartRevealDirector] Target node invalid; skipping.")
+		_force_complete_entry(entry)
 		return
-	
+
+	var tier := _get_entry_tier(entry)
+
+	# Pick tier settings
+	var target_zoom := sprout_zoom_in if tier == 0 else root_zoom_in
+	var pan_time := sprout_pan_time if tier == 0 else root_pan_time
+	var hold_time := sprout_hold_time if tier == 0 else root_hold_time
+
+	var fade_time := sprout_fade_time_override if tier == 0 else root_fade_time_override
+	var scale_from := sprout_scale_from_override if tier == 0 else root_scale_from_override
+	var scale_time := sprout_scale_time_override if tier == 0 else root_scale_time_override
+
+	# Camera focus
 	var focus_pos := _get_focus_position(target_node)
-	var clamped_pos := _clamp_camera_target(focus_pos, zoom_in)
+	var clamped_pos := _clamp_camera_target(focus_pos, target_zoom)
 
 	if debug_enabled:
-		print("[HeartRevealDirector] Reveal key=", reveal_key, " focus=", focus_pos, " clamped=", clamped_pos)
+		print("[HeartRevealDirector] Reveal key=", reveal_key, " tier=", tier, " focus=", focus_pos, " clamped=", clamped_pos)
 
-	# Animate camera pan + zoom
-	await _tween_camera_to(clamped_pos, zoom_in)
-	if _skip_requested: return
+	# Pan + zoom (use override duration)
+	await _tween_camera_to(clamped_pos, target_zoom, pan_time)
 
-	# hold (optional skip-aware hold)
-	var elapsed := 0.0
-	while elapsed < camera_hold_time and not _skip_requested:
-		await get_tree().process_frame
-		elapsed += get_process_delta_time()
-	if _skip_requested: return
+	if _skip_requested:
+		_force_complete_entry(entry)
+		return
 
-	await _tween_canvasitem_reveal(target_node)
-	if _skip_requested: return
+	# Optional: stronger vignette moment for roots
+	# (Requires your overlay to support set_vignette_strength(strength, time))
+	if tier != 0 and _overlay and _overlay.has_method("set_vignette_strength"):
+		_overlay.call("set_vignette_strength", 0.65, 0.10) # pulse in
 
-	# Mark revealed (this should write to HeartProgress and re-sync visuals)
+	# Hold
+	await get_tree().create_timer(hold_time).timeout
+	if _skip_requested:
+		_force_complete_entry(entry)
+		return
+
+	# Audio
+	_stop_reveal_audio()
+
+	if tier == 0:
+		# Sprout: ping at start of bloom feels fine
+		if sprout_reveal_sfx and _sfx_player:
+			_sfx_player.stream = sprout_reveal_sfx
+			_sfx_player.play()
+	else:
+		# Root: swell first
+		if root_swell_sfx and _swell_player:
+			_swell_player.stream = root_swell_sfx
+			_swell_player.play()
+
+	# Animate the visual (pass overrides so roots feel weightier)
+	await _tween_canvasitem_reveal_tier(target_node, fade_time, scale_from, scale_time)
+	
+	# After bloom finishes, do the root "reveal ping"
+	if tier != 0 and not _skip_requested:
+		if root_reveal_sfx and _sfx_player:
+			_sfx_player.stream = root_reveal_sfx
+			_sfx_player.play()
+
+			# NEW: wait for the ping to finish (skip-safe)
+			await _await_sfx_finish_or_skip(_sfx_player)
+
+			# NEW: a tiny linger so accomplishment lands
+			if not _skip_requested and root_post_reveal_linger > 0.0:
+				await get_tree().create_timer(root_post_reveal_linger).timeout
+
+	# Vignette back to normal
+	if tier != 0 and _overlay and _overlay.has_method("set_vignette_strength"):
+		_overlay.call("set_vignette_strength", 0.30, 0.18) # pulse out
+
+	if _skip_requested:
+		_force_complete_entry(entry)
+		return
+
+	# Mark revealed
 	if _visual_controller.has_method("mark_reveal_done"):
 		_visual_controller.call("mark_reveal_done", reveal_key)
 	
-	_current_entry_active = false
+func _tween_canvasitem_reveal_tier(n: Node, fade_time: float, scale_from: float, scale_time: float) -> void:
+	var item := n as CanvasItem
+	if item == null:
+		return
 
+	item.visible = true
+
+	var original_modulate := item.modulate
+	var original_scale := Vector2.ONE
+	var has_scale := false
+
+	if n is Node2D:
+		original_scale = (n as Node2D).scale
+		has_scale = true
+
+	# Start hidden-ish
+	item.modulate = Color(original_modulate.r, original_modulate.g, original_modulate.b, 0.0)
+	if has_scale:
+		(n as Node2D).scale = original_scale * scale_from
+
+	var t := create_tween()
+	t.set_trans(Tween.TRANS_SINE)
+	t.set_ease(Tween.EASE_OUT)
+
+	t.tween_property(item, "modulate:a", original_modulate.a, fade_time)
+	if has_scale:
+		t.parallel().tween_property(n, "scale", original_scale, scale_time)
+
+	await t.finished
 
 func _get_global_pos(n: Node) -> Vector2:
 	if n is Node2D:
@@ -330,6 +450,7 @@ func _tween_camera_to(pos: Vector2, target_zoom: Vector2, duration_override: flo
 	# We poll so skip can break us out cleanly.
 	while _camera_tween != null and _camera_tween.is_running():
 		if _skip_requested:
+			_stop_reveal_audio()
 			_camera_tween.kill()
 			break
 		await get_tree().process_frame
@@ -371,6 +492,7 @@ func _tween_canvasitem_reveal(n: Node) -> void:
 
 	while _reveal_tween != null and _reveal_tween.is_running():
 		if _skip_requested:
+			_stop_reveal_audio()
 			_reveal_tween.kill()
 			break
 		await get_tree().process_frame
@@ -379,6 +501,7 @@ func _tween_canvasitem_reveal(n: Node) -> void:
 
 	# If we skipped mid-reveal, snap to fully shown so we don't leave half-alpha
 	if _skip_requested:
+		_stop_reveal_audio()
 		item.modulate = Color(original_modulate.r, original_modulate.g, original_modulate.b, 1.0)
 		if has_scale:
 			(n as Node2D).scale = original_scale
@@ -418,11 +541,29 @@ func _instant_reveal(entry: Dictionary) -> void:
 	if _visual_controller and _visual_controller.has_method("mark_reveal_done"):
 		_visual_controller.call("mark_reveal_done", k)
 
-func _abort_active_tweens() -> void:
-	if _camera_tween != null and _camera_tween.is_running():
-		_camera_tween.kill()
-	_camera_tween = null
+func _get_entry_tier(entry: Dictionary) -> int:
+	# Default to SPROUT if not provided
+	if entry.has("binding") and entry["binding"] != null:
+		var b = entry["binding"]
+		# Binding is a Resource, so use get() safely
+		if b.has_method("get"):
+			return int(b.get("reveal_tier"))
+	return 0 # HeartVisualBinding.RevealTier.SPROUT
 
-	if _reveal_tween != null and _reveal_tween.is_running():
-		_reveal_tween.kill()
-	_reveal_tween = null
+func _stop_reveal_audio() -> void:
+	if _sfx_player:
+		_sfx_player.stop()
+	if _swell_player:
+		_swell_player.stop()
+
+func _force_complete_entry(entry: Dictionary) -> void:
+	# Ensures the visual exists + is marked revealed, even if we skip mid-cutscene.
+	_instant_reveal(entry)
+	_stop_reveal_audio()
+
+func _await_sfx_finish_or_skip(player: AudioStreamPlayer) -> void:
+	if player == null:
+		return
+	# Wait until the stream finishes OR skip is requested.
+	while is_instance_valid(player) and player.playing and not _skip_requested:
+		await get_tree().create_timer(sfx_poll_interval).timeout

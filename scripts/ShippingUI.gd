@@ -70,6 +70,7 @@ func _refresh_inventory_list() -> void:
 		var price := GameState.get_sell_price(item_name)
 		# Example: "Watermelon x3 (35g)"
 		inventory_list.add_item("%s x%d (%dg)" % [item_name, count, price])
+		print("Added" % [item_name, count, price])
 
 func _refresh_bin_list() -> void:
 	bin_list.clear()

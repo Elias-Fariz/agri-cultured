@@ -142,7 +142,28 @@ func start_dialogue() -> void:
 		print("Node in group 'dialogue_ui' does not have show_dialogue(). Reattach DialogueUI.gd to the DialogueUI CanvasLayer.")
 		print("Found node:", ui.name, " type:", ui.get_class())
 		return
-		
+	
+	var f := GameState.get_friendship(npc_id)
+	# SHOP CHECK FIRST
+	if opens_shop:
+		var hour := int(TimeManager.minutes / 60)
+
+		if hour < shop_open_hour or hour >= shop_close_hour:
+			# Shop is closed → use dialogue instead of opening UI
+			var lines := shop_closed_lines
+			if lines.is_empty():
+				lines = ["Sorry, we’re closed right now. Come back tomorrow!"]
+
+			ui.show_dialogue(display_name, lines, f)
+		else:
+			# Shop is open → show ShopUI overlay
+			var shop_ui := get_tree().get_first_node_in_group("shop_ui")
+			if shop_ui:
+				if shop_ui.has_method("set_title"):
+					shop_ui.set_title(shop_title)
+				shop_ui.show_overlay()
+		return
+	
 	# --- TALK COOLDOWN: once per time block ---
 	if not GameState.can_talk_to_npc(npc_id):
 		# Make them feel "uninteractable" during this block.
@@ -163,27 +184,7 @@ func start_dialogue() -> void:
 		GameState.add_friendship(npc_id, 1)
 		GameState.mark_talked_today(npc_id, current_day)
 		
-	var f := GameState.get_friendship(npc_id)
-	
-	# SHOP CHECK FIRST
-	if opens_shop:
-		var hour := int(TimeManager.minutes / 60)
-
-		if hour < shop_open_hour or hour >= shop_close_hour:
-			# Shop is closed → use dialogue instead of opening UI
-			var lines := shop_closed_lines
-			if lines.is_empty():
-				lines = ["Sorry, we’re closed right now. Come back tomorrow!"]
-
-			ui.show_dialogue(display_name, lines, f)
-		else:
-			# Shop is open → show ShopUI overlay
-			var shop_ui := get_tree().get_first_node_in_group("shop_ui")
-			if shop_ui:
-				if shop_ui.has_method("set_title"):
-					shop_ui.set_title(shop_title)
-				shop_ui.show_overlay()
-		return
+	f = GameState.get_friendship(npc_id)
 
 	# ... existing quest + friendship dialogue logic below ...
 	

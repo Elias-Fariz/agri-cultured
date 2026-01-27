@@ -102,12 +102,19 @@ func _apply_binding(b: HeartVisualBinding) -> void:
 
 
 func _is_binding_complete(b: HeartVisualBinding) -> bool:
-	# Preferred: milestone-based
+	# Option A: milestone-based
 	if b.domain_id.strip_edges() != "" and b.milestone_id.strip_edges() != "":
 		if _hp.has_method("has_milestone"):
 			return bool(_hp.call("has_milestone", b.domain_id, b.milestone_id))
 
-	# Counter-based
+	# Option C: stat threshold (NEW)
+	# Example: stat_key="money_earned_total", amount_required=500
+	if b.stat_key.strip_edges() != "" and b.amount_required > 0:
+		if _hp.has_method("get_stat"):
+			var have := int(_hp.call("get_stat", b.stat_key))
+			return have >= b.amount_required
+
+	# Option B: action counter threshold (existing)
 	if b.action_id.strip_edges() != "" and b.amount_required > 0:
 		if _hp.has_method("get_count"):
 			var have := int(_hp.call("get_count", b.action_id))

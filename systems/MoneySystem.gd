@@ -11,6 +11,8 @@ func add(amount: int) -> void:
 		return
 	current_money += amount
 	money_changed.emit(current_money)
+	if amount > 0:
+		HeartProgress.add_stat("money_earned_total", amount)
 
 func can_afford(amount: int) -> bool:
 	return current_money >= amount
