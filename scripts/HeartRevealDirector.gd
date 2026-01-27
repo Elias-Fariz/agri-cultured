@@ -37,6 +37,18 @@ var _is_running := false
 
 var _prev_cam_enabled: bool = true
 
+@export var camera_return_time := 0.25
+@export var swap_fade_time := 0.12  # optional if you add overlay
+
+@export var cutscene_overlay_path: NodePath
+var _overlay: Node = null
+var _skip_requested := false
+
+var _camera_tween: Tween = null
+var _reveal_tween: Tween = null
+
+var _current_entry: Dictionary = {}
+var _current_entry_active := false
 
 
 func _ready() -> void:
@@ -50,7 +62,30 @@ func _ready() -> void:
 
 	if _heart_camera and _top_left and _bottom_right:
 		_apply_camera_bounds(_heart_camera, _top_left.global_position, _bottom_right.global_position)
+	
+	_overlay = get_node_or_null(cutscene_overlay_path)
+	set_process_unhandled_input(true)
+	
+	set_process(true) # allow _process() to run
 
+func _process(_delta: float) -> void:
+	if not _is_running:
+		return
+	if Input.is_action_just_pressed("ui_cancel"):
+		print("Pressed Escape!")
+		_skip_requested = true
+		if _overlay and _overlay.has_method("fade_to"):
+			print("[HeartRevealDirector] Skip -> calling overlay fade_to(1.0)")
+			_overlay.call("fade_to", 1.0, 0.10)
+		else:
+			print("[HeartRevealDirector] Skip -> NO overlay or fade_to() missing")
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not _is_running:
+		return
+	if event.is_action_pressed("ui_cancel"): # Escape by default
+		_skip_requested = true
 
 func run_reveals_if_any() -> void:
 	if _is_running:
@@ -71,76 +106,100 @@ func run_reveals_if_any() -> void:
 			print("[HeartRevealDirector] No pending reveals.")
 		return
 
+	# Lock gameplay (player cannot move)
 	var gs := get_node_or_null("/root/GameState")
 	if gs != null and gs.has_method("lock_gameplay"):
 		gs.call("lock_gameplay")
 
-
 	_is_running = true
+	_skip_requested = false
 	reveal_started.emit()
+	
+	if debug_enabled:
+		print("[HeartRevealDirector] Overlay node=", _overlay, " path=", cutscene_overlay_path)
+	
+	# Optional soft blink during camera handoff
+	if _overlay and _overlay.has_method("fade_to"):
+		_overlay.call("fade_to", 0.15, swap_fade_time)
 
+	# Cache current camera (player camera) + its pose BEFORE disabling it
 	_cached_previous_camera = get_viewport().get_camera_2d()
-
 	if _cached_previous_camera:
+		_cached_previous_pos = _cached_previous_camera.global_position
+		_cached_previous_zoom = _cached_previous_camera.zoom
+
 		_prev_cam_enabled = _cached_previous_camera.enabled
 		_cached_previous_camera.enabled = false
 
-
-	# Ensure our heart camera starts exactly where the player camera is (no jump)
+	# Prepare heart camera to start exactly where the player camera was
+	_heart_camera.enabled = true
 	_heart_camera.global_position = _cached_previous_pos
 	_heart_camera.zoom = _cached_previous_zoom
 
 	# Clamp bounds (in case markers moved)
 	if _top_left and _bottom_right:
 		_apply_camera_bounds(_heart_camera, _top_left.global_position, _bottom_right.global_position)
-	
-	_heart_camera.enabled = true
+
+	# Activate heart camera
 	_heart_camera.make_current()
 	await get_tree().process_frame
 
-	if debug_enabled:
-		print("[HeartRevealDirector] HeartCam current? ", get_viewport().get_camera_2d() == _heart_camera,
-		" active=", get_viewport().get_camera_2d(), " heart=", _heart_camera)
-
-	
-	if debug_enabled:
-		print("[HeartRevealDirector] HeartCam current? ", get_viewport().get_camera_2d() == _heart_camera,
-		" heart_cam_pos=", _heart_camera.global_position,
-		" prev_cam_pos=", _cached_previous_pos)
-	
-	if debug_enabled:
-		print("[HeartRevealDirector] Active camera now:", get_viewport().get_camera_2d())
+	# Fade back from soft blink
+	if _overlay and _overlay.has_method("fade_to"):
+		_overlay.call("fade_to", 0.0, swap_fade_time)
 
 	if debug_enabled:
+		print("[HeartRevealDirector] HeartCam current? ", get_viewport().get_camera_2d() == _heart_camera,
+			" active=", get_viewport().get_camera_2d(), " heart=", _heart_camera)
 		print("[HeartRevealDirector] Starting reveals count=", pending.size(), " using=", min(max_reveals_per_entry, pending.size()))
 
+	# Reveal only up to max per entry
 	var count: int = min(max_reveals_per_entry, pending.size())
-	for i in range(count):
-		await _reveal_one(pending[i])
 
-	# Give control back
+	# IMPORTANT: keep i in outer scope so skip can reveal the rest
+	var i: int = 0
+	while i < count and not _skip_requested:
+		await _reveal_one(pending[i])
+		i += 1
+
+	# If skipped: fade to black, apply remaining instantly, fade back
+	if _skip_requested:
+		if _overlay and _overlay.has_method("fade_to"):
+			_overlay.call("fade_to", 1.0, 0.10)
+			await get_tree().create_timer(0.10).timeout
+
+		while i < count:
+			_instant_reveal(pending[i])
+			i += 1
+
+		# Ensure the currently-in-progress reveal becomes real (no missing sprout)
+		if _current_entry_active:
+			_instant_reveal(_current_entry)
+		
+		if _overlay and _overlay.has_method("fade_to"):
+			_overlay.call("fade_to", 0.0, 0.18)
+
+	# Smoothly return heart camera back to the player's cached pose (prevents snap)
+	await _tween_camera_to(_cached_previous_pos, _cached_previous_zoom, camera_return_time)
+
+	# Restore player camera exactly as it was
 	if _cached_previous_camera:
+		_cached_previous_camera.enabled = _prev_cam_enabled
 		_cached_previous_camera.make_current()
 
+	# Turn off heart camera so it can't compete later
+	_heart_camera.enabled = false
+
+	# Unlock gameplay
 	var gs2 := get_node_or_null("/root/GameState")
 	if gs2 != null and gs2.has_method("unlock_gameplay"):
 		gs2.call("unlock_gameplay")
 
 	_is_running = false
-	
-	# Restore player camera
-	if _cached_previous_camera:
-		_cached_previous_camera.enabled = _prev_cam_enabled
-		_cached_previous_camera.make_current()
-
-	_heart_camera.enabled = false
-
-	
 	reveal_finished.emit()
 
 	if debug_enabled:
 		print("[HeartRevealDirector] Finished reveals; returned to previous camera.")
-
 
 func _apply_camera_bounds(cam: Camera2D, tl: Vector2, br: Vector2) -> void:
 	# Godot camera limits are in global pixels.
@@ -151,6 +210,9 @@ func _apply_camera_bounds(cam: Camera2D, tl: Vector2, br: Vector2) -> void:
 
 
 func _reveal_one(entry: Dictionary) -> void:
+	_current_entry = entry
+	_current_entry_active = true
+
 	if not entry.has("node") or not entry.has("key"):
 		if debug_enabled:
 			print("[HeartRevealDirector] Bad pending entry:", entry)
@@ -172,16 +234,23 @@ func _reveal_one(entry: Dictionary) -> void:
 
 	# Animate camera pan + zoom
 	await _tween_camera_to(clamped_pos, zoom_in)
+	if _skip_requested: return
 
-	# Small hold before bloom
-	await get_tree().create_timer(camera_hold_time).timeout
+	# hold (optional skip-aware hold)
+	var elapsed := 0.0
+	while elapsed < camera_hold_time and not _skip_requested:
+		await get_tree().process_frame
+		elapsed += get_process_delta_time()
+	if _skip_requested: return
 
-	# Animate the sprout itself
 	await _tween_canvasitem_reveal(target_node)
+	if _skip_requested: return
 
 	# Mark revealed (this should write to HeartProgress and re-sync visuals)
 	if _visual_controller.has_method("mark_reveal_done"):
 		_visual_controller.call("mark_reveal_done", reveal_key)
+	
+	_current_entry_active = false
 
 
 func _get_global_pos(n: Node) -> Vector2:
@@ -240,18 +309,32 @@ func _clamp_camera_target(pos: Vector2, target_zoom: Vector2) -> Vector2:
 	return pos
 
 
-func _tween_camera_to(pos: Vector2, target_zoom: Vector2) -> void:
+func _tween_camera_to(pos: Vector2, target_zoom: Vector2, duration_override: float = -1.0) -> void:
 	if not _heart_camera:
 		return
 
-	var t := create_tween()
-	t.set_trans(Tween.TRANS_SINE)
-	t.set_ease(Tween.EASE_IN_OUT)
+	var d := camera_pan_time if duration_override < 0.0 else duration_override
 
-	t.tween_property(_heart_camera, "global_position", pos, camera_pan_time)
-	t.parallel().tween_property(_heart_camera, "zoom", target_zoom, zoom_time)
+	# Kill any previous camera tween (safe because we won't await its finished)
+	if _camera_tween != null and _camera_tween.is_running():
+		_camera_tween.kill()
+	_camera_tween = null
 
-	await t.finished
+	_camera_tween = create_tween()
+	_camera_tween.set_trans(Tween.TRANS_SINE)
+	_camera_tween.set_ease(Tween.EASE_IN_OUT)
+	_camera_tween.tween_property(_heart_camera, "global_position", pos, d)
+	_camera_tween.parallel().tween_property(_heart_camera, "zoom", target_zoom, min(d, zoom_time))
+
+	# Instead of: await _camera_tween.finished
+	# We poll so skip can break us out cleanly.
+	while _camera_tween != null and _camera_tween.is_running():
+		if _skip_requested:
+			_camera_tween.kill()
+			break
+		await get_tree().process_frame
+
+	_camera_tween = null
 
 
 func _tween_canvasitem_reveal(n: Node) -> void:
@@ -269,20 +352,36 @@ func _tween_canvasitem_reveal(n: Node) -> void:
 		original_scale = (n as Node2D).scale
 		has_scale = true
 
-	# Start hidden-ish
 	item.modulate = Color(original_modulate.r, original_modulate.g, original_modulate.b, 0.0)
 	if has_scale:
 		(n as Node2D).scale = original_scale * sprout_scale_from
 
-	var t := create_tween()
-	t.set_trans(Tween.TRANS_SINE)
-	t.set_ease(Tween.EASE_OUT)
+	# Kill any previous reveal tween (safe because we won't await its finished)
+	if _reveal_tween != null and _reveal_tween.is_running():
+		_reveal_tween.kill()
+	_reveal_tween = null
 
-	t.tween_property(item, "modulate:a", original_modulate.a, sprout_fade_time)
+	_reveal_tween = create_tween()
+	_reveal_tween.set_trans(Tween.TRANS_SINE)
+	_reveal_tween.set_ease(Tween.EASE_OUT)
+
+	_reveal_tween.tween_property(item, "modulate:a", original_modulate.a, sprout_fade_time)
 	if has_scale:
-		t.parallel().tween_property(n, "scale", original_scale, sprout_scale_time)
+		_reveal_tween.parallel().tween_property(n, "scale", original_scale, sprout_scale_time)
 
-	await t.finished
+	while _reveal_tween != null and _reveal_tween.is_running():
+		if _skip_requested:
+			_reveal_tween.kill()
+			break
+		await get_tree().process_frame
+
+	_reveal_tween = null
+
+	# If we skipped mid-reveal, snap to fully shown so we don't leave half-alpha
+	if _skip_requested:
+		item.modulate = Color(original_modulate.r, original_modulate.g, original_modulate.b, 1.0)
+		if has_scale:
+			(n as Node2D).scale = original_scale
 
 func _get_focus_position(target_node: Node) -> Vector2:
 	# If there's a sibling Marker2D named "<SproutName>Focus", use that.
@@ -300,3 +399,30 @@ func _get_focus_position(target_node: Node) -> Vector2:
 
 	# Last resort
 	return _heart_camera.global_position
+
+func _instant_reveal(entry: Dictionary) -> void:
+	if not entry.has("node") or not entry.has("key"):
+		return
+	var n: Node = entry["node"]
+	var k: String = entry["key"]
+	if not is_instance_valid(n):
+		return
+
+	var item := n as CanvasItem
+	if item:
+		item.visible = true
+		# restore fully visible (no partial alpha)
+		var m := item.modulate
+		item.modulate = Color(m.r, m.g, m.b, 1.0)
+
+	if _visual_controller and _visual_controller.has_method("mark_reveal_done"):
+		_visual_controller.call("mark_reveal_done", k)
+
+func _abort_active_tweens() -> void:
+	if _camera_tween != null and _camera_tween.is_running():
+		_camera_tween.kill()
+	_camera_tween = null
+
+	if _reveal_tween != null and _reveal_tween.is_running():
+		_reveal_tween.kill()
+	_reveal_tween = null

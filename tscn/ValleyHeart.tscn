@@ -1,4 +1,4 @@
-[gd_scene load_steps=49 format=3 uid="uid://cwspce5y4tb13"]
+[gd_scene load_steps=50 format=3 uid="uid://cwspce5y4tb13"]
 
 [ext_resource type="TileSet" uid="uid://bqs5ruk6pejpc" path="res://tiles/GroundTileset.tres" id="1_vkoen"]
 [ext_resource type="Script" uid="uid://bywlb7k2vtqr" path="res://scripts/ValleyHeart.gd" id="1_ye5kf"]
@@ -31,6 +31,7 @@
 [ext_resource type="PackedScene" uid="uid://d1qqa5bygrbsp" path="res://ui/HUD.tscn" id="24_vuwqn"]
 [ext_resource type="PackedScene" uid="uid://lx466cy4gjau" path="res://ui/HeartProgressUI.tscn" id="24_ye5kf"]
 [ext_resource type="PackedScene" uid="uid://ded2abuo15uwh" path="res://ui/DialogueUI.tscn" id="25_7x0e2"]
+[ext_resource type="Script" uid="uid://b58bb81l27nno" path="res://ui/HeartCutsceneOverlay.gd" id="25_tokjd"]
 [ext_resource type="PackedScene" uid="uid://dk1aaefcs7nwf" path="res://ui/QuestBoardUI.tscn" id="26_nyydk"]
 [ext_resource type="PackedScene" uid="uid://dfcn8oje3hko1" path="res://ui/EndOfDaySummaryUI.tscn" id="27_iiyss"]
 [ext_resource type="PackedScene" uid="uid://dexrjrr1c8jfb" path="res://ui/ShopUI.tscn" id="28_ye5kf"]
@@ -117,10 +118,11 @@ layer_0/tile_data = PackedInt32Array(393226, 0, 0, 262152, 0, 0, 458756, 2, 0, 1
 [node name="Visuals" type="Node2D" parent="Sections/LandWing"]
 
 [node name="Sprout1" type="Sprite2D" parent="Sections/LandWing/Visuals"]
-visible = false
+position = Vector2(-69, 40)
 texture = ExtResource("5_iiyss")
 
 [node name="Sprout1Focus" type="Marker2D" parent="Sections/LandWing/Visuals"]
+position = Vector2(-79, 40)
 
 [node name="TriggerArea" type="Area2D" parent="Sections/LandWing"]
 
@@ -178,10 +180,10 @@ shape = SubResource("RectangleShape2D_teva3")
 [node name="CameraBounds" type="Node2D" parent="."]
 
 [node name="TopLeft" type="Marker2D" parent="CameraBounds"]
-position = Vector2(-593, -373)
+position = Vector2(-1659, -1131)
 
 [node name="BottomRight" type="Marker2D" parent="CameraBounds"]
-position = Vector2(1598, 972)
+position = Vector2(2035, 1197)
 
 [node name="TravelPoints" type="Node2D" parent="."]
 
@@ -240,7 +242,40 @@ position = Vector2(96, 224)
 [node name="SpawnManager" type="Node" parent="."]
 script = ExtResource("19_vuwqn")
 
-[node name="HeartProgressUI" parent="." instance=ExtResource("24_ye5kf")]
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="HeartProgressUI" parent="UI" instance=ExtResource("24_ye5kf")]
+
+[node name="HeartCutsceneOverlay" type="CanvasLayer" parent="UI"]
+script = ExtResource("25_tokjd")
+visual_node_path = NodePath("Panel")
+start_visible_in_game = false
+
+[node name="Panel" type="Control" parent="UI/HeartCutsceneOverlay"]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="FadeRect" type="ColorRect" parent="UI/HeartCutsceneOverlay/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+
+[node name="Vignette" type="TextureRect" parent="UI/HeartCutsceneOverlay/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="QuestMenuUI" parent="." instance=ExtResource("20_k38wn")]
 
@@ -281,3 +316,4 @@ heart_camera_path = NodePath("../HeartCamera2D")
 visual_controller_path = NodePath("../HeartVisualController")
 bounds_top_left_path = NodePath("../CameraBounds/TopLeft")
 bounds_bottom_right_path = NodePath("../CameraBounds/BottomRight")
+cutscene_overlay_path = NodePath("../UI/HeartCutsceneOverlay")

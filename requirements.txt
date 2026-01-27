@@ -49,7 +49,7 @@ Phase 3.5: Valley Heart
 * New Area *CHECK*
 * Progress Tracker
 * Milestone Rewards
-* Visual Changes *BASELINE*
+* Visual Changes *ADDED SKIP*
 * Cutscenes *BASELINE*
 * Moving Tools out of Farm.gd
 
