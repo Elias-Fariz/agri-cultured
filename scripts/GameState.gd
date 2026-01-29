@@ -261,6 +261,15 @@ func shipping_calculate_payout() -> int:
 	for item_name in shipping_bin.keys():
 		var qty := int(shipping_bin[item_name])
 		total += get_sell_price(String(item_name)) * qty
+
+	var mul := 1.0
+	var hp := get_node_or_null("/root/HeartProgress")
+	if hp != null and hp.has_method("get_sell_multiplier"):
+		mul = float(hp.call("get_sell_multiplier"))
+
+	total = int(round(float(total) * mul))
+	print("[Ship] base_total=", total, " mul=", mul, " final=", total)
+
 	return total
 
 func shipping_payout_and_clear() -> int:
@@ -418,6 +427,9 @@ var _gifted_week_count_by_npc: Dictionary = {} # npc_id -> Dictionary{ week_key:
 
 var pending_cutscene_id: String = ""
 var _heart_intro_queued: bool = false
+
+var heart_stats: Dictionary = {}   # e.g. { "sell_multiplier": 1.05 }
+var heart_flags: Dictionary = {}   # e.g. { "heart_pond_unlocked": true }
 
 func _ready() -> void:
 	reset_energy()
@@ -1417,3 +1429,26 @@ func _on_heart_intro_dialogue_closed() -> void:
 
 func _clear_pending_cutscene() -> void:
 	pending_cutscene_id = ""
+
+func apply_heart_reward(r) -> void:
+	# r is HeartRewardDefinition
+	if r == null:
+		return
+
+	match r.kind:
+		r.RewardKind.STAT_ADD:
+			var k := str(r.stat_key)
+			heart_stats[k] = float(heart_stats.get(k, 0.0)) + float(r.amount)
+
+		r.RewardKind.STAT_MULTIPLY:
+			var k := str(r.stat_key)
+			var cur := float(heart_stats.get(k, 1.0))
+			heart_stats[k] = cur * float(r.amount)
+
+		r.RewardKind.FLAG_SET:
+			heart_flags[str(r.flag_key)] = bool(r.flag_value)
+
+		_:
+			pass
+
+	print("[GameState] Applied Heart reward:", r.id, " stats=", heart_stats, " flags=", heart_flags)

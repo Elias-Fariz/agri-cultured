@@ -31,8 +31,5 @@ func _exit_tree() -> void:
 
 func _start_heart_reveal_if_needed() -> void:
 	var director := get_node_or_null(reveal_director_path)
-	if director == null:
-		return
-
-	if director.has_method("run_reveals_if_any"):
+	if director and director.has_method("run_reveals_if_any"):
 		director.call_deferred("run_reveals_if_any")

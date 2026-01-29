@@ -65,41 +65,64 @@ func _apply_binding(b: HeartVisualBinding) -> void:
 		_set_visible(node, false)
 		return
 
-	# Build a stable reveal key even for counter-based bindings.
+	# ----- Stable identity -----
+	# Now that you're definition-driven, we expect these to be set.
 	var domain_id := b.domain_id.strip_edges()
+	var milestone_id := b.milestone_id.strip_edges()
+
+	# Still keep your synthetic fallback (useful during early prototyping)
 	if domain_id == "":
-		# If domain_id isn't set in binding, put it in "misc" so key is stable
 		domain_id = "misc"
 
-	var milestone_id := b.milestone_id.strip_edges()
 	if milestone_id == "":
-		# Synthetic milestone id for counter-based bindings:
-		# Includes action + required + node path (stable if you don't move nodes)
 		var a := b.action_id.strip_edges()
 		var req := int(b.amount_required)
 		milestone_id = "counter:%s:%d:%s" % [a, req, str(b.node_path)]
 
 	var reveal_key := "%s:%s" % [domain_id, milestone_id]
 
-	# If HeartProgress doesn't support reveal API, fail open (show)
-	var is_revealed := true
-	if _hp.has_method("is_revealed"):
+	# ----- Reveal gating -----
+	var is_revealed := false
+	if _hp != null and _hp.has_method("is_revealed"):
 		is_revealed = bool(_hp.call("is_revealed", domain_id, milestone_id))
+	else:
+		# If reveal API is missing, fail open (show)
+		is_revealed = true
+
+	# ----- Pull cinematic "kind" from heart_definition via HeartProgress -----
+	# This is the important part: sprout vs root comes from the definition,
+	# NOT from the binding and NOT from any hardcoded tiers.
+	var kind := "sprout"
+	if _hp != null and _hp.has_method("get_milestone_kind"):
+		kind = str(_hp.call("get_milestone_kind", domain_id, milestone_id)).strip_edges()
+		if kind == "":
+			kind = "sprout"
 
 	if is_revealed:
 		_set_visible(node, true)
 		if debug_enabled:
-			print("[HeartVisualController] SHOW (revealed) ", reveal_key, " node=", node.name)
+			print("[HeartVisualController] SHOW (revealed) ", reveal_key, " kind=", kind, " node=", node.name)
 	else:
 		_set_visible(node, false)
 		_pending_reveals.append({
 			"node": node,
 			"key": reveal_key,
-			"binding": b
+			"binding": b,
+			"kind": kind,          # ✅ Director can now branch on this
+			"domain_id": domain_id,
+			"milestone_id": milestone_id
 		})
 		if debug_enabled:
-			print("[HeartVisualController] QUEUE REVEAL ", reveal_key, " node=", node.name)
+			print("[HeartVisualController] QUEUE REVEAL ", reveal_key, " kind=", kind, " node=", node.name)
 
+	if debug_enabled:
+		print("[HVC DBG] ", domain_id, "/", milestone_id,
+			" unlocked=", unlocked,
+			" revealed=", is_revealed,
+			" kind=", kind,
+			" action_id=", b.action_id,
+			" stat_key=", b.stat_key,
+			" req=", b.amount_required)
 
 func _is_binding_complete(b: HeartVisualBinding) -> bool:
 	# Option A: milestone-based

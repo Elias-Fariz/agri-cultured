@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="HeartRewardCatalog" load_steps=5 format=3 uid="uid://c28md7mqmnxvd"]
+
+[ext_resource type="Script" uid="uid://du6rd1efphtlv" path="res://data/heart/HeartRewardDefinition.gd" id="1_pldyk"]
+[ext_resource type="Script" uid="uid://c0ecbebm6reap" path="res://data/heart/HeartRewardCatalog.gd" id="2_rbprb"]
+
+[sub_resource type="Resource" id="Resource_ats7i"]
+script = ExtResource("1_pldyk")
+id = &"sprout_sell_bonus_1"
+kind = 1
+domain_id = "land"
+milestone_id = "land_sprout_1"
+stat_key = &"sell_multiplier"
+amount = 1.05
+description = "Increases the price of selling items by 1.05x"
+metadata/_custom_type_script = "uid://du6rd1efphtlv"
+
+[sub_resource type="Resource" id="Resource_pldyk"]
+script = ExtResource("1_pldyk")
+id = &"root_unlock_minecart_pad"
+kind = 3
+travel_id = &"minecart_net"
+metadata/_custom_type_script = "uid://du6rd1efphtlv"
+
+[resource]
+script = ExtResource("2_rbprb")
+rewards = Array[ExtResource("1_pldyk")]([SubResource("Resource_ats7i"), SubResource("Resource_pldyk")])
+metadata/_custom_type_script = "uid://c0ecbebm6reap"

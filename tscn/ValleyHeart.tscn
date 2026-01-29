@@ -91,16 +91,15 @@ sources/2 = SubResource("TileSetAtlasSource_62bci")
 [sub_resource type="Resource" id="Resource_hxn5l"]
 script = ExtResource("38_teva3")
 node_path = NodePath("../Sections/LandWing/Visuals/Sprout1")
-action_id = "harvest"
-amount_required = 1
+domain_id = "land"
+milestone_id = "land_sprout_1"
 metadata/_custom_type_script = "uid://db23ydj4dqo8r"
 
 [sub_resource type="Resource" id="Resource_tokjd"]
 script = ExtResource("38_teva3")
 node_path = NodePath("../Sections/LandWing/Visuals/Sprout2")
-action_id = "harvest"
-amount_required = 2
-reveal_tier = 1
+domain_id = "land"
+milestone_id = "land_sprout_2"
 metadata/_custom_type_script = "uid://db23ydj4dqo8r"
 
 [node name="ValleyHeart" type="Node2D"]
@@ -223,16 +222,14 @@ position = Vector2(95, 224)
 script = ExtResource("7_opw5b")
 tag = "from_farm"
 
-[node name="Interactables" type="Node2D" parent="."]
-
-[node name="HeartPedestal" type="Area2D" parent="Interactables"]
+[node name="HeartPedestal" type="Area2D" parent="."]
 position = Vector2(91, 91)
 collision_mask = 3
 
-[node name="Sprite2D" type="Sprite2D" parent="Interactables/HeartPedestal"]
+[node name="Sprite2D" type="Sprite2D" parent="HeartPedestal"]
 texture = ExtResource("8_qprux")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactables/HeartPedestal"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HeartPedestal"]
 scale = Vector2(1.6558535, 1.6558535)
 shape = SubResource("RectangleShape2D_opw5b")
 

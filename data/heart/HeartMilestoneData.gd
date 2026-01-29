@@ -14,3 +14,5 @@ class_name HeartMilestoneData
 @export var filter_npc_id: String = ""      # optional: "npc_mayor" or ""
 @export var hint: String = ""               # shown in UI when next
 @export var reward_travel_unlock: String = ""  # optional unlock id, like "valley_heart"
+
+@export var reward_ids: Array[StringName] = []

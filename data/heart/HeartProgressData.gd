@@ -4,9 +4,15 @@ class_name HeartProgressData
 
 @export var domains: Array[HeartDomainData] = []
 
+# ✅ Add this (the real source of truth)
+@export var completed_milestones: Dictionary = {} # domain_id -> Array[String]
+
 # Presentation layer: "Have we already played the reveal moment?"
 # Key format: "domain_id:milestone_id" -> true
 @export var revealed_milestones: Dictionary = {}
+
+# ✅ Optional but recommended if you're doing rewards
+@export var unlocked_rewards: Dictionary = {}     # reward_id -> bool
 
 # Persistent counters (save-like)
 @export var counters: Dictionary = {}   # e.g. { "harvest": 7, "gift": 2 }

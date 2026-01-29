@@ -7,16 +7,19 @@
 script = ExtResource("1_72vlk")
 id = "land_sprout_1"
 counter_key = "harvest"
+required_amount = 3
 hint = "Harvest a few crops to help the soil remember."
+reward_ids = Array[StringName]([&"sell_multiplier_105"])
 metadata/_custom_type_script = "uid://c885adlv5mv1"
 
 [sub_resource type="Resource" id="Resource_5buww"]
 script = ExtResource("1_72vlk")
 id = "land_sprout_2"
 order = 2
-counter_key = "harvest"
-required_amount = 10
+counter_key = "ship"
+required_amount = 3
 hint = "A stronger rhythm... keep harvesting."
+reward_ids = Array[StringName]([&"shop_discount_097"])
 metadata/_custom_type_script = "uid://c885adlv5mv1"
 
 [resource]

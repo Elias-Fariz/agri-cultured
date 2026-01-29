@@ -18,14 +18,19 @@ const DEFAULT_PROGRESS_TEMPLATE_PATH := "res://data/heart/heart_progress.tres"
 # The actual save path MUST be user:// (writable in export)
 const USER_SAVE_PATH := "user://heart_progress.tres"
 
+signal reward_unlocked(reward_id: StringName)
+
+const REWARD_PATH := "res://data/heart/heart_rewards.tres"
+var reward_catalog: HeartRewardCatalog = null
+
 # -----------------------------------------------------------------------------
 # DEV / TESTING SWITCHES
 # -----------------------------------------------------------------------------
 # If true: never save progress to disk.
-const DEV_DISABLE_SAVE := true
+const DEV_DISABLE_SAVE := false
 
 # If true: ignore user save and start fresh each run (in-memory).
-const DEV_FORCE_FRESH_ON_START := false
+const DEV_FORCE_FRESH_ON_START := true
 
 # If true: when starting fresh, also clear completed milestones.
 const DEV_CLEAR_MILESTONES_ON_FRESH := true
@@ -49,8 +54,13 @@ var stats: Dictionary = {}
 
 func _ready() -> void:
 	_load_resources()
+	_load_reward_catalog()
 	_connect_signals()
 	emit_signal("changed")
+	
+	dev_dump_progress_state("BEFORE CLEAR")
+	dev_clear_milestones_and_reveals_runtime()
+	dev_dump_progress_state("AFTER CLEAR")
 
 
 # -----------------------------------------------------------------------------
@@ -70,12 +80,33 @@ func _load_resources() -> void:
 
 	# Try to load user save; if missing, create it from template (unless DEV_DISABLE_SAVE)
 	progress = _load_or_create_user_progress()
-
+	
+	if progress != null:
+		# Ensure dictionaries exist (prevents Nil issues)
+		if not ("completed_milestones" in progress) or progress.get("completed_milestones") == null:
+			progress.set("completed_milestones", {})
+		if not ("revealed_milestones" in progress) or progress.get("revealed_milestones") == null:
+			progress.set("revealed_milestones", {})
+		if not ("unlocked_rewards" in progress) or progress.get("unlocked_rewards") == null:
+			progress.set("unlocked_rewards", {})
+	
+	if progress != null:
+		print("[HP] completed_milestones=", progress.get("completed_milestones"))
+	print("[HP] legacy land=", counters.get("__milestones_done__land", null))
+	print("[HP] harvest count=", counters.get("harvest", 0), " ship=", counters.get("ship", 0))
+	
 	# Pull dictionaries out safely
 	_ingest_progress_dicts()
 	_normalize_numeric_dicts()
 
-	print("[HeartProgress] Loaded. counters=", counters, " item_counters=", item_counters, " stats=", stats)
+	print("[HeartProgress-BEFORE] Loaded. counters=", counters, " item_counters=", item_counters, " stats=", stats) 
+	
+	_dev_clear_legacy_milestone_keys()
+	_clear_legacy_milestone_lists()
+	
+	print("[HeartProgress-AFTER] Loaded. counters=", counters, " item_counters=", item_counters, " stats=", stats) 
+	
+	_evaluate_definition_milestones()
 
 
 func _load_or_create_user_progress() -> Resource:
@@ -185,20 +216,17 @@ func reset_progress_runtime(save_after: bool = false) -> void:
 func _reset_progress_in_memory() -> void:
 	counters = {}
 	item_counters = {}
-	stats = {}
+
+	_clear_legacy_milestone_lists()
 
 	if progress != null:
-		_ensure_required_fields(progress)
-		progress.set("counters", {})
-		progress.set("item_counters", {})
-		progress.set("stats", {})
-		progress.set("revealed_milestones", {})
-
-		if DEV_CLEAR_MILESTONES_ON_FRESH:
-			progress.set("completed_milestones", {})
+		if "counters" in progress: progress.set("counters", {})
+		if "item_counters" in progress: progress.set("item_counters", {})
+		if "revealed_milestones" in progress: progress.set("revealed_milestones", {})
+		if "completed_milestones" in progress: progress.set("completed_milestones", {})
+		if "unlocked_rewards" in progress: progress.set("unlocked_rewards", {})
 
 	emit_signal("changed")
-
 
 # -----------------------------------------------------------------------------
 # Signal wiring (matches YOUR QuestEvents.gd)
@@ -214,9 +242,11 @@ func _connect_signals() -> void:
 		if not qe.is_connected("crop_harvested", cb):
 			qe.connect("crop_harvested", cb)
 
-	_try_connect(qe, "item_shipped", "_on_item_shipped")
+	_try_connect(qe, "shipped", "_on_item_shipped")
 	_try_connect(qe, "item_crafted", "_on_item_crafted")
 	_try_connect(qe, "item_gifted", "_on_item_gifted")
+	
+	print("crop_harvested connections:", qe.get_signal_connection_list("crop_harvested"))
 
 
 func _try_connect(obj: Object, sig: String, method: String) -> void:
@@ -234,31 +264,40 @@ func _try_connect(obj: Object, sig: String, method: String) -> void:
 # Incoming events -> canonical action ids
 # -----------------------------------------------------------------------------
 func _on_crop_harvested(item_id: String, amount: int) -> void:
+	# Track total produce harvested (quantity)
 	_add_action("harvest", amount)
+
+	# Track distinct harvest events (one per plant harvest action)
+	_add_action("harvest_actions", 1)
+
 	_add_item(item_id, amount)
-
-	# Starter milestone hook (keep as-is for now)
-	if get_count("harvest") >= 1:
-		_mark_milestone_done_if_supported("land", "sprout_1_harvest_1")
-
+	
+	print("[HP] crop_harvested item=", item_id, " amount=", amount)
+	
+	_evaluate_definition_milestones()
 	emit_signal("changed")
-
 
 func _on_item_shipped(item_id: String, amount: int) -> void:
 	_add_action("ship", amount)
 	_add_item(item_id, amount)
+	
+	_evaluate_definition_milestones()
 	emit_signal("changed")
 
 
 func _on_item_crafted(item_id: String, amount: int) -> void:
 	_add_action("craft", amount)
 	_add_item(item_id, amount)
+	
+	_evaluate_definition_milestones()
 	emit_signal("changed")
 
 
 func _on_item_gifted(_npc_id: String, item_id: String, amount: int) -> void:
 	_add_action("gift", amount)
 	_add_item(item_id, amount)
+	
+	_evaluate_definition_milestones()
 	emit_signal("changed")
 
 
@@ -340,8 +379,12 @@ func _mark_milestone_done_if_supported(domain_id: String, milestone_id: String) 
 			arr.append(milestone_id)
 			cm[domain_id] = arr
 			progress.set("completed_milestones", cm)
+			
+			_unlock_rewards_for_milestone(domain_id, milestone_id)
+			
 			_save_progress_if_possible()
 			emit_signal("milestone_completed", domain_id, milestone_id)
+			_apply_rewards_for_milestone(domain_id, milestone_id)
 		return
 
 	# Fallback: store done milestones in memory
@@ -352,20 +395,38 @@ func _mark_milestone_done_if_supported(domain_id: String, milestone_id: String) 
 	if not done.has(milestone_id):
 		done.append(milestone_id)
 		counters[key] = done
+		
+		_unlock_rewards_for_milestone(domain_id, milestone_id)
+		
 		emit_signal("milestone_completed", domain_id, milestone_id)
+		_apply_rewards_for_milestone(domain_id, milestone_id)
 
 
 func has_milestone(domain_id: String, milestone_id: String) -> bool:
+	var cm_val = null
+	if progress != null and ("completed_milestones" in progress):
+		cm_val = progress.get("completed_milestones")
+
+	var legacy_key := "__milestones_done__%s" % domain_id
+	var legacy_val = counters.get(legacy_key, null)
+
+	print("[HP] has_milestone ", domain_id, "/", milestone_id,
+		" completed_milestones=", cm_val,
+		" legacy_done=", legacy_val)
+
+	# ✅ Use the real persisted dictionary whenever possible
 	if progress != null and ("completed_milestones" in progress):
 		var cm: Dictionary = progress.get("completed_milestones")
-		if cm != null:
-			var arr: Array = cm.get(domain_id, [])
-			return arr != null and arr.has(milestone_id)
+		if cm == null:
+			cm = {}
+			progress.set("completed_milestones", cm)
 
-	var key := "__milestones_done__%s" % domain_id
-	var done: Array = counters.get(key, [])
+		var arr: Array = cm.get(domain_id, [])
+		return arr != null and arr.has(milestone_id)
+
+	# Only fall back if we truly have no progress resource
+	var done: Array = counters.get(legacy_key, [])
 	return done != null and done.has(milestone_id)
-
 
 # -----------------------------------------------------------------------------
 # Reveal history (presentation layer)
@@ -377,36 +438,40 @@ func _make_reveal_key(domain_id: String, milestone_id: String) -> String:
 func is_revealed(domain_id: String, milestone_id: String) -> bool:
 	if progress == null:
 		return false
-	_ensure_required_fields(progress)
 
-	var rm: Dictionary = progress.get("revealed_milestones")
-	if rm == null:
+	# Ensure dictionary exists and is actually a Dictionary
+	var rm: Variant = null
+	if "revealed_milestones" in progress:
+		rm = progress.get("revealed_milestones")
+
+	if typeof(rm) != TYPE_DICTIONARY or rm == null:
 		rm = {}
 		progress.set("revealed_milestones", rm)
 
-	var key := _make_reveal_key(domain_id, milestone_id)
-	return rm.get(key, false) == true
+	var key := "%s:%s" % [domain_id, milestone_id]
+	return (rm as Dictionary).get(key, false) == true
 
 
 func mark_revealed(domain_id: String, milestone_id: String) -> void:
 	if progress == null:
 		return
-	_ensure_required_fields(progress)
 
-	var rm: Dictionary = progress.get("revealed_milestones")
-	if rm == null:
+	var rm: Variant = null
+	if "revealed_milestones" in progress:
+		rm = progress.get("revealed_milestones")
+
+	if typeof(rm) != TYPE_DICTIONARY or rm == null:
 		rm = {}
 		progress.set("revealed_milestones", rm)
 
-	var key := _make_reveal_key(domain_id, milestone_id)
-	if rm.get(key, false) == true:
+	var key := "%s:%s" % [domain_id, milestone_id]
+	if (rm as Dictionary).get(key, false) == true:
 		return
 
-	rm[key] = true
+	(rm as Dictionary)[key] = true
 	progress.set("revealed_milestones", rm)
 	_save_progress_if_possible()
 	emit_signal("changed")
-
 
 # -----------------------------------------------------------------------------
 # Persist
@@ -437,3 +502,294 @@ func get_friendship_level(npc_id: String) -> int:
 func set_friendship_level(npc_id: String, level: int) -> int:
 	# Friendship is usually “highest achieved”
 	return set_stat_max("friendship:%s" % npc_id, level)
+
+func has_unlocked_reward(reward_id: StringName) -> bool:
+	if progress == null:
+		return false
+
+	# Ensure property exists
+	if not ("unlocked_rewards" in progress):
+		progress.set("unlocked_rewards", {})
+
+	# Ensure it's actually a Dictionary (not null)
+	var ur_any: Variant = progress.get("unlocked_rewards")
+	if ur_any == null or typeof(ur_any) != TYPE_DICTIONARY:
+		ur_any = {}
+		progress.set("unlocked_rewards", ur_any)
+
+	var ur: Dictionary = ur_any
+	return ur.get(str(reward_id), false) == true
+
+func _mark_reward_unlocked(reward_id: StringName) -> void:
+	if progress == null:
+		return
+
+	if not ("unlocked_rewards" in progress):
+		progress.set("unlocked_rewards", {})
+
+	var ur_any: Variant = progress.get("unlocked_rewards")
+	if ur_any == null or typeof(ur_any) != TYPE_DICTIONARY:
+		ur_any = {}
+		progress.set("unlocked_rewards", ur_any)
+
+	var ur: Dictionary = ur_any
+	ur[str(reward_id)] = true
+	progress.set("unlocked_rewards", ur)
+
+	_save_progress_if_possible()
+	reward_unlocked.emit(reward_id)
+
+func _apply_reward(r: HeartRewardDefinition) -> void:
+	if r == null:
+		return
+	if r.id == StringName(""):
+		return
+	if has_unlocked_reward(r.id):
+		return
+
+	# Mark unlocked first (so even if the game crashes mid-apply, it won't double-apply later)
+	_mark_reward_unlocked(r.id)
+
+	var gs := get_node_or_null("/root/GameState")
+
+	match r.kind:
+		HeartRewardDefinition.RewardKind.UNLOCK_TRAVEL:
+			if gs != null and gs.has_method("unlock_travel") and str(r.travel_id) != "":
+				gs.call("unlock_travel", str(r.travel_id))
+
+		HeartRewardDefinition.RewardKind.TOAST:
+			var qe := get_node_or_null("/root/QuestEvents")
+			if qe != null and qe.has_signal("toast_requested"):
+				qe.call("toast_requested").emit(r.description if r.description != "" else "A blessing has awakened.")
+
+		_:
+			# Generic stat/flag handling: let GameState decide what to do with it.
+			if gs != null and gs.has_method("apply_heart_reward"):
+				gs.call("apply_heart_reward", r)
+			else:
+				# Safe fallback so you can still SEE it working immediately
+				print("[HeartProgress] Reward unlocked: ", r.id, " kind=", r.kind, " desc=", r.description)
+
+func _apply_rewards_for_milestone(domain_id: String, milestone_id: String) -> void:
+	if reward_catalog == null:
+		return
+	var list := reward_catalog.get_rewards_for(domain_id, milestone_id)
+	for r in list:
+		_apply_reward(r)
+
+func _evaluate_definition_milestones() -> void:
+	if definition == null:
+		return
+	if progress == null:
+		return
+
+	# HeartDefinitionData should expose "milestones: Array[HeartMilestone]"
+	if not ("milestones" in definition):
+		return
+
+	var list: Array = definition.get("milestones")
+	if list == null or list.is_empty():
+		return
+
+	for m in list:
+		if m == null:
+			continue
+
+		# Expected fields from your HeartMilestone resource:
+		# id, domain_id, counter_key, required_amount, filter_item_id, filter_npc_id
+		var domain_id := str(m.get("domain_id"))
+		var milestone_id := str(m.get("id"))
+
+		if domain_id == "" or milestone_id == "":
+			continue
+
+		# Already completed? skip
+		if has_milestone(domain_id, milestone_id):
+			continue
+
+		var counter_key := str(m.get("counter_key"))
+		var required := int(m.get("required_amount"))
+
+		if counter_key == "" or required <= 0:
+			continue
+
+		# --- base counter check ---
+		var have := get_count(counter_key)
+
+		# Optional: if you later use filter_item_id or filter_npc_id,
+		# you can extend this check safely without changing bindings.
+		# For now, ignore filters unless you already store per-item counters for that key.
+		# (You *do* have item_counters, so later we can do:
+		# have = get_item_count(filter_item_id) for specific milestone types.)
+
+		if have >= required:
+			_mark_milestone_done_if_supported(domain_id, milestone_id)
+
+func dev_dump_progress_state(tag: String = "") -> void:
+	if progress == null:
+		print("[HP DUMP] progress=null ", tag)
+		return
+	
+	var cm = null
+	var rm = null
+	
+	if ("completed_milestones" in progress):
+		cm = progress.get("completed_milestones")
+	
+	if ("revealed_milestones" in progress):
+		rm = progress.get("revealed_milestones")
+
+	print("[HP DUMP] ", tag,
+		" completed_milestones=", cm,
+		" revealed_milestones=", rm,
+		" counters=", counters,
+		" item_counters=", item_counters)
+
+
+func dev_clear_milestones_and_reveals_runtime() -> void:
+	if progress != null:
+		if "completed_milestones" in progress:
+			progress.set("completed_milestones", {})
+		if "revealed_milestones" in progress:
+			progress.set("revealed_milestones", {})
+
+	# Clear fallback “done” list too (so definition drives completion cleanly)
+	for k in counters.keys():
+		if str(k).begins_with("__milestones_done__"):
+			counters.erase(k)
+
+	emit_signal("changed")
+	print("[HeartProgress] DEV cleared completed_milestones + revealed_milestones + fallback done lists.")
+
+func _get_milestone(domain_id: String, milestone_id: String) -> Resource:
+	# heart_definition.tres should have domains with milestones; adapt if your structure differs.
+	if definition == null:
+		return null
+
+	# Common pattern: definition.domains -> HeartDomainData with id + milestones array
+	if "domains" in definition:
+		for d in definition.get("domains"):
+			if d != null and ("id" in d) and d.get("id") == domain_id:
+				if "milestones" in d:
+					for m in d.get("milestones"):
+						if m != null and ("id" in m) and m.get("id") == milestone_id:
+							return m
+
+	# Fallback if definition stores milestones flat
+	if "milestones" in definition:
+		for m in definition.get("milestones"):
+			if m != null and ("domain_id" in m) and ("id" in m):
+				if m.get("domain_id") == domain_id and m.get("id") == milestone_id:
+					return m
+
+	return null
+
+
+func is_milestone_completed_by_definition(domain_id: String, milestone_id: String) -> bool:
+	var m := _get_milestone(domain_id, milestone_id)
+	if m == null:
+		# If no definition, we can't evaluate it.
+		return false
+
+	var key := ""
+	var req := 1
+	var filter_item := ""
+	var filter_npc := ""
+
+	if "counter_key" in m:
+		key = str(m.get("counter_key")).strip_edges()
+	if "required_amount" in m:
+		req = int(m.get("required_amount"))
+	if "filter_item_id" in m:
+		filter_item = str(m.get("filter_item_id")).strip_edges()
+	if "filter_npc_id" in m:
+		filter_npc = str(m.get("filter_npc_id")).strip_edges()
+
+	if key == "":
+		return false
+
+	# For now: if you set filter_item_id, we evaluate against item_counters.
+	# Otherwise we evaluate against counters[key].
+	if filter_item != "":
+		return int(item_counters.get(filter_item, 0)) >= req
+
+	# Later: add npc friendship checks, money earned, etc. by interpreting key prefixes.
+	return int(counters.get(key, 0)) >= req
+
+func get_milestone_kind(domain_id: String, milestone_id: String) -> String:
+	var m := _get_milestone(domain_id, milestone_id)
+	if m != null and ("kind" in m):
+		return str(m.get("kind"))
+	return "sprout"
+
+# HeartProgress.gd
+
+func _load_reward_catalog() -> void:
+	reward_catalog = load(REWARD_PATH)
+	if reward_catalog == null:
+		push_warning("[HeartProgress] Could not load reward catalog at %s" % REWARD_PATH)
+
+func _ensure_unlocked_rewards_dict() -> Dictionary:
+	if progress == null:
+		return {}
+	if not ("unlocked_rewards" in progress):
+		progress.set("unlocked_rewards", {})
+	var ur :Variant= progress.get("unlocked_rewards")
+	if ur == null or typeof(ur) != TYPE_DICTIONARY:
+		ur = {}
+		progress.set("unlocked_rewards", ur)
+	return ur
+
+func unlock_reward(reward_id: StringName) -> void:
+	if progress == null:
+		return
+	var ur := _ensure_unlocked_rewards_dict()
+	var key := str(reward_id)
+	if ur.get(key, false) == true:
+		return
+	ur[key] = true
+	progress.set("unlocked_rewards", ur)
+	_save_progress_if_possible()
+	emit_signal("changed")
+
+func _unlock_rewards_for_milestone(domain_id: String, milestone_id: String) -> void:
+	# This expects you already have _get_milestone(domain_id, milestone_id)
+	# that searches heart_definition.tres.
+	var m := _get_milestone(domain_id, milestone_id)
+	if m == null:
+		return
+
+	# Supports either reward_ids (Array) or a single reward_id (if you ever add it)
+	if "reward_ids" in m:
+		var arr :Variant= m.get("reward_ids")
+		if arr != null and typeof(arr) == TYPE_ARRAY:
+			for rid in arr:
+				if rid == null:
+					continue
+				unlock_reward(StringName(str(rid)))
+
+func get_sell_multiplier() -> float:
+	# Default: no bonus
+	var mul := 1.0
+
+	# If you want to read real values from HeartRewardCatalog, we can do that next.
+	# For now, keep it super safe and explicit:
+	if has_unlocked_reward(&"sell_multiplier_105"):
+		mul *= 1.05
+
+	return mul
+
+func _dev_clear_legacy_milestone_keys() -> void:
+	# Removes old fallback milestone arrays that can cause false unlocks
+	var keys := counters.keys()
+	for k in keys:
+		var ks := str(k)
+		if ks.begins_with("__milestones_done__"):
+			counters.erase(k)
+
+func _clear_legacy_milestone_lists() -> void:
+	var keys := counters.keys()
+	for k in keys:
+		var ks := str(k)
+		if ks.begins_with("__milestones_done__"):
+			counters.erase(k)
