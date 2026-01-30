@@ -1,4 +1,4 @@
-[gd_scene load_steps=54 format=3 uid="uid://cwspce5y4tb13"]
+[gd_scene load_steps=56 format=3 uid="uid://cwspce5y4tb13"]
 
 [ext_resource type="TileSet" uid="uid://bqs5ruk6pejpc" path="res://tiles/GroundTileset.tres" id="1_vkoen"]
 [ext_resource type="Script" uid="uid://bywlb7k2vtqr" path="res://scripts/ValleyHeart.gd" id="1_ye5kf"]
@@ -17,6 +17,7 @@
 [ext_resource type="AudioStream" uid="uid://c0vxwp7d85xq8" path="res://audio/ambience/life/sfx_bird_01.WAV" id="10_qpypx"]
 [ext_resource type="AudioStream" uid="uid://dby2jcrvk4ssy" path="res://audio/ambience/life/sfx_bird_02.WAV" id="11_wrwcu"]
 [ext_resource type="AudioStream" uid="uid://b4kphj6d0xlxg" path="res://audio/ambience/life/sfx_bird_03.WAV" id="12_2nu52"]
+[ext_resource type="Script" uid="uid://dv2v7aj2554or" path="res://scripts/HeartPedestal.gd" id="13_81ihf"]
 [ext_resource type="AudioStream" uid="uid://cvxhlbrm7hew0" path="res://audio/ambience/life/sfx_leaves_01.WAV" id="13_dyf4m"]
 [ext_resource type="AudioStream" uid="uid://bd7fsofv05h57" path="res://audio/ambience/life/sfx_leaves_02.WAV" id="14_k38wn"]
 [ext_resource type="AudioStream" uid="uid://ddtmvpbosnor5" path="res://audio/ambience/life/sfx_murmur_01.WAV" id="15_h0wiq"]
@@ -44,6 +45,7 @@
 [ext_resource type="Script" uid="uid://dtnt771y54j77" path="res://scripts/HeartVisualController.gd" id="37_cix88"]
 [ext_resource type="Script" uid="uid://db23ydj4dqo8r" path="res://data/heart/HeartVisualBinding.gd" id="38_teva3"]
 [ext_resource type="Script" uid="uid://b8h23vsvf630b" path="res://scripts/HeartRevealDirector.gd" id="39_hxn5l"]
+[ext_resource type="PackedScene" uid="uid://s45kp2837ukm" path="res://ui/HeartDomainHubUI.tscn" id="46_c5fuf"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_qprux"]
 texture = ExtResource("2_05sqv")
@@ -225,6 +227,7 @@ tag = "from_farm"
 [node name="HeartPedestal" type="Area2D" parent="."]
 position = Vector2(91, 91)
 collision_mask = 3
+script = ExtResource("13_81ihf")
 
 [node name="Sprite2D" type="Sprite2D" parent="HeartPedestal"]
 texture = ExtResource("8_qprux")
@@ -275,7 +278,6 @@ root_swell_sfx = ExtResource("30_c5fuf")
 [node name="UI" type="CanvasLayer" parent="."]
 
 [node name="HeartProgressUI" parent="UI" instance=ExtResource("24_ye5kf")]
-progress_data = ExtResource("2_818gh")
 
 [node name="HeartCutsceneOverlay" type="CanvasLayer" parent="UI"]
 script = ExtResource("25_tokjd")
@@ -331,6 +333,10 @@ grow_vertical = 2
 [node name="ShippingUI" parent="." instance=ExtResource("30_teva3")]
 
 [node name="GiftUI" parent="." instance=ExtResource("31_hxn5l")]
+
+[node name="HeartProgressUI" parent="." instance=ExtResource("24_ye5kf")]
+
+[node name="HeartDomainHubUI" parent="." instance=ExtResource("46_c5fuf")]
 
 [node name="SceneBootstrap" type="Node" parent="."]
 

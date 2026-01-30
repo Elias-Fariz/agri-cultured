@@ -1,0 +1,37 @@
+[gd_scene load_steps=2 format=3 uid="uid://s45kp2837ukm"]
+
+[ext_resource type="Script" uid="uid://bs8ufellim8n3" path="res://scripts/HeartDomainHubUI.gd" id="1_1lk6f"]
+
+[node name="HeartDomainHubUI" type="CanvasLayer"]
+script = ExtResource("1_1lk6f")
+visual_node_path = NodePath("Panel")
+start_visible_in_game = false
+is_modal = true
+
+[node name="Panel" type="Panel" parent="."]
+visible = false
+custom_minimum_size = Vector2(400, 400)
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="VBox" type="VBoxContainer" parent="Panel"]
+custom_minimum_size = Vector2(400, 300)
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Title" type="Label" parent="Panel/VBox"]
+layout_mode = 2
+
+[node name="Subtitle" type="Label" parent="Panel/VBox"]
+layout_mode = 2
+
+[node name="DomainButtons" type="VBoxContainer" parent="Panel/VBox"]
+layout_mode = 2
+
+[node name="Hint" type="Label" parent="Panel/VBox"]
+layout_mode = 2
+
+[node name="CloseButton" type="Button" parent="Panel/VBox"]
+layout_mode = 2
+text = "Close"

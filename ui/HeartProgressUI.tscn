@@ -10,29 +10,81 @@ is_modal = true
 
 [node name="Panel" type="Panel" parent="."]
 visible = false
-custom_minimum_size = Vector2(400, 500)
+custom_minimum_size = Vector2(400, 600)
 offset_right = 40.0
 offset_bottom = 40.0
 
-[node name="VBox" type="VBoxContainer" parent="Panel"]
-custom_minimum_size = Vector2(400, 450)
+[node name="Margin" type="MarginContainer" parent="Panel"]
 layout_mode = 0
-offset_left = -1.0
-offset_right = 399.0
-offset_bottom = 450.0
+offset_right = 40.0
+offset_bottom = 40.0
 
-[node name="Title" type="Label" parent="Panel/VBox"]
+[node name="Root" type="VBoxContainer" parent="Panel/Margin"]
+custom_minimum_size = Vector2(400, 450)
+layout_mode = 2
+
+[node name="Header" type="VBoxContainer" parent="Panel/Margin/Root"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="Panel/Margin/Root/Header"]
 layout_mode = 2
 text = "Valley Heart"
 
-[node name="Hint" type="Label" parent="Panel/VBox"]
+[node name="Subtitle" type="Label" parent="Panel/Margin/Root/Header"]
 layout_mode = 2
-text = "Walk to wings..."
+text = "For the ones who care..."
 
-[node name="Domains" type="VBoxContainer" parent="Panel/VBox"]
+[node name="Body" type="HBoxContainer" parent="Panel/Margin/Root"]
 layout_mode = 2
-size_flags_vertical = 3
 
-[node name="CloseHint" type="Label" parent="Panel/VBox"]
+[node name="LeftCol" type="VBoxContainer" parent="Panel/Margin/Root/Body"]
 layout_mode = 2
-text = "Sprouts are quick... Roots take time..."
+
+[node name="ActiveTitle" type="Label" parent="Panel/Margin/Root/Body/LeftCol"]
+layout_mode = 2
+text = "Active Blessings"
+
+[node name="ActiveText" type="RichTextLabel" parent="Panel/Margin/Root/Body/LeftCol"]
+custom_minimum_size = Vector2(50, 300)
+layout_mode = 2
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+
+[node name="RightCol" type="VBoxContainer" parent="Panel/Margin/Root/Body"]
+layout_mode = 2
+
+[node name="NextTitle" type="Label" parent="Panel/Margin/Root/Body/RightCol"]
+layout_mode = 2
+text = "Next Blessing"
+
+[node name="NextText" type="RichTextLabel" parent="Panel/Margin/Root/Body/RightCol"]
+custom_minimum_size = Vector2(50, 300)
+layout_mode = 2
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+
+[node name="ProgressTitle" type="Label" parent="Panel/Margin/Root/Body/RightCol"]
+layout_mode = 2
+text = "Progress"
+
+[node name="ProgressBar" type="ProgressBar" parent="Panel/Margin/Root/Body/RightCol"]
+layout_mode = 2
+
+[node name="ProgressDetail" type="Label" parent="Panel/Margin/Root/Body/RightCol"]
+layout_mode = 2
+
+[node name="Footer" type="HBoxContainer" parent="Panel/Margin/Root"]
+layout_mode = 2
+
+[node name="Hint" type="Label" parent="Panel/Margin/Root/Footer"]
+layout_mode = 2
+
+[node name="CloseButton" type="Button" parent="Panel/Margin/Root/Footer"]
+layout_mode = 2
+text = "Close"
+
+[node name="CloseHint" type="Label" parent="Panel/Margin/Root"]
+layout_mode = 2
+text = "Press Esc to Close"

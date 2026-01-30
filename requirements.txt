@@ -47,7 +47,7 @@ Phase 3: Stardew Feel
 
 Phase 3.5: Valley Heart
 * New Area *CHECK*
-* Progress Tracker *MOVED TO IDS*
+* Progress Tracker *CREATED PEDESTAL*
 * Milestone Rewards *THREE MINI DONE!*
 * Visual Changes *ROOTS VS NODES*
 * Cutscenes *BASELINE*
