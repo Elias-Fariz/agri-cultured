@@ -13,14 +13,10 @@ extends BaseOverlay
 @onready var take_one_button: Button = $Panel/Margin/Root/BodyRow/MidCol/TakeOneButton
 @onready var take_all_button: Button = $Panel/Margin/Root/BodyRow/MidCol/TakeAllButton
 
-# We store the currently displayed keys so we can map a selected row -> item name.
 var _inv_keys: Array[String] = []
 var _bin_keys: Array[String] = []
 
 func _ready() -> void:
-	# BaseOverlay should handle: hide in editor, lock gameplay, pause time, etc.
-	# We’ll just wire up buttons and refresh.
-
 	close_button.pressed.connect(hide_overlay)
 
 	ship_one_button.pressed.connect(_on_ship_one)
@@ -34,7 +30,6 @@ func _ready() -> void:
 	_refresh_all()
 
 func show_overlay() -> void:
-	# If BaseOverlay already has show_overlay(), call super then refresh.
 	super.show_overlay()
 	_refresh_all()
 
@@ -51,7 +46,6 @@ func _refresh_inventory_list() -> void:
 	inventory_list.clear()
 	_inv_keys.clear()
 
-	# Only show items that exist + are shippable
 	for key in GameState.inventory.keys():
 		var item_name := str(key)
 		var count := int(GameState.inventory[key])
@@ -59,18 +53,14 @@ func _refresh_inventory_list() -> void:
 			continue
 		if not GameState.is_shippable(item_name):
 			continue
-
 		_inv_keys.append(item_name)
 
-	# Keep stable order for sanity
 	_inv_keys.sort()
 
 	for item_name in _inv_keys:
 		var count := int(GameState.inventory.get(item_name, 0))
 		var price := GameState.get_sell_price(item_name)
-		# Example: "Watermelon x3 (35g)"
 		inventory_list.add_item("%s x%d (%dg)" % [item_name, count, price])
-		print("Added" % [item_name, count, price])
 
 func _refresh_bin_list() -> void:
 	bin_list.clear()
@@ -91,6 +81,27 @@ func _refresh_bin_list() -> void:
 		bin_list.add_item("%s x%d (%dg)" % [item_name, count, price])
 
 func _refresh_payout_label() -> void:
+	# Prefer breakdown if available (so we can show the Heart bonus clearly).
+	if GameState.has_method("shipping_calculate_payout_breakdown"):
+		var b: Dictionary = GameState.call("shipping_calculate_payout_breakdown")
+		var base_total := int(b.get("base", 0))
+		var final_total := int(b.get("final", 0))
+		var bonus := int(b.get("bonus", 0))
+		var mul := float(b.get("mul", 1.0))
+
+		# Always show the final tomorrow payout
+		var lines: Array[String] = []
+		lines.append("Tomorrow: %dg" % final_total)
+
+		# Only add extra lines when the Heart actually helped
+		if bonus > 0 and mul > 1.0:
+			lines.append("Valley Heart Blessing (x%.2f): +%dg" % [mul, bonus])
+			lines.append("Base: %dg" % base_total)
+
+		payout_label.text = "\n".join(lines)
+		return
+
+	# Fallback: old behavior
 	var payout := GameState.shipping_calculate_payout()
 	payout_label.text = "Tomorrow: %dg" % payout
 

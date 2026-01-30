@@ -61,6 +61,8 @@ func _ready() -> void:
 	dev_dump_progress_state("BEFORE CLEAR")
 	dev_clear_milestones_and_reveals_runtime()
 	dev_dump_progress_state("AFTER CLEAR")
+	dev_clear_rewards_runtime(true)
+
 
 
 # -----------------------------------------------------------------------------
@@ -155,7 +157,6 @@ func _make_fresh_progress_resource() -> Resource:
 func _ensure_required_fields(res: Resource) -> void:
 	if res == null:
 		return
-	# Make sure these dictionaries exist (matching your HeartProgressData extensions)
 	if not ("counters" in res):
 		res.set("counters", {})
 	if not ("item_counters" in res):
@@ -166,7 +167,12 @@ func _ensure_required_fields(res: Resource) -> void:
 		res.set("completed_milestones", {})
 	if not ("stats" in res):
 		res.set("stats", {})
-
+	if not ("unlocked_rewards" in res):
+		res.set("unlocked_rewards", {})
+	if not ("reward_stats" in res):
+		res.set("reward_stats", {})
+	if not ("reward_flags" in res):
+		res.set("reward_flags", {})
 
 func _ingest_progress_dicts() -> void:
 	# Start clean
@@ -186,6 +192,12 @@ func _ingest_progress_dicts() -> void:
 	if counters == null: counters = {}
 	if item_counters == null: item_counters = {}
 	if stats == null: stats = {}
+	
+	# Keep reward stats inside the resource (not in-memory only)
+# We will read/write them via get_reward_stat / _set_reward_stat_* helpers.
+	if progress != null:
+		if not ("reward_stats" in progress) or progress.get("reward_stats") == null:
+			progress.set("reward_stats", {})
 
 
 func _normalize_numeric_dicts() -> void:
@@ -225,6 +237,7 @@ func _reset_progress_in_memory() -> void:
 		if "revealed_milestones" in progress: progress.set("revealed_milestones", {})
 		if "completed_milestones" in progress: progress.set("completed_milestones", {})
 		if "unlocked_rewards" in progress: progress.set("unlocked_rewards", {})
+		if "reward_stats" in progress: progress.set("reward_stats", {})
 
 	emit_signal("changed")
 
@@ -366,41 +379,63 @@ func _mark_milestone_done_if_supported(domain_id: String, milestone_id: String) 
 	if domain_id == "" or milestone_id == "":
 		return
 
+	# --- Persisted path ---
 	if progress != null and ("completed_milestones" in progress):
-		var cm: Dictionary = progress.get("completed_milestones")
-		if cm == null:
-			cm = {}
+		var cm_any: Variant = progress.get("completed_milestones")
+		if cm_any == null or typeof(cm_any) != TYPE_DICTIONARY:
+			cm_any = {}
+			progress.set("completed_milestones", cm_any)
 
-		var arr: Array = cm.get(domain_id, [])
-		if arr == null:
-			arr = []
+		var cm: Dictionary = cm_any
+		var arr_any: Variant = cm.get(domain_id, [])
+		if arr_any == null or typeof(arr_any) != TYPE_ARRAY:
+			arr_any = []
 
-		if not arr.has(milestone_id):
-			arr.append(milestone_id)
-			cm[domain_id] = arr
-			progress.set("completed_milestones", cm)
-			
-			_unlock_rewards_for_milestone(domain_id, milestone_id)
-			
-			_save_progress_if_possible()
-			emit_signal("milestone_completed", domain_id, milestone_id)
-			_apply_rewards_for_milestone(domain_id, milestone_id)
-		return
+		var arr: Array = arr_any
 
-	# Fallback: store done milestones in memory
-	var key := "__milestones_done__%s" % domain_id
-	var done: Array = counters.get(key, [])
-	if done == null:
-		done = []
-	if not done.has(milestone_id):
-		done.append(milestone_id)
-		counters[key] = done
-		
-		_unlock_rewards_for_milestone(domain_id, milestone_id)
-		
+		if arr.has(milestone_id):
+			print("[HP REWARD DBG] milestone already in completed_milestones domain=", domain_id, " id=", milestone_id)
+			return
+
+		# Mark complete
+		arr.append(milestone_id)
+		cm[domain_id] = arr
+		progress.set("completed_milestones", cm)
+
+		print("[HP REWARD DBG] milestone completed NOW domain=", domain_id, " id=", milestone_id, " completed_list=", arr)
+
+		_save_progress_if_possible()
 		emit_signal("milestone_completed", domain_id, milestone_id)
+
+		# Grant rewards from definition and apply them
+		print("[HP REWARD DBG] calling _apply_rewards_for_milestone domain=", domain_id, " id=", milestone_id)
 		_apply_rewards_for_milestone(domain_id, milestone_id)
 
+		emit_signal("changed")
+		return
+
+	# --- Fallback path (no progress resource) ---
+	var key := "__milestones_done__%s" % domain_id
+	var done_any: Variant = counters.get(key, [])
+	if done_any == null or typeof(done_any) != TYPE_ARRAY:
+		done_any = []
+
+	var done: Array = done_any
+
+	if done.has(milestone_id):
+		print("[HP REWARD DBG] milestone already in legacy done list domain=", domain_id, " id=", milestone_id)
+		return
+
+	done.append(milestone_id)
+	counters[key] = done
+
+	print("[HP REWARD DBG] milestone completed NOW (legacy) domain=", domain_id, " id=", milestone_id, " done_list=", done)
+
+	emit_signal("milestone_completed", domain_id, milestone_id)
+	print("[HP REWARD DBG] calling _apply_rewards_for_milestone domain=", domain_id, " id=", milestone_id)
+	_apply_rewards_for_milestone(domain_id, milestone_id)
+
+	emit_signal("changed")
 
 func has_milestone(domain_id: String, milestone_id: String) -> bool:
 	var cm_val = null
@@ -485,6 +520,11 @@ func _mirror_into_progress() -> void:
 	progress.set("item_counters", item_counters)
 	progress.set("stats", stats)
 
+	# ✅ Ensure reward_stats exists but don't overwrite it
+	if progress.get("reward_stats") == null or typeof(progress.get("reward_stats")) != TYPE_DICTIONARY:
+		progress.set("reward_stats", {})
+
+
 
 func _save_progress_if_possible() -> void:
 	if progress == null:
@@ -502,42 +542,6 @@ func get_friendship_level(npc_id: String) -> int:
 func set_friendship_level(npc_id: String, level: int) -> int:
 	# Friendship is usually “highest achieved”
 	return set_stat_max("friendship:%s" % npc_id, level)
-
-func has_unlocked_reward(reward_id: StringName) -> bool:
-	if progress == null:
-		return false
-
-	# Ensure property exists
-	if not ("unlocked_rewards" in progress):
-		progress.set("unlocked_rewards", {})
-
-	# Ensure it's actually a Dictionary (not null)
-	var ur_any: Variant = progress.get("unlocked_rewards")
-	if ur_any == null or typeof(ur_any) != TYPE_DICTIONARY:
-		ur_any = {}
-		progress.set("unlocked_rewards", ur_any)
-
-	var ur: Dictionary = ur_any
-	return ur.get(str(reward_id), false) == true
-
-func _mark_reward_unlocked(reward_id: StringName) -> void:
-	if progress == null:
-		return
-
-	if not ("unlocked_rewards" in progress):
-		progress.set("unlocked_rewards", {})
-
-	var ur_any: Variant = progress.get("unlocked_rewards")
-	if ur_any == null or typeof(ur_any) != TYPE_DICTIONARY:
-		ur_any = {}
-		progress.set("unlocked_rewards", ur_any)
-
-	var ur: Dictionary = ur_any
-	ur[str(reward_id)] = true
-	progress.set("unlocked_rewards", ur)
-
-	_save_progress_if_possible()
-	reward_unlocked.emit(reward_id)
 
 func _apply_reward(r: HeartRewardDefinition) -> void:
 	if r == null:
@@ -563,19 +567,33 @@ func _apply_reward(r: HeartRewardDefinition) -> void:
 				qe.call("toast_requested").emit(r.description if r.description != "" else "A blessing has awakened.")
 
 		_:
-			# Generic stat/flag handling: let GameState decide what to do with it.
+			# ✅ If the reward definition contains numeric stats, store them into reward_stats.
+			# We will support stacking in a predictable way.
+			if "stats" in r:
+				var s_any: Variant = r.get("stats")
+				if s_any != null and typeof(s_any) == TYPE_DICTIONARY:
+					var s: Dictionary = s_any
+					# Multipliers stack multiplicatively; energy bonus stacks additively.
+					if s.has("sell_multiplier"):
+						_mul_reward_stat("sell_multiplier", float(s["sell_multiplier"]))
+					if s.has("shop_discount_multiplier"):
+						_mul_reward_stat("shop_discount_multiplier", float(s["shop_discount_multiplier"]))
+					if s.has("energy_bonus_on_sleep"):
+						_add_reward_stat("energy_bonus_on_sleep", int(s["energy_bonus_on_sleep"]))
+
+					# If you want, you can also store any unknown keys literally:
+					# (Safe for future expansion — you can interpret later.)
+					for k in s.keys():
+						var ks := String(k)
+						if ks == "sell_multiplier" or ks == "shop_discount_multiplier" or ks == "energy_bonus_on_sleep":
+							continue
+						_set_reward_stat(ks, s[k])
+
+			# Keep your existing behavior too (so UI/toasts/etc keep working)
 			if gs != null and gs.has_method("apply_heart_reward"):
 				gs.call("apply_heart_reward", r)
 			else:
-				# Safe fallback so you can still SEE it working immediately
 				print("[HeartProgress] Reward unlocked: ", r.id, " kind=", r.kind, " desc=", r.description)
-
-func _apply_rewards_for_milestone(domain_id: String, milestone_id: String) -> void:
-	if reward_catalog == null:
-		return
-	var list := reward_catalog.get_rewards_for(domain_id, milestone_id)
-	for r in list:
-		_apply_reward(r)
 
 func _evaluate_definition_milestones() -> void:
 	if definition == null:
@@ -605,6 +623,7 @@ func _evaluate_definition_milestones() -> void:
 
 		# Already completed? skip
 		if has_milestone(domain_id, milestone_id):
+			print("[HP REWARD DBG] milestone already completed, skipping grant domain=", domain_id, " id=", milestone_id)
 			continue
 
 		var counter_key := str(m.get("counter_key"))
@@ -657,7 +676,9 @@ func dev_clear_milestones_and_reveals_runtime() -> void:
 	for k in counters.keys():
 		if str(k).begins_with("__milestones_done__"):
 			counters.erase(k)
-
+	
+	if "reward_stats" in progress: progress.set("reward_stats", {})
+	
 	emit_signal("changed")
 	print("[HeartProgress] DEV cleared completed_milestones + revealed_milestones + fallback done lists.")
 
@@ -729,16 +750,202 @@ func _load_reward_catalog() -> void:
 	if reward_catalog == null:
 		push_warning("[HeartProgress] Could not load reward catalog at %s" % REWARD_PATH)
 
+func get_reward_stat(key: String, default_value) -> Variant:
+	if progress == null:
+		return default_value
+	var rs := _ensure_reward_stats_dict()
+	return rs.get(key, default_value)
+
+func get_reward_flag(key: String, default_value: bool = false) -> bool:
+	if progress == null:
+		return default_value
+	var rf := _ensure_reward_flags_dict()
+	return bool(rf.get(key, default_value))
+
+func _apply_reward_definition(r: HeartRewardDefinition) -> void:
+	if r == null:
+		return
+	if r.id == StringName(""):
+		return
+
+	# If you want “only apply once”, gate using unlocked_rewards:
+	if has_unlocked_reward(r.id):
+		print("[HP REWARD DBG] already unlocked, skipping apply id=", str(r.id))
+		return
+
+	# Mark unlocked first
+	_mark_reward_unlocked(r.id)
+
+	print("[HP REWARD DBG] APPLY reward id=", str(r.id),
+		" kind=", int(r.kind),
+		" stat_key=", str(r.stat_key),
+		" amount=", r.amount,
+		" flag_key=", str(r.flag_key),
+		" flag_value=", r.flag_value)
+
+	var gs := get_node_or_null("/root/GameState")
+
+	match r.kind:
+		HeartRewardDefinition.RewardKind.STAT_ADD:
+			var rs := _ensure_reward_stats_dict()
+			var key := str(r.stat_key)
+			if key == "":
+				print("[HP REWARD DBG] STAT_ADD missing stat_key for id=", str(r.id))
+			else:
+				var cur := float(rs.get(key, 0.0))
+				rs[key] = cur + float(r.amount)
+				progress.set("reward_stats", rs)
+				_save_progress_if_possible()
+				emit_signal("changed")
+				print("[HP REWARD DBG] STAT_ADD wrote reward_stats[", key, "]=", rs[key])
+
+		HeartRewardDefinition.RewardKind.STAT_MULTIPLY:
+			var rs := _ensure_reward_stats_dict()
+			var key := str(r.stat_key)
+			if key == "":
+				print("[HP REWARD DBG] STAT_MULTIPLY missing stat_key for id=", str(r.id))
+			else:
+				var cur := float(rs.get(key, 1.0))
+				rs[key] = cur * float(r.amount)
+				progress.set("reward_stats", rs)
+				_save_progress_if_possible()
+				emit_signal("changed")
+				print("[HP REWARD DBG] STAT_MULTIPLY wrote reward_stats[", key, "]=", rs[key])
+
+		HeartRewardDefinition.RewardKind.FLAG_SET:
+			var rf := _ensure_reward_flags_dict()
+			var fkey := str(r.flag_key)
+			if fkey == "":
+				print("[HP REWARD DBG] FLAG_SET missing flag_key for id=", str(r.id))
+			else:
+				rf[fkey] = bool(r.flag_value)
+				progress.set("reward_flags", rf)
+				_save_progress_if_possible()
+				emit_signal("changed")
+				print("[HP REWARD DBG] FLAG_SET wrote reward_flags[", fkey, "]=", rf[fkey])
+
+		HeartRewardDefinition.RewardKind.UNLOCK_TRAVEL:
+			if gs != null and gs.has_method("unlock_travel") and str(r.travel_id) != "":
+				gs.call("unlock_travel", str(r.travel_id))
+				_save_progress_if_possible()
+				emit_signal("changed")
+
+		HeartRewardDefinition.RewardKind.TOAST:
+			var qe := get_node_or_null("/root/QuestEvents")
+			if qe != null and qe.has_signal("toast_requested"):
+				qe.toast_requested.emit(r.description if r.description != "" else "A blessing has awakened.", "success", 3.0)
+
+func _apply_rewards_for_milestone(domain_id: String, milestone_id: String) -> void:
+	print("[HP REWARD DBG] apply_rewards begin domain=", domain_id, " id=", milestone_id)
+	
+	if progress == null:
+		print("[HP REWARD DBG] progress is null, cannot persist rewards")
+		return
+
+	if reward_catalog == null:
+		print("[HP REWARD DBG] reward_catalog is null, cannot lookup reward ids")
+		return
+
+	var m := _get_milestone(domain_id, milestone_id)
+	if m == null:
+		print("[HP REWARD DBG] _get_milestone returned null for domain=", domain_id, " id=", milestone_id)
+		return
+
+	# Safe read of reward_ids from Resource
+	var ids_any: Variant = null
+	# Prefer direct property access when possible
+	# (Resource exported vars are usually accessible as fields)
+	if m.has_method("get"):
+		ids_any = m.get("reward_ids")
+	else:
+		# last resort: try property access
+		ids_any = m.reward_ids
+
+	if ids_any == null:
+		print("[HP REWARD DBG] milestone has reward_ids=null domain=", domain_id, " id=", milestone_id)
+		return
+
+	if typeof(ids_any) != TYPE_ARRAY:
+		print("[HP REWARD DBG] milestone reward_ids not an Array. type=", typeof(ids_any), " value=", ids_any)
+		return
+
+	var ids: Array = ids_any
+	print("[HP REWARD DBG] milestone reward_ids=", ids)
+
+	if ids.is_empty():
+		print("[HP REWARD DBG] milestone reward_ids is empty, nothing to apply")
+		return
+
+	for rid_any in ids:
+		var rid := StringName(str(rid_any))
+		print("[HP REWARD DBG] attempting reward id=", str(rid))
+
+		var defn: HeartRewardDefinition = reward_catalog.get_reward_by_id(rid)
+		if defn == null:
+			print("[HP REWARD DBG] MISSING reward definition for id=", str(rid))
+			continue
+
+		print("[HP REWARD DBG] found reward def id=", str(defn.id), " kind=", int(defn.kind), " stat_key=", str(defn.stat_key), " amount=", defn.amount)
+		_apply_reward_definition(defn)
+
+	# After applying, dump reward_stats so you can see if it persisted
+	var rs_any: Variant = progress.get("reward_stats") if ("reward_stats" in progress) else null
+	var rf_any: Variant = progress.get("reward_flags") if ("reward_flags" in progress) else null
+	var ur_any: Variant = progress.get("unlocked_rewards") if ("unlocked_rewards" in progress) else null
+
+	print("[HP REWARD DBG] after apply reward_stats=", rs_any)
+	print("[HP REWARD DBG] after apply reward_flags=", rf_any)
+	print("[HP REWARD DBG] after apply unlocked_rewards=", ur_any)
+
+	print("[HP REWARD DBG] apply_rewards end domain=", domain_id, " id=", milestone_id)
+
 func _ensure_unlocked_rewards_dict() -> Dictionary:
 	if progress == null:
 		return {}
-	if not ("unlocked_rewards" in progress):
+	if not ("unlocked_rewards" in progress) or progress.get("unlocked_rewards") == null:
 		progress.set("unlocked_rewards", {})
-	var ur :Variant= progress.get("unlocked_rewards")
-	if ur == null or typeof(ur) != TYPE_DICTIONARY:
-		ur = {}
-		progress.set("unlocked_rewards", ur)
-	return ur
+	var ur_any: Variant = progress.get("unlocked_rewards")
+	if ur_any == null or typeof(ur_any) != TYPE_DICTIONARY:
+		ur_any = {}
+		progress.set("unlocked_rewards", ur_any)
+	return ur_any as Dictionary
+
+func _ensure_reward_stats_dict() -> Dictionary:
+	if progress == null:
+		return {}
+	if not ("reward_stats" in progress):
+		progress.set("reward_stats", {})
+	var rs_any: Variant = progress.get("reward_stats")
+	if rs_any == null or typeof(rs_any) != TYPE_DICTIONARY:
+		rs_any = {}
+		progress.set("reward_stats", rs_any)
+	return rs_any
+
+func _ensure_reward_flags_dict() -> Dictionary:
+	if progress == null:
+		return {}
+	if not ("reward_flags" in progress):
+		progress.set("reward_flags", {})
+	var rf_any: Variant = progress.get("reward_flags")
+	if rf_any == null or typeof(rf_any) != TYPE_DICTIONARY:
+		rf_any = {}
+		progress.set("reward_flags", rf_any)
+	return rf_any
+
+func has_unlocked_reward(reward_id: StringName) -> bool:
+	if progress == null:
+		return false
+	var ur := _ensure_unlocked_rewards_dict()
+	return ur.get(str(reward_id), false) == true
+
+func _mark_reward_unlocked(reward_id: StringName) -> void:
+	if progress == null:
+		return
+	var ur := _ensure_unlocked_rewards_dict()
+	ur[str(reward_id)] = true
+	progress.set("unlocked_rewards", ur)
+	_save_progress_if_possible()
+	reward_unlocked.emit(reward_id)
 
 func unlock_reward(reward_id: StringName) -> void:
 	if progress == null:
@@ -768,17 +975,6 @@ func _unlock_rewards_for_milestone(domain_id: String, milestone_id: String) -> v
 					continue
 				unlock_reward(StringName(str(rid)))
 
-func get_sell_multiplier() -> float:
-	# Default: no bonus
-	var mul := 1.0
-
-	# If you want to read real values from HeartRewardCatalog, we can do that next.
-	# For now, keep it super safe and explicit:
-	if has_unlocked_reward(&"sell_multiplier_105"):
-		mul *= 1.05
-
-	return mul
-
 func _dev_clear_legacy_milestone_keys() -> void:
 	# Removes old fallback milestone arrays that can cause false unlocks
 	var keys := counters.keys()
@@ -793,3 +989,63 @@ func _clear_legacy_milestone_lists() -> void:
 		var ks := str(k)
 		if ks.begins_with("__milestones_done__"):
 			counters.erase(k)
+
+func get_sell_multiplier() -> float:
+	return float(get_reward_stat("sell_multiplier", 1.0))
+
+func get_shop_discount_multiplier() -> float:
+	return float(get_reward_stat("shop_discount_multiplier", 1.0))
+
+func get_energy_bonus_on_sleep() -> int:
+	return int(get_reward_stat("energy_bonus_on_sleep", 0))
+
+func _set_reward_stat(key: String, value) -> void:
+	if progress == null:
+		return
+	var rs := _ensure_reward_stats_dict()
+	rs[key] = value
+	progress.set("reward_stats", rs)
+	_save_progress_if_possible()
+	emit_signal("changed")
+
+
+func _mul_reward_stat(key: String, factor: float) -> void:
+	if progress == null:
+		return
+	if factor <= 0.0:
+		return
+	var rs := _ensure_reward_stats_dict()
+	var cur := float(rs.get(key, 1.0))
+	rs[key] = cur * factor
+	progress.set("reward_stats", rs)
+	_save_progress_if_possible()
+	emit_signal("changed")
+
+
+func _add_reward_stat(key: String, delta: int) -> void:
+	if progress == null:
+		return
+	if delta == 0:
+		return
+	var rs := _ensure_reward_stats_dict()
+	var cur := int(rs.get(key, 0))
+	rs[key] = cur + delta
+	progress.set("reward_stats", rs)
+	_save_progress_if_possible()
+	emit_signal("changed")
+
+func dev_clear_rewards_runtime(save_after: bool = false) -> void:
+	if progress == null:
+		return
+	if "reward_stats" in progress:
+		progress.set("reward_stats", {})
+	if "reward_flags" in progress:
+		progress.set("reward_flags", {})
+	if "unlocked_rewards" in progress:
+		progress.set("unlocked_rewards", {})
+
+	if save_after:
+		_save_progress_if_possible()
+
+	print("[HP REWARD DBG] dev_clear_rewards_runtime completed. reward_stats/reward_flags/unlocked_rewards cleared.")
+	emit_signal("changed")

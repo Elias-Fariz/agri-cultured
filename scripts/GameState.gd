@@ -257,20 +257,8 @@ func unship_to_inventory(item_name: String, qty: int = 1) -> bool:
 # PAYOUT
 # -------------------------
 func shipping_calculate_payout() -> int:
-	var total := 0
-	for item_name in shipping_bin.keys():
-		var qty := int(shipping_bin[item_name])
-		total += get_sell_price(String(item_name)) * qty
-
-	var mul := 1.0
-	var hp := get_node_or_null("/root/HeartProgress")
-	if hp != null and hp.has_method("get_sell_multiplier"):
-		mul = float(hp.call("get_sell_multiplier"))
-
-	total = int(round(float(total) * mul))
-	print("[Ship] base_total=", total, " mul=", mul, " final=", total)
-
-	return total
+	var b := shipping_calculate_payout_breakdown()
+	return int(b.get("final", 0))
 
 func shipping_payout_and_clear() -> int:
 	# --- Capture shipped items BEFORE we clear the bin ---
@@ -289,14 +277,13 @@ func shipping_payout_and_clear() -> int:
 			report_item_shipped(item_name, qty)
 
 	# 2) Pay out money
-	var payout := shipping_calculate_payout()
+	var breakdown := shipping_calculate_payout_breakdown()
+	var payout := int(breakdown["final"])
 	if payout > 0:
 		MoneySystem.add(payout)
 
-	# --- Finalize yesterday summary BEFORE clearing ---
-	# TimeManager.day has already been incremented in start_new_day(),
-	# so "yesterday" is (TimeManager.day - 1)
 	finalize_yesterday_summary(TimeManager.day, payout, shipped_copy)
+
 
 	# Prepare tracking for the NEW day
 	reset_today_tracking()
@@ -304,6 +291,28 @@ func shipping_payout_and_clear() -> int:
 	# 3) Clear the bin
 	shipping_bin.clear()
 	return payout
+
+func shipping_calculate_payout_breakdown() -> Dictionary:
+	# Returns:
+	# { "base": int, "mul": float, "bonus": int, "final": int }
+	var base_total := 0
+	for item_name in shipping_bin.keys():
+		var qty := int(shipping_bin[item_name])
+		base_total += get_sell_price(String(item_name)) * qty
+
+	var mul := 1.0
+	if has_node("/root/HeartProgress"):
+		mul = float(get_node("/root/HeartProgress").call("get_sell_multiplier"))
+
+	var final_total := int(round(float(base_total) * mul))
+	var bonus := final_total - base_total
+
+	return {
+		"base": base_total,
+		"mul": mul,
+		"bonus": bonus,
+		"final": final_total,
+	}
 
 # ----------------------------
 # Energy / Stamina (NEW)
@@ -474,6 +483,22 @@ func get_tool_name() -> String:
 func reset_energy() -> void:
 	energy = max_energy
 	exhausted = false
+
+	# Valley Heart blessing: bonus energy ONLY when you sleep (since passout uses apply_passout_penalty)
+	var bonus := 0
+	if has_node("/root/HeartProgress"):
+		bonus = int(get_node("/root/HeartProgress").call("get_energy_bonus_on_sleep"))
+
+	if bonus > 0:
+		energy = min(max_energy + bonus, energy + bonus)
+		# If you prefer a hard cap at max_energy, use:
+		# energy = min(max_energy, energy + bonus)
+
+		# Optional cozy feedback (safe)
+		if has_node("/root/QuestEvents"):
+			var qe := get_node("/root/QuestEvents")
+			if qe != null and qe.has_signal("toast_requested"):
+				QuestEvents.toast_requested.emit("Valley Heart Blessing: +" + str(bonus) + " energy", "success", 2.5)
 
 func can_spend(cost: int) -> bool:
 	return energy >= cost
@@ -1244,18 +1269,70 @@ func reset_today_tracking() -> void:
 		"energy_penalty": 0,
 	}
 
-func finalize_yesterday_summary(new_day: int, payout: int, shipped_copy: Dictionary) -> void:
-	# This summary represents the day that just ended.
-	yesterday_summary = {
-		"day_ended": new_day - 1,
-		"money_earned": payout,
-		"shipped": shipped_copy,
-		"quests_accepted": today_tracking.get("quests_accepted", []),
-		"quests_completed": today_tracking.get("quests_completed", []),
-		"areas_unlocked": today_tracking.get("areas_unlocked", []),
-		"pass_out": today_tracking.get("pass_out", false),
-		"energy_penalty": today_tracking.get("energy_penalty", 0),
-	}
+func finalize_yesterday_summary(day_now: int, payout: int, shipped_copy: Dictionary) -> void:
+	# "day_now" is the current day after TimeManager advanced.
+	# The day that just ended is yesterday:
+	var day_ended :Variant= max(0, int(day_now) - 1)
+
+	# Defensive reads from today_tracking (your quest + unlock hooks write here)
+	var accepted: Array = []
+	var completed: Array = []
+	var unlocked: Array = []
+
+	if today_tracking is Dictionary:
+		if today_tracking.has("quests_accepted") and today_tracking["quests_accepted"] is Array:
+			accepted = (today_tracking["quests_accepted"] as Array).duplicate(true)
+		if today_tracking.has("quests_completed") and today_tracking["quests_completed"] is Array:
+			completed = (today_tracking["quests_completed"] as Array).duplicate(true)
+		if today_tracking.has("areas_unlocked") and today_tracking["areas_unlocked"] is Array:
+			unlocked = (today_tracking["areas_unlocked"] as Array).duplicate(true)
+
+	# --- Build a COMPLETE summary dict (do not overwrite later with a smaller one) ---
+	var s: Dictionary = {}
+
+	# Core day + money
+	s["day_ended"] = day_ended
+	s["money_earned"] = int(payout)
+	s["payout"] = int(payout) # optional alias
+
+	# Shipping itemized list
+	s["shipped"] = shipped_copy.duplicate(true)
+
+	# Quests + unlocks for the EOD UI
+	s["quests_accepted"] = accepted
+	s["quests_completed"] = completed
+	s["areas_unlocked"] = unlocked
+
+	# --- Shipping blessing breakdown ---
+	# Prefer values you already computed/logged; otherwise compute cleanly.
+	var base_total := int(s.get("ship_base_total", -1))
+	var final_total := int(s.get("ship_final_total", -1))
+	var bonus := int(s.get("ship_heart_bonus", 0))
+	var mul := float(s.get("ship_heart_mul", 1.0))
+
+	# If you didn't set these earlier, compute from current payout + HeartProgress multiplier.
+	final_total = int(payout)
+
+	if has_node("/root/HeartProgress"):
+		mul = float(get_node("/root/HeartProgress").call("get_sell_multiplier"))
+	else:
+		mul = 1.0
+
+	# Best-effort base_total for display:
+	if mul > 0.0:
+		base_total = int(round(float(final_total) / mul))
+	else:
+		base_total = final_total
+
+	bonus = max(0, final_total - base_total)
+
+	s["ship_base_total"] = base_total
+	s["ship_heart_mul"] = mul
+	s["ship_heart_bonus"] = bonus
+	s["ship_final_total"] = final_total
+
+	# ✅ Assign once
+	yesterday_summary = s
 
 func _current_time_block_stamp() -> String:
 	# Same idea as your talk block stamp: day + timeblock key
@@ -1452,3 +1529,19 @@ func apply_heart_reward(r) -> void:
 			pass
 
 	print("[GameState] Applied Heart reward:", r.id, " stats=", heart_stats, " flags=", heart_flags)
+
+func get_shop_discount_multiplier() -> float:
+	if has_node("/root/HeartProgress"):
+		return float(get_node("/root/HeartProgress").call("get_shop_discount_multiplier"))
+	return 1.0
+
+
+func shop_calculate_buy_price(base_price: int) -> int:
+	if base_price <= 0:
+		return 0
+	var mul := get_shop_discount_multiplier()
+	if mul <= 0.0:
+		mul = 1.0
+	# Favor the player: floor keeps discounts feeling real
+	var final_price := int(floor(float(base_price) * mul))
+	return max(1, final_price)

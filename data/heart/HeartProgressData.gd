@@ -20,6 +20,10 @@ class_name HeartProgressData
 # Optional: if you later want per-item persistence here too
 @export var item_counters: Dictionary = {}  # item_id -> int
 
+# 🔥 REQUIRED FOR YOUR REWARD SYSTEM
+@export var reward_stats: Dictionary = {}
+@export var reward_flags: Dictionary = {}
+
 
 func get_domain(domain_id: String) -> HeartDomainData:
 	for d in domains:

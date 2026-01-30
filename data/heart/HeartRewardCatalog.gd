@@ -3,11 +3,12 @@ class_name HeartRewardCatalog
 
 @export var rewards: Array[HeartRewardDefinition] = []
 
-func get_rewards_for(domain_id: String, milestone_id: String) -> Array[HeartRewardDefinition]:
-	var out: Array[HeartRewardDefinition] = []
+func get_reward_by_id(reward_id: StringName) -> HeartRewardDefinition:
+	if reward_id == StringName(""):
+		return null
 	for r in rewards:
 		if r == null:
 			continue
-		if r.domain_id == domain_id and r.milestone_id == milestone_id:
-			out.append(r)
-	return out
+		if r.id == reward_id:
+			return r
+	return null

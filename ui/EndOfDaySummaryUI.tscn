@@ -27,7 +27,7 @@ layout_mode = 2
 layout_mode = 2
 
 [node name="ShippedRichText" type="RichTextLabel" parent="Panel/VBox"]
-custom_minimum_size = Vector2(50, 50)
+custom_minimum_size = Vector2(50, 200)
 layout_mode = 2
 
 [node name="QuestsScroll" type="ScrollContainer" parent="Panel/VBox"]
