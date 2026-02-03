@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="FishDefinition" load_steps=2 format=3 uid="uid://bnla4wktaen61"]
+
+[ext_resource type="Script" uid="uid://dwgbix054vtfh" path="res://data/fishing/FishDefinition.gd" id="1_8ij22"]
+
+[resource]
+script = ExtResource("1_8ij22")
+item_id = "Tuna"
+display_name = "Tuna"
+sequence_len = 6
+time_limit = 2.5
+mistakes_allowed = 0
+metadata/_custom_type_script = "uid://dwgbix054vtfh"

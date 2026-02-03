@@ -173,6 +173,9 @@ func _ensure_required_fields(res: Resource) -> void:
 		res.set("reward_stats", {})
 	if not ("reward_flags" in res):
 		res.set("reward_flags", {})
+	if not ("location_counters" in res):
+		res.set("location_counters", {})
+
 
 func _ingest_progress_dicts() -> void:
 	# Start clean
@@ -188,7 +191,8 @@ func _ingest_progress_dicts() -> void:
 	counters = progress.get("counters") if ("counters" in progress) else {}
 	item_counters = progress.get("item_counters") if ("item_counters" in progress) else {}
 	stats = progress.get("stats") if ("stats" in progress) else {}
-
+	location_counters = progress.get("location_counters") if ("location_counters" in progress) else {}
+	if location_counters == null: location_counters = {}
 	if counters == null: counters = {}
 	if item_counters == null: item_counters = {}
 	if stats == null: stats = {}
@@ -213,6 +217,11 @@ func _normalize_numeric_dicts() -> void:
 	for k3 in stats.keys():
 		if typeof(stats[k3]) in [TYPE_INT, TYPE_FLOAT, TYPE_STRING]:
 			stats[k3] = int(stats[k3])
+			
+	for k4 in location_counters.keys():
+		if typeof(location_counters[k4]) in [TYPE_INT, TYPE_FLOAT, TYPE_STRING]:
+			location_counters[k4] = int(location_counters[k4])
+
 
 
 # -----------------------------------------------------------------------------
@@ -258,6 +267,19 @@ func _connect_signals() -> void:
 	_try_connect(qe, "shipped", "_on_item_shipped")
 	_try_connect(qe, "item_crafted", "_on_item_crafted")
 	_try_connect(qe, "item_gifted", "_on_item_gifted")
+	_try_connect(qe, "went_to", "_on_went_to")
+	_try_connect(qe, "item_picked_up", "_on_item_picked_up")
+	
+	# ADD THESE PRINTS:
+	if qe.has_signal("went_to"):
+		print("[HP SIG] went_to connections: ", qe.get_signal_connection_list("went_to"))
+	else:
+		print("[HP SIG] QuestEvents is missing signal: went_to")
+
+	if qe.has_signal("item_picked_up"):
+		print("[HP SIG] item_picked_up connections: ", qe.get_signal_connection_list("item_picked_up"))
+	else:
+		print("[HP SIG] QuestEvents is missing signal: item_picked_up")
 	
 	print("crop_harvested connections:", qe.get_signal_connection_list("crop_harvested"))
 
@@ -519,6 +541,7 @@ func _mirror_into_progress() -> void:
 	progress.set("counters", counters)
 	progress.set("item_counters", item_counters)
 	progress.set("stats", stats)
+	progress.set("location_counters", location_counters)
 
 	# ✅ Ensure reward_stats exists but don't overwrite it
 	if progress.get("reward_stats") == null or typeof(progress.get("reward_stats")) != TYPE_DICTIONARY:
@@ -633,13 +656,27 @@ func _evaluate_definition_milestones() -> void:
 			continue
 
 		# --- base counter check ---
-		var have := get_count(counter_key)
+		var have := 0
 
-		# Optional: if you later use filter_item_id or filter_npc_id,
-		# you can extend this check safely without changing bindings.
-		# For now, ignore filters unless you already store per-item counters for that key.
-		# (You *do* have item_counters, so later we can do:
-		# have = get_item_count(filter_item_id) for specific milestone types.)
+		# If filter_item_id is set, interpret it based on counter_key
+		var filter_item := str(m.get("filter_item_id")).strip_edges()
+
+		if filter_item != "":
+			if counter_key == "pickup":
+				# "pickup" milestones filtered by item_id (Shell, Flower, etc.)
+				have = get_item_count(filter_item)
+			elif counter_key == "go_to":
+				# "go_to" milestones filtered by location_id (beach, town, etc.)
+				have = get_location_count(filter_item)
+			else:
+				# default fallback: treat filter as item counter
+				have = get_item_count(filter_item)
+		else:
+			# No filter: use generic action counter
+			have = get_count(counter_key)
+		
+		print("[HP CHECK] %s/%s key=%s filter=%s have=%d req=%d" %
+			[domain_id, milestone_id, counter_key, filter_item, have, required])
 
 		if have >= required:
 			_mark_milestone_done_if_supported(domain_id, milestone_id)
@@ -1049,3 +1086,64 @@ func dev_clear_rewards_runtime(save_after: bool = false) -> void:
 
 	print("[HP REWARD DBG] dev_clear_rewards_runtime completed. reward_stats/reward_flags/unlocked_rewards cleared.")
 	emit_signal("changed")
+
+func _on_went_to(location_id: String) -> void:
+	location_id = location_id.strip_edges()
+	if location_id == "":
+		return
+
+	print("[HP EVT] went_to:", location_id, " -> counters[go_to] + location_counters[%s]" % location_id)
+
+	# ✅ Your quest keyword
+	_add_action("go_to", 1)
+
+	# ✅ Enables filter_item_id="beach"
+	_add_location(location_id, 1)
+
+	_evaluate_definition_milestones()
+	emit_signal("changed")
+
+
+func _on_item_picked_up(item_id: String, qty: int) -> void:
+	item_id = item_id.strip_edges()
+	if item_id == "" or qty <= 0:
+		return
+
+	print("[HP EVT] item_picked_up:", item_id, " qty=", qty, " -> counters[pickup] + item_counters[%s]" % item_id)
+
+	# ✅ Your quest keyword
+	_add_action("pickup", qty)
+
+	# ✅ Enables filter_item_id="Shell"
+	_add_item(item_id, qty)
+
+	_evaluate_definition_milestones()
+	emit_signal("changed")
+
+var location_counters: Dictionary = {}  # location_id -> int
+
+func _add_location_visit(location_id: String, amount: int) -> void:
+	location_id = location_id.strip_edges()
+	if location_id == "" or amount <= 0:
+		return
+	location_counters[location_id] = int(location_counters.get(location_id, 0)) + int(amount)
+	_mirror_into_progress()
+	_save_progress_if_possible()
+
+func _add_pickup(item_id: String, amount: int) -> void:
+	item_id = item_id.strip_edges()
+	if item_id == "" or amount <= 0:
+		return
+	# You already have item_counters and _add_item — perfect:
+	_add_item(item_id, amount)
+
+func get_location_count(location_id: String) -> int:
+	return int(location_counters.get(location_id, 0))
+
+func _add_location(location_id: String, amount: int) -> void:
+	location_id = location_id.strip_edges()
+	if location_id == "" or amount <= 0:
+		return
+	location_counters[location_id] = int(location_counters.get(location_id, 0)) + int(amount)
+	_mirror_into_progress()
+	_save_progress_if_possible()

@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="FishDefinition" load_steps=2 format=3 uid="uid://c7fnqf4mgteax"]
+
+[ext_resource type="Script" uid="uid://dwgbix054vtfh" path="res://data/fishing/FishDefinition.gd" id="1_wat0v"]
+
+[resource]
+script = ExtResource("1_wat0v")
+item_id = "Sardine"
+display_name = "Sardine"
+weight = 20
+metadata/_custom_type_script = "uid://dwgbix054vtfh"

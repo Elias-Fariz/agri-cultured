@@ -1,4 +1,4 @@
-[gd_scene load_steps=57 format=3 uid="uid://6ni01dvcs2m2"]
+[gd_scene load_steps=62 format=3 uid="uid://6ni01dvcs2m2"]
 
 [ext_resource type="Script" uid="uid://cevvm7fnmvrhe" path="res://scripts/Farm.gd" id="1_vobxb"]
 [ext_resource type="PackedScene" uid="uid://b0c10lgb0ivgd" path="res://tscn/WaterSplash.tscn" id="2_66215"]
@@ -48,6 +48,11 @@
 [ext_resource type="Script" uid="uid://cx0lg4ua6qvj7" path="res://scripts/RewardSpawner.gd" id="43_6jl04"]
 [ext_resource type="Script" uid="uid://c0wb6p01vhywa" path="res://scripts/RewardSpawnPoint.gd" id="44_6jl04"]
 [ext_resource type="PackedScene" uid="uid://cbaw8nhel818e" path="res://tscn/Bench.tscn" id="46_5apsn"]
+[ext_resource type="PackedScene" uid="uid://b2yas8ffxxcxr" path="res://tscn/FishingSpot.tscn" id="49_adcl0"]
+[ext_resource type="Script" uid="uid://dwgbix054vtfh" path="res://data/fishing/FishDefinition.gd" id="50_11pgm"]
+[ext_resource type="Resource" uid="uid://c7fnqf4mgteax" path="res://data/fishing/fish_sardine.tres" id="51_yp4mp"]
+[ext_resource type="Resource" uid="uid://bnla4wktaen61" path="res://data/fishing/fish_tuna.tres" id="52_5v62u"]
+[ext_resource type="PackedScene" uid="uid://kqa5wudv68tx" path="res://ui/FIshingMinigameUI.tscn" id="53_11pgm"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_hxf25"]
 texture = ExtResource("3_d13le")
@@ -302,3 +307,9 @@ position = Vector2(291, 247)
 position = Vector2(60, 148)
 script = ExtResource("42_hm1ss")
 tag = "passout_spawn"
+
+[node name="FishingSpot" parent="." instance=ExtResource("49_adcl0")]
+position = Vector2(359, 313)
+possible_fish = Array[ExtResource("50_11pgm")]([ExtResource("51_yp4mp"), ExtResource("52_5v62u")])
+
+[node name="FishingMinigameUI" parent="." instance=ExtResource("53_11pgm")]

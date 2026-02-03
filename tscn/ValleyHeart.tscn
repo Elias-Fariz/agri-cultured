@@ -1,4 +1,4 @@
-[gd_scene load_steps=56 format=3 uid="uid://cwspce5y4tb13"]
+[gd_scene load_steps=59 format=3 uid="uid://cwspce5y4tb13"]
 
 [ext_resource type="TileSet" uid="uid://bqs5ruk6pejpc" path="res://tiles/GroundTileset.tres" id="1_vkoen"]
 [ext_resource type="Script" uid="uid://bywlb7k2vtqr" path="res://scripts/ValleyHeart.gd" id="1_ye5kf"]
@@ -104,6 +104,28 @@ domain_id = "land"
 milestone_id = "land_sprout_2"
 metadata/_custom_type_script = "uid://db23ydj4dqo8r"
 
+[sub_resource type="Resource" id="Resource_c5fuf"]
+script = ExtResource("38_teva3")
+node_path = NodePath("../Sections/SeaWing/Visuals/Sprout1")
+domain_id = "sea"
+milestone_id = "sea_sprout_1"
+metadata/_custom_type_script = "uid://db23ydj4dqo8r"
+
+[sub_resource type="Resource" id="Resource_kyy0j"]
+script = ExtResource("38_teva3")
+node_path = NodePath("../Sections/SeaWing/Visuals/Sprout2")
+domain_id = "sea"
+milestone_id = "sea_sprout_2"
+metadata/_custom_type_script = "uid://db23ydj4dqo8r"
+
+[sub_resource type="Resource" id="Resource_xr385"]
+script = ExtResource("38_teva3")
+node_path = NodePath("../Sections/SeaWing/Visuals/Root1")
+domain_id = "sea"
+milestone_id = "sea_root_1"
+reveal_tier = 1
+metadata/_custom_type_script = "uid://db23ydj4dqo8r"
+
 [node name="ValleyHeart" type="Node2D"]
 script = ExtResource("1_ye5kf")
 heart_progress_res = ExtResource("2_818gh")
@@ -140,7 +162,7 @@ position = Vector2(-79, 40)
 position = Vector2(-184, 113)
 texture = ExtResource("5_iiyss")
 
-[node name="Sprout1Focus2" type="Marker2D" parent="Sections/LandWing/Visuals"]
+[node name="Sprout2Focus" type="Marker2D" parent="Sections/LandWing/Visuals"]
 position = Vector2(-185, 109)
 
 [node name="TriggerArea" type="Area2D" parent="Sections/LandWing"]
@@ -156,8 +178,24 @@ position = Vector2(2, 279)
 [node name="Visuals" type="Node2D" parent="Sections/SeaWing"]
 
 [node name="Sprout1" type="Sprite2D" parent="Sections/SeaWing/Visuals"]
-visible = false
 texture = ExtResource("6_ye5kf")
+
+[node name="Sprout1Focus" type="Marker2D" parent="Sections/SeaWing/Visuals"]
+position = Vector2(-8, 2)
+
+[node name="Sprout2" type="Sprite2D" parent="Sections/SeaWing/Visuals"]
+position = Vector2(-136, -24)
+texture = ExtResource("6_ye5kf")
+
+[node name="Sprout2Focus" type="Marker2D" parent="Sections/SeaWing/Visuals"]
+position = Vector2(-144, -22)
+
+[node name="Root1" type="Sprite2D" parent="Sections/SeaWing/Visuals"]
+position = Vector2(-105, 77)
+texture = ExtResource("6_ye5kf")
+
+[node name="Root1Focus" type="Marker2D" parent="Sections/SeaWing/Visuals"]
+position = Vector2(-112, 78)
 
 [node name="TriggerArea" type="Area2D" parent="Sections/SeaWing"]
 
@@ -262,7 +300,7 @@ script = ExtResource("19_vuwqn")
 
 [node name="HeartVisualController" type="Node" parent="."]
 script = ExtResource("37_cix88")
-bindings = Array[ExtResource("38_teva3")]([SubResource("Resource_hxn5l"), SubResource("Resource_tokjd")])
+bindings = Array[ExtResource("38_teva3")]([SubResource("Resource_hxn5l"), SubResource("Resource_tokjd"), SubResource("Resource_c5fuf"), SubResource("Resource_kyy0j"), SubResource("Resource_xr385")])
 
 [node name="HeartRevealDirector" type="Node" parent="."]
 script = ExtResource("39_hxn5l")

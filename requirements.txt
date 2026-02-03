@@ -53,6 +53,8 @@ Phase 3.5: Valley Heart
 * Cutscenes *BASELINE*
 * Moving Tools out of Farm.gd
 
+* Fishing *ADDED POPUP*
+
 Phase 4: Inventory/UI Polish
 
 Phase 5: Expanding

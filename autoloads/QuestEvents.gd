@@ -31,9 +31,9 @@ func _ready() -> void:
 		GameState.apply_quest_event("talk_to", npc_id, 1)
 	)
 
-	entered_location.connect(func(loc_id: String):
-		GameState.apply_quest_event("go_to", loc_id, 1)
-	)
+	#entered_location.connect(func(loc_id: String):
+		#GameState.apply_quest_event("go_to", loc_id, 1)
+	#)
 
 	shipped.connect(func(item_id: String, qty: int):
 		GameState.apply_quest_event("ship", item_id, qty)

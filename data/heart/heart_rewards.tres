@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="HeartRewardCatalog" load_steps=7 format=3 uid="uid://c28md7mqmnxvd"]
+[gd_resource type="Resource" script_class="HeartRewardCatalog" load_steps=10 format=3 uid="uid://c28md7mqmnxvd"]
 
 [ext_resource type="Script" uid="uid://du6rd1efphtlv" path="res://data/heart/HeartRewardDefinition.gd" id="1_pldyk"]
 [ext_resource type="Script" uid="uid://c0ecbebm6reap" path="res://data/heart/HeartRewardCatalog.gd" id="2_rbprb"]
@@ -35,7 +35,32 @@ stat_key = &"energy_bonus_on_sleep"
 amount = 1.0
 metadata/_custom_type_script = "uid://du6rd1efphtlv"
 
+[sub_resource type="Resource" id="Resource_n252p"]
+script = ExtResource("1_pldyk")
+id = &"sea_unlock_fishing_1"
+kind = 2
+flag_key = &"can_fish"
+description = "The Heart whispers: the sea is ready to be listened to."
+metadata/_custom_type_script = "uid://du6rd1efphtlv"
+
+[sub_resource type="Resource" id="Resource_yqroa"]
+script = ExtResource("1_pldyk")
+id = &"sea_shop_discount_1"
+kind = 1
+stat_key = &"shop_discount_multiplier"
+amount = 0.95
+description = "A gentle blessing: prices feel a little lighter."
+metadata/_custom_type_script = "uid://du6rd1efphtlv"
+
+[sub_resource type="Resource" id="Resource_vpwrf"]
+script = ExtResource("1_pldyk")
+id = &"sea_energy_sleep_1"
+stat_key = &"energy_bonus_on_sleep"
+amount = 1.0
+description = "The tide's hush helps you rest. +1 energy when you sleep."
+metadata/_custom_type_script = "uid://du6rd1efphtlv"
+
 [resource]
 script = ExtResource("2_rbprb")
-rewards = Array[ExtResource("1_pldyk")]([SubResource("Resource_ats7i"), SubResource("Resource_pldyk"), SubResource("Resource_rbprb"), SubResource("Resource_dpaty")])
+rewards = Array[ExtResource("1_pldyk")]([SubResource("Resource_ats7i"), SubResource("Resource_pldyk"), SubResource("Resource_rbprb"), SubResource("Resource_dpaty"), SubResource("Resource_n252p"), SubResource("Resource_yqroa"), SubResource("Resource_vpwrf")])
 metadata/_custom_type_script = "uid://c0ecbebm6reap"

@@ -1,0 +1,40 @@
+[gd_scene load_steps=2 format=3 uid="uid://kqa5wudv68tx"]
+
+[ext_resource type="Script" uid="uid://c0uhpl2w87817" path="res://scripts/FishingMinigameUI.gd" id="1_wgnd5"]
+
+[node name="FishingMinigameUI" type="CanvasLayer"]
+script = ExtResource("1_wgnd5")
+visual_node_path = NodePath("Panel")
+start_visible_in_game = false
+is_modal = true
+
+[node name="Panel" type="PanelContainer" parent="."]
+visible = false
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="VBox" type="VBoxContainer" parent="Panel"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="Panel/VBox"]
+layout_mode = 2
+text = "Fishing..."
+
+[node name="CatchLabel" type="Label" parent="Panel/VBox"]
+layout_mode = 2
+text = "CATCH!"
+
+[node name="SequenceLabel" type="Label" parent="Panel/VBox"]
+layout_mode = 2
+text = "A D A"
+
+[node name="StatusLabel" type="Label" parent="Panel/VBox"]
+layout_mode = 2
+text = "Mistakes left: 1"
+
+[node name="TimerBar" type="ProgressBar" parent="Panel/VBox"]
+layout_mode = 2
+
+[node name="HintLabel" type="Label" parent="Panel/VBox"]
+layout_mode = 2
+text = "Press the letters in order!"
