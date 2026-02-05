@@ -37,9 +37,9 @@ metadata/_custom_type_script = "uid://du6rd1efphtlv"
 
 [sub_resource type="Resource" id="Resource_n252p"]
 script = ExtResource("1_pldyk")
-id = &"sea_unlock_fishing_1"
+id = &"sprout_fishing_unlock_1"
 kind = 2
-flag_key = &"can_fish"
+flag_key = &"fishing_unlocked"
 description = "The Heart whispers: the sea is ready to be listened to."
 metadata/_custom_type_script = "uid://du6rd1efphtlv"
 

@@ -26,6 +26,8 @@ signal item_picked_up(item_id: String, qty: int)
 signal item_crafted(item_id: String, qty: int)
 signal item_gifted(npc_id: String, item_id: String, qty: int)
 
+signal fish_caught(fish_id: String, qty: int)
+
 func _ready() -> void:
 	talked_to.connect(func(npc_id: String):
 		GameState.apply_quest_event("talk_to", npc_id, 1)
@@ -50,6 +52,10 @@ func _ready() -> void:
 
 	item_purchased.connect(func(item_id: String, qty: int):
 		GameState.apply_quest_event("buy", item_id, qty)
+	)
+	
+	fish_caught.connect(func(fish_id: String, qty: int):
+		GameState.apply_quest_event("fish", fish_id, qty)
 	)
 #
 	#chopped_tree.connect(func(qty: int):

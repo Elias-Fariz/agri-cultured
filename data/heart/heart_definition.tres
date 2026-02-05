@@ -29,7 +29,7 @@ domain_id = "sea"
 counter_key = "go_to"
 filter_item_id = "beach"
 hint = "Let the tide greet you. Visit the beach."
-reward_ids = Array[StringName]([&"sea_unlock_fishing_1"])
+reward_ids = Array[StringName]([&"sprout_fishing_unlock_1"])
 metadata/_custom_type_script = "uid://c885adlv5mv1"
 
 [sub_resource type="Resource" id="Resource_r5myy"]

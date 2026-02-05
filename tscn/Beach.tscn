@@ -1,4 +1,4 @@
-[gd_scene load_steps=40 format=3 uid="uid://6xr8sk7sok3p"]
+[gd_scene load_steps=41 format=3 uid="uid://6xr8sk7sok3p"]
 
 [ext_resource type="TileSet" uid="uid://bqs5ruk6pejpc" path="res://tiles/GroundTileset.tres" id="1_xg4aa"]
 [ext_resource type="Script" uid="uid://xl6estd3noyu" path="res://scripts/SceneTravelArea.gd" id="2_77khv"]
@@ -16,6 +16,7 @@
 [ext_resource type="AudioStream" uid="uid://dby2jcrvk4ssy" path="res://audio/ambience/life/sfx_bird_02.WAV" id="8_om0ow"]
 [ext_resource type="Resource" uid="uid://dyftxqjlgk7ew" path="res://data/gifts/gifts_fisher.tres" id="8_rafxk"]
 [ext_resource type="PackedScene" uid="uid://dtrn2d385g5ul" path="res://ui/InventoryUI.tscn" id="9_om0ow"]
+[ext_resource type="Resource" uid="uid://x7h6dqd7teun" path="res://data/quests/surfer_fish_quest.tres" id="9_v2t45"]
 [ext_resource type="AudioStream" uid="uid://b4kphj6d0xlxg" path="res://audio/ambience/life/sfx_bird_03.WAV" id="9_xl85j"]
 [ext_resource type="AudioStream" uid="uid://cvxhlbrm7hew0" path="res://audio/ambience/life/sfx_leaves_01.WAV" id="10_1wqoc"]
 [ext_resource type="PackedScene" uid="uid://b2yas8ffxxcxr" path="res://tscn/FishingSpot.tscn" id="10_kuapj"]
@@ -84,6 +85,19 @@ night_dialogue_lines = Array[String](["Man, the twinkling stars are beautiful~"]
 overhead_greeting_lines = Array[String](["Yo!"])
 overhead_idle_lines = Array[String](["Radical!"])
 quest_offers = Array[ExtResource("6_3sblc")]([ExtResource("7_qpl2v")])
+gift_prefs = ExtResource("8_rafxk")
+
+[node name="Surfer" parent="NPCs" instance=ExtResource("5_uodw0")]
+position = Vector2(423, 85)
+npc_id = "npc_surfer"
+display_name = "Dudeman"
+dialogue_lines = Array[String](["Suuuuuuuuuuuup!"])
+morning_dialogue_lines = Array[String](["Make sure to put some sunscreen on!"])
+evening_dialogue_lines = Array[String](["The ocean's going to bed, but I'm not!"])
+night_dialogue_lines = Array[String](["Whew, got a bit wet!"])
+overhead_greeting_lines = Array[String](["Smooth!"])
+overhead_idle_lines = Array[String](["Awesome!"])
+quest_offers = Array[ExtResource("6_3sblc")]([ExtResource("9_v2t45")])
 gift_prefs = ExtResource("8_rafxk")
 
 [node name="CameraBounds" type="Node2D" parent="."]

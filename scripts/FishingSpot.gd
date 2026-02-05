@@ -28,6 +28,13 @@ func interact() -> void:
 
 	if GameState == null:
 		return
+	
+	var hp := get_node_or_null("/root/HeartProgress")
+	if hp == null or (hp.has_method("is_fishing_unlocked") and not bool(hp.call("is_fishing_unlocked"))):
+		if QuestEvents != null and QuestEvents.has_signal("toast_requested"):
+			QuestEvents.toast_requested.emit("The tide feels quiet… The Sea Wing hasn’t awakened yet.", "info", 2.5)
+		return
+
 
 	# Energy check (don’t spend yet)
 	if int(GameState.energy) <= 0:
@@ -76,6 +83,9 @@ func _on_fishing_finished(success: bool, caught_fish_id: String, fish: FishDefin
 
 	# Give fish
 	GameState.inventory_add(caught_fish_id, 1)
+	
+	if QuestEvents != null and QuestEvents.has_signal("fish_caught"):
+		QuestEvents.fish_caught.emit(caught_fish_id, 1)
 
 	if QuestEvents != null and QuestEvents.has_signal("toast_requested"):
 		var name := fish.display_name if fish.display_name != "" else caught_fish_id

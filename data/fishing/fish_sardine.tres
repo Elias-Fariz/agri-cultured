@@ -4,7 +4,7 @@
 
 [resource]
 script = ExtResource("1_wat0v")
-item_id = "Sardine"
+fish_item_id = "Sardine"
 display_name = "Sardine"
 weight = 20
 metadata/_custom_type_script = "uid://dwgbix054vtfh"

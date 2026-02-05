@@ -796,7 +796,16 @@ func get_reward_stat(key: String, default_value) -> Variant:
 func get_reward_flag(key: String, default_value: bool = false) -> bool:
 	if progress == null:
 		return default_value
-	var rf := _ensure_reward_flags_dict()
+
+	if not ("reward_flags" in progress):
+		progress.set("reward_flags", {})
+
+	var rf_any: Variant = progress.get("reward_flags")
+	if rf_any == null or typeof(rf_any) != TYPE_DICTIONARY:
+		rf_any = {}
+		progress.set("reward_flags", rf_any)
+
+	var rf: Dictionary = rf_any
 	return bool(rf.get(key, default_value))
 
 func _apply_reward_definition(r: HeartRewardDefinition) -> void:
@@ -1147,3 +1156,6 @@ func _add_location(location_id: String, amount: int) -> void:
 	location_counters[location_id] = int(location_counters.get(location_id, 0)) + int(amount)
 	_mirror_into_progress()
 	_save_progress_if_possible()
+
+func is_fishing_unlocked() -> bool:
+	return bool(get_reward_flag("fishing_unlocked", false))

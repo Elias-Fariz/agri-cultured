@@ -4,7 +4,7 @@
 
 [resource]
 script = ExtResource("1_8ij22")
-item_id = "Tuna"
+fish_item_id = "Tuna"
 display_name = "Tuna"
 sequence_len = 6
 time_limit = 2.5
