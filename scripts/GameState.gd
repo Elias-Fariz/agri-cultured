@@ -1545,3 +1545,37 @@ func shop_calculate_buy_price(base_price: int) -> int:
 	# Favor the player: floor keeps discounts feeling real
 	var final_price := int(floor(float(base_price) * mul))
 	return max(1, final_price)
+
+func get_primary_quest_hint() -> String:
+	# 1) Completed but unclaimed -> strongest nudge (turn-in)
+	for qid_any in completed_quests.keys():
+		var qid := String(qid_any)
+		var q: Dictionary = completed_quests[qid]
+		if bool(q.get("claimed", false)):
+			continue
+
+		# Prefer explicit turn-in text if present
+		var turn_text := String(q.get("turn_in_text", "")).strip_edges()
+		if turn_text != "":
+			return turn_text
+
+		var turn_id := String(q.get("turn_in_id", "")).strip_edges()
+		if turn_id != "":
+			return "Return to %s to claim your reward." % turn_id
+
+		return "You have a reward waiting to be claimed."
+
+	# 2) Tracked quest -> use your already-good tracker text
+	var tracked := get_tracked_objective_text().strip_edges()
+	if tracked != "":
+		return tracked
+
+	# 3) Any active quest -> show the first objective we can
+	for qid_any in active_quests.keys():
+		var qid := String(qid_any)
+		var q: Dictionary = active_quests[qid]
+		var text := get_quest_objective_text(q).strip_edges()
+		if text != "":
+			return text
+
+	return ""

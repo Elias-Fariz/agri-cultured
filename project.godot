@@ -24,6 +24,7 @@ ItemDb="*res://autoloads/ItemDB.gd"
 WeatherChange="*res://autoloads/WeatherManager.gd"
 QuestEvents="*res://autoloads/QuestEvents.gd"
 HeartProgress="*res://autoloads/HeartProgress.gd"
+GuidanceNudger="*res://autoloads/GuidanceNudger.gd"
 
 [input]
 

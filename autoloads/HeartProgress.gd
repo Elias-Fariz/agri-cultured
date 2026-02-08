@@ -619,12 +619,8 @@ func _apply_reward(r: HeartRewardDefinition) -> void:
 				print("[HeartProgress] Reward unlocked: ", r.id, " kind=", r.kind, " desc=", r.description)
 
 func _evaluate_definition_milestones() -> void:
-	if definition == null:
+	if definition == null or progress == null:
 		return
-	if progress == null:
-		return
-
-	# HeartDefinitionData should expose "milestones: Array[HeartMilestone]"
 	if not ("milestones" in definition):
 		return
 
@@ -636,50 +632,49 @@ func _evaluate_definition_milestones() -> void:
 		if m == null:
 			continue
 
-		# Expected fields from your HeartMilestone resource:
-		# id, domain_id, counter_key, required_amount, filter_item_id, filter_npc_id
-		var domain_id := str(m.get("domain_id"))
-		var milestone_id := str(m.get("id"))
-
+		var domain_id := String(m.domain_id).strip_edges()
+		var milestone_id := String(m.id).strip_edges()
 		if domain_id == "" or milestone_id == "":
 			continue
 
 		# Already completed? skip
 		if has_milestone(domain_id, milestone_id):
-			print("[HP REWARD DBG] milestone already completed, skipping grant domain=", domain_id, " id=", milestone_id)
 			continue
 
-		var counter_key := str(m.get("counter_key"))
-		var required := int(m.get("required_amount"))
+		# ✅ NEW: Order/Prereq gating
+		if not _is_milestone_eligible(m):
+			continue
 
+		var counter_key := String(m.counter_key).strip_edges()
+		var required := int(m.required_amount)
 		if counter_key == "" or required <= 0:
 			continue
 
-		# --- base counter check ---
+		var filter_item := String(m.filter_item_id).strip_edges()
 		var have := 0
 
-		# If filter_item_id is set, interpret it based on counter_key
-		var filter_item := str(m.get("filter_item_id")).strip_edges()
-
+		# ---- Evaluate progress using your canonical keywords ----
 		if filter_item != "":
 			if counter_key == "pickup":
-				# "pickup" milestones filtered by item_id (Shell, Flower, etc.)
 				have = get_item_count(filter_item)
 			elif counter_key == "go_to":
-				# "go_to" milestones filtered by location_id (beach, town, etc.)
 				have = get_location_count(filter_item)
 			else:
-				# default fallback: treat filter as item counter
+				# Default behavior: treat filter as item counter
 				have = get_item_count(filter_item)
 		else:
-			# No filter: use generic action counter
 			have = get_count(counter_key)
-		
-		print("[HP CHECK] %s/%s key=%s filter=%s have=%d req=%d" %
-			[domain_id, milestone_id, counter_key, filter_item, have, required])
+
+		print("[HP CHECK] %s/%s key=%s filter=%s have=%d req=%d order=%d kind=%s" % [
+			domain_id, milestone_id, counter_key, filter_item, have, required, int(m.order), String(m.kind)
+		])
 
 		if have >= required:
 			_mark_milestone_done_if_supported(domain_id, milestone_id)
+
+			# Optional: tiny feel-good toast when you complete a milestone in proper order
+			if String(m.hint).strip_edges() != "":
+				_toast("The Heart warms… " + String(m.hint), "success", 2.5)
 
 func dev_dump_progress_state(tag: String = "") -> void:
 	if progress == null:
@@ -1159,3 +1154,74 @@ func _add_location(location_id: String, amount: int) -> void:
 
 func is_fishing_unlocked() -> bool:
 	return bool(get_reward_flag("fishing_unlocked", false))
+
+func _get_all_milestones_flat() -> Array:
+	if definition == null:
+		return []
+	if ("milestones" in definition):
+		var arr: Array = definition.get("milestones")
+		return arr if arr != null else []
+	return []
+
+func _max_completed_order(domain_id: String, kind: String) -> int:
+	var best := 0
+	for m in _get_all_milestones_flat():
+		if m == null:
+			continue
+		# Prefer property access (Godot 4 friendly)
+		if m.domain_id != domain_id:
+			continue
+		if m.kind != kind:
+			continue
+		if has_milestone(domain_id, m.id):
+			best = max(best, int(m.order))
+	return best
+
+func _is_milestone_eligible(m) -> bool:
+	if m == null:
+		return false
+
+	var domain_id := String(m.domain_id).strip_edges()
+	var milestone_id := String(m.id).strip_edges()
+	if domain_id == "" or milestone_id == "":
+		return false
+
+	# Already completed? Not eligible (we skip anyway)
+	if has_milestone(domain_id, milestone_id):
+		return false
+
+	# 1) Explicit prerequisites (tree-style)
+	for pre in m.prerequisite_ids:
+		var pre_id := String(pre).strip_edges()
+		if pre_id == "":
+			continue
+		if not has_milestone(domain_id, pre_id):
+			return false
+
+	# 2) Lane sequencing: must have all lower orders in same domain+kind
+	if bool(m.enforce_sequential_in_lane):
+		for other in _get_all_milestones_flat():
+			if other == null:
+				continue
+			if other.domain_id != domain_id:
+				continue
+			if other.kind != m.kind:
+				continue
+			if int(other.order) < int(m.order):
+				if not has_milestone(domain_id, other.id):
+					return false
+
+	# 3) Cross-lane gating: requires_kind + requires_order_at_least
+	var req_kind := String(m.requires_kind).strip_edges()
+	var req_order := int(m.requires_order_at_least)
+	if req_kind != "" and req_order > 0:
+		if _max_completed_order(domain_id, req_kind) < req_order:
+			return false
+
+	return true
+
+func _toast(text: String, style: String = "info", duration: float = 2.5) -> void:
+	var qe := get_node_or_null("/root/QuestEvents")
+	if qe != null and qe.has_signal("toast_requested"):
+		# ✅ Use your known-good pattern
+		QuestEvents.toast_requested.emit(text, style, duration)

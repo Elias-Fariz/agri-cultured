@@ -76,6 +76,10 @@ func start_new_day() -> void:
 	GameState.shipping_payout_and_clear()
 	_did_passout_today = false
 
+	# ✅ NEW: daily gentle nudge
+	if GuidanceNudger != null:
+		GuidanceNudger.queue_daily_nudge()
+
 
 func get_time_string() -> String:
 	var h := minutes / 60

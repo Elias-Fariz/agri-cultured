@@ -95,6 +95,7 @@ script = ExtResource("38_teva3")
 node_path = NodePath("../Sections/LandWing/Visuals/Sprout1")
 domain_id = "land"
 milestone_id = "land_sprout_1"
+reveal_tier = 1
 metadata/_custom_type_script = "uid://db23ydj4dqo8r"
 
 [sub_resource type="Resource" id="Resource_tokjd"]

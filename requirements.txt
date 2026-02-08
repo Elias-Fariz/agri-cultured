@@ -50,6 +50,7 @@ Phase 3.5: Valley Heart
 * Progress Tracker *CREATED PEDESTAL*
 * Milestone Rewards *THREE MINI DONE!*
 * Visual Changes *ROOTS VS NODES*
+* Quest Hint Toasts *CHECK*
 * Cutscenes *BASELINE*
 * Moving Tools out of Farm.gd
 
