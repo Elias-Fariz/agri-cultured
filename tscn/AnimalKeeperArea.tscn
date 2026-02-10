@@ -1,4 +1,4 @@
-[gd_scene load_steps=43 format=3 uid="uid://dcq7dmqwwrac8"]
+[gd_scene load_steps=44 format=3 uid="uid://dcq7dmqwwrac8"]
 
 [ext_resource type="TileSet" uid="uid://bqs5ruk6pejpc" path="res://tiles/GroundTileset.tres" id="1_a8y6s"]
 [ext_resource type="Texture2D" uid="uid://caerjv5h3fdyv" path="res://art/tree.png" id="2_vnc70"]
@@ -35,6 +35,7 @@
 [ext_resource type="AudioStream" uid="uid://ddtmvpbosnor5" path="res://audio/ambience/life/sfx_murmur_01.WAV" id="29_hqvdf"]
 [ext_resource type="AudioStream" uid="uid://co4coq6x4nty5" path="res://audio/ambience/life/sfx_murmur_02.WAV" id="30_b3m5l"]
 [ext_resource type="PackedScene" uid="uid://cfyepca1wp5kc" path="res://tscn/Flower.tscn" id="32_th51b"]
+[ext_resource type="PackedScene" uid="uid://c2t6sq4qrohbv" path="res://tscn/ToolWorld.tscn" id="36_hqvdf"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_3mm4q"]
 texture = ExtResource("2_vnc70")
@@ -241,3 +242,8 @@ pickup_id = "flower_02"
 [node name="Flower3" parent="." instance=ExtResource("32_th51b")]
 position = Vector2(161, 97)
 pickup_id = "flower_03"
+
+[node name="TileToolWorld" parent="." instance=ExtResource("36_hqvdf")]
+world_id = "AnimalKeeperArea"
+ground_path = NodePath("../TileMaps/Ground")
+objects_path = NodePath("../TileMaps/Objects")

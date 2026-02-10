@@ -125,6 +125,10 @@ func _physics_process(delta: float) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("interact"):
 		_try_interact()
+		
+	if event.is_action_pressed("tool"):
+		ToolSystem.tool_action_auto(self)
+		return
 	
 	if event.is_action_pressed("open_gift"):
 		_try_gift()

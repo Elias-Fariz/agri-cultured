@@ -52,7 +52,7 @@ Phase 3.5: Valley Heart
 * Visual Changes *ROOTS VS NODES*
 * Quest Hint Toasts *CHECK*
 * Cutscenes *BASELINE*
-* Moving Tools out of Farm.gd
+* Moving Tools out of Farm.gd *CHECK*
 
 * Fishing *ADDED POPUP*
 
