@@ -436,6 +436,7 @@ var _gifted_week_count_by_npc: Dictionary = {} # npc_id -> Dictionary{ week_key:
 
 var pending_cutscene_id: String = ""
 var _heart_intro_queued: bool = false
+var has_played_greeting_intro: bool = false
 
 var heart_stats: Dictionary = {}   # e.g. { "sell_multiplier": 1.05 }
 var heart_flags: Dictionary = {}   # e.g. { "heart_pond_unlocked": true }
@@ -465,6 +466,10 @@ func _ready() -> void:
 	
 	unlock_recipe("shell_necklace")
 	unlock_recipe("flower_headband")
+	
+	if not has_played_greeting_intro:
+		pending_cutscene_id = "greeting_intro"
+		has_played_greeting_intro = true
 
 
 func cycle_tool_next() -> void:

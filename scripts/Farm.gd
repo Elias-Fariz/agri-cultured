@@ -144,6 +144,15 @@ func _ready() -> void:
 
 	if _is_raining_today():
 		_apply_rain_wet_visuals_today()
+	
+	# Wait 2 frames so Player + DialogueUI are definitely in groups,
+	# and CutsceneDirector can see current_scene reliably.
+	await get_tree().process_frame
+	await get_tree().process_frame
+
+	# If a greeting cutscene is pending, play it now.
+	if GameState != null and GameState.has_method("try_play_pending_cutscene"):
+		GameState.try_play_pending_cutscene()
 
 func _on_day_changed(_day: int) -> void:
 	var grew_from_rain := rained_today  # rain that happened during the previous day

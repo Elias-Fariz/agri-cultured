@@ -15,6 +15,7 @@ var _temp_spawned_actors: Array[Node] = []
 # Cutscene registry: id -> .tres path
 var _cutscene_paths := {
 	"heart_intro": "res://data/cutscenes/heart_intro.tres",
+	"greeting_intro": "res://data/cutscenes/greeting_intro.tres",
 }
 
 
@@ -169,18 +170,13 @@ func _run_cutscene_impl(data: CutsceneData) -> void:
 	await get_tree().create_timer(0.2).timeout
 
 	# 6) Dialogue (Resource-driven)
-	if data.dialogue != null and dialogue_ui.has_method("show_dialogue"):
-		var speaker_key := String(data.dialogue.speaker_actor_key).strip_edges()
-		var speaker_name := _get_display_name_for_actor_key(data, speaker_key)
-
-		# Friendship: only if the speaker is an NPC with npc_id
-		var friendship := -1
-		var npc_id := _get_npc_id_for_actor_key(data, speaker_key)
-		if npc_id != "":
-			friendship = int(GameState.get_friendship(npc_id))
-
-		dialogue_ui.show_dialogue(speaker_name, data.dialogue.lines, friendship)
-		await _await_dialogue_closed(dialogue_ui)
+	# Run step list (dialogue, moves, waits, etc.)
+	if data.steps != null and data.steps.size() > 0:
+		for step in data.steps:
+			await _run_step(data, step, scene, player, dialogue_ui, actors_by_key)
+	else:
+		# Fallback: if no steps, do nothing (or keep your old dialogue behavior)
+		pass
 
 	# 7) Effects / rewards (Resource-driven)
 	_apply_effects(data.effects)
@@ -364,3 +360,68 @@ func _get_npc_id_for_actor_key(data: CutsceneData, actor_key: String) -> String:
 		if String(a.key).strip_edges() == actor_key:
 			return String(a.npc_id).strip_edges()
 	return ""
+
+func _run_step(data: CutsceneData, step: CutsceneStepData, scene: Node, player: Node, dialogue_ui: Node, actors: Dictionary) -> void:
+	if step == null:
+		return
+
+	match step.step_type:
+		CutsceneStepData.StepType.WAIT:
+			await get_tree().create_timer(max(step.duration, 0.01)).timeout
+
+		CutsceneStepData.StepType.FOCUS_CAMERA_MARKER:
+			var p := _resolve_marker_path(data, step)
+			var m := _get_marker(scene, p)
+			if m != null and player != null and player.has_method("camera_focus_on_world_point"):
+				player.camera_focus_on_world_point(m.global_position)
+			await get_tree().create_timer(0.05).timeout
+
+		CutsceneStepData.StepType.MOVE_ACTOR_TO_MARKER:
+			var a: Variant = actors.get(step.actor_key, null)
+			if a == null or not is_instance_valid(a):
+				return
+
+			var p2 := _resolve_marker_path(data, step)
+			var m2 := _get_marker(scene, p2)
+			if m2 == null:
+				return
+
+			var to_pos := m2.global_position
+			var t := scene.create_tween()
+			t.tween_property(a, "global_position", to_pos, max(step.duration, 0.01))
+
+			if step.ease_run:
+				t.set_trans(Tween.TRANS_QUAD)
+				t.set_ease(Tween.EASE_OUT)
+			else:
+				t.set_trans(Tween.TRANS_SINE)
+				t.set_ease(Tween.EASE_IN_OUT)
+
+			await t.finished
+	
+		CutsceneStepData.StepType.DIALOGUE:
+			var speaker_key := step.speaker_actor_key
+			var speaker_name := step.speaker_name
+
+			if speaker_name.strip_edges() == "":
+				# fallback: if actor exists and has display_name, else key title-case
+				speaker_name = speaker_key.capitalize()
+
+			var friendship := -1
+			# optional: if your NPCs track npc_id and friendship, you can add:
+			# if speaker_key in ["mayor", "lia"]:
+			#   ...
+
+			if dialogue_ui != null and dialogue_ui.has_method("show_dialogue"):
+				dialogue_ui.show_dialogue(speaker_name, step.lines, friendship)
+				await _await_dialogue_closed(dialogue_ui)
+
+func _resolve_marker_path(data: CutsceneData, step: CutsceneStepData) -> NodePath:
+	# New preferred: marker_id -> marker_set lookup
+	if step.marker_id.strip_edges() != "" and data != null and data.markers != null:
+		var p := data.markers.resolve_marker(step.marker_id)
+		if p != NodePath(""):
+			return p
+
+	# Old fallback: direct marker_path on the step
+	return step.marker_path

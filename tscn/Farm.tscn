@@ -324,3 +324,21 @@ position = Vector2(238, 324)
 
 [node name="HeartIntro_Focus" type="Marker2D" parent="CutsceneMarkers"]
 position = Vector2(194, 384)
+
+[node name="GreetingIntro_PlayerStart" type="Marker2D" parent="CutsceneMarkers"]
+position = Vector2(574, 34)
+
+[node name="GreetingIntro_LiaStart" type="Marker2D" parent="CutsceneMarkers"]
+position = Vector2(518, 273)
+
+[node name="GreetingIntro_MayorStart" type="Marker2D" parent="CutsceneMarkers"]
+position = Vector2(630, 274)
+
+[node name="GreetingIntro_LiaGreetSpot" type="Marker2D" parent="CutsceneMarkers"]
+position = Vector2(517, 97)
+
+[node name="GreetingIntro_MayorGreetSpot" type="Marker2D" parent="CutsceneMarkers"]
+position = Vector2(631, 98)
+
+[node name="GreetingIntro_Focus" type="Marker2D" parent="CutsceneMarkers"]
+position = Vector2(572, 142)

@@ -10,4 +10,4 @@ class_name CutsceneData
 @export var effects: Array[CutsceneEffectData] = []
 
 # Gate for future cinematic steps (we’ll add StepData later)
-@export var steps: Array[Resource] = []
+@export var steps: Array[CutsceneStepData] = []

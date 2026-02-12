@@ -1,10 +1,12 @@
-[gd_resource type="Resource" script_class="CutsceneData" load_steps=12 format=3 uid="uid://cluprrkrnm8pa"]
+[gd_resource type="Resource" script_class="CutsceneData" load_steps=20 format=3 uid="uid://cluprrkrnm8pa"]
 
 [ext_resource type="Script" uid="uid://camo0lur1qm85" path="res://data/cutscenes/CutsceneData.gd" id="1_art0q"]
 [ext_resource type="Script" uid="uid://b4pm6wxp5ivtk" path="res://data/cutscenes/CutsceneActorData.gd" id="1_idqsu"]
 [ext_resource type="Script" uid="uid://bjwubxbrbyt2x" path="res://data/cutscenes/CutsceneMarkerSet.gd" id="2_4h6s1"]
 [ext_resource type="Script" uid="uid://cbc4hknxa1gfx" path="res://data/cutscenes/CutsceneDialogueData.gd" id="2_7rqi0"]
 [ext_resource type="Script" uid="uid://cp2gtb0hckrrj" path="res://data/cutscenes/CutsceneEffectData.gd" id="3_xae77"]
+[ext_resource type="Script" uid="uid://o2gllh00r8xi" path="res://data/cutscenes/CutsceneMarkerRef.gd" id="4_a7apk"]
+[ext_resource type="Script" uid="uid://0k0f68wqa7mm" path="res://data/cutscenes/CutsceneStepData.gd" id="6_gusfa"]
 
 [sub_resource type="Resource" id="Resource_4h6s1"]
 script = ExtResource("1_idqsu")
@@ -22,8 +24,6 @@ metadata/_custom_type_script = "uid://b4pm6wxp5ivtk"
 
 [sub_resource type="Resource" id="Resource_xae77"]
 script = ExtResource("2_7rqi0")
-speaker_actor_key = "mayor"
-lines = Array[String](["Good morning…", "I need to show you something special.", "Meet me at the Heart of the Valley."])
 metadata/_custom_type_script = "uid://cbc4hknxa1gfx"
 
 [sub_resource type="Resource" id="Resource_gusfa"]
@@ -38,14 +38,51 @@ effect_type = "toast"
 msg = "A gentle pull draws you toward the valley..."
 metadata/_custom_type_script = "uid://cp2gtb0hckrrj"
 
+[sub_resource type="Resource" id="Resource_f2sxk"]
+script = ExtResource("4_a7apk")
+id = "player_start"
+path = NodePath("CutsceneMarkers/HeartIntro_Player")
+metadata/_custom_type_script = "uid://o2gllh00r8xi"
+
+[sub_resource type="Resource" id="Resource_bb0d6"]
+script = ExtResource("4_a7apk")
+id = "mayor_start"
+path = NodePath("CutsceneMarkers/HeartIntro_Mayor")
+metadata/_custom_type_script = "uid://o2gllh00r8xi"
+
+[sub_resource type="Resource" id="Resource_ftyte"]
+script = ExtResource("4_a7apk")
+id = "focus"
+path = NodePath("CutsceneMarkers/HeartIntro_Focus")
+metadata/_custom_type_script = "uid://o2gllh00r8xi"
+
 [sub_resource type="Resource" id="Resource_7rqi0"]
 script = ExtResource("2_4h6s1")
+markers = Array[ExtResource("4_a7apk")]([SubResource("Resource_f2sxk"), SubResource("Resource_bb0d6"), SubResource("Resource_ftyte")])
 player_spot = NodePath("CutsceneMarkers/HeartIntro_Player")
-npc_spots = {
-"mayor": NodePath("CutsceneMarkers/HeartIntro_Mayor")
-}
 camera_focus = NodePath("CutsceneMarkers/HeartIntro_Focus")
 metadata/_custom_type_script = "uid://bjwubxbrbyt2x"
+
+[sub_resource type="Resource" id="Resource_hh4rx"]
+script = ExtResource("6_gusfa")
+step_type = 0
+actor_key = "mayor"
+marker_id = "mayor_start"
+duration = 0.01
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_tqc3f"]
+script = ExtResource("6_gusfa")
+step_type = 1
+marker_id = "focus"
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_dmbhf"]
+script = ExtResource("6_gusfa")
+step_type = 2
+speaker_actor_key = "mayor"
+lines = Array[String](["Good morning…", "I need to show you something special.", "Meet me at the Heart of the Valley."])
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
 
 [resource]
 script = ExtResource("1_art0q")
@@ -54,5 +91,6 @@ scene_name = "Farm"
 actors = Array[ExtResource("1_idqsu")]([SubResource("Resource_4h6s1"), SubResource("Resource_idqsu")])
 markers = SubResource("Resource_7rqi0")
 dialogue = SubResource("Resource_xae77")
-effects = [SubResource("Resource_gusfa"), SubResource("Resource_a7apk")]
+effects = Array[ExtResource("3_xae77")]([SubResource("Resource_gusfa"), SubResource("Resource_a7apk")])
+steps = Array[ExtResource("6_gusfa")]([SubResource("Resource_hh4rx"), SubResource("Resource_tqc3f"), SubResource("Resource_dmbhf")])
 metadata/_custom_type_script = "uid://camo0lur1qm85"

@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=3 format=3 uid="uid://cobll55ekqa7i"]
+
+[ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="1_71ryc"]
+[ext_resource type="Script" uid="uid://bolxtchvrfo0y" path="res://data/quests/QuestStepData.gd" id="2_57r38"]
+
+[resource]
+script = ExtResource("1_71ryc")
+id = "lia_watermelon_help"
+title = "Watermelon Woes"
+description = "Get your hands dirty by growing then shipping a watermelon!"
+oneshot_target = "Watermelon"
+oneshot_text = "Ship 1 Watermelon."
+turn_in_id = "npc_lia"
+turn_in_text = "Go let Lia know you shipped a watermelon!"
+reward_money = 20
+reward_items = Dictionary[String, int]({
+"Watermelon": 1
+})
+offer_lines = Array[String](["Hey, I’ve been craving a watermelon. Could you ship me one?"])
+in_progress_lines = Array[String](["Still waiting on that watermelon! No rush, but I’d really appreciate it."])
+turn_in_lines = Array[String](["You shipped the watermelon! Thank you! Here, have one for yourself."])
+after_thanks_lines = Array[String](["That watermelon was delicious. Thanks again for helping me out!"])
+metadata/_custom_type_script = "uid://cg0ailnic1w71"
