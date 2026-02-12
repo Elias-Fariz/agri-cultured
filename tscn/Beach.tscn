@@ -6,7 +6,7 @@
 [ext_resource type="Script" uid="uid://dxx68q28fdnvv" path="res://scripts/SpawnPoint.gd" id="4_sjhdg"]
 [ext_resource type="AudioStream" uid="uid://d28bo8p77va8y" path="res://audio/ambience/amb_farm_wind.WAV" id="5_8ebig"]
 [ext_resource type="PackedScene" uid="uid://dv7wem6ftpvdd" path="res://tscn/Player.tscn" id="5_udil2"]
-[ext_resource type="PackedScene" uid="uid://bfaurdf2mucr2" path="res://tscn/NPC.tscn" id="5_uodw0"]
+[ext_resource type="PackedScene" uid="uid://bfaurdf2mucr2" path="res://tscn/npcs/NPC.tscn" id="5_uodw0"]
 [ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="6_3sblc"]
 [ext_resource type="PackedScene" uid="uid://ded2abuo15uwh" path="res://ui/DialogueUI.tscn" id="6_8ebig"]
 [ext_resource type="AudioStream" uid="uid://c0vxwp7d85xq8" path="res://audio/ambience/life/sfx_bird_01.WAV" id="7_4vvm7"]

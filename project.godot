@@ -26,6 +26,7 @@ QuestEvents="*res://autoloads/QuestEvents.gd"
 HeartProgress="*res://autoloads/HeartProgress.gd"
 GuidanceNudger="*res://autoloads/GuidanceNudger.gd"
 ToolSystem="*res://autoloads/ToolSystem.gd"
+CutsceneDirector="*res://autoloads/CutsceneDirector.gd"
 
 [input]
 

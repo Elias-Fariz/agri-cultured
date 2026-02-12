@@ -11,7 +11,7 @@
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_h582y"]
 
-[node name="NPC" type="CharacterBody2D"]
+[node name="NPC" type="CharacterBody2D" groups=["npc"]]
 collision_layer = 4
 collision_mask = 0
 script = ExtResource("1_8j625")

@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://caerjv5h3fdyv" path="res://art/tree.png" id="2_vnc70"]
 [ext_resource type="Texture2D" uid="uid://b6q6p1rqkpdec" path="res://art/crops.png" id="3_3a5ef"]
 [ext_resource type="Texture2D" uid="uid://1d6ygtxnkroh" path="res://art/rock.PNG" id="4_hw5sw"]
-[ext_resource type="PackedScene" uid="uid://bfaurdf2mucr2" path="res://tscn/NPC.tscn" id="5_3a5ef"]
+[ext_resource type="PackedScene" uid="uid://bfaurdf2mucr2" path="res://tscn/npcs/NPC.tscn" id="5_3a5ef"]
 [ext_resource type="PackedScene" uid="uid://dv7wem6ftpvdd" path="res://tscn/Player.tscn" id="6_hw5sw"]
 [ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="6_y8126"]
 [ext_resource type="Resource" uid="uid://d1rk16thm6q8l" path="res://data/quests/keeper_cow_quest.tres" id="7_3mm4q"]

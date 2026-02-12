@@ -1459,10 +1459,9 @@ func try_play_pending_cutscene() -> void:
 	var id := pending_cutscene_id
 	pending_cutscene_id = ""
 
-	# For now: dialogue-only cutscene stub.
-	# We'll replace this later with a proper CutsceneDirector.
-	if id == "heart_intro":
-		_play_heart_intro_stub()
+	if has_node("/root/CutsceneDirector"):
+		CutsceneDirector.queue_cutscene(id)
+		CutsceneDirector.try_play_queued()
 
 func _play_heart_intro_stub() -> void:
 	lock_gameplay()

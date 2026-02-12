@@ -1,0 +1,58 @@
+[gd_resource type="Resource" script_class="CutsceneData" load_steps=12 format=3 uid="uid://cluprrkrnm8pa"]
+
+[ext_resource type="Script" uid="uid://camo0lur1qm85" path="res://data/cutscenes/CutsceneData.gd" id="1_art0q"]
+[ext_resource type="Script" uid="uid://b4pm6wxp5ivtk" path="res://data/cutscenes/CutsceneActorData.gd" id="1_idqsu"]
+[ext_resource type="Script" uid="uid://bjwubxbrbyt2x" path="res://data/cutscenes/CutsceneMarkerSet.gd" id="2_4h6s1"]
+[ext_resource type="Script" uid="uid://cbc4hknxa1gfx" path="res://data/cutscenes/CutsceneDialogueData.gd" id="2_7rqi0"]
+[ext_resource type="Script" uid="uid://cp2gtb0hckrrj" path="res://data/cutscenes/CutsceneEffectData.gd" id="3_xae77"]
+
+[sub_resource type="Resource" id="Resource_4h6s1"]
+script = ExtResource("1_idqsu")
+key = "player"
+actor_type = "player"
+metadata/_custom_type_script = "uid://b4pm6wxp5ivtk"
+
+[sub_resource type="Resource" id="Resource_idqsu"]
+script = ExtResource("1_idqsu")
+key = "mayor"
+npc_id = "npc_mayor"
+display_name = "Mayor"
+scene_path = "res://tscn/npcs/Mayor.tscn"
+metadata/_custom_type_script = "uid://b4pm6wxp5ivtk"
+
+[sub_resource type="Resource" id="Resource_xae77"]
+script = ExtResource("2_7rqi0")
+speaker_actor_key = "mayor"
+lines = Array[String](["Good morning…", "I need to show you something special.", "Meet me at the Heart of the Valley."])
+metadata/_custom_type_script = "uid://cbc4hknxa1gfx"
+
+[sub_resource type="Resource" id="Resource_gusfa"]
+script = ExtResource("3_xae77")
+effect_type = "unlock_travel"
+id = "valley_heart"
+metadata/_custom_type_script = "uid://cp2gtb0hckrrj"
+
+[sub_resource type="Resource" id="Resource_a7apk"]
+script = ExtResource("3_xae77")
+effect_type = "toast"
+msg = "A gentle pull draws you toward the valley..."
+metadata/_custom_type_script = "uid://cp2gtb0hckrrj"
+
+[sub_resource type="Resource" id="Resource_7rqi0"]
+script = ExtResource("2_4h6s1")
+player_spot = NodePath("CutsceneMarkers/HeartIntro_Player")
+npc_spots = {
+"mayor": NodePath("CutsceneMarkers/HeartIntro_Mayor")
+}
+camera_focus = NodePath("CutsceneMarkers/HeartIntro_Focus")
+metadata/_custom_type_script = "uid://bjwubxbrbyt2x"
+
+[resource]
+script = ExtResource("1_art0q")
+id = "heart_intro"
+scene_name = "Farm"
+actors = Array[ExtResource("1_idqsu")]([SubResource("Resource_4h6s1"), SubResource("Resource_idqsu")])
+markers = SubResource("Resource_7rqi0")
+dialogue = SubResource("Resource_xae77")
+effects = [SubResource("Resource_gusfa"), SubResource("Resource_a7apk")]
+metadata/_custom_type_script = "uid://camo0lur1qm85"

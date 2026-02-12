@@ -313,3 +313,14 @@ position = Vector2(359, 313)
 possible_fish = Array[ExtResource("50_11pgm")]([ExtResource("51_yp4mp"), ExtResource("52_5v62u")])
 
 [node name="FishingMinigameUI" parent="." instance=ExtResource("53_11pgm")]
+
+[node name="CutsceneMarkers" type="Node2D" parent="." groups=["cutscene_anchor"]]
+
+[node name="HeartIntro_Player" type="Marker2D" parent="CutsceneMarkers"]
+position = Vector2(156, 321)
+
+[node name="HeartIntro_Mayor" type="Marker2D" parent="CutsceneMarkers"]
+position = Vector2(238, 324)
+
+[node name="HeartIntro_Focus" type="Marker2D" parent="CutsceneMarkers"]
+position = Vector2(194, 384)

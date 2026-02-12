@@ -1,0 +1,18 @@
+[gd_scene load_steps=5 format=3 uid="uid://dbc6p4387b3x2"]
+
+[ext_resource type="PackedScene" uid="uid://bfaurdf2mucr2" path="res://tscn/npcs/NPC.tscn" id="1_jq1o3"]
+[ext_resource type="Resource" uid="uid://cw4m17hab13da" path="res://data/quests/main_mayor_strawberry.tres" id="2_w0ipx"]
+[ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="3_swo65"]
+[ext_resource type="Resource" uid="uid://bvric8xdsbabb" path="res://data/gifts/gifts_mayor.tres" id="4_fqgqq"]
+
+[node name="NPC" instance=ExtResource("1_jq1o3")]
+display_name = "Mayor"
+dialogue_lines = Array[String](["Hey! How are you doing?"])
+morning_dialogue_lines = Array[String](["Sure is bright today!"])
+evening_dialogue_lines = Array[String](["Winding down now..."])
+night_dialogue_lines = Array[String](["Time to get some shuteye!"])
+overhead_greeting_lines = Array[String](["Welcome!"])
+overhead_idle_lines = Array[String](["Wonderful day..."])
+mayor_main_quest = ExtResource("2_w0ipx")
+quest_offers = Array[ExtResource("3_swo65")]([ExtResource("2_w0ipx")])
+gift_prefs = ExtResource("4_fqgqq")
