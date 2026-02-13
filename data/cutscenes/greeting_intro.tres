@@ -1,8 +1,7 @@
-[gd_resource type="Resource" script_class="CutsceneData" load_steps=27 format=3 uid="uid://c8bi3kh8p7lxt"]
+[gd_resource type="Resource" script_class="CutsceneData" load_steps=18 format=3 uid="uid://c8bi3kh8p7lxt"]
 
 [ext_resource type="Script" uid="uid://b4pm6wxp5ivtk" path="res://data/cutscenes/CutsceneActorData.gd" id="1_ma2w5"]
 [ext_resource type="Script" uid="uid://cp2gtb0hckrrj" path="res://data/cutscenes/CutsceneEffectData.gd" id="2_r1wa0"]
-[ext_resource type="Script" uid="uid://o2gllh00r8xi" path="res://data/cutscenes/CutsceneMarkerRef.gd" id="3_2pgpd"]
 [ext_resource type="Script" uid="uid://camo0lur1qm85" path="res://data/cutscenes/CutsceneData.gd" id="3_qnkhb"]
 [ext_resource type="Script" uid="uid://bjwubxbrbyt2x" path="res://data/cutscenes/CutsceneMarkerSet.gd" id="3_r1wa0"]
 [ext_resource type="Script" uid="uid://0k0f68wqa7mm" path="res://data/cutscenes/CutsceneStepData.gd" id="4_2pgpd"]
@@ -35,74 +34,17 @@ effect_type = "toast"
 msg = "Welcome to the village!"
 metadata/_custom_type_script = "uid://cp2gtb0hckrrj"
 
-[sub_resource type="Resource" id="Resource_27yug"]
-script = ExtResource("3_2pgpd")
-id = "player_start"
-path = NodePath("CutsceneMarkers/GreetingIntro_PlayerStart")
-metadata/_custom_type_script = "uid://o2gllh00r8xi"
-
-[sub_resource type="Resource" id="Resource_yopxa"]
-script = ExtResource("3_2pgpd")
-id = "lia_start"
-path = NodePath("CutsceneMarkers/GreetingIntro_LiaStart")
-metadata/_custom_type_script = "uid://o2gllh00r8xi"
-
-[sub_resource type="Resource" id="Resource_a08rt"]
-script = ExtResource("3_2pgpd")
-id = "lia_greet"
-path = NodePath("CutsceneMarkers/GreetingIntro_LiaGreetSpot")
-metadata/_custom_type_script = "uid://o2gllh00r8xi"
-
-[sub_resource type="Resource" id="Resource_fomr5"]
-script = ExtResource("3_2pgpd")
-id = "mayor_start"
-path = NodePath("CutsceneMarkers/GreetingIntro_MayorStart")
-metadata/_custom_type_script = "uid://o2gllh00r8xi"
-
-[sub_resource type="Resource" id="Resource_vp7ds"]
-script = ExtResource("3_2pgpd")
-id = "mayor_greet"
-path = NodePath("CutsceneMarkers/GreetingIntro_MayorGreetSpot")
-metadata/_custom_type_script = "uid://o2gllh00r8xi"
-
-[sub_resource type="Resource" id="Resource_fbapq"]
-script = ExtResource("3_2pgpd")
-id = "focus"
-path = NodePath("CutsceneMarkers/GreetingIntro_Focus")
-metadata/_custom_type_script = "uid://o2gllh00r8xi"
-
 [sub_resource type="Resource" id="Resource_2pgpd"]
 script = ExtResource("3_r1wa0")
-markers = Array[ExtResource("3_2pgpd")]([SubResource("Resource_27yug"), SubResource("Resource_yopxa"), SubResource("Resource_a08rt"), SubResource("Resource_fomr5"), SubResource("Resource_vp7ds"), SubResource("Resource_fbapq")])
-player_spot = NodePath("CutsceneMarkers/GreetingIntro_PlayerStart")
-npc_spots = {
-"lia": {
-"greet": NodePath("CutsceneMarkers/GreetingIntro_LiaGreetSpot"),
-"start": NodePath("CutsceneMarkers/GreetingIntro_LiaStart")
-},
-"mayor": {
-"greet": NodePath("CutsceneMarkers/GreetingIntro_MayorGreetSpot"),
-"start": NodePath("CutsceneMarkers/GreetingIntro_MayorStart")
+markers_by_id = {
+"focus_start": NodePath("CutsceneMarkers/GreetingIntro_Focus"),
+"lia_greet": NodePath("CutsceneMarkers/GreetingIntro_LiaGreetSpot"),
+"lia_start": NodePath("CutsceneMarkers/GreetingIntro_LiaStart"),
+"mayor_greet": NodePath("CutsceneMarkers/GreetingIntro_MayorGreetSpot"),
+"mayor_start": NodePath("CutsceneMarkers/GreetingIntro_MayorStart"),
+"player_start": NodePath("CutsceneMarkers/GreetingIntro_PlayerStart")
 }
-}
-camera_focus = NodePath("CutsceneMarkers/GreetingIntro_Focus")
 metadata/_custom_type_script = "uid://bjwubxbrbyt2x"
-
-[sub_resource type="Resource" id="Resource_sqiqa"]
-script = ExtResource("4_2pgpd")
-step_type = 0
-actor_key = "mayor"
-marker_id = "mayor_start"
-duration = 0.01
-metadata/_custom_type_script = "uid://0k0f68wqa7mm"
-
-[sub_resource type="Resource" id="Resource_law8i"]
-script = ExtResource("4_2pgpd")
-step_type = 0
-actor_key = "lia"
-marker_id = "lia_start"
-duration = 0.01
-metadata/_custom_type_script = "uid://0k0f68wqa7mm"
 
 [sub_resource type="Resource" id="Resource_cag78"]
 script = ExtResource("4_2pgpd")
@@ -159,5 +101,5 @@ scene_name = "Farm"
 actors = Array[ExtResource("1_ma2w5")]([SubResource("Resource_ma2w5"), SubResource("Resource_r1wa0"), SubResource("Resource_qnkhb")])
 markers = SubResource("Resource_2pgpd")
 effects = Array[ExtResource("2_r1wa0")]([SubResource("Resource_df6ec")])
-steps = Array[ExtResource("4_2pgpd")]([SubResource("Resource_sqiqa"), SubResource("Resource_law8i"), SubResource("Resource_cag78"), SubResource("Resource_r4rt6"), SubResource("Resource_f74h5"), SubResource("Resource_kir2k"), SubResource("Resource_xo77u"), SubResource("Resource_occxa"), SubResource("Resource_4m285")])
+steps = Array[ExtResource("4_2pgpd")]([SubResource("Resource_cag78"), SubResource("Resource_r4rt6"), SubResource("Resource_f74h5"), SubResource("Resource_kir2k"), SubResource("Resource_xo77u"), SubResource("Resource_occxa"), SubResource("Resource_4m285")])
 metadata/_custom_type_script = "uid://camo0lur1qm85"

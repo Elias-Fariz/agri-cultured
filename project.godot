@@ -27,6 +27,7 @@ HeartProgress="*res://autoloads/HeartProgress.gd"
 GuidanceNudger="*res://autoloads/GuidanceNudger.gd"
 ToolSystem="*res://autoloads/ToolSystem.gd"
 CutsceneDirector="*res://autoloads/CutsceneDirector.gd"
+FadeOverlay="*res://autoloads/FadeOverlay.gd"
 
 [input]
 

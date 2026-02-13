@@ -1,11 +1,10 @@
-[gd_resource type="Resource" script_class="CutsceneData" load_steps=20 format=3 uid="uid://cluprrkrnm8pa"]
+[gd_resource type="Resource" script_class="CutsceneData" load_steps=15 format=3 uid="uid://cluprrkrnm8pa"]
 
 [ext_resource type="Script" uid="uid://camo0lur1qm85" path="res://data/cutscenes/CutsceneData.gd" id="1_art0q"]
 [ext_resource type="Script" uid="uid://b4pm6wxp5ivtk" path="res://data/cutscenes/CutsceneActorData.gd" id="1_idqsu"]
 [ext_resource type="Script" uid="uid://bjwubxbrbyt2x" path="res://data/cutscenes/CutsceneMarkerSet.gd" id="2_4h6s1"]
 [ext_resource type="Script" uid="uid://cbc4hknxa1gfx" path="res://data/cutscenes/CutsceneDialogueData.gd" id="2_7rqi0"]
 [ext_resource type="Script" uid="uid://cp2gtb0hckrrj" path="res://data/cutscenes/CutsceneEffectData.gd" id="3_xae77"]
-[ext_resource type="Script" uid="uid://o2gllh00r8xi" path="res://data/cutscenes/CutsceneMarkerRef.gd" id="4_a7apk"]
 [ext_resource type="Script" uid="uid://0k0f68wqa7mm" path="res://data/cutscenes/CutsceneStepData.gd" id="6_gusfa"]
 
 [sub_resource type="Resource" id="Resource_4h6s1"]
@@ -38,38 +37,14 @@ effect_type = "toast"
 msg = "A gentle pull draws you toward the valley..."
 metadata/_custom_type_script = "uid://cp2gtb0hckrrj"
 
-[sub_resource type="Resource" id="Resource_f2sxk"]
-script = ExtResource("4_a7apk")
-id = "player_start"
-path = NodePath("CutsceneMarkers/HeartIntro_Player")
-metadata/_custom_type_script = "uid://o2gllh00r8xi"
-
-[sub_resource type="Resource" id="Resource_bb0d6"]
-script = ExtResource("4_a7apk")
-id = "mayor_start"
-path = NodePath("CutsceneMarkers/HeartIntro_Mayor")
-metadata/_custom_type_script = "uid://o2gllh00r8xi"
-
-[sub_resource type="Resource" id="Resource_ftyte"]
-script = ExtResource("4_a7apk")
-id = "focus"
-path = NodePath("CutsceneMarkers/HeartIntro_Focus")
-metadata/_custom_type_script = "uid://o2gllh00r8xi"
-
 [sub_resource type="Resource" id="Resource_7rqi0"]
 script = ExtResource("2_4h6s1")
-markers = Array[ExtResource("4_a7apk")]([SubResource("Resource_f2sxk"), SubResource("Resource_bb0d6"), SubResource("Resource_ftyte")])
-player_spot = NodePath("CutsceneMarkers/HeartIntro_Player")
-camera_focus = NodePath("CutsceneMarkers/HeartIntro_Focus")
+markers_by_id = {
+"focus_start": NodePath("CutsceneMarkers/HeartIntro_Focus"),
+"mayor_start": NodePath("CutsceneMarkers/HeartIntro_Mayor"),
+"player_start": NodePath("CutsceneMarkers/HeartIntro_Player")
+}
 metadata/_custom_type_script = "uid://bjwubxbrbyt2x"
-
-[sub_resource type="Resource" id="Resource_hh4rx"]
-script = ExtResource("6_gusfa")
-step_type = 0
-actor_key = "mayor"
-marker_id = "mayor_start"
-duration = 0.01
-metadata/_custom_type_script = "uid://0k0f68wqa7mm"
 
 [sub_resource type="Resource" id="Resource_tqc3f"]
 script = ExtResource("6_gusfa")
@@ -92,5 +67,5 @@ actors = Array[ExtResource("1_idqsu")]([SubResource("Resource_4h6s1"), SubResour
 markers = SubResource("Resource_7rqi0")
 dialogue = SubResource("Resource_xae77")
 effects = Array[ExtResource("3_xae77")]([SubResource("Resource_gusfa"), SubResource("Resource_a7apk")])
-steps = Array[ExtResource("6_gusfa")]([SubResource("Resource_hh4rx"), SubResource("Resource_tqc3f"), SubResource("Resource_dmbhf")])
+steps = Array[ExtResource("6_gusfa")]([SubResource("Resource_tqc3f"), SubResource("Resource_dmbhf")])
 metadata/_custom_type_script = "uid://camo0lur1qm85"

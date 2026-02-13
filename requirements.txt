@@ -51,7 +51,7 @@ Phase 3.5: Valley Heart
 * Milestone Rewards *THREE MINI DONE!*
 * Visual Changes *ROOTS VS NODES*
 * Quest Hint Toasts *CHECK*
-* Cutscenes *TO ITS ALMOST PERFECTION!*
+* Cutscenes *AS GOOD AS IT CAN GET NOW!*
 * Moving Tools out of Farm.gd *CHECK*
 
 * Fishing *ADDED POPUP*
