@@ -1,0 +1,59 @@
+[gd_scene load_steps=6 format=3 uid="uid://cdl24vnfjtm3q"]
+
+[ext_resource type="Script" uid="uid://dilo4ughk18uf" path="res://scripts/InventorySlot.gd" id="1_1m8ot"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1m8ot"]
+bg_color = Color(0.34781694, 0.34781697, 0.34781682, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5uilj"]
+bg_color = Color(0.5330367, 0.5330367, 0.5330366, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yp5n2"]
+bg_color = Color(0.6296744, 0.6296749, 0.62967455, 1)
+border_width_left = 6
+border_width_top = 6
+border_width_right = 6
+border_width_bottom = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mxn3t"]
+bg_color = Color(0.7840552, 0.50580466, 0.5953078, 1)
+
+[node name="InventorySlot" type="Button"]
+custom_minimum_size = Vector2(64, 64)
+offset_right = 8.0
+offset_bottom = 8.0
+toggle_mode = true
+script = ExtResource("1_1m8ot")
+style_empty = SubResource("StyleBoxFlat_1m8ot")
+style_filled = SubResource("StyleBoxFlat_5uilj")
+style_hover = SubResource("StyleBoxFlat_yp5n2")
+style_selected = SubResource("StyleBoxFlat_mxn3t")
+
+[node name="Icon" type="TextureRect" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+mouse_filter = 2
+
+[node name="Name" type="Label" parent="."]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+vertical_alignment = 3
+
+[node name="Qty" type="Label" parent="."]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+horizontal_alignment = 2
+vertical_alignment = 2

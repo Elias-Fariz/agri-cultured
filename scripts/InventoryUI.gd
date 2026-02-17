@@ -1,72 +1,37 @@
-# InventoryUI.gd
+# res://ui/InventoryUI.gd
 extends BaseOverlay
 
 @onready var panel: Panel = $Panel
-@onready var item_list: ItemList = $Panel/VBoxContainer/ItemList
+@onready var grid: GridContainer = $Panel/VBoxContainer/Scroll/Grid
 
+@export var slot_count: int = 30            # ✅ change this later anytime
+@export var columns: int = 6                # Grid width
+@export var slot_scene: PackedScene = preload("res://ui/InventorySlot.tscn")
+
+var _slots: Array[InventorySlot] = []
+
+var _selected_slot_index: int = -1
 var _selected_item_id: String = ""
-var _selected_index: int = -1
+
+var _slot_group := ButtonGroup.new()
 
 func _ready() -> void:
 	super._ready()
 	if Engine.is_editor_hint():
 		return
-
-	# Track selection changes
-	item_list.item_selected.connect(_on_item_selected)
-	item_list.item_activated.connect(_on_item_activated) # double-click or Enter depending on OS
-
+	
+	_slot_group.allow_unpress = true
+	_build_slots()
 	_refresh_from_gamestate()
-
-
-func _unhandled_input(event: InputEvent) -> void:
-	if Engine.is_editor_hint():
-		return
-	if not is_open():
-		return
-
-	# Press Enter to "use" the selected item (eat if edible)
-	if event.is_action_pressed("ui_accept"):
-		_try_use_selected()
-		get_viewport().set_input_as_handled()
-		return
-
-	# Optional: Press E to use as well (only if you want)
-	# Make sure you have an input action named "interact" or "ui_use"
-	if event.is_action_pressed("interact"):
-		_try_use_selected()
-		get_viewport().set_input_as_handled()
-		return
-
-
-func set_items(items: Dictionary) -> void:
-	item_list.clear()
-
-	# Keep stable ordering so selection doesn't jump too much
-	var keys: Array = items.keys()
-	keys.sort()
-
-	for key_any in keys:
-		var id := String(key_any)
-		var count := int(items[key_any])
-		var row_text := "%s x%d" % [id, count]
-
-		# Store the item id in metadata so we can retrieve it safely
-		var idx := item_list.add_item(row_text)
-		item_list.set_item_metadata(idx, id)
-
-	# Restore selection if possible
-	_restore_selection()
-
 
 func show_ui() -> void:
 	super.show_overlay()
 	_refresh_from_gamestate()
-
+	_clear_selection()
 
 func hide_ui() -> void:
+	_clear_selection()
 	super.hide_overlay()
-
 
 func toggle_ui() -> void:
 	if panel.visible:
@@ -74,77 +39,176 @@ func toggle_ui() -> void:
 	else:
 		show_ui()
 
-
 func is_open() -> bool:
 	return panel.visible
 
+func _unhandled_input(event: InputEvent) -> void:
+	if Engine.is_editor_hint():
+		return
+	if not is_open():
+		return
 
-# -------------------------
-# Internals
-# -------------------------
+	if event.is_action_pressed("ui_accept") or event.is_action_pressed("interact"):
+		_try_use_selected()
+		get_viewport().set_input_as_handled()
+		return
+
+func _build_slots() -> void:
+	# Configure columns
+	grid.columns = max(1, columns)
+
+	# Clear existing children (if any)
+	for c in grid.get_children():
+		c.queue_free()
+	_slots.clear()
+
+	# Build slot instances
+	for i in range(slot_count):
+		var s := slot_scene.instantiate() as InventorySlot
+		grid.add_child(s)
+		s.slot_index = i
+		s.toggle_mode = true
+		s.focus_mode = Control.FOCUS_ALL
+		s.toggled.connect(_on_slot_toggled.bind(i))
+		s.button_group = _slot_group
+		s.toggle_mode = true
+		s.action_mode = BaseButton.ACTION_MODE_BUTTON_RELEASE  # important in Godot 4
+		_slots.append(s)
+
+	# Default select first slot
+	_selected_slot_index = -1
+	_selected_item_id = ""
 
 func _refresh_from_gamestate() -> void:
-	# Assumes GameState.inventory is your Dictionary of item_id -> qty
-	# If it’s named differently, tell me and I’ll adjust.
-	set_items(GameState.inventory)
+	# Convert GameState.inventory (Dictionary item_id -> qty) into a stable list
+	var inv: Dictionary = GameState.inventory
 
+	var ids: Array[String] = []
+	for k in inv.keys():
+		var id := String(k)
+		var qty := int(inv[k])
+		if id != "" and qty > 0:
+			ids.append(id)
+	ids.sort() # stable ordering
 
-func _on_item_selected(index: int) -> void:
-	_selected_index = index
-	_selected_item_id = _get_item_id_at(index)
-
-
-func _on_item_activated(index: int) -> void:
-	# Activated is like double-click / Enter
-	_selected_index = index
-	_selected_item_id = _get_item_id_at(index)
-	_try_use_selected()
-
-
-func _get_item_id_at(index: int) -> String:
-	if index < 0 or index >= item_list.item_count:
-		return ""
-	var meta = item_list.get_item_metadata(index)
-	return String(meta)
-
-
-func _try_use_selected() -> void:
-	if _selected_item_id == "":
-		# Nothing selected: pick first item if exists (friendly)
-		if item_list.item_count > 0:
-			item_list.select(0)
-			_on_item_selected(0)
+	# Fill slots
+	for i in range(_slots.size()):
+		var slot := _slots[i]
+		if i < ids.size():
+			var id := ids[i]
+			var qty := int(inv.get(id, 0))
+			var tex := _get_item_icon(id)
+			slot.set_item(id, qty, tex)
 		else:
+			slot.clear_item()
+
+	# Restore selection
+	_restore_selection()
+
+func _on_slot_pressed(i: int) -> void:
+	if i < 0 or i >= _slots.size():
+		return
+	if _slots[i].item_id == "" or _slots[i].qty <= 0:
+		# ✅ don’t select empties
+		return
+
+	_select_slot(i)
+
+func _select_slot(i: int) -> void:
+	if i < 0 or i >= _slots.size():
+		return
+
+	for j in range(_slots.size()):
+		if j != i:
+			_slots[j].button_pressed = false
+			_slots[j].refresh_visuals() # ✅ immediate unhighlight
+
+	_slots[i].button_pressed = true
+	_slots[i].refresh_visuals()      # ✅ immediate highlight
+
+	_selected_slot_index = i
+	_selected_item_id = _slots[i].item_id
+
+func _restore_selection() -> void:
+	# If we had an item selected, try to re-select it
+	if _selected_item_id != "":
+		for i in range(_slots.size()):
+			if _slots[i].item_id == _selected_item_id:
+				_select_slot(i)
+				return
+
+	# Otherwise select first non-empty slot, else none
+	for i in range(_slots.size()):
+		if _slots[i].item_id != "":
+			_select_slot(i)
 			return
 
-	# Try to consume (eat)
+	_selected_slot_index = -1
+	_selected_item_id = ""
+
+func _try_use_selected() -> void:
+	# If nothing selected, pick the first item
+	if _selected_item_id == "":
+		_restore_selection()
+		if _selected_item_id == "":
+			return
+
+	# Attempt to consume/eat (your existing GameState logic)
 	var used := GameState.consume_item(_selected_item_id)
 	if used:
 		_refresh_from_gamestate()
-
-		# If the selected item disappeared (qty hit 0), update selection
-		_restore_selection()
 	else:
-		# Optional: feedback if not edible or energy full
-		# (Keep it quiet if you prefer)
+		# Optional: tiny feedback later (toast) if you want
 		pass
 
+func _get_item_icon(item_id: String) -> Texture2D:
+	if ItemDb != null and ItemDb.has_method("get_item"):
+		var data = ItemDb.get_item(item_id)
+		if data != null:
+			# ItemData.icon is exactly what we want
+			var tex: Variant = data.icon
+			if tex is Texture2D:
+				return tex
+	return null
 
-func _restore_selection() -> void:
-	if item_list.item_count <= 0:
-		_selected_index = -1
-		_selected_item_id = ""
+func _on_slot_toggled(pressed: bool, index: int) -> void:
+	if not pressed:
 		return
 
-	# If we still have same item id somewhere, reselect it
-	if _selected_item_id != "":
-		for i in range(item_list.item_count):
-			if _get_item_id_at(i) == _selected_item_id:
-				item_list.select(i)
-				_selected_index = i
-				return
+	if index < 0 or index >= _slots.size():
+		return
 
-	# Otherwise select first item
-	item_list.select(0)
-	_selected_index = 0
-	_selected_item_id = _get_item_id_at(0)
+	var slot := _slots[index]
+
+	# ✅ Block empty slots from being selected — and keep NOTHING selected
+	if slot.item_id == "" or slot.qty <= 0:
+		# Untoggle the clicked empty slot immediately
+		slot.button_pressed = false
+		if slot.has_method("refresh_visuals"):
+			slot.refresh_visuals()
+
+		# Clear selection state
+		_selected_slot_index = -1
+		_selected_item_id = ""
+
+		# Also clear any other toggles (just to be extra safe)
+		for s in _slots:
+			if s.button_pressed:
+				s.button_pressed = false
+				if s.has_method("refresh_visuals"):
+					s.refresh_visuals()
+
+		return
+
+	# ✅ Valid selection
+	_selected_slot_index = index
+	_selected_item_id = slot.item_id
+
+func _clear_selection() -> void:
+	_selected_slot_index = -1
+	_selected_item_id = ""
+
+	for s in _slots:
+		s.button_pressed = false
+		if s.has_method("refresh_visuals"):
+			s.refresh_visuals()

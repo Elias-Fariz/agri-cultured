@@ -136,7 +136,6 @@ func _unhandled_input(event: InputEvent) -> void:
 		
 	if event.is_action_pressed("open_inventory"):
 		# Refresh UI content then toggle
-		inventory_ui.set_items(GameState.inventory)
 		inventory_ui.toggle_ui()
 		return
 	

@@ -4,6 +4,8 @@
 
 [node name="InventoryUI" type="CanvasLayer"]
 script = ExtResource("1_w7o80")
+slot_count = 20
+columns = 5
 visual_node_path = NodePath("Panel")
 start_visible_in_game = false
 is_modal = true
@@ -30,6 +32,10 @@ grow_vertical = 2
 [node name="Inventory" type="Label" parent="Panel/VBoxContainer"]
 layout_mode = 2
 
-[node name="ItemList" type="ItemList" parent="Panel/VBoxContainer"]
+[node name="Scroll" type="ScrollContainer" parent="Panel/VBoxContainer"]
+custom_minimum_size = Vector2(1152, 648)
 layout_mode = 2
-size_flags_vertical = 3
+
+[node name="Grid" type="GridContainer" parent="Panel/VBoxContainer/Scroll"]
+layout_mode = 2
+columns = 6

@@ -56,6 +56,14 @@ Phase 3.5: Valley Heart
 
 * Fishing *ADDED POPUP*
 
+Phase 3.99: UI Restructuring
+* Inventory *CHANGED TO ICONS AND GRID*
+* Townboard
+* Shop/Shipping
+* Dialogue
+* Calendar *SUNWAKE/DUSKHAVEN SEASON CYCLES*
+* World Cohesion
+
 Phase 4: Inventory/UI Polish
 
 Phase 5: Expanding
