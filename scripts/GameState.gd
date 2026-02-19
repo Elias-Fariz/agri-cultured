@@ -1482,7 +1482,7 @@ func _play_heart_intro_stub() -> void:
 	# Show dialogue through your existing dialogue UI
 	var ui := get_tree().get_first_node_in_group("dialogue_ui")
 	if ui and ui.has_method("show_dialogue"):
-		ui.show_dialogue("Mayor", lines, f)
+		ui.show_dialogue("Mayor", lines, f, mayor_id)
 
 	# SAFEST: unlock after a short delay for now.
 	# Later we'll unlock exactly when dialogue ends (via a dialogue_finished signal).

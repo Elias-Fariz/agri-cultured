@@ -1,0 +1,33 @@
+[gd_scene format=3 uid="uid://px4v1yibqish"]
+
+[node name="QuestPaperCard" type="Button"]
+custom_minimum_size = Vector2(128, 128)
+offset_right = 8.0
+offset_bottom = 8.0
+
+[node name="PaperBG" type="TextureRect" parent="."]
+custom_minimum_size = Vector2(128, 128)
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="VBox" type="VBoxContainer" parent="."]
+custom_minimum_size = Vector2(128, 128)
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Title" type="Label" parent="VBox"]
+custom_minimum_size = Vector2(128, 0)
+layout_mode = 2
+autowrap_mode = 3
+
+[node name="Subtitle" type="Label" parent="VBox"]
+custom_minimum_size = Vector2(128, 0)
+layout_mode = 2
+autowrap_mode = 3
+
+[node name="PushPin" type="TextureRect" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0

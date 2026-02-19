@@ -415,7 +415,7 @@ func _run_step(step: CutsceneStepData, scene: Node, player: Node, dialogue_ui: N
 
 			# 4) Use YOUR DialogueUI exactly as normal
 			if dialogue_ui != null and dialogue_ui.has_method("show_dialogue"):
-				dialogue_ui.show_dialogue(speaker_name, lines, friendship)
+				dialogue_ui.show_dialogue(speaker_name, lines, friendship, npc_id)
 				await _await_dialogue_closed(dialogue_ui)
 
 func _resolve_marker(scene: Node, data: CutsceneData, step: CutsceneStepData) -> Marker2D:

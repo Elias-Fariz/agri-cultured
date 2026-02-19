@@ -10,7 +10,6 @@ is_modal = true
 tutorial_ui_id = "townboard"
 
 [node name="Panel" type="PanelContainer" parent="."]
-visible = false
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -45,10 +44,13 @@ size_flags_horizontal = 3
 layout_mode = 2
 text = "Available"
 
-[node name="AvailableList" type="ItemList" parent="Panel/Margin/Root/BodyRow/LeftCol"]
+[node name="AvailableScroll" type="ScrollContainer" parent="Panel/Margin/Root/BodyRow/LeftCol"]
 custom_minimum_size = Vector2(0, 200)
 layout_mode = 2
 size_flags_vertical = 3
+
+[node name="AvailableWrap" type="FlowContainer" parent="Panel/Margin/Root/BodyRow/LeftCol/AvailableScroll"]
+layout_mode = 2
 
 [node name="AcceptButton" type="Button" parent="Panel/Margin/Root/BodyRow/LeftCol"]
 layout_mode = 2
@@ -62,19 +64,27 @@ size_flags_horizontal = 3
 layout_mode = 2
 text = "Active"
 
-[node name="ActiveList" type="ItemList" parent="Panel/Margin/Root/BodyRow/RightCol"]
-custom_minimum_size = Vector2(0, 200)
+[node name="ActiveScroll" type="ScrollContainer" parent="Panel/Margin/Root/BodyRow/RightCol"]
+custom_minimum_size = Vector2(400, 200)
 layout_mode = 2
 size_flags_vertical = 3
+
+[node name="ActiveStack" type="VBoxContainer" parent="Panel/Margin/Root/BodyRow/RightCol/ActiveScroll"]
+custom_minimum_size = Vector2(500, 200)
+layout_mode = 2
 
 [node name="CompletedLabel" type="Label" parent="Panel/Margin/Root/BodyRow/RightCol"]
 layout_mode = 2
 text = "Completed"
 
-[node name="CompletedList" type="ItemList" parent="Panel/Margin/Root/BodyRow/RightCol"]
-custom_minimum_size = Vector2(0, 200)
+[node name="CompletedScroll" type="ScrollContainer" parent="Panel/Margin/Root/BodyRow/RightCol"]
+custom_minimum_size = Vector2(400, 200)
 layout_mode = 2
 size_flags_vertical = 3
+
+[node name="CompletedStack" type="VBoxContainer" parent="Panel/Margin/Root/BodyRow/RightCol/CompletedScroll"]
+custom_minimum_size = Vector2(500, 200)
+layout_mode = 2
 
 [node name="ClaimButton" type="Button" parent="Panel/Margin/Root/BodyRow/RightCol"]
 layout_mode = 2

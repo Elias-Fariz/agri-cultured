@@ -47,11 +47,14 @@ layout_mode = 2
 layout_mode = 2
 text = "For Sale"
 
-[node name="ShopList" type="ItemList" parent="Panel/Margin/Root/BodyRow/LeftCol"]
+[node name="ShopScroll" type="ScrollContainer" parent="Panel/Margin/Root/BodyRow/LeftCol"]
+custom_minimum_size = Vector2(400, 400)
 layout_mode = 2
 size_flags_vertical = 3
-auto_width = true
-auto_height = true
+
+[node name="ShopWrap" type="FlowContainer" parent="Panel/Margin/Root/BodyRow/LeftCol/ShopScroll"]
+custom_minimum_size = Vector2(400, 400)
+layout_mode = 2
 
 [node name="AddButton" type="Button" parent="Panel/Margin/Root/BodyRow/LeftCol"]
 layout_mode = 2
@@ -64,11 +67,14 @@ layout_mode = 2
 layout_mode = 2
 text = "Your Cart"
 
-[node name="CartList" type="ItemList" parent="Panel/Margin/Root/BodyRow/RightCol"]
+[node name="CartScroll" type="ScrollContainer" parent="Panel/Margin/Root/BodyRow/RightCol"]
+custom_minimum_size = Vector2(400, 400)
 layout_mode = 2
 size_flags_vertical = 3
-auto_width = true
-auto_height = true
+
+[node name="CartStack" type="VBoxContainer" parent="Panel/Margin/Root/BodyRow/RightCol/CartScroll"]
+custom_minimum_size = Vector2(400, 400)
+layout_mode = 2
 
 [node name="RemoveButton" type="Button" parent="Panel/Margin/Root/BodyRow/RightCol"]
 layout_mode = 2

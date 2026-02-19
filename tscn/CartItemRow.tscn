@@ -1,0 +1,32 @@
+[gd_scene load_steps=2 format=3 uid="uid://dnp5be4hvo5bc"]
+
+[ext_resource type="Script" uid="uid://jlgud0sax6q" path="res://scripts/CartItemRow.gd" id="1_xra0w"]
+
+[node name="CartItemRow" type="Button"]
+custom_minimum_size = Vector2(48, 48)
+offset_right = 8.0
+offset_bottom = 8.0
+toggle_mode = true
+script = ExtResource("1_xra0w")
+
+[node name="Margin" type="MarginContainer" parent="."]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Root" type="HBoxContainer" parent="Margin"]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="NameLabel" type="Label" parent="Margin/Root"]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PriceLabel" type="Label" parent="Margin/Root"]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+horizontal_alignment = 2

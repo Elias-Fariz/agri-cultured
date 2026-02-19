@@ -1,12 +1,23 @@
+# res://ui/ShopUI.gd
 extends BaseOverlay
 
-@onready var shop_list: ItemList = $Panel/Margin/Root/BodyRow/LeftCol/ShopList
-@onready var cart_list: ItemList = $Panel/Margin/Root/BodyRow/RightCol/CartList
+# --- NEW: visual containers ---
+@onready var shop_wrap: FlowContainer = $Panel/Margin/Root/BodyRow/LeftCol/ShopScroll/ShopWrap
+@onready var cart_stack: VBoxContainer = $Panel/Margin/Root/BodyRow/RightCol/CartScroll/CartStack
+
+# --- Buttons / labels stay the same ---
 @onready var add_button: Button = $Panel/Margin/Root/BodyRow/LeftCol/AddButton
 @onready var remove_button: Button = $Panel/Margin/Root/BodyRow/RightCol/RemoveButton
 @onready var total_label: Label = $Panel/Margin/Root/FooterRow/TotalLabel
 @onready var buy_button: Button = $Panel/Margin/Root/FooterRow/BuyButton
 @onready var close_button: Button = $Panel/Margin/Root/HeaderRow/CloseButton
+
+@onready var shop_sfx: AudioStreamPlayer2D = $ShopSfx2D
+@export var buy_sounds: Array[AudioStream] = []
+
+# --- Card scenes ---
+@export var shelf_card_scene: PackedScene = preload("res://tscn/ShelfItemCard.tscn")
+@export var cart_row_scene: PackedScene = preload("res://tscn/CartItemRow.tscn")
 
 # Simple stock: each item has an id, name, and price
 var shop_items: Array = [
@@ -23,39 +34,34 @@ var shop_items: Array = [
 # cart[item_id] = count
 var cart: Dictionary = {}
 
-var _cart_row_ids: Array[String] = []      # row index -> item_id
-var _last_cart_selected_id: String = ""    # currently selected item_id in cart
+# --- Selection state (replaces ItemList selection) ---
+var _selected_shop_id: String = ""
+var _last_cart_selected_id: String = ""
 
-@onready var shop_sfx: AudioStreamPlayer2D = $ShopSfx2D
-@export var buy_sounds: Array[AudioStream] = []
+# ButtonGroups so only one stays “pressed” visually
+var _shop_group := ButtonGroup.new()
+var _cart_group := ButtonGroup.new()
 
 # -------------------------------------------------------------------
 # Heart discount helpers
 # -------------------------------------------------------------------
 func _get_shop_discount_multiplier() -> float:
-	# 1.0 = no discount; 0.97 = 3% cheaper
 	var mul := 1.0
 	var hp := get_node_or_null("/root/HeartProgress")
 	if hp != null and hp.has_method("get_shop_discount_multiplier"):
 		mul = float(hp.call("get_shop_discount_multiplier"))
-	# Safety
 	if mul <= 0.0:
 		mul = 1.0
 	return mul
-
-func _discount_active() -> bool:
-	return _get_shop_discount_multiplier() < 0.999
 
 func _calc_discounted_unit_price(base_price: int) -> int:
 	if base_price <= 0:
 		return 0
 	var mul := _get_shop_discount_multiplier()
-	# Favor player: floor makes discount feel real and predictable
 	var p := int(floor(float(base_price) * mul))
 	return max(1, p)
 
 func _compute_subtotal_base() -> int:
-	# What the cart would cost with NO blessing.
 	var total := 0
 	for id_any in cart.keys():
 		var id := String(id_any)
@@ -68,7 +74,6 @@ func _compute_subtotal_base() -> int:
 	return total
 
 func _compute_total_discounted() -> int:
-	# What the cart costs with blessing applied.
 	var total := 0
 	for id_any in cart.keys():
 		var id := String(id_any)
@@ -89,13 +94,14 @@ func _compute_heart_savings() -> int:
 # -------------------------------------------------------------------
 
 func _ready() -> void:
+	super._ready()
+	if Engine.is_editor_hint():
+		return
+
 	close_button.pressed.connect(hide_overlay)
 	add_button.pressed.connect(_on_add_pressed)
 	remove_button.pressed.connect(_on_remove_pressed)
 	buy_button.pressed.connect(_on_buy_pressed)
-
-	shop_list.item_selected.connect(_on_shop_selected)
-	cart_list.item_selected.connect(_on_cart_selected)
 
 	_refresh_shop()
 	_refresh_cart()
@@ -112,78 +118,111 @@ func _find_item_by_id(item_id: String) -> Dictionary:
 			return item
 	return {}
 
+func _get_item_icon(item_id: String) -> Texture2D:
+	# Optional icons from ItemDb -> ItemData.icon
+	if ItemDb != null and ItemDb.has_method("get_item"):
+		var data = ItemDb.get_item(item_id)
+		if data != null:
+			var tex: Variant = data.icon
+			if tex is Texture2D:
+				return tex
+	return null
+
+# -------------------------------------------------------------------
+# VISUAL REFRESH (Shelf cards + Cart rows)
+# -------------------------------------------------------------------
+func _clear_children(n: Node) -> void:
+	for c in n.get_children():
+		c.queue_free()
+
 func _refresh_shop() -> void:
-	shop_list.clear()
+	_clear_children(shop_wrap)
 
 	var mul := _get_shop_discount_multiplier()
-	var show_discount := mul < 0.999
 
 	for item_any in shop_items:
 		var item: Dictionary = item_any
-		var name := String(item.get("name", "Item"))
-		var base_price := int(item.get("price", 0))
+		var id := String(item.get("id", ""))
+		if id == "":
+			continue
 
-		if show_discount:
-			var final_unit := _calc_discounted_unit_price(base_price)
-			var savings :Variant= max(0, base_price - final_unit)
-			if savings > 0:
-				# Example: "Apple - 15g  (Blessing: -1g → 14g)"
-				shop_list.add_item("%s - %dg  (Blessing: -%dg → %dg)" % [name, base_price, savings, final_unit])
-			else:
-				shop_list.add_item("%s - %dg" % [name, base_price])
+		var display_name := String(item.get("name", "Item"))
+		var base_price := int(item.get("price", 0))
+		var final_unit := _calc_discounted_unit_price(base_price)
+
+		var icon := _get_item_icon(id)
+
+		var card = shelf_card_scene.instantiate()
+		shop_wrap.add_child(card)
+
+		# Safe typed call (works even if you didn’t class_name it)
+		card.button_group = _shop_group
+		card.toggle_mode = true
+		card.action_mode = BaseButton.ACTION_MODE_BUTTON_RELEASE
+
+		# Fill data
+		if card.has_method("set_data"):
+			card.call("set_data", id, display_name, base_price, final_unit, icon)
+
+		# Connect selection
+		if card.has_signal("card_selected"):
+			card.connect("card_selected", Callable(self, "_on_shelf_card_selected"))
 		else:
-			shop_list.add_item("%s - %dg" % [name, base_price])
+			# Fallback: use pressed
+			card.pressed.connect(_on_shelf_pressed_fallback.bind(id))
+
+		# Restore visual selection if needed
+		if id == _selected_shop_id:
+			card.button_pressed = true
 
 	_update_buttons()
 
 func _refresh_cart() -> void:
-	# Remember what was selected before refresh
-	var previously_selected_id := _last_cart_selected_id
-
-	cart_list.clear()
-	_cart_row_ids.clear()
+	_clear_children(cart_stack)
 
 	var mul := _get_shop_discount_multiplier()
 	var show_discount := mul < 0.999
 
+	# Build rows in a stable order so it feels consistent
+	var ids: Array[String] = []
 	for id_any in cart.keys():
 		var id := String(id_any)
-		var count := int(cart[id_any])
+		if int(cart[id_any]) > 0:
+			ids.append(id)
+	ids.sort()
+
+	for id in ids:
+		var count := int(cart.get(id, 0))
 		var item := _find_item_by_id(id)
 		if item.is_empty():
 			continue
 
-		var name := String(item.get("name", "Item"))
+		var display_name := String(item.get("name", "Item"))
 		var base_price := int(item.get("price", 0))
 
 		var base_line_total := base_price * count
-		var line := ""
+		var final_unit := _calc_discounted_unit_price(base_price)
+		var final_line_total := final_unit * count
 
-		if show_discount:
-			var final_unit := _calc_discounted_unit_price(base_price)
-			var final_line_total := final_unit * count
-			var savings :Variant= max(0, base_line_total - final_line_total)
+		var row = cart_row_scene.instantiate()
+		cart_stack.add_child(row)
 
-			if savings > 0:
-				# Example: "Apple x2 (30g → 28g)"
-				line = "%s x%d (%dg → %dg)" % [name, count, base_line_total, final_line_total]
-			else:
-				line = "%s x%d (%dg)" % [name, count, base_line_total]
+		row.button_group = _cart_group
+		row.toggle_mode = true
+		row.action_mode = BaseButton.ACTION_MODE_BUTTON_RELEASE
+
+		if row.has_method("set_data"):
+			row.call("set_data", id, display_name, count, base_line_total, final_line_total)
+
+		if row.has_signal("row_selected"):
+			row.connect("row_selected", Callable(self, "_on_cart_row_selected"))
 		else:
-			line = "%s x%d (%dg)" % [name, count, base_line_total]
+			row.pressed.connect(_on_cart_pressed_fallback.bind(id))
 
-		_cart_row_ids.append(id)
-		cart_list.add_item(line)
+		if id == _last_cart_selected_id:
+			row.button_pressed = true
 
-	# Try to restore selection
-	if previously_selected_id != "":
-		var row := _cart_row_ids.find(previously_selected_id)
-		if row != -1:
-			cart_list.select(row)
-		else:
-			_last_cart_selected_id = ""
-
-	# Total label (multi-line flourish)
+	# Total label (multi-line flourish like you already had)
 	var base_total := _compute_subtotal_base()
 	var final_total := _compute_total_discounted()
 	var savings_total :Variant= max(0, base_total - final_total)
@@ -200,45 +239,55 @@ func _refresh_cart() -> void:
 
 	_update_buttons()
 
+# -------------------------------------------------------------------
+# Selection handlers
+# -------------------------------------------------------------------
+func _on_shelf_card_selected(item_id: String) -> void:
+	_selected_shop_id = item_id
+	_update_buttons()
+
+func _on_shelf_pressed_fallback(item_id: String) -> void:
+	_selected_shop_id = item_id
+	_update_buttons()
+
+func _on_cart_row_selected(item_id: String) -> void:
+	_last_cart_selected_id = item_id
+	_update_buttons()
+
+func _on_cart_pressed_fallback(item_id: String) -> void:
+	_last_cart_selected_id = item_id
+	_update_buttons()
+
+# -------------------------------------------------------------------
+# Buttons
+# -------------------------------------------------------------------
 func _update_buttons() -> void:
-	var shop_has_selection := not shop_list.get_selected_items().is_empty()
-	var cart_has_selection := not cart_list.get_selected_items().is_empty()
+	var shop_has_selection := (_selected_shop_id != "")
+	var cart_has_selection := (_last_cart_selected_id != "")
 
 	add_button.disabled = not shop_has_selection
 	remove_button.disabled = not cart_has_selection
 
 	var cart_empty := cart.is_empty()
 
-	# IMPORTANT: affordability should use the discounted total the player will actually pay
 	var final_total := _compute_total_discounted()
 	var can_afford := MoneySystem.can_afford(final_total)
 
 	buy_button.disabled = cart_empty or not can_afford
 
-func _on_shop_selected(_index: int) -> void:
-	_update_buttons()
-
-func _on_cart_selected(index: int) -> void:
-	if index >= 0 and index < _cart_row_ids.size():
-		_last_cart_selected_id = _cart_row_ids[index]
-	_update_buttons()
-
 func _on_add_pressed() -> void:
-	var selected := shop_list.get_selected_items()
-	if selected.is_empty():
+	if _selected_shop_id == "":
 		return
 
-	var idx := int(selected[0])
-	if idx < 0 or idx >= shop_items.size():
+	# Validate it exists in shop
+	var item := _find_item_by_id(_selected_shop_id)
+	if item.is_empty():
+		_selected_shop_id = ""
+		_refresh_shop()
 		return
 
-	var item: Dictionary = shop_items[idx]
-	var id := String(item.get("id", ""))
-
-	if id == "":
-		return
-
-	cart[id] = int(cart.get(id, 0)) + 1
+	cart[_selected_shop_id] = int(cart.get(_selected_shop_id, 0)) + 1
+	_last_cart_selected_id = _selected_shop_id
 	_refresh_cart()
 
 func _on_remove_pressed() -> void:
@@ -264,17 +313,13 @@ func _on_buy_pressed() -> void:
 	if cart.is_empty():
 		return
 
-	# Charge the discounted amount (player pays what UI shows)
 	var final_total := _compute_total_discounted()
 	if not MoneySystem.can_afford(final_total):
 		return
 	if not MoneySystem.spend(final_total):
 		return
 
-	# Optional cozy toast showing savings (very low risk)
 	var savings := _compute_heart_savings()
-	
-	
 	if savings > 0:
 		var qe := get_node_or_null("/root/QuestEvents")
 		if qe != null and qe.has_signal("toast_requested"):
@@ -284,13 +329,13 @@ func _on_buy_pressed() -> void:
 	for id_any in cart.keys():
 		var id := String(id_any)
 		var count := int(cart[id_any])
-		var inv_name := id
-		GameState.inventory_add(inv_name, count)
-		QuestEvents.item_purchased.emit(inv_name, count)
+		GameState.inventory_add(id, count)
+		QuestEvents.item_purchased.emit(id, count)
 
 	play_buy_sfx()
 
 	cart.clear()
+	_last_cart_selected_id = ""
 	_refresh_cart()
 
 func play_buy_sfx() -> void:

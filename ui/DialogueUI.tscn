@@ -1,45 +1,70 @@
-[gd_scene load_steps=3 format=3 uid="uid://ded2abuo15uwh"]
+[gd_scene load_steps=4 format=3 uid="uid://ded2abuo15uwh"]
 
 [ext_resource type="Script" uid="uid://cewvrkc6o3hdl" path="res://scripts/DialogueUI.gd" id="1_vvl2g"]
 [ext_resource type="AudioStream" uid="uid://e7naj8iuf7u5" path="res://audio/sfx/sfx_talk_01.WAV" id="2_qe7eq"]
+[ext_resource type="Texture2D" uid="uid://cy1st5mk1v1h8" path="res://ui/portraits/sand-imageonline.co-merged.png" id="2_xda8i"]
 
 [node name="DialogueUI" type="CanvasLayer" groups=["dialogue_ui"]]
 script = ExtResource("1_vvl2g")
+default_portrait = ExtResource("2_xda8i")
 visual_node_path = NodePath("Box")
 start_visible_in_game = false
 is_modal = true
 
 [node name="Box" type="Panel" parent="."]
-visible = false
+custom_minimum_size = Vector2(600, 250)
 anchors_preset = 14
 anchor_top = 0.5
 anchor_right = 1.0
 anchor_bottom = 0.5
+offset_top = -125.0
+offset_bottom = 175.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBox" type="VBoxContainer" parent="Box"]
+[node name="Margin" type="MarginContainer" parent="Box"]
 layout_mode = 0
 offset_right = 40.0
 offset_bottom = 40.0
 
-[node name="NameLabel" type="Label" parent="Box/VBox"]
+[node name="Root" type="HBoxContainer" parent="Box/Margin"]
+layout_mode = 2
+
+[node name="PortraitCol" type="VBoxContainer" parent="Box/Margin/Root"]
+custom_minimum_size = Vector2(300, 250)
+layout_mode = 2
+
+[node name="PortraitFrame" type="TextureRect" parent="Box/Margin/Root/PortraitCol"]
+custom_minimum_size = Vector2(250, 250)
+layout_mode = 2
+
+[node name="Portrait" type="TextureRect" parent="Box/Margin/Root/PortraitCol/PortraitFrame"]
+custom_minimum_size = Vector2(250, 250)
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="FriendshipLabel" type="Label" parent="Box/Margin/Root/PortraitCol"]
+layout_mode = 2
+
+[node name="TextCol" type="VBoxContainer" parent="Box/Margin/Root"]
+custom_minimum_size = Vector2(600, 250)
+layout_mode = 2
+
+[node name="NameLabel" type="Label" parent="Box/Margin/Root/TextCol"]
 layout_mode = 2
 text = "Name"
 
-[node name="TextLabel" type="Label" parent="Box/VBox"]
+[node name="TextLabel" type="Label" parent="Box/Margin/Root/TextCol"]
 layout_mode = 2
 text = "Hello!"
 autowrap_mode = 2
 
-[node name="HintLabel" type="Label" parent="Box/VBox"]
+[node name="HintLabel" type="Label" parent="Box/Margin/Root/TextCol"]
 layout_mode = 2
 text = "E: Next   Esc: Close"
 
-[node name="FriendshipLabel" type="Label" parent="Box/VBox"]
-layout_mode = 2
-
-[node name="TextLabel2" type="RichTextLabel" parent="Box/VBox"]
+[node name="TextLabel2" type="RichTextLabel" parent="Box/Margin/Root/TextCol"]
 visible = false
 layout_mode = 2
 

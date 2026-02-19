@@ -1,13 +1,15 @@
-[gd_scene load_steps=5 format=3 uid="uid://d3rb2u1uqckiu"]
+[gd_scene load_steps=6 format=3 uid="uid://d3rb2u1uqckiu"]
 
 [ext_resource type="PackedScene" uid="uid://bfaurdf2mucr2" path="res://tscn/npcs/NPC.tscn" id="1_fhxrh"]
 [ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="2_3352h"]
+[ext_resource type="Texture2D" uid="uid://cd8rv8272flxi" path="res://ui/portraits/default_silhouette.png" id="2_lkteq"]
 [ext_resource type="Resource" uid="uid://cobll55ekqa7i" path="res://data/quests/lia_watermelon_help.tres" id="3_mxcg8"]
 [ext_resource type="Resource" uid="uid://dpyp6b7vm8uwb" path="res://data/gifts/gifts_lia.tres" id="4_udhro"]
 
 [node name="NPC" instance=ExtResource("1_fhxrh")]
 npc_id = "npc_lia"
 display_name = "Lia"
+portrait = ExtResource("2_lkteq")
 dialogue_lines = Array[String](["Have you ever stopped to smell the watermelon?", "They have the scent of a summer breeze and morning dew.", "S-Sorry, who are you?"])
 overhead_greeting_lines = Array[String](["Hello!"])
 overhead_idle_lines = Array[String](["Watermelons..."])

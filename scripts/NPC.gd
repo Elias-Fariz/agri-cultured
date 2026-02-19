@@ -3,6 +3,7 @@ extends CharacterBody2D
 @export var npc_id: String = "npc_mayor"
 
 @export var display_name: String
+@export var portrait: Texture2D
 @export var dialogue_lines: Array[String] = []
 
 @export var morning_dialogue_lines: Array[String] = []
@@ -154,7 +155,7 @@ func start_dialogue() -> void:
 			if lines.is_empty():
 				lines = ["Sorry, we’re closed right now. Come back tomorrow!"]
 
-			ui.show_dialogue(display_name, lines, f)
+			ui.show_dialogue(display_name, lines, f, npc_id)
 		else:
 			# Shop is open → show ShopUI overlay
 			var shop_ui := get_tree().get_first_node_in_group("shop_ui")
@@ -221,7 +222,7 @@ func start_dialogue() -> void:
 		QuestEvents.quest_state_changed.emit()
 		_update_quest_icon()
 
-		ui.show_dialogue(display_name, turnin_lines, f)
+		ui.show_dialogue(display_name, turnin_lines, f, npc_id)
 		return
 
 
@@ -236,7 +237,7 @@ func start_dialogue() -> void:
 		if offer_lines.is_empty():
 			offer_lines = ["Could you help me with something?"]
 
-		ui.show_dialogue(display_name, offer_lines, f)
+		ui.show_dialogue(display_name, offer_lines, f, npc_id)
 		return
 		
 	# --- QUEST PRIORITY 3: LOCKED BARK (low chance), else NORMAL DIALOGUE ---
@@ -246,7 +247,7 @@ func start_dialogue() -> void:
 			var bark_lines: Array[String] = locked_q.locked_lines
 			if bark_lines.is_empty():
 				bark_lines = ["Not yet… but soon."]  # tiny fallback
-			ui.show_dialogue(display_name, bark_lines, f)
+			ui.show_dialogue(display_name, bark_lines, f, npc_id)
 			return
 
 	# 3) If they already accepted a quest from this NPC, optionally show in-progress lines
@@ -260,16 +261,16 @@ func start_dialogue() -> void:
 				inprog_lines = qd.in_progress_lines
 			
 			if not qd.in_progress_lines.is_empty():
-				ui.show_dialogue(display_name, qd.in_progress_lines, f)
+				ui.show_dialogue(display_name, qd.in_progress_lines, f, npc_id)
 				return
 
 			if not inprog_lines.is_empty():
-				ui.show_dialogue(display_name, inprog_lines, f)
+				ui.show_dialogue(display_name, inprog_lines, f, npc_id)
 				return
 	
 	# If this NPC doesn’t have a quest attached, use normal dialogue.
 	if quest_id == "":
-		ui.show_dialogue(display_name, _get_time_based_dialogue(), f)
+		ui.show_dialogue(display_name, _get_time_based_dialogue(), f, npc_id)
 		return
 		
 	# --- Quest-aware behavior below ---
@@ -277,9 +278,9 @@ func start_dialogue() -> void:
 	# 1) Quest already active and not completed → in-progress lines
 	if GameState.active_quests.has(quest_id):
 		if quest_in_progress_lines.size() > 0:
-			ui.show_dialogue(display_name, quest_in_progress_lines, f)
+			ui.show_dialogue(display_name, quest_in_progress_lines, f, npc_id)
 		else:
-			ui.show_dialogue(display_name, dialogue_lines, f)
+			ui.show_dialogue(display_name, dialogue_lines, f, npc_id)
 		return
 
 	# 2) Quest completed and not yet claimed → thank + reward
@@ -295,31 +296,31 @@ func start_dialogue() -> void:
 			f = GameState.get_friendship(npc_id)
 
 			if quest_completed_lines.size() > 0:
-				ui.show_dialogue(display_name, quest_completed_lines, f)
+				ui.show_dialogue(display_name, quest_completed_lines, f, npc_id)
 			else:
-				ui.show_dialogue(display_name, ["Thank you so much for your help!"], f)
+				ui.show_dialogue(display_name, ["Thank you so much for your help!"], f, npc_id)
 		else:
 			# Already claimed, show “after” lines
 			if quest_after_thanks_lines.size() > 0:
-				ui.show_dialogue(display_name, quest_after_thanks_lines, f)
+				ui.show_dialogue(display_name, quest_after_thanks_lines, f, npc_id)
 			else:
-				ui.show_dialogue(display_name, dialogue_lines, f)
+				ui.show_dialogue(display_name, dialogue_lines, f, npc_id)
 		return
 
 	# 3) Quest not started yet → offer + automatically accept
 	var new_quest := _build_quest()
 	if new_quest.is_empty():
 		# Fallback to normal if something went wrong
-		ui.show_dialogue(display_name, dialogue_lines, f)
+		ui.show_dialogue(display_name, dialogue_lines, f, npc_id)
 		return
 
 	GameState.add_quest(new_quest)
 	_update_quest_icon()
 
 	if quest_request_lines.size() > 0:
-		ui.show_dialogue(display_name, quest_request_lines, f)
+		ui.show_dialogue(display_name, quest_request_lines, f, npc_id)
 	else:
-		ui.show_dialogue(display_name, dialogue_lines, f)
+		ui.show_dialogue(display_name, dialogue_lines, f, npc_id)
 
 func _build_quest() -> Dictionary:
 	if quest_id == "":
@@ -762,7 +763,7 @@ func receive_gift(item_id: String, qty: int = 1) -> void:
 	if ui and ui.has_method("show_dialogue"):
 		var f := GameState.get_friendship(npc_id)
 		var lines: Array[String] = _gift_reaction_lines(tier)
-		ui.show_dialogue(display_name, lines, f)
+		ui.show_dialogue(display_name, lines, f, npc_id)
 
 func _gift_reaction_tier(item_id: String) -> String:
 	if gift_prefs == null:

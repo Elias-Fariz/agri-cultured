@@ -58,9 +58,9 @@ Phase 3.5: Valley Heart
 
 Phase 3.99: UI Restructuring
 * Inventory *CHANGED TO ICONS AND GRID*
-* Townboard
-* Shop/Shipping
-* Dialogue
+* Townboard *MADE PAPER SLIPS*
+* Shop/Shipping *SHELF AND CART LIST*
+* Dialogue *AMAZING PORTRAITS!*
 * Calendar *SUNWAKE/DUSKHAVEN SEASON CYCLES*
 * World Cohesion
 
