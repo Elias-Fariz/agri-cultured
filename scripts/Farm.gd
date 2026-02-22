@@ -23,50 +23,50 @@ extends Node2D
 # - stages: atlas coords in crops.png
 # - days: how many days each stage lasts (final stage can be huge like 9999)
 # - harvest_item: what to add to inventory on harvest
-var crop_defs := {
-	"watermelon": {
-		"stages": [Vector2i(0,0), Vector2i(1,0), Vector2i(2,0)],
-		"days":   [1, 1, 9999],
-		"harvest_item": "Watermelon",
-		"harvest_yield": 1,
-	},
-
-	"blueberry": {
-		"stages": [Vector2i(0,1), Vector2i(1,1), Vector2i(2,1), Vector2i(3,1)],
-		"days":   [1, 1, 1, 9999],
-		"harvest_item": "Blueberry",
-		"harvest_yield_min": 2,
-		"harvest_yield_max": 4,
-		"regrow_to_stage": 2,
-		"regrow_days": 1,
-	},
-
-	"strawberry": {
-		"stages": [Vector2i(0,2), Vector2i(1,2), Vector2i(2,2), Vector2i(3,2)],
-		"days":   [1, 1, 1, 9999],
-		"harvest_item": "Strawberry",
-		"harvest_yield": 1,
-		"regrow_to_stage": 1,
-		"regrow_days": 1,
-	},
-
-	"avocado": {
-		"stages": [Vector2i(0,3), Vector2i(1,3), Vector2i(2,3)],
-		"days":   [2, 2, 9999],
-		"harvest_items_by_stage": {
-			1: "Avocado",
-			2: "Overripe Avocado",
-		},
-		"harvest_yields_by_stage": {
-			1: 1,
-			2: 1,
-		},
-		"harvestable_stages": [1, 2],
-		"ignore_water_after_stage": 1,
-		"ripe_stage": 1,
-		"overripe_stage": 2,
-	},
-}
+#var crop_defs := {
+	#"watermelon": {
+		#"stages": [Vector2i(0,0), Vector2i(1,0), Vector2i(2,0)],
+		#"days":   [1, 1, 9999],
+		#"harvest_item": "Watermelon",
+		#"harvest_yield": 1,
+	#},
+#
+	#"blueberry": {
+		#"stages": [Vector2i(0,1), Vector2i(1,1), Vector2i(2,1), Vector2i(3,1)],
+		#"days":   [1, 1, 1, 9999],
+		#"harvest_item": "Blueberry",
+		#"harvest_yield_min": 2,
+		#"harvest_yield_max": 4,
+		#"regrow_to_stage": 2,
+		#"regrow_days": 1,
+	#},
+#
+	#"strawberry": {
+		#"stages": [Vector2i(0,2), Vector2i(1,2), Vector2i(2,2), Vector2i(3,2)],
+		#"days":   [1, 1, 1, 9999],
+		#"harvest_item": "Strawberry",
+		#"harvest_yield": 1,
+		#"regrow_to_stage": 1,
+		#"regrow_days": 1,
+	#},
+#
+	#"avocado": {
+		#"stages": [Vector2i(0,3), Vector2i(1,3), Vector2i(2,3)],
+		#"days":   [2, 2, 9999],
+		#"harvest_items_by_stage": {
+			#1: "Avocado",
+			#2: "Overripe Avocado",
+		#},
+		#"harvest_yields_by_stage": {
+			#1: 1,
+			#2: 1,
+		#},
+		#"harvestable_stages": [1, 2],
+		#"ignore_water_after_stage": 1,
+		#"ripe_stage": 1,
+		#"overripe_stage": 2,
+	#},
+#}
 
 # crop_state[cell] = { "type": String, "stage": int, "days_left": int }
 var crop_state: Dictionary = {}
@@ -296,8 +296,10 @@ func _hit_destructible(cell: Vector2i, key: String) -> void:
 func _try_plant_crop_return_success(crop_name: String) -> bool:
 	if GameState.is_gameplay_locked():
 		return false
-	if not crop_defs.has(crop_name):
-		print("Unknown crop: ", crop_name)
+
+	var crop := CropDb.get_crop(crop_name) if CropDb != null else null
+	if crop == null or not crop.is_valid():
+		print("Unknown/invalid crop: ", crop_name)
 		return false
 
 	var player_cell: Vector2i = ground.local_to_map(ground.to_local(player.global_position))
@@ -318,16 +320,22 @@ func _try_plant_crop_return_success(crop_name: String) -> bool:
 		print("Something already on that tile.")
 		return false
 
-	var def: Dictionary = crop_defs[crop_name]
-	var stages: Array = def["stages"]
-	var days: Array = def["days"]
+	# Optional: gentle seasonal gating (OFF by default if allowed_seasons has both)
+	var season_name :Variant= CalendarSystem.season if CalendarSystem != null else "Sunwake"
+	if not CropDb.is_allowed_in_season(crop, season_name):
+		print("This crop doesn't like this season:", season_name)
+		return false
 
-	objects.set_cell(0, cell, crops_source_id, stages[0])
+	# Place stage 0 tile
+	var stage0 := crop.stage_atlas_coords[0]
+	objects.set_cell(0, cell, crop.tile_source_id, stage0)
+
+	var days0 := CropDb.get_effective_stage_days(crop, 0, season_name)
 
 	crop_state[cell] = {
 		"type": crop_name,
 		"stage": 0,
-		"days_left": int(days[0])
+		"days_left": int(days0)
 	}
 
 	print("Planted ", crop_name, " at ", cell)
@@ -336,23 +344,21 @@ func _try_plant_crop_return_success(crop_name: String) -> bool:
 	return true
 
 func _advance_all_crops_one_day(raining: bool = false) -> void:
-	var cells := crop_state.keys()
+	var season_name :Variant= CalendarSystem.season if CalendarSystem != null else "Sunwake"
 
+	var cells := crop_state.keys()
 	for cell in cells:
 		var data: Dictionary = crop_state[cell]
-		var crop_name := String(data["type"])
+		var crop_name := String(data.get("type", ""))
 
-		if not crop_defs.has(crop_name):
+		var crop := CropDb.get_crop(crop_name) if CropDb != null else null
+		if crop == null or not crop.is_valid():
 			continue
 
-		var def: Dictionary = crop_defs[crop_name]
-		var stages: Array = def["stages"]
-		var days: Array = def["days"]
-
-		var stage: int = int(data["stage"])
+		var stage: int = int(data.get("stage", 0))
 		var watered := (raining or is_cell_watered(cell))
 
-		var ignore_after := int(def.get("ignore_water_after_stage", -1))
+		var ignore_after := int(crop.ignore_water_after_stage)
 		var needs_water := true
 		if ignore_after != -1 and stage >= ignore_after:
 			needs_water = false
@@ -360,7 +366,13 @@ func _advance_all_crops_one_day(raining: bool = false) -> void:
 		if needs_water and not watered:
 			continue
 
-		var days_left: int = int(data["days_left"]) - 1
+		# Duskhaven "chill day" (soft slowdown, not constant punishment)
+		if CropDb != null and CropDb.should_chill_today(crop, season_name):
+			# Still keep indicator updated (optional)
+			_update_crop_indicator(cell)
+			continue
+
+		var days_left: int = int(data.get("days_left", 1)) - 1
 		data["days_left"] = days_left
 
 		if days_left > 0:
@@ -369,20 +381,20 @@ func _advance_all_crops_one_day(raining: bool = false) -> void:
 
 		var next_stage := stage + 1
 
-		if next_stage >= stages.size():
-			data["stage"] = stages.size() - 1
+		if next_stage >= crop.stage_atlas_coords.size():
+			data["stage"] = crop.stage_atlas_coords.size() - 1
 			data["days_left"] = 9999
 			crop_state[cell] = data
 			continue
 
 		data["stage"] = next_stage
-		data["days_left"] = int(days[next_stage])
+		data["days_left"] = CropDb.get_effective_stage_days(crop, next_stage, season_name)
 		crop_state[cell] = data
 
-		objects.set_cell(0, cell, crops_source_id, stages[next_stage])
+		objects.set_cell(0, cell, crop.tile_source_id, crop.stage_atlas_coords[next_stage])
 
 		print(crop_name, " grew to stage ", next_stage, " at ", cell,
-			" (watered=", watered, ", needs_water=", needs_water, ")")
+			" (watered=", watered, ", needs_water=", needs_water, ", season=", season_name, ")")
 
 		_update_crop_indicator(cell)
 
@@ -409,48 +421,31 @@ func _is_crop_harvestable(cell: Vector2i) -> bool:
 		return false
 
 	var data: Dictionary = crop_state[cell]
-	var crop_name := String(data["type"])
-	if not crop_defs.has(crop_name):
+	var crop_name := String(data.get("type", ""))
+	var crop := CropDb.get_crop(crop_name) if CropDb != null else null
+	if crop == null or not crop.is_valid():
 		return false
 
-	var def: Dictionary = crop_defs[crop_name]
-	var stage: int = int(data["stage"])
+	var stage: int = int(data.get("stage", 0))
 
-	if def.has("harvestable_stages"):
-		var hs: Array = def["harvestable_stages"]
-		return hs.has(stage)
+	if not crop.harvestable_stages.is_empty():
+		return crop.harvestable_stages.has(stage)
 
-	var stages: Array = def["stages"]
-	return stage >= (stages.size() - 1)
+	return stage >= (crop.stage_atlas_coords.size() - 1)
 
 func _harvest_crop(cell: Vector2i) -> void:
+	var season_name :Variant= CalendarSystem.season if CalendarSystem != null else "Sunwake"
+
 	var data: Dictionary = crop_state[cell]
-	var crop_name := String(data["type"])
-	var def: Dictionary = crop_defs[crop_name]
-	var stage: int = int(data["stage"])
+	var crop_name := String(data.get("type", ""))
+	var crop := CropDb.get_crop(crop_name) if CropDb != null else null
+	if crop == null or not crop.is_valid():
+		return
 
-	var item_name: String = ""
-	var qty: int = 1
+	var stage: int = int(data.get("stage", 0))
 
-	if def.has("harvest_items_by_stage"):
-		var hib: Dictionary = def["harvest_items_by_stage"]
-		item_name = String(hib.get(stage, ""))
-	else:
-		item_name = String(def.get("harvest_item", ""))
-
-	if def.has("harvest_yields_by_stage"):
-		var hyb: Dictionary = def["harvest_yields_by_stage"]
-		qty = int(hyb.get(stage, 1))
-	elif def.has("harvest_yield_min") and def.has("harvest_yield_max"):
-		var mn := int(def["harvest_yield_min"])
-		var mx := int(def["harvest_yield_max"])
-		if mx < mn:
-			var tmp := mn
-			mn = mx
-			mx = tmp
-		qty = randi_range(mn, mx)
-	else:
-		qty = int(def.get("harvest_yield", 1))
+	var item_name := CropDb.get_harvest_item(crop, stage) if CropDb != null else ""
+	var qty := CropDb.get_harvest_yield(crop, stage, season_name) if CropDb != null else 1
 
 	if item_name == "":
 		print("Harvest failed: no harvest item defined for crop:", crop_name, " stage:", stage)
@@ -464,16 +459,16 @@ func _harvest_crop(cell: Vector2i) -> void:
 	_play_sfx(sfx_harvest, _cell_to_world_center(cell))
 	player.camera_shake(1.5, 0.08, 28.0, 12.0)
 
-	if def.has("regrow_to_stage"):
-		var regrow_stage := int(def["regrow_to_stage"])
-		var regrow_days := int(def.get("regrow_days", 1))
+	# Regrow support
+	if crop.regrow_to_stage >= 0:
+		var regrow_stage := int(crop.regrow_to_stage)
+		var regrow_days := int(crop.regrow_days)
 
 		data["stage"] = regrow_stage
-		data["days_left"] = regrow_days
+		data["days_left"] = max(1, regrow_days)
 		crop_state[cell] = data
 
-		var stages: Array = def["stages"]
-		objects.set_cell(0, cell, crops_source_id, stages[regrow_stage])
+		objects.set_cell(0, cell, crop.tile_source_id, crop.stage_atlas_coords[regrow_stage])
 		print("Regrow: set ", crop_name, " back to stage ", regrow_stage, " for ", regrow_days, " day(s).")
 		_update_crop_indicator(cell)
 		return
@@ -622,22 +617,17 @@ func _get_crop_readiness(cell: Vector2i) -> String:
 	var crop_name := String(data.get("type", ""))
 	var stage := int(data.get("stage", 0))
 
-	if not crop_defs.has(crop_name):
+	var crop := CropDb.get_crop(crop_name) if CropDb != null else null
+	if crop == null or not crop.is_valid():
 		return ""
 
-	var def: Dictionary = crop_defs[crop_name]
-	var stages: Array = def["stages"]
-	var final_stage := stages.size() - 1
-
-	var ripe_stage := int(def.get("ripe_stage", final_stage))
-	var overripe_stage := int(def.get("overripe_stage", -1))
+	var ripe_stage := CropDb.get_ripe_stage(crop) if CropDb != null else (crop.stage_atlas_coords.size() - 1)
+	var overripe_stage := CropDb.get_overripe_stage(crop) if CropDb != null else -1
 
 	if overripe_stage >= 0 and stage >= overripe_stage:
 		return "overripe"
-
 	if stage >= ripe_stage:
 		return "ripe"
-
 	return ""
 
 func _update_crop_indicator(cell: Vector2i) -> void:

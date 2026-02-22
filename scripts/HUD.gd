@@ -12,12 +12,24 @@ extends BaseOverlay
 @onready var tool_label: Label = $TopRightPanel/VBoxContainer/ToolLabel
 @onready var money_label: Label = $TopRightPanel/VBoxContainer/MoneyLabel
 
+# NEW (safe): calendar label (won’t crash if you haven’t added it yet)
+@onready var calendar_label: Label = get_node_or_null("TopRightPanel/VBoxContainer/CalendarLabel") as Label
+
 
 func _ready() -> void:
 	super._ready()
 	_refresh()
+
 	TimeManager.time_changed.connect(func(_m): _refresh())
 	TimeManager.day_changed.connect(func(_d): _refresh())
+
+	# CalendarSystem is optional: only hook if it exists
+	if CalendarSystem != null:
+		if CalendarSystem.has_signal("calendar_changed"):
+			CalendarSystem.calendar_changed.connect(_refresh)
+		if CalendarSystem.has_signal("season_changed"):
+			CalendarSystem.season_changed.connect(func(_s): _refresh())
+
 	_update_money_label(MoneySystem.current_money)
 	MoneySystem.money_changed.connect(_update_money_label)
 
@@ -26,7 +38,7 @@ func _process(_delta: float) -> void:
 	# Simple approach: update every frame so it always reflects energy changes
 	energy_label.text = "Energy: %d/%d" % [GameState.energy, GameState.max_energy]
 	tool_label.text = "Tool: %s" % GameState.get_tool_name()
-	
+
 	var ratio := 0.0
 	if GameState.max_energy > 0:
 		ratio = float(GameState.energy) / float(GameState.max_energy)
@@ -40,12 +52,23 @@ func _process(_delta: float) -> void:
 	else:
 		warning_label.visible = false
 
+
 func _update_money_label(amount: int) -> void:
 	money_label.text = "Gold: %d" % amount
+
 
 func _refresh() -> void:
 	time_label.text = TimeManager.get_time_string()
 	day_label.text = "Day %d" % TimeManager.day
+
+	# NEW: calendar display (season/week/day-of-week)
+	if calendar_label != null:
+		if CalendarSystem != null and CalendarSystem.has_method("get_calendar_string_short"):
+			# Example: "Sunwake • W2 • Thu"
+			calendar_label.text = CalendarSystem.get_calendar_string_short()
+		else:
+			calendar_label.text = ""
+
 
 func _enable_ui_on_play(node: CanvasItem) -> void:
 	if Engine.is_editor_hint():

@@ -62,7 +62,14 @@ Phase 3.99: UI Restructuring
 * Shop/Shipping *SHELF AND CART LIST*
 * Dialogue *AMAZING PORTRAITS!*
 * Calendar *SUNWAKE/DUSKHAVEN SEASON CYCLES*
+* Crops *TURNED INTO RESOURCES*
 * World Cohesion
+
+Phase 3.999: Season Development
+* Sunwake/Duskhaven *AUTOLOADED*
+* Toasts
+* Shop Catalogs
+* Seasonal Differences
 
 Phase 4: Inventory/UI Polish
 

@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="CropData" load_steps=2 format=3 uid="uid://dn5ppf46kpq0b"]
+
+[ext_resource type="Script" uid="uid://cmbjjvs5dc80" path="res://data/crops/CropData.gd" id="1_2pup6"]
+
+[resource]
+script = ExtResource("1_2pup6")
+crop_id = "avocado"
+display_name = "Avocado"
+stage_atlas_coords = Array[Vector2i]([Vector2i(0, 3), Vector2i(1, 3), Vector2i(2, 3)])
+days_per_stage = Array[int]([2, 2, 9999])
+ignore_water_after_stage = 1
+harvestable_stages = Array[int]([1, 2])
+harvest_items_by_stage = {
+1: "Avocado",
+2: "Overripe Avocado"
+}
+ripe_stage = 1
+overripe_stage = 2
+metadata/_custom_type_script = "uid://cmbjjvs5dc80"

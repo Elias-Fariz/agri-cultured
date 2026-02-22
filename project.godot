@@ -28,6 +28,8 @@ GuidanceNudger="*res://autoloads/GuidanceNudger.gd"
 ToolSystem="*res://autoloads/ToolSystem.gd"
 CutsceneDirector="*res://autoloads/CutsceneDirector.gd"
 FadeOverlay="*res://autoloads/FadeOverlay.gd"
+CropDb="*res://autoloads/CropDb.tscn"
+CalendarSystem="*res://autoloads/CalendarSystem.tscn"
 
 [input]
 

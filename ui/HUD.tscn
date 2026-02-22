@@ -26,6 +26,9 @@ layout_mode = 2
 [node name="DayLabel" type="Label" parent="TopRightPanel/VBoxContainer"]
 layout_mode = 2
 
+[node name="CalendarLabel" type="Label" parent="TopRightPanel/VBoxContainer"]
+layout_mode = 2
+
 [node name="EnergyLabel" type="Label" parent="TopRightPanel/VBoxContainer"]
 layout_mode = 2
 text = "Energy: 5/5"

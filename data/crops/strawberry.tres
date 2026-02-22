@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="CropData" load_steps=2 format=3 uid="uid://cf07vhmff4cvl"]
+
+[ext_resource type="Script" uid="uid://cmbjjvs5dc80" path="res://data/crops/CropData.gd" id="1_b3eid"]
+
+[resource]
+script = ExtResource("1_b3eid")
+crop_id = "strawberry"
+display_name = "Strawberry"
+stage_atlas_coords = Array[Vector2i]([Vector2i(0, 2), Vector2i(1, 2), Vector2i(2, 2), Vector2i(3, 2)])
+days_per_stage = Array[int]([1, 1, 1, 9999])
+harvest_item = "Strawberry"
+regrow_to_stage = 1
+metadata/_custom_type_script = "uid://cmbjjvs5dc80"

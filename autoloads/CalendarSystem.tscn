@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://cctpuew1452ma"]
+
+[ext_resource type="Script" uid="uid://c3r1rx2khtf6q" path="res://autoloads/CalendarSystem.gd" id="1_ao7us"]
+
+[node name="Node" type="Node"]
+script = ExtResource("1_ao7us")

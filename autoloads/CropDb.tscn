@@ -1,0 +1,12 @@
+[gd_scene load_steps=7 format=3 uid="uid://cybu1x7apco0x"]
+
+[ext_resource type="Script" uid="uid://ce47k2smfx081" path="res://autoloads/CropDb.gd" id="1_6kf2c"]
+[ext_resource type="Script" uid="uid://cmbjjvs5dc80" path="res://data/crops/CropData.gd" id="2_2n75j"]
+[ext_resource type="Resource" uid="uid://dn5ppf46kpq0b" path="res://data/crops/avocado.tres" id="3_hyhmg"]
+[ext_resource type="Resource" uid="uid://bqfq72qldqx62" path="res://data/crops/blueberry.tres" id="4_dcq3g"]
+[ext_resource type="Resource" uid="uid://cf07vhmff4cvl" path="res://data/crops/strawberry.tres" id="5_prl3t"]
+[ext_resource type="Resource" uid="uid://blcs605jkyc5e" path="res://data/crops/watermelon.tres" id="6_q2rma"]
+
+[node name="Node" type="Node"]
+script = ExtResource("1_6kf2c")
+crops = Array[ExtResource("2_2n75j")]([ExtResource("3_hyhmg"), ExtResource("4_dcq3g"), ExtResource("5_prl3t"), ExtResource("6_q2rma")])
