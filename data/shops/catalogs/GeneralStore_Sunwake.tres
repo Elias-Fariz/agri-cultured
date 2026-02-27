@@ -1,0 +1,46 @@
+[gd_resource type="Resource" script_class="ShopCatalogData" load_steps=7 format=3 uid="uid://chft82r6khxka"]
+
+[ext_resource type="Script" uid="uid://4jj3qeingotk" path="res://data/shops/ShopCatalogData.gd" id="1_uasli"]
+[ext_resource type="Script" uid="uid://bevaiudfi1jy0" path="res://data/shops/ShopCatalogEntry.gd" id="2_hoy6q"]
+
+[sub_resource type="Resource" id="Resource_hoy6q"]
+script = ExtResource("2_hoy6q")
+item_id = "Watermelon Seeds"
+display_name_override = "Watermelon Seeds"
+base_price = 10
+requires_completed_quests = null
+tags = PackedStringArray("seed")
+metadata/_custom_type_script = "uid://bevaiudfi1jy0"
+
+[sub_resource type="Resource" id="Resource_3eow7"]
+script = ExtResource("2_hoy6q")
+item_id = "Blueberry Seeds"
+display_name_override = "Blueberry Seeds"
+base_price = 25
+requires_completed_quests = PackedStringArray("tutorial_day1")
+tags = PackedStringArray("seed")
+metadata/_custom_type_script = "uid://bevaiudfi1jy0"
+
+[sub_resource type="Resource" id="Resource_405d8"]
+script = ExtResource("2_hoy6q")
+item_id = "Animal Feed"
+display_name_override = "Animal Feed"
+base_price = 5
+requires_completed_quests = null
+tags = PackedStringArray()
+metadata/_custom_type_script = "uid://bevaiudfi1jy0"
+
+[sub_resource type="Resource" id="Resource_dobpl"]
+script = ExtResource("2_hoy6q")
+item_id = "Apple"
+display_name_override = "Apple"
+base_price = 15
+requires_completed_quests = null
+tags = null
+metadata/_custom_type_script = "uid://bevaiudfi1jy0"
+
+[resource]
+script = ExtResource("1_uasli")
+season = 0
+entries = Array[ExtResource("2_hoy6q")]([SubResource("Resource_hoy6q"), SubResource("Resource_3eow7"), SubResource("Resource_405d8"), SubResource("Resource_dobpl")])
+metadata/_custom_type_script = "uid://4jj3qeingotk"

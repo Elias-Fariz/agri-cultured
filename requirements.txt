@@ -67,9 +67,16 @@ Phase 3.99: UI Restructuring
 
 Phase 3.999: Season Development
 * Sunwake/Duskhaven *AUTOLOADED*
-* Toasts
-* Shop Catalogs
+* Toasts *ADDED*
+* Shop Catalogs *CREATED RESOURCES*
 * Seasonal Differences
+** Shop Text
+** Dialogue Variants
+** Ambience
+* Beta Loop
+** Festival Scaffold/Template
+** Forage Spawning
+** Save System
 
 Phase 4: Inventory/UI Polish
 

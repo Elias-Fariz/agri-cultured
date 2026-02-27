@@ -2,5 +2,5 @@
 
 [ext_resource type="Script" uid="uid://c3r1rx2khtf6q" path="res://autoloads/CalendarSystem.gd" id="1_ao7us"]
 
-[node name="Node" type="Node"]
+[node name="CalendarSystem" type="Node"]
 script = ExtResource("1_ao7us")

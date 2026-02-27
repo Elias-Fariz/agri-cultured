@@ -19,17 +19,12 @@ extends BaseOverlay
 @export var shelf_card_scene: PackedScene = preload("res://tscn/ShelfItemCard.tscn")
 @export var cart_row_scene: PackedScene = preload("res://tscn/CartItemRow.tscn")
 
-# Simple stock: each item has an id, name, and price
-var shop_items: Array = [
-	{ "id": "Watermelon Seeds", "name": "Watermelon Seeds", "price": 10 },
-	{ "id": "Blueberry Seeds", "name": "Blueberry Seeds", "price": 25 },
-	{ "id": "Strawberry Seeds", "name": "Strawberry Seeds", "price": 20 },
-	{ "id": "Avocado Seeds", "name": "Avocado Seeds", "price": 40 },
-	{ "id": "Watermelon", "name": "Watermelon", "price": 60 },
-	{ "id": "Wood", "name": "Bundle of Wood", "price": 10 },
-	{ "id": "Animal Feed", "name": "All-Purpose Animal Feed", "price": 5 },
-	{ "id": "Apple", "name": "Energizing Apple", "price": 15 },
-]
+# Which shop is this UI representing?
+@export var shop_id: String = "GeneralStore"
+
+# Loaded from ShopCatalogDb; same shape as before:
+# [{ "id": "...", "name": "...", "price": 10 }, ...]
+var shop_items: Array = []
 
 # cart[item_id] = count
 var cart: Dictionary = {}
@@ -103,13 +98,26 @@ func _ready() -> void:
 	remove_button.pressed.connect(_on_remove_pressed)
 	buy_button.pressed.connect(_on_buy_pressed)
 
+	_reload_catalog()
 	_refresh_shop()
 	_refresh_cart()
 
 func show_overlay() -> void:
 	super.show_overlay()
+	_reload_catalog()
 	_refresh_shop()
 	_refresh_cart()
+
+func _reload_catalog() -> void:
+	# Pull items from ShopCatalogDb (preferred).
+	if ShopCatalogDb != null and ShopCatalogDb.has_method("get_shop_items"):
+		shop_items = ShopCatalogDb.get_shop_items(shop_id)
+	else:
+		shop_items = []
+
+	# If the current selection is no longer in the catalog, clear it
+	if _selected_shop_id != "" and _find_item_by_id(_selected_shop_id).is_empty():
+		_selected_shop_id = ""
 
 func _find_item_by_id(item_id: String) -> Dictionary:
 	for item_any in shop_items:
@@ -138,8 +146,6 @@ func _clear_children(n: Node) -> void:
 func _refresh_shop() -> void:
 	_clear_children(shop_wrap)
 
-	var mul := _get_shop_discount_multiplier()
-
 	for item_any in shop_items:
 		var item: Dictionary = item_any
 		var id := String(item.get("id", ""))
@@ -155,23 +161,18 @@ func _refresh_shop() -> void:
 		var card = shelf_card_scene.instantiate()
 		shop_wrap.add_child(card)
 
-		# Safe typed call (works even if you didn’t class_name it)
 		card.button_group = _shop_group
 		card.toggle_mode = true
 		card.action_mode = BaseButton.ACTION_MODE_BUTTON_RELEASE
 
-		# Fill data
 		if card.has_method("set_data"):
 			card.call("set_data", id, display_name, base_price, final_unit, icon)
 
-		# Connect selection
 		if card.has_signal("card_selected"):
 			card.connect("card_selected", Callable(self, "_on_shelf_card_selected"))
 		else:
-			# Fallback: use pressed
 			card.pressed.connect(_on_shelf_pressed_fallback.bind(id))
 
-		# Restore visual selection if needed
 		if id == _selected_shop_id:
 			card.button_pressed = true
 
@@ -183,7 +184,6 @@ func _refresh_cart() -> void:
 	var mul := _get_shop_discount_multiplier()
 	var show_discount := mul < 0.999
 
-	# Build rows in a stable order so it feels consistent
 	var ids: Array[String] = []
 	for id_any in cart.keys():
 		var id := String(id_any)
@@ -222,10 +222,9 @@ func _refresh_cart() -> void:
 		if id == _last_cart_selected_id:
 			row.button_pressed = true
 
-	# Total label (multi-line flourish like you already had)
 	var base_total := _compute_subtotal_base()
 	var final_total := _compute_total_discounted()
-	var savings_total :Variant= max(0, base_total - final_total)
+	var savings_total: Variant = max(0, base_total - final_total)
 
 	if show_discount and savings_total > 0:
 		total_label.text = "Total: %dg\nValley Heart Blessing (x%.2f): -%dg\nYou pay: %dg" % [
@@ -279,7 +278,6 @@ func _on_add_pressed() -> void:
 	if _selected_shop_id == "":
 		return
 
-	# Validate it exists in shop
 	var item := _find_item_by_id(_selected_shop_id)
 	if item.is_empty():
 		_selected_shop_id = ""
@@ -325,7 +323,6 @@ func _on_buy_pressed() -> void:
 		if qe != null and qe.has_signal("toast_requested"):
 			QuestEvents.toast_requested.emit("Valley Heart Blessing saved you %dg today." % savings, "success", 2.5)
 
-	# Give items to player
 	for id_any in cart.keys():
 		var id := String(id_any)
 		var count := int(cart[id_any])

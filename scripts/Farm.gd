@@ -344,7 +344,7 @@ func _try_plant_crop_return_success(crop_name: String) -> bool:
 	return true
 
 func _advance_all_crops_one_day(raining: bool = false) -> void:
-	var season_name :Variant= CalendarSystem.season if CalendarSystem != null else "Sunwake"
+	var season_name :Variant= CalendarSystem.get_season_name()
 
 	var cells := crop_state.keys()
 	for cell in cells:

@@ -46,11 +46,12 @@ layout_mode = 2
 text = "Available"
 
 [node name="AvailableScroll" type="ScrollContainer" parent="Panel/Margin/Root/BodyRow/LeftCol"]
-custom_minimum_size = Vector2(0, 200)
+custom_minimum_size = Vector2(400, 400)
 layout_mode = 2
 size_flags_vertical = 3
 
 [node name="AvailableWrap" type="FlowContainer" parent="Panel/Margin/Root/BodyRow/LeftCol/AvailableScroll"]
+custom_minimum_size = Vector2(400, 400)
 layout_mode = 2
 
 [node name="AcceptButton" type="Button" parent="Panel/Margin/Root/BodyRow/LeftCol"]

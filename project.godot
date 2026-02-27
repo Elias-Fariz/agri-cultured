@@ -30,6 +30,7 @@ CutsceneDirector="*res://autoloads/CutsceneDirector.gd"
 FadeOverlay="*res://autoloads/FadeOverlay.gd"
 CropDb="*res://autoloads/CropDb.tscn"
 CalendarSystem="*res://autoloads/CalendarSystem.tscn"
+ShopCatalogDb="*res://autoloads/ShopCatalogDb.tscn"
 
 [input]
 

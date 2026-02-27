@@ -1,0 +1,10 @@
+[gd_scene load_steps=5 format=3 uid="uid://b8yltd2mkctdr"]
+
+[ext_resource type="Script" uid="uid://bbtnyd7u6gpnt" path="res://autoloads/ShopCatalogDb.gd" id="1_6okg6"]
+[ext_resource type="Script" uid="uid://4jj3qeingotk" path="res://data/shops/ShopCatalogData.gd" id="2_u3uj7"]
+[ext_resource type="Resource" uid="uid://chft82r6khxka" path="res://data/shops/catalogs/GeneralStore_Sunwake.tres" id="3_3dmw3"]
+[ext_resource type="Resource" uid="uid://dbcyx8wyj57r0" path="res://data/shops/catalogs/GeneralStore_Duskhaven.tres" id="4_2rlce"]
+
+[node name="Node" type="Node"]
+script = ExtResource("1_6okg6")
+catalogs = Array[ExtResource("2_u3uj7")]([ExtResource("3_3dmw3"), ExtResource("4_2rlce")])

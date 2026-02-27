@@ -1,0 +1,46 @@
+[gd_resource type="Resource" script_class="ShopCatalogData" load_steps=7 format=3 uid="uid://dbcyx8wyj57r0"]
+
+[ext_resource type="Script" uid="uid://4jj3qeingotk" path="res://data/shops/ShopCatalogData.gd" id="1_tqei2"]
+[ext_resource type="Script" uid="uid://bevaiudfi1jy0" path="res://data/shops/ShopCatalogEntry.gd" id="1_vy5ia"]
+
+[sub_resource type="Resource" id="Resource_hoy6q"]
+script = ExtResource("1_vy5ia")
+item_id = "Strawberry Seeds"
+display_name_override = "Strawberry Seeds"
+base_price = 20
+requires_completed_quests = null
+tags = PackedStringArray("seed")
+metadata/_custom_type_script = "uid://bevaiudfi1jy0"
+
+[sub_resource type="Resource" id="Resource_vy5ia"]
+script = ExtResource("1_vy5ia")
+item_id = "Avocado Seeds"
+display_name_override = "Avocado Seeds"
+base_price = 40
+requires_completed_quests = null
+tags = PackedStringArray("seed")
+metadata/_custom_type_script = "uid://bevaiudfi1jy0"
+
+[sub_resource type="Resource" id="Resource_lke6g"]
+script = ExtResource("1_vy5ia")
+item_id = "Animal Feed"
+display_name_override = "Animal Feed"
+base_price = 10
+requires_completed_quests = null
+tags = null
+metadata/_custom_type_script = "uid://bevaiudfi1jy0"
+
+[sub_resource type="Resource" id="Resource_el734"]
+script = ExtResource("1_vy5ia")
+item_id = "Apple"
+display_name_override = "Apple"
+base_price = 20
+requires_completed_quests = null
+tags = null
+metadata/_custom_type_script = "uid://bevaiudfi1jy0"
+
+[resource]
+script = ExtResource("1_tqei2")
+season = 1
+entries = Array[ExtResource("1_vy5ia")]([SubResource("Resource_hoy6q"), SubResource("Resource_vy5ia"), SubResource("Resource_lke6g"), SubResource("Resource_el734")])
+metadata/_custom_type_script = "uid://4jj3qeingotk"

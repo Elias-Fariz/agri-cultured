@@ -1,0 +1,95 @@
+[gd_scene load_steps=5 format=3 uid="uid://dexrjrr1c8jfb"]
+
+[ext_resource type="Script" uid="uid://cq2f6i4fxuiu1" path="res://scripts/ShopUI.gd" id="1_p8e25"]
+[ext_resource type="AudioStream" uid="uid://dn6qldyiomxpv" path="res://audio/sfx/sfx_money_01.WAV" id="2_hbhm7"]
+[ext_resource type="AudioStream" uid="uid://b3rk55uri4r3q" path="res://audio/sfx/sfx_money_02.WAV" id="3_n586u"]
+[ext_resource type="AudioStream" uid="uid://bnt8rhl1uc6c8" path="res://audio/sfx/sfx_money_03.WAV" id="4_cl8rv"]
+
+[node name="ShopUI" type="CanvasLayer" groups=["shop_ui"]]
+script = ExtResource("1_p8e25")
+buy_sounds = Array[AudioStream]([ExtResource("2_hbhm7"), ExtResource("3_n586u"), ExtResource("4_cl8rv")])
+visual_node_path = NodePath("Panel")
+start_visible_in_game = false
+is_modal = true
+
+[node name="Panel" type="PanelContainer" parent="."]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Margin" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+
+[node name="Root" type="VBoxContainer" parent="Panel/Margin"]
+layout_mode = 2
+
+[node name="HeaderRow" type="HBoxContainer" parent="Panel/Margin/Root"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="Panel/Margin/Root/HeaderRow"]
+layout_mode = 2
+text = "General Store"
+
+[node name="CloseButton" type="Button" parent="Panel/Margin/Root/HeaderRow"]
+layout_mode = 2
+text = "Close"
+
+[node name="BodyRow" type="HBoxContainer" parent="Panel/Margin/Root"]
+layout_mode = 2
+
+[node name="LeftCol" type="VBoxContainer" parent="Panel/Margin/Root/BodyRow"]
+layout_mode = 2
+
+[node name="ShopLabel" type="Label" parent="Panel/Margin/Root/BodyRow/LeftCol"]
+layout_mode = 2
+text = "For Sale"
+
+[node name="ShopScroll" type="ScrollContainer" parent="Panel/Margin/Root/BodyRow/LeftCol"]
+custom_minimum_size = Vector2(400, 400)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ShopWrap" type="FlowContainer" parent="Panel/Margin/Root/BodyRow/LeftCol/ShopScroll"]
+custom_minimum_size = Vector2(400, 400)
+layout_mode = 2
+
+[node name="AddButton" type="Button" parent="Panel/Margin/Root/BodyRow/LeftCol"]
+layout_mode = 2
+text = "Add →"
+
+[node name="RightCol" type="VBoxContainer" parent="Panel/Margin/Root/BodyRow"]
+layout_mode = 2
+
+[node name="CartLabel" type="Label" parent="Panel/Margin/Root/BodyRow/RightCol"]
+layout_mode = 2
+text = "Your Cart"
+
+[node name="CartScroll" type="ScrollContainer" parent="Panel/Margin/Root/BodyRow/RightCol"]
+custom_minimum_size = Vector2(400, 400)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="CartStack" type="VBoxContainer" parent="Panel/Margin/Root/BodyRow/RightCol/CartScroll"]
+custom_minimum_size = Vector2(400, 400)
+layout_mode = 2
+
+[node name="RemoveButton" type="Button" parent="Panel/Margin/Root/BodyRow/RightCol"]
+layout_mode = 2
+text = "← Remove"
+
+[node name="FooterRow" type="HBoxContainer" parent="Panel/Margin/Root"]
+layout_mode = 2
+
+[node name="TotalLabel" type="Label" parent="Panel/Margin/Root/FooterRow"]
+layout_mode = 2
+text = "Total: 0g"
+
+[node name="BuyButton" type="Button" parent="Panel/Margin/Root/FooterRow"]
+layout_mode = 2
+text = "Buy"
+
+[node name="ShopSfx2D" type="AudioStreamPlayer2D" parent="."]
+bus = &"SFX"
