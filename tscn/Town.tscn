@@ -1,4 +1,4 @@
-[gd_scene load_steps=59 format=3 uid="uid://b7y4cme4an3kb"]
+[gd_scene load_steps=62 format=3 uid="uid://b7y4cme4an3kb"]
 
 [ext_resource type="PackedScene" uid="uid://dv7wem6ftpvdd" path="res://tscn/Player.tscn" id="1_2feps"]
 [ext_resource type="Script" uid="uid://0ofb5xeer5m6" path="res://scripts/Town.gd" id="1_o31te"]
@@ -16,6 +16,7 @@
 [ext_resource type="PackedScene" uid="uid://pgemy77xtake" path="res://tscn/npcs/Alex.tscn" id="10_gmfaa"]
 [ext_resource type="PackedScene" uid="uid://dbc6p4387b3x2" path="res://tscn/npcs/Mayor.tscn" id="10_ml18c"]
 [ext_resource type="PackedScene" uid="uid://bfaurdf2mucr2" path="res://tscn/npcs/NPC.tscn" id="10_va2fq"]
+[ext_resource type="Resource" uid="uid://dlrvta6f8b0de" path="res://data/quests/bloom_setup_quest.tres" id="12_01b2m"]
 [ext_resource type="PackedScene" uid="uid://dk1aaefcs7nwf" path="res://ui/QuestBoardUI.tscn" id="12_15yes"]
 [ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="12_fgqwr"]
 [ext_resource type="PackedScene" uid="uid://dexrjrr1c8jfb" path="res://ui/ShopUI.tscn" id="12_j34sm"]
@@ -50,6 +51,8 @@
 [ext_resource type="AudioStream" uid="uid://w8xlw7qbvgtu" path="res://audio/sfx/sfx_hit_tree_01.WAV" id="50_gmfaa"]
 [ext_resource type="PackedScene" uid="uid://d3rb2u1uqckiu" path="res://tscn/npcs/Lia.tscn" id="50_ml18c"]
 [ext_resource type="AudioStream" uid="uid://dmqutky1tc220" path="res://audio/sfx/sfx_hit_rock_01.WAV" id="51_ao30e"]
+[ext_resource type="Texture2D" uid="uid://cpkecnwhl7wbm" path="res://art/bed.PNG" id="51_gmfaa"]
+[ext_resource type="PackedScene" uid="uid://fw6jgfem1715" path="res://tscn/Bloom Lamppost.tscn" id="52_ao30e"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_gmfaa"]
 texture = ExtResource("3_k6pgv")
@@ -137,6 +140,7 @@ position = Vector2(154, 215)
 
 [node name="Alex" parent="NPCs" instance=ExtResource("10_gmfaa")]
 position = Vector2(247, 138)
+quest_offers = Array[ExtResource("12_fgqwr")]([ExtResource("12_01b2m")])
 
 [node name="Player" parent="." instance=ExtResource("1_2feps")]
 position = Vector2(90, 33)
@@ -205,9 +209,11 @@ available_quests = Array[ExtResource("12_fgqwr")]([ExtResource("13_seor3"), ExtR
 position = Vector2(270, 42)
 
 [node name="FireflyLayer" parent="." groups=["firefly_layer"] instance=ExtResource("15_j34sm")]
+visible = false
 position = Vector2(-97, -35)
 
 [node name="NavigationRegion2D" type="NavigationRegion2D" parent="."]
+visible = false
 navigation_polygon = SubResource("NavigationPolygon_j34sm")
 
 [node name="RainOverlay" parent="." instance=ExtResource("16_vlptm")]
@@ -264,6 +270,7 @@ script = ExtResource("26_lyu0f")
 location_id = "town_square"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="TownQuestLocation"]
+visible = false
 shape = SubResource("RectangleShape2D_dvr77")
 
 [node name="QuestMenuUI" parent="." instance=ExtResource("27_dvr77")]
@@ -278,6 +285,7 @@ script = ExtResource("26_lyu0f")
 location_id = "shop"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ShopQuestLocation"]
+visible = false
 shape = SubResource("RectangleShape2D_dvr77")
 
 [node name="SpawnManager" type="Node" parent="."]
@@ -292,3 +300,19 @@ ground_path = NodePath("../TileMaps/Ground")
 objects_path = NodePath("../TileMaps/Objects")
 sfx_hit_tree = ExtResource("50_gmfaa")
 sfx_hit_rock = ExtResource("51_ao30e")
+
+[node name="BloomBanner" type="Sprite2D" parent="." groups=["festival_decoration"]]
+visible = false
+position = Vector2(355, 174)
+texture = ExtResource("51_gmfaa")
+
+[node name="Bloom Lamppost" parent="." instance=ExtResource("52_ao30e")]
+position = Vector2(382, 259)
+
+[node name="Bloom Lamppost2" parent="." instance=ExtResource("52_ao30e")]
+position = Vector2(364, 125)
+interactable_id = "bloom_lamppost_02"
+
+[node name="Bloom Lamppost3" parent="." instance=ExtResource("52_ao30e")]
+position = Vector2(65, 233)
+interactable_id = "bloom_lamppost_03"

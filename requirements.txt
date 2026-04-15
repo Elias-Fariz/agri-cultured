@@ -78,6 +78,13 @@ Phase 3.999: Season Development
 ** Forage Spawning
 ** Save System
 
+Phase 4 - 0.0001: okay, i'm adding a LOT more now
+* Tree/Rock Regeneration
+* Dialogue Options
+* Cutscene Character Staging
+* Puzzle Mining
+* Restoration Combat
+
 Phase 4: Inventory/UI Polish
 
 Phase 5: Expanding

@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=3 format=3 uid="uid://dlrvta6f8b0de"]
+
+[ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="1_nfstd"]
+[ext_resource type="Script" uid="uid://bolxtchvrfo0y" path="res://data/quests/QuestStepData.gd" id="2_7twvs"]
+
+[resource]
+script = ExtResource("1_nfstd")
+id = "bloom_setup_quest"
+title = "Set Up Balloons"
+description = "Hang up balloons around the town. Walk up to a lamppost and press E to do so!"
+oneshot_action = "interact"
+oneshot_target = "bloom_setup"
+oneshot_amount = 3
+oneshot_text = "Decorate 3 lampposts."
+turn_in_id = "npc_alex"
+turn_in_text = "Let Alex know you finished!"
+reward_money = 30
+required_festival_id = "bloom_festival"
+festival_day_only = true
+metadata/_custom_type_script = "uid://cg0ailnic1w71"

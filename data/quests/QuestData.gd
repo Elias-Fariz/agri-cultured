@@ -30,6 +30,9 @@ class_name QuestData
 @export var requires_day: int = 0                    # 0 = no day gate, else day must be >= this
 @export var requires_friendship: Dictionary = {}     # { "npc_mayor": 10, "npc_alex": 5 }
 
+@export var required_festival_id: String = ""
+@export var festival_day_only: bool = false
+
 # Optional nice-to-have: who offers / who turn-in (future-friendly)
 @export var giver_id: String = ""       # NPC or board id (optional)
 
@@ -104,5 +107,16 @@ func is_unlocked() -> bool:
 		var needed: int = int(requires_friendship[npc_id_any])
 		if GameState.get_friendship(npc_id) < needed:
 			return false
-
+	
+		# Festival gate
+	if festival_day_only:
+		if required_festival_id.strip_edges() == "":
+			return false
+		if FestivalManager == null:
+			return false
+		if not FestivalManager.is_festival_today():
+			return false
+		if FestivalManager.get_current_festival_id() != required_festival_id:
+			return false
+	
 	return true

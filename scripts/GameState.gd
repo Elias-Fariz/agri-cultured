@@ -441,6 +441,8 @@ var has_played_greeting_intro: bool = false
 var heart_stats: Dictionary = {}   # e.g. { "sell_multiplier": 1.05 }
 var heart_flags: Dictionary = {}   # e.g. { "heart_pond_unlocked": true }
 
+var interacted_object_ids: Dictionary = {}
+
 func _ready() -> void:
 	reset_energy()
 	current_tool = starting_tool
@@ -1583,3 +1585,16 @@ func get_primary_quest_hint() -> String:
 			return text
 
 	return ""
+
+func has_object_been_interacted(interactable_id: String) -> bool:
+	if interactable_id.strip_edges() == "":
+		return false
+	return interacted_object_ids.get(interactable_id, false) == true
+
+func mark_object_interacted(interactable_id: String) -> void:
+	if interactable_id.strip_edges() == "":
+		return
+	interacted_object_ids[interactable_id] = true
+
+func reset_interacted_objects() -> void:
+	interacted_object_ids.clear()

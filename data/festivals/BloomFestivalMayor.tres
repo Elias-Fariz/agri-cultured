@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="FestivalNpcPlacement" load_steps=2 format=3 uid="uid://byvcqnp3sw2l"]
+
+[ext_resource type="Script" uid="uid://dqtykoym36v3j" path="res://data/festivals/FestivalNpcPlacement.gd" id="1_sei6f"]
+
+[resource]
+script = ExtResource("1_sei6f")
+npc_id = "npc_mayor"
+npc_scene_path = "res://tscn/npcs/Mayor.tscn"
+target_position = Vector2(250, 200)
+festival_dialogue_lines = PackedStringArray("A festival reminds us that the valley still has heart.", "Please enjoy the celebration at your own pace.")
+metadata/_custom_type_script = "uid://dqtykoym36v3j"

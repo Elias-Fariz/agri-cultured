@@ -28,6 +28,8 @@ signal item_gifted(npc_id: String, item_id: String, qty: int)
 
 signal fish_caught(fish_id: String, qty: int)
 
+signal object_interacted(interactable_id: String, quest_target_id: String, qty: int)
+
 func _ready() -> void:
 	talked_to.connect(func(npc_id: String):
 		GameState.apply_quest_event("talk_to", npc_id, 1)
@@ -56,6 +58,13 @@ func _ready() -> void:
 	
 	fish_caught.connect(func(fish_id: String, qty: int):
 		GameState.apply_quest_event("fish", fish_id, qty)
+	)
+	
+	object_interacted.connect(func(interactable_id: String, quest_target_id: String, qty: int):
+		# Only quest_target_id is used for quest progress.
+		# interactable_id exists so the object itself / GameState can prevent double-counting.
+		GameState.apply_quest_event("interact", quest_target_id, qty)
+		QuestEvents.quest_state_changed.emit()
 	)
 #
 	#chopped_tree.connect(func(qty: int):

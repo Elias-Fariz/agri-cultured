@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="FestivalNpcPlacement" load_steps=2 format=3 uid="uid://sy0q43pbgpoa"]
+
+[ext_resource type="Script" uid="uid://dqtykoym36v3j" path="res://data/festivals/FestivalNpcPlacement.gd" id="1_bff6q"]
+
+[resource]
+script = ExtResource("1_bff6q")
+npc_id = "npc_alex"
+npc_scene_path = "res://tscn/npcs/Alex.tscn"
+target_position = Vector2(150, 100)
+festival_dialogue_lines = PackedStringArray("The whole square smells like fresh flowers today.", "I like when everyone gathers together like this.")
+metadata/_custom_type_script = "uid://dqtykoym36v3j"

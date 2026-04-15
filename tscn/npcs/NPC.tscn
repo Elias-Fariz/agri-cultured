@@ -29,6 +29,7 @@ collision_layer = 3
 script = ExtResource("3_7xv34")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="InteractArea"]
+visible = false
 scale = Vector2(3, 3)
 shape = SubResource("RectangleShape2D_7xv34")
 
@@ -37,6 +38,7 @@ scale = Vector2(5, 5)
 collision_mask = 3
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ProximityArea"]
+visible = false
 shape = SubResource("RectangleShape2D_h582y")
 
 [node name="BubbleAnchor" type="Node2D" parent="."]

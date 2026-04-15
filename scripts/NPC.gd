@@ -268,9 +268,10 @@ func start_dialogue() -> void:
 				ui.show_dialogue(display_name, inprog_lines, f, npc_id)
 				return
 	
-	# If this NPC doesn’t have a quest attached, use normal dialogue.
+	# If this NPC doesn’t have a quest attached, use festival dialogue if present,
+	# otherwise normal time-based dialogue.
 	if quest_id == "":
-		ui.show_dialogue(display_name, _get_time_based_dialogue(), f, npc_id)
+		ui.show_dialogue(display_name, _get_festival_or_time_based_dialogue(), f, npc_id)
 		return
 		
 	# --- Quest-aware behavior below ---
@@ -280,7 +281,7 @@ func start_dialogue() -> void:
 		if quest_in_progress_lines.size() > 0:
 			ui.show_dialogue(display_name, quest_in_progress_lines, f, npc_id)
 		else:
-			ui.show_dialogue(display_name, dialogue_lines, f, npc_id)
+			ui.show_dialogue(display_name, _get_festival_or_lines(dialogue_lines), f, npc_id)
 		return
 
 	# 2) Quest completed and not yet claimed → thank + reward
@@ -304,14 +305,14 @@ func start_dialogue() -> void:
 			if quest_after_thanks_lines.size() > 0:
 				ui.show_dialogue(display_name, quest_after_thanks_lines, f, npc_id)
 			else:
-				ui.show_dialogue(display_name, dialogue_lines, f, npc_id)
+				ui.show_dialogue(display_name, _get_festival_or_lines(dialogue_lines), f, npc_id)
 		return
 
 	# 3) Quest not started yet → offer + automatically accept
 	var new_quest := _build_quest()
 	if new_quest.is_empty():
-		# Fallback to normal if something went wrong
-		ui.show_dialogue(display_name, dialogue_lines, f, npc_id)
+		# Fallback to festival dialogue if present, otherwise normal dialogue
+		ui.show_dialogue(display_name, _get_festival_or_lines(dialogue_lines), f, npc_id)
 		return
 
 	GameState.add_quest(new_quest)
@@ -320,7 +321,7 @@ func start_dialogue() -> void:
 	if quest_request_lines.size() > 0:
 		ui.show_dialogue(display_name, quest_request_lines, f, npc_id)
 	else:
-		ui.show_dialogue(display_name, dialogue_lines, f, npc_id)
+		ui.show_dialogue(display_name, _get_festival_or_lines(dialogue_lines), f, npc_id)
 
 func _build_quest() -> Dictionary:
 	if quest_id == "":
@@ -797,3 +798,30 @@ func _gift_reaction_lines(tier: String) -> Array[String]:
 	if gift_prefs != null and gift_prefs.has_method("get_lines_for_tier"):
 		return gift_prefs.call("get_lines_for_tier", tier)
 	return ["Thanks!"]
+
+func _get_festival_dialogue_lines() -> Array[String]:
+	if FestivalManager == null:
+		return []
+
+	if not FestivalManager.is_festival_today():
+		return []
+
+	var lines := FestivalManager.get_npc_festival_dialogue(npc_id)
+	if lines == null or lines.is_empty():
+		return []
+
+	return lines
+
+
+func _get_festival_or_lines(fallback_lines: Array[String]) -> Array[String]:
+	var fest_lines := _get_festival_dialogue_lines()
+	if not fest_lines.is_empty():
+		return fest_lines
+	return fallback_lines
+
+
+func _get_festival_or_time_based_dialogue() -> Array[String]:
+	var fest_lines := _get_festival_dialogue_lines()
+	if not fest_lines.is_empty():
+		return fest_lines
+	return _get_time_based_dialogue()

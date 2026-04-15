@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="FestivalData" load_steps=5 format=3 uid="uid://bg1chcv4468wk"]
+
+[ext_resource type="Script" uid="uid://dqtykoym36v3j" path="res://data/festivals/FestivalNpcPlacement.gd" id="1_7x04w"]
+[ext_resource type="Script" uid="uid://oas2a4ag7kng" path="res://data/festivals/FestivalData.gd" id="2_0xdd0"]
+[ext_resource type="Resource" uid="uid://sy0q43pbgpoa" path="res://data/festivals/BloomFestivalAlex.tres" id="2_bch7y"]
+[ext_resource type="Resource" uid="uid://byvcqnp3sw2l" path="res://data/festivals/BloomFestivalMayor.tres" id="3_lnr5m"]
+
+[resource]
+script = ExtResource("2_0xdd0")
+festival_id = "bloom_festival"
+display_name = "Bloom Festival"
+day_in_season = 3
+location_id = "town"
+day_before_toast = "The Bloom Festival will be held tomorrow in the town square. 🌸"
+day_of_toast = "Today is the Bloom Festival! Stop by the town square anytime. 🌸"
+npc_placements = Array[ExtResource("1_7x04w")]([ExtResource("2_bch7y"), ExtResource("3_lnr5m")])
+decoration_node_names = PackedStringArray("BloomBanner")
+metadata/_custom_type_script = "uid://oas2a4ag7kng"
