@@ -1,0 +1,56 @@
+[gd_resource type="TileSet" load_steps=11 format=3 uid="uid://bjhy464dgbpg"]
+
+[ext_resource type="Texture2D" uid="uid://caerjv5h3fdyv" path="res://art/tree.png" id="1_r5rek"]
+[ext_resource type="Texture2D" uid="uid://b6q6p1rqkpdec" path="res://art/crops.png" id="2_825n7"]
+[ext_resource type="Texture2D" uid="uid://1d6ygtxnkroh" path="res://art/rock.PNG" id="3_itga5"]
+[ext_resource type="Texture2D" uid="uid://bcvka4x2af0m1" path="res://art/sapling.png" id="4_8fm3l"]
+[ext_resource type="Texture2D" uid="uid://1ngctcl757iq" path="res://art/rubble.png" id="5_xfupo"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_0m8ol"]
+texture = ExtResource("1_r5rek")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_eipp1"]
+texture = ExtResource("2_825n7")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+3:2/0 = 0
+0:3/0 = 0
+1:3/0 = 0
+2:3/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_2qqyd"]
+texture = ExtResource("3_itga5")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ep6ep"]
+texture = ExtResource("4_8fm3l")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_3mxf2"]
+texture = ExtResource("5_xfupo")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+
+[resource]
+tile_size = Vector2i(32, 32)
+physics_layer_0/collision_layer = 1
+sources/0 = SubResource("TileSetAtlasSource_0m8ol")
+sources/1 = SubResource("TileSetAtlasSource_eipp1")
+sources/2 = SubResource("TileSetAtlasSource_2qqyd")
+sources/3 = SubResource("TileSetAtlasSource_ep6ep")
+sources/4 = SubResource("TileSetAtlasSource_3mxf2")

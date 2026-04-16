@@ -411,6 +411,101 @@ func cleanup_old_pickup_records(keep_days: int = 7) -> void:
 		if today - d > keep_days:
 			_picked_up_day_by_id.erase(k)
 			
+
+# --- Tile destructible regrowth persistence ---
+# spot_id -> {
+#   "kind": String,                 # "tree", "rock", etc.
+#   "scene_path": String,           # current scene path/name marker
+#   "objects_path": String,         # node path to the objects TileMap inside scene
+#   "cell": Vector2i,               # tile cell
+#   "respawn_day": int,             # day full resource returns
+#   "sprout_day": int,              # day regrowth visual begins (-1 if unused)
+# }
+var _regrowing_destructibles: Dictionary = {}
+
+func make_destructible_spot_id(scene_path: String, objects_path: String, cell: Vector2i) -> String:
+	return "%s|%s|%d,%d" % [scene_path, objects_path, cell.x, cell.y]
+
+func mark_destructible_regrowing(
+	spot_id: String,
+	kind: String,
+	scene_path: String,
+	objects_path: String,
+	cell: Vector2i,
+	respawn_day: int,
+	sprout_day: int = -1
+) -> void:
+	if spot_id.strip_edges() == "":
+		return
+
+	_regrowing_destructibles[spot_id] = {
+		"kind": kind,
+		"scene_path": scene_path,
+		"objects_path": objects_path,
+		"cell": cell,
+		"respawn_day": respawn_day,
+		"sprout_day": sprout_day,
+	}
+
+func get_destructible_regrowth_record(spot_id: String) -> Dictionary:
+	return _regrowing_destructibles.get(spot_id, {})
+
+func is_destructible_regrowing(spot_id: String) -> bool:
+	return _regrowing_destructibles.has(spot_id)
+
+func clear_destructible_regrowth_record(spot_id: String) -> void:
+	if _regrowing_destructibles.has(spot_id):
+		_regrowing_destructibles.erase(spot_id)
+
+func get_regrowth_stage_for_day(spot_id: String, today: int = -1) -> String:
+	if today < 0:
+		today = int(TimeManager.day)
+
+	var rec: Dictionary = get_destructible_regrowth_record(spot_id)
+	if rec.is_empty():
+		return "grown"
+
+	var respawn_day := int(rec.get("respawn_day", today))
+	var sprout_day := int(rec.get("sprout_day", -1))
+
+	if today >= respawn_day:
+		return "grown"
+
+	if sprout_day >= 0 and today >= sprout_day:
+		return "regrowing"
+
+	return "empty"
+
+func cleanup_finished_destructible_regrowth(today: int = -1) -> void:
+	if today < 0:
+		today = int(TimeManager.day)
+
+	var to_remove: Array = []
+	for spot_id in _regrowing_destructibles.keys():
+		var rec: Dictionary = _regrowing_destructibles[spot_id]
+		var respawn_day := int(rec.get("respawn_day", today))
+		if today >= respawn_day:
+			to_remove.append(spot_id)
+
+	for spot_id in to_remove:
+		_regrowing_destructibles.erase(spot_id)
+
+func get_destructible_regrowth_records_for_world(scene_path: String, objects_path: String = "") -> Dictionary:
+	var out: Dictionary = {}
+
+	for spot_id in _regrowing_destructibles.keys():
+		var rec: Dictionary = _regrowing_destructibles[spot_id]
+
+		if String(rec.get("scene_path", "")) != scene_path:
+			continue
+
+		if objects_path != "" and String(rec.get("objects_path", "")) != objects_path:
+			continue
+
+		out[spot_id] = rec
+
+	return out
+
 # --- Crafting recipe unlocks ---
 var unlocked_recipes: Dictionary = {}  # recipe_id -> true
 

@@ -94,6 +94,18 @@ var destructible_defs := {
 var destructible_hits: Dictionary = {} # { Vector2i: int }
 # --- Destructibles ---
 
+# --- Destructible regrowth (beta) ---
+@export var tree_regrow_days: int = 3
+@export var rock_regrow_days: int = 2
+
+# Optional placeholder tiles while regrowing.
+# If source_id is -1, the spot stays empty until mature again.
+@export var tree_regrow_source_id: int = -1
+@export var tree_regrow_coords: Vector2i = Vector2i.ZERO
+
+@export var rock_regrow_source_id: int = -1
+@export var rock_regrow_coords: Vector2i = Vector2i.ZERO
+
 var watered_today: Dictionary = {}  # cell_key -> true
 var rained_today: bool = false
 
@@ -125,6 +137,7 @@ var _crop_indicators: Dictionary = {}
 
 func _ready() -> void:
 	_load_farm_state()
+	_refresh_destructible_regrowth_tiles()
 	if ambience_player and not ambience_player.playing:
 		ambience_player.play()
 	life_timer.timeout.connect(_on_life_timer_timeout)
@@ -170,6 +183,8 @@ func _on_day_changed(_day: int) -> void:
 	if _is_raining_today():
 		rained_today = true
 		_apply_rain_wet_visuals_today()
+	
+	_refresh_destructible_regrowth_tiles()
 
 func _load_farm_state() -> void:
 	var map := GameState.get_map_state("Farm")
@@ -278,7 +293,6 @@ func _hit_destructible(cell: Vector2i, key: String) -> void:
 			player.camera_shake(300.0, 0.16, 35.0, 9.0)
 
 	if current >= needed:
-		objects.erase_cell(0, cell)
 		destructible_hits.erase(cell)
 
 		var drop := String(def["drop"])
@@ -292,6 +306,8 @@ func _hit_destructible(cell: Vector2i, key: String) -> void:
 				GameState.report_action("break_rock", 1)
 			_:
 				GameState.report_action("break_object", 1)
+
+		_begin_destructible_regrowth(cell, key)
 
 func _try_plant_crop_return_success(crop_name: String) -> bool:
 	if GameState.is_gameplay_locked():
@@ -721,3 +737,102 @@ func _on_life_timer_timeout() -> void:
 	life_player.play()
 
 	_schedule_next_life_sound()
+
+func _make_regrowth_spot_id(cell: Vector2i) -> String:
+	return GameState.make_destructible_spot_id("Farm", "TileMaps/Objects", cell)
+
+func _get_regrow_days(key: String) -> int:
+	match key:
+		"tree":
+			return max(1, tree_regrow_days)
+		"rock":
+			return max(1, rock_regrow_days)
+		_:
+			return 3
+
+func _get_regrow_tile_def(key: String) -> Dictionary:
+	match key:
+		"tree":
+			return {
+				"source_id": tree_regrow_source_id,
+				"atlas": tree_regrow_coords
+			}
+		"rock":
+			return {
+				"source_id": rock_regrow_source_id,
+				"atlas": rock_regrow_coords
+			}
+		_:
+			return {
+				"source_id": -1,
+				"atlas": Vector2i.ZERO
+			}
+
+func _begin_destructible_regrowth(cell: Vector2i, key: String) -> void:
+	var today := int(TimeManager.day)
+	var respawn_day := today + _get_regrow_days(key)
+
+	var spot_id := _make_regrowth_spot_id(cell)
+
+	GameState.mark_destructible_regrowing(
+		spot_id,
+		key,
+		"Farm",
+		"TileMaps/Objects",
+		cell,
+		respawn_day,
+		today
+	)
+
+	var regrow_tile := _get_regrow_tile_def(key)
+	var regrow_src := int(regrow_tile.get("source_id", -1))
+	var regrow_atlas := Vector2i(regrow_tile.get("atlas", Vector2i.ZERO))
+
+	if regrow_src >= 0:
+		objects.set_cell(0, cell, regrow_src, regrow_atlas)
+	else:
+		objects.erase_cell(0, cell)
+
+func _restore_mature_destructible_tile(cell: Vector2i, key: String) -> void:
+	if not destructible_defs.has(key):
+		return
+
+	var def: Dictionary = destructible_defs[key]
+	var src := int(def.get("source_id", -1))
+	var atlas := Vector2i(def.get("atlas", Vector2i.ZERO))
+
+	if src >= 0:
+		objects.set_cell(0, cell, src, atlas)
+
+func _refresh_destructible_regrowth_tiles() -> void:
+	var today := int(TimeManager.day)
+	var records := GameState.get_destructible_regrowth_records_for_world("Farm", "TileMaps/Objects")
+
+	for spot_id in records.keys():
+		var rec: Dictionary = records[spot_id]
+
+		var cell: Vector2i = rec.get("cell", Vector2i.ZERO)
+		var key := String(rec.get("kind", ""))
+
+		if key == "":
+			continue
+
+		var stage := GameState.get_regrowth_stage_for_day(spot_id, today)
+
+		match stage:
+			"empty":
+				objects.erase_cell(0, cell)
+
+			"regrowing":
+				var regrow_tile := _get_regrow_tile_def(key)
+				var regrow_src := int(regrow_tile.get("source_id", -1))
+				var regrow_atlas := Vector2i(regrow_tile.get("atlas", Vector2i.ZERO))
+
+				if regrow_src >= 0:
+					objects.set_cell(0, cell, regrow_src, regrow_atlas)
+				else:
+					objects.erase_cell(0, cell)
+
+			"grown":
+				_restore_mature_destructible_tile(cell, key)
+				GameState.clear_destructible_regrowth_record(spot_id)

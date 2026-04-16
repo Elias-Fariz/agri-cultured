@@ -5,6 +5,8 @@
 [node name="ToolWorld" type="Node2D" groups=["tool_world"]]
 script = ExtResource("1_f5j0x")
 sfx_player_path = NodePath("SfxPlayer2D")
+tree_regrow_source_id = 3
+rock_regrow_source_id = 4
 
 [node name="SfxPlayer2D" type="AudioStreamPlayer2D" parent="."]
 volume_db = -10.0
