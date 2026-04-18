@@ -145,26 +145,7 @@ func start_dialogue() -> void:
 		return
 	
 	var f := GameState.get_friendship(npc_id)
-	# SHOP CHECK FIRST
-	if opens_shop:
-		var hour := int(TimeManager.minutes / 60)
 
-		if hour < shop_open_hour or hour >= shop_close_hour:
-			# Shop is closed → use dialogue instead of opening UI
-			var lines := shop_closed_lines
-			if lines.is_empty():
-				lines = ["Sorry, we’re closed right now. Come back tomorrow!"]
-
-			ui.show_dialogue(display_name, lines, f, npc_id)
-		else:
-			# Shop is open → show ShopUI overlay
-			var shop_ui := get_tree().get_first_node_in_group("shop_ui")
-			if shop_ui:
-				if shop_ui.has_method("set_title"):
-					shop_ui.set_title(shop_title)
-				shop_ui.show_overlay()
-		return
-	
 	# --- TALK COOLDOWN: once per time block ---
 	if not GameState.can_talk_to_npc(npc_id):
 		# Make them feel "uninteractable" during this block.
@@ -207,26 +188,45 @@ func start_dialogue() -> void:
 
 	# --- QUEST PRIORITY 1: TURN-IN READY ---
 	if GameState.has_turn_in_ready(npc_id):
-		var ready_id: String = GameState.get_first_turn_in_ready_id_for(npc_id) # you already discussed this helper
+		var ready_id: String = GameState.get_first_turn_in_ready_id_for(npc_id)
 
-		# Find matching QuestData so we can use its turn_in_lines
+		# Find matching QuestData
 		var qd_ready: QuestData = _find_questdata_by_id(ready_id)
 
+		# Prefer participant override C first
 		var turnin_lines: Array[String] = []
-		if qd_ready != null and not qd_ready.turn_in_lines.is_empty():
-			turnin_lines = qd_ready.turn_in_lines
-		else:
+		if qd_ready != null:
+			var quest_state: Dictionary = _get_active_quest_state_by_id(ready_id)
+			turnin_lines = qd_ready.get_best_override_lines_for_npc(npc_id, quest_state)
+
+			# Fallback to standard turn-in lines if no override exists
+			if turnin_lines.is_empty() and not qd_ready.turn_in_lines.is_empty():
+				turnin_lines = qd_ready.turn_in_lines
+
+		if turnin_lines.is_empty():
 			turnin_lines = ["You did it! Here’s your reward."]
 
-		GameState.claim_quest_reward(ready_id)
+		# IMPORTANT: fully complete the quest now
+		GameState.complete_quest(ready_id)
 		QuestEvents.quest_state_changed.emit()
 		_update_quest_icon()
 
 		ui.show_dialogue(display_name, turnin_lines, f, npc_id)
 		return
+	
+	# --- QUEST PRIORITY 2: ACTIVE PARTICIPANT OVERRIDE ---
+	var participant_override_lines := _get_best_active_participant_override_lines()
+	if not participant_override_lines.is_empty():
+		ui.show_dialogue(display_name, participant_override_lines, f, npc_id)
+		return
 
+	# --- QUEST PRIORITY 3: RECENTLY CLAIMED PARTICIPANT OVERRIDE (same day reminiscence) ---
+	var recent_override_lines := _get_best_recently_claimed_override_lines()
+	if not recent_override_lines.is_empty():
+		ui.show_dialogue(display_name, recent_override_lines, f, npc_id)
+		return
 
-	# --- QUEST PRIORITY 2: OFFER FIRST UNLOCKED QUEST ---
+	# --- QUEST PRIORITY 4: OFFER FIRST UNLOCKED QUEST ---
 	var offer_q: QuestData = _get_offerable_questdata()
 	if offer_q != null:
 		GameState.add_quest(offer_q.to_dict())
@@ -240,7 +240,7 @@ func start_dialogue() -> void:
 		ui.show_dialogue(display_name, offer_lines, f, npc_id)
 		return
 		
-	# --- QUEST PRIORITY 3: LOCKED BARK (low chance), else NORMAL DIALOGUE ---
+	# --- QUEST PRIORITY 5: LOCKED BARK (low chance), else NORMAL DIALOGUE ---
 	var locked_q: QuestData = _get_first_locked_questdata_not_done()
 	if locked_q != null:
 		if randf() < locked_q.locked_bark_chance:
@@ -657,9 +657,15 @@ func _has_offerable_quest() -> bool:
 	return q_offer != null
 
 func _find_questdata_by_id(qid: String) -> QuestData:
+	# 1) Prefer this NPC's own local offers first
 	for q in quest_offers:
 		if q != null and q.id == qid:
 			return q
+
+	# 2) Fall back to global quest catalog
+	if QuestCatalogDb != null and QuestCatalogDb.has_method("get_quest"):
+		return QuestCatalogDb.get_quest(qid)
+
 	return null
 
 func _get_offerable_questdata() -> QuestData:
@@ -686,6 +692,136 @@ func _get_first_locked_questdata_not_done() -> QuestData:
 		if not q.is_unlocked():
 			return q
 	return null
+
+func _get_active_quest_state_by_id(qid: String) -> Dictionary:
+	if qid.strip_edges() == "":
+		return {}
+
+	if GameState.active_quests.has(qid):
+		return GameState.active_quests[qid]
+
+	if GameState.completed_quests.has(qid):
+		return GameState.completed_quests[qid]
+
+	return {}
+
+func _get_current_chain_step_dict(quest_state: Dictionary) -> Dictionary:
+	if quest_state.is_empty():
+		return {}
+
+	if String(quest_state.get("type", "")) != "chain":
+		return {}
+
+	var steps_any = quest_state.get("steps", [])
+	if typeof(steps_any) != TYPE_ARRAY:
+		return {}
+
+	var steps: Array = steps_any
+	var step_index := int(quest_state.get("step_index", 0))
+
+	if step_index < 0 or step_index >= steps.size():
+		return {}
+
+	var step_any = steps[step_index]
+	if typeof(step_any) != TYPE_DICTIONARY:
+		return {}
+
+	return step_any
+
+func _does_current_step_target_this_npc(qd: QuestData, quest_state: Dictionary) -> bool:
+	if qd == null or quest_state.is_empty():
+		return false
+
+	# Explicit turn-in target also counts as quest-critical interaction
+	if bool(quest_state.get("completed", false)) and not bool(quest_state.get("claimed", false)):
+		return String(qd.turn_in_id) == npc_id
+
+	var step := _get_current_chain_step_dict(quest_state)
+	if step.is_empty():
+		return false
+
+	var step_type := String(step.get("type", ""))
+	var step_target := String(step.get("target", ""))
+
+	# For now, only "talk_to" directly claims this NPC interaction.
+	# Later you can extend this for delivery steps, staged scenes, etc.
+	if step_type == "talk_to" and step_target == npc_id:
+		return true
+
+	return false
+
+func _get_participant_override_priority_score(qd: QuestData, quest_state: Dictionary) -> int:
+	if qd == null or quest_state.is_empty():
+		return -1
+
+	var score := -1
+
+	# Highest priority: this NPC is the current quest-critical target
+	if _does_current_step_target_this_npc(qd, quest_state):
+		score = 100
+	# General participant in an active quest
+	elif qd.has_participant(npc_id):
+		score = 50
+	else:
+		return -1
+
+	# Tracked quest gets a small nudge if there is a tie
+	if String(GameState.tracked_quest_id) == String(qd.id):
+		score += 5
+
+	return score
+
+func _get_best_active_participant_override_lines() -> Array[String]:
+	var best_score := -1
+	var best_lines: Array[String] = []
+
+	# Check active quests
+	for qid_any in GameState.active_quests.keys():
+		var qid := String(qid_any)
+		var qd := _find_questdata_by_id(qid)
+		if qd == null:
+			continue
+
+		var quest_state: Dictionary = GameState.active_quests[qid]
+		var score := _get_participant_override_priority_score(qd, quest_state)
+		if score < 0:
+			continue
+
+		var lines := qd.get_best_override_lines_for_npc(npc_id, quest_state)
+		if lines.is_empty():
+			continue
+
+		if score > best_score:
+			best_score = score
+			best_lines = lines
+
+	# Also check completed-but-unclaimed quests in case the participant override
+	# should still speak differently during a turn-in-ready state.
+	for qid_any in GameState.completed_quests.keys():
+		var qid := String(qid_any)
+		var qd := _find_questdata_by_id(qid)
+		if qd == null:
+			continue
+
+		var quest_state: Dictionary = GameState.completed_quests[qid]
+		if not bool(quest_state.get("completed", false)):
+			continue
+		if bool(quest_state.get("claimed", false)):
+			continue
+
+		var score := _get_participant_override_priority_score(qd, quest_state)
+		if score < 0:
+			continue
+
+		var lines := qd.get_best_override_lines_for_npc(npc_id, quest_state)
+		if lines.is_empty():
+			continue
+
+		if score > best_score:
+			best_score = score
+			best_lines = lines
+
+	return best_lines
 
 func can_player_interact(player: Node) -> bool:
 	# If you already have a cooldown / time-block lock, use that.
@@ -825,3 +961,25 @@ func _get_festival_or_time_based_dialogue() -> Array[String]:
 	if not fest_lines.is_empty():
 		return fest_lines
 	return _get_time_based_dialogue()
+
+func _get_best_recently_claimed_override_lines() -> Array[String]:
+	for qid_any in GameState.completed_quests.keys():
+		var qid := String(qid_any)
+
+		if not GameState.was_quest_claimed_today(qid):
+			continue
+
+		var qd := _find_questdata_by_id(qid)
+		if qd == null:
+			continue
+
+		if not qd.has_participant(npc_id):
+			continue
+
+		var quest_state: Dictionary = GameState.completed_quests[qid]
+		var lines := qd.get_best_override_lines_for_npc(npc_id, quest_state)
+
+		if not lines.is_empty():
+			return lines
+
+	return []

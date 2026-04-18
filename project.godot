@@ -32,6 +32,7 @@ CropDb="*res://autoloads/CropDb.tscn"
 CalendarSystem="*res://autoloads/CalendarSystem.tscn"
 ShopCatalogDb="*res://autoloads/ShopCatalogDb.tscn"
 FestivalManager="*res://autoloads/FestivalManager.tscn"
+QuestCatalogDb="*res://autoloads/QuestCatalogDb.tscn"
 
 [input]
 

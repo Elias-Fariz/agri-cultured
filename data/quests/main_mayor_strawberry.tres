@@ -1,6 +1,7 @@
-[gd_resource type="Resource" script_class="QuestData" load_steps=6 format=3 uid="uid://cw4m17hab13da"]
+[gd_resource type="Resource" script_class="QuestData" load_steps=7 format=3 uid="uid://cw4m17hab13da"]
 
 [ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="1_cpycv"]
+[ext_resource type="Script" uid="uid://dqvgpvdaiv010" path="res://data/quests/QuestNpcOverrideData.gd" id="1_u2day"]
 [ext_resource type="Script" uid="uid://bolxtchvrfo0y" path="res://data/quests/QuestStepData.gd" id="2_u2day"]
 
 [sub_resource type="Resource" id="Resource_cpycv"]
@@ -40,4 +41,5 @@ in_progress_lines = Array[String](["No rush, take your time!"])
 turn_in_lines = Array[String](["Woah, it feels livelier already! Thanks!"])
 after_thanks_lines = Array[String](["I hope I can count on you later!"])
 locked_lines = Array[String](["Heyo! Just get used to the area for now, I'll need your help later."])
+participant_ids = null
 metadata/_custom_type_script = "uid://cg0ailnic1w71"

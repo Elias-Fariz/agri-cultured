@@ -1,6 +1,7 @@
-[gd_resource type="Resource" script_class="QuestData" load_steps=5 format=3 uid="uid://d1rk16thm6q8l"]
+[gd_resource type="Resource" script_class="QuestData" load_steps=6 format=3 uid="uid://d1rk16thm6q8l"]
 
 [ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="1_7yrps"]
+[ext_resource type="Script" uid="uid://dqvgpvdaiv010" path="res://data/quests/QuestNpcOverrideData.gd" id="1_nv8ym"]
 [ext_resource type="Script" uid="uid://bolxtchvrfo0y" path="res://data/quests/QuestStepData.gd" id="2_nv8ym"]
 
 [sub_resource type="Resource" id="Resource_7yrps"]
@@ -28,4 +29,5 @@ steps = Array[ExtResource("2_nv8ym")]([SubResource("Resource_7yrps"), SubResourc
 turn_in_id = "npc_keeper"
 turn_in_text = "Return to the Animal Keeper for your reward."
 requires_completed = Array[String](["unlock_animal_keeper"])
+participant_ids = null
 metadata/_custom_type_script = "uid://cg0ailnic1w71"

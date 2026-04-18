@@ -1,0 +1,9 @@
+[gd_scene load_steps=4 format=3 uid="uid://chpu64y6tk6x5"]
+
+[ext_resource type="Script" uid="uid://bvkmhflqj52ab" path="res://autoloads/QuestCatalogDb.gd" id="1_oop4i"]
+[ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="2_1guhr"]
+[ext_resource type="Resource" uid="uid://bxwj4ue4o4biq" path="res://data/quests/lia_gift_mayor.tres" id="3_uyq6d"]
+
+[node name="QuestCatalogDb" type="Node"]
+script = ExtResource("1_oop4i")
+quests = Array[ExtResource("2_1guhr")]([ExtResource("3_uyq6d")])

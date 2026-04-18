@@ -151,6 +151,8 @@ var seed_to_crop := {
 
 var tracked_quest_id: String = ""  # "" means no quest tracked
 
+var ready_to_turn_in: Dictionary = {}
+
 # --- Scene spawning ---
 var next_spawn_name: String = ""      # your existing system
 var pending_spawn_tag: String = ""    # optional future tag system
@@ -361,6 +363,8 @@ func mark_talked_today(npc_id: String, current_day: int) -> void:
 var active_quests: Dictionary = {}    # id -> quest dict
 var completed_quests: Dictionary = {} # id -> quest dict
 
+var ready_to_turn_in_quests: Dictionary = {}     # quest_id -> true
+var recently_claimed_quests: Dictionary = {}     # quest_id -> day number
 
 var _talked_block_by_npc: Dictionary = {}  # npc_id -> String "day:morning" etc.
 
@@ -699,17 +703,55 @@ func complete_quest(quest_id: String) -> void:
 
 	var quest: Dictionary = active_quests[quest_id]
 	quest["completed"] = true
-	quest["claimed"] = false
+	quest["claimed"] = true
+
 	active_quests.erase(quest_id)
+	clear_quest_ready_to_turn_in(quest_id)
+
 	completed_quests[quest_id] = quest
+	mark_quest_claimed_today(quest_id)
+
 	print("Quest completed: ", quest_id)
-	
+
 	var q: Dictionary = completed_quests.get(quest_id, {})
 	var title := String(q.get("title", "Quest"))
-	
+
 	(today_tracking["quests_completed"] as Array).append(title)
 	QuestEvents.toast_requested.emit("Quest Completed: " + title, "success", 3.0)
 
+func is_quest_ready_to_turn_in(quest_id: String) -> bool:
+	if quest_id.strip_edges() == "":
+		return false
+	return ready_to_turn_in_quests.has(quest_id)
+
+func mark_quest_ready_to_turn_in(quest_id: String) -> void:
+	if quest_id.strip_edges() == "":
+		return
+	ready_to_turn_in_quests[quest_id] = true
+
+func clear_quest_ready_to_turn_in(quest_id: String) -> void:
+	if quest_id.strip_edges() == "":
+		return
+	if ready_to_turn_in_quests.has(quest_id):
+		ready_to_turn_in_quests.erase(quest_id)
+
+func was_quest_claimed_today(quest_id: String) -> bool:
+	if quest_id.strip_edges() == "":
+		return false
+	var d := int(recently_claimed_quests.get(quest_id, -1))
+	return d == int(TimeManager.day)
+
+func mark_quest_claimed_today(quest_id: String) -> void:
+	if quest_id.strip_edges() == "":
+		return
+	recently_claimed_quests[quest_id] = int(TimeManager.day)
+
+func cleanup_old_recently_claimed_quests(keep_days: int = 1) -> void:
+	var today := int(TimeManager.day)
+	for qid in recently_claimed_quests.keys():
+		var d := int(recently_claimed_quests.get(qid, -999999))
+		if today - d > keep_days:
+			recently_claimed_quests.erase(qid)
 	
 func claim_quest_reward(quest_id: String) -> void:
 	print("[Reward] claim_quest_reward:", quest_id)
@@ -959,25 +1001,18 @@ func is_quest_available_to_accept(quest_id: String) -> bool:
 	return not active_quests.has(quest_id) and not completed_quests.has(quest_id)
 
 func has_turn_in_ready(npc_id: String) -> bool:
-	for qid_any in completed_quests.keys():
-		var qid := String(qid_any)
-		var q: Dictionary = completed_quests[qid]
+	if npc_id.strip_edges() == "":
+		return false
 
-		if bool(q.get("claimed", false)):
+	for qid_any in ready_to_turn_in_quests.keys():
+		var qid := String(qid_any)
+
+		if not active_quests.has(qid):
 			continue
 
-		# Preferred: explicit turn_in_id
-		var turn_in := String(q.get("turn_in_id", ""))
-		if turn_in != "" and turn_in == npc_id:
+		var quest: Dictionary = active_quests[qid]
+		if String(quest.get("turn_in_id", "")) == npc_id:
 			return true
-
-		# Fallback for chain quests: infer from last step if it’s a talk_to
-		if String(q.get("type", "")) == "chain":
-			var steps: Array = q.get("steps", [])
-			if steps.size() > 0:
-				var last: Dictionary = steps[steps.size() - 1]
-				if String(last.get("type", "")) == "talk_to" and String(last.get("target", "")) == npc_id:
-					return true
 
 	return false
 
@@ -1238,20 +1273,26 @@ func apply_quest_event(action: String, target: String = "", amount: int = 1, tar
 		active_quests[qid] = quest
 
 	for qid in to_complete:
-		complete_quest(qid)
+		mark_quest_ready_to_turn_in(qid)
 		changed = true
 
 	if changed:
 		QuestEvents.quest_state_changed.emit()
 
 func get_first_turn_in_ready_id_for(npc_id: String) -> String:
-	for qid_any in completed_quests.keys():
-		var qid: String = String(qid_any)
-		var q: Dictionary = completed_quests[qid]
-		if bool(q.get("claimed", false)):
+	if npc_id.strip_edges() == "":
+		return ""
+
+	for qid_any in ready_to_turn_in_quests.keys():
+		var qid := String(qid_any)
+
+		if not active_quests.has(qid):
 			continue
-		if String(q.get("turn_in_id", "")) == npc_id:
+
+		var quest: Dictionary = active_quests[qid]
+		if String(quest.get("turn_in_id", "")) == npc_id:
 			return qid
+
 	return ""
 
 func _current_talk_block_stamp() -> String:

@@ -1,6 +1,7 @@
-[gd_resource type="Resource" script_class="QuestData" load_steps=6 format=3 uid="uid://cntqbb2vy4mrp"]
+[gd_resource type="Resource" script_class="QuestData" load_steps=7 format=3 uid="uid://cntqbb2vy4mrp"]
 
 [ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="1_f8u51"]
+[ext_resource type="Script" uid="uid://dqvgpvdaiv010" path="res://data/quests/QuestNpcOverrideData.gd" id="1_o1cdf"]
 [ext_resource type="Script" uid="uid://bolxtchvrfo0y" path="res://data/quests/QuestStepData.gd" id="2_o1cdf"]
 
 [sub_resource type="Resource" id="Resource_f8u51"]
@@ -41,4 +42,5 @@ offer_lines = Array[String](["These shells look cool. Hey, I got an idea... Can 
 in_progress_lines = Array[String](["Let the sea breeze guide you, there's no rush..."])
 turn_in_lines = Array[String](["See? The Mayor loved it! Keep giving gifts to NPCs, and they'll love you in no time!"])
 after_thanks_lines = Array[String](["I hope your lucky somebody feels really good once they get your necklace!"])
+participant_ids = null
 metadata/_custom_type_script = "uid://cg0ailnic1w71"

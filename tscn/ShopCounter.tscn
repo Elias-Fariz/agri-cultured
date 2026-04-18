@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3 uid="uid://ifwtc0xfdr1d"]
+
+[ext_resource type="Script" uid="uid://dh3fimdeam542" path="res://scripts/ShopCounter.gd" id="1_2s3ny"]
+[ext_resource type="Texture2D" uid="uid://bwudms0hgr4q7" path="res://art/grass.png" id="1_dgavn"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2s3ny"]
+size = Vector2(31.5, 32)
+
+[node name="ShopCounter" type="Area2D"]
+script = ExtResource("1_2s3ny")
+prompt_text = "E: Browse Shop"
+prompt_priority = 15
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_dgavn")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0.25, 0)
+shape = SubResource("RectangleShape2D_2s3ny")

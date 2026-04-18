@@ -80,6 +80,8 @@ Phase 3.999: Season Development
 
 Phase 4 - 0.0001: okay, i'm adding a LOT more now
 * Tree/Rock Regeneration *DONE*
+* Separating Shop from NPC *DONE*
+* Revamped QuestData *NOW ALLOWS FOR OVERRIDING VOICELINES*
 * Dialogue Options
 * Cutscene Character Staging
 * Puzzle Mining

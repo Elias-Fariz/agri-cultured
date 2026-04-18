@@ -1,0 +1,75 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=12 format=3 uid="uid://bxwj4ue4o4biq"]
+
+[ext_resource type="Script" uid="uid://dqvgpvdaiv010" path="res://data/quests/QuestNpcOverrideData.gd" id="1_sxbms"]
+[ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="2_lil1c"]
+[ext_resource type="Script" uid="uid://i787kejqffp7" path="res://data/quests/QuestDialogueEntryData.gd" id="2_n7orr"]
+[ext_resource type="Script" uid="uid://bolxtchvrfo0y" path="res://data/quests/QuestStepData.gd" id="3_n7orr"]
+
+[sub_resource type="Resource" id="Resource_qhxev"]
+script = ExtResource("1_sxbms")
+npc_id = "npc_lia"
+lines = Array[String](["Do you think he'll like it?", "I've been trying to make it just right..."])
+metadata/_custom_type_script = "uid://dqvgpvdaiv010"
+
+[sub_resource type="Resource" id="Resource_y3i3t"]
+script = ExtResource("1_sxbms")
+npc_id = "npc_mayor"
+phase = "active_step"
+step_index = 1
+lines = Array[String](["Poppy has seemed unusually busy lately... I wonder what she's up to."])
+metadata/_custom_type_script = "uid://dqvgpvdaiv010"
+
+[sub_resource type="Resource" id="Resource_5oib3"]
+script = ExtResource("1_sxbms")
+npc_id = "npc_mayor"
+phase = "turn_in_ready"
+lines = Array[String](["This... this is for me? From Poppy?"])
+metadata/_custom_type_script = "uid://dqvgpvdaiv010"
+
+[sub_resource type="Resource" id="Resource_idoql"]
+script = ExtResource("1_sxbms")
+npc_id = "npc_lia"
+phase = "completed_claimed"
+lines = Array[String](["I'm so glad that went well. Thank you for helping me!"])
+metadata/_custom_type_script = "uid://dqvgpvdaiv010"
+
+[sub_resource type="Resource" id="Resource_sxbms"]
+script = ExtResource("3_n7orr")
+type = "pickup"
+target = "Flower"
+amount = 5
+text = "Pick up 5 flowers."
+metadata/_custom_type_script = "uid://bolxtchvrfo0y"
+
+[sub_resource type="Resource" id="Resource_lil1c"]
+script = ExtResource("3_n7orr")
+type = "craft"
+target = "Flower Headband"
+text = "Craft a flower headband."
+metadata/_custom_type_script = "uid://bolxtchvrfo0y"
+
+[sub_resource type="Resource" id="Resource_n7orr"]
+script = ExtResource("3_n7orr")
+type = "talk_to"
+target = "npc_mayor"
+text = "Go give the necklace to the Mayor!"
+metadata/_custom_type_script = "uid://bolxtchvrfo0y"
+
+[resource]
+script = ExtResource("2_lil1c")
+id = "lia_gift_mayor"
+title = "Present Time!"
+description = "Poppy needs help making a gift for the Mayor."
+quest_type = "chain"
+oneshot_action = ""
+steps = Array[ExtResource("3_n7orr")]([SubResource("Resource_sxbms"), SubResource("Resource_lil1c"), SubResource("Resource_n7orr")])
+turn_in_id = "npc_mayor"
+turn_in_text = "Go give the necklace to the Mayor!"
+reward_money = 5
+giver_id = "npc_lia"
+offer_lines = Array[String](["Hi! So I wanted to do something nice for him, and I hope he likes it!"])
+in_progress_lines = Array[String](["Make sure you get the best flowers!"])
+turn_in_lines = Array[String](["Aww, thank you!"])
+participant_ids = PackedStringArray("npc_lia", "npc_mayor")
+npc_overrides = Array[ExtResource("1_sxbms")]([SubResource("Resource_qhxev"), SubResource("Resource_y3i3t"), SubResource("Resource_5oib3"), SubResource("Resource_idoql")])
+metadata/_custom_type_script = "uid://cg0ailnic1w71"

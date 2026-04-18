@@ -1,4 +1,4 @@
-[gd_scene load_steps=56 format=3 uid="uid://b7y4cme4an3kb"]
+[gd_scene load_steps=58 format=3 uid="uid://b7y4cme4an3kb"]
 
 [ext_resource type="PackedScene" uid="uid://dv7wem6ftpvdd" path="res://tscn/Player.tscn" id="1_2feps"]
 [ext_resource type="Script" uid="uid://0ofb5xeer5m6" path="res://scripts/Town.gd" id="1_o31te"]
@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://d1qqa5bygrbsp" path="res://ui/HUD.tscn" id="7_xf6b5"]
 [ext_resource type="PackedScene" uid="uid://dtrn2d385g5ul" path="res://ui/InventoryUI.tscn" id="8_va2fq"]
 [ext_resource type="PackedScene" uid="uid://68vtjhtvdbhw" path="res://ui/ShippingUI.tscn" id="8_vr3p6"]
+[ext_resource type="Resource" uid="uid://bxwj4ue4o4biq" path="res://data/quests/lia_gift_mayor.tres" id="9_01b2m"]
 [ext_resource type="PackedScene" uid="uid://ded2abuo15uwh" path="res://ui/DialogueUI.tscn" id="9_xf6b5"]
 [ext_resource type="PackedScene" uid="uid://pgemy77xtake" path="res://tscn/npcs/Alex.tscn" id="10_gmfaa"]
 [ext_resource type="PackedScene" uid="uid://dbc6p4387b3x2" path="res://tscn/npcs/Mayor.tscn" id="10_ml18c"]
@@ -50,6 +51,7 @@
 [ext_resource type="PackedScene" uid="uid://d3rb2u1uqckiu" path="res://tscn/npcs/Lia.tscn" id="50_ml18c"]
 [ext_resource type="AudioStream" uid="uid://dmqutky1tc220" path="res://audio/sfx/sfx_hit_rock_01.WAV" id="51_ao30e"]
 [ext_resource type="Texture2D" uid="uid://cpkecnwhl7wbm" path="res://art/bed.PNG" id="51_gmfaa"]
+[ext_resource type="PackedScene" uid="uid://ifwtc0xfdr1d" path="res://tscn/ShopCounter.tscn" id="52_01b2m"]
 [ext_resource type="PackedScene" uid="uid://fw6jgfem1715" path="res://tscn/Bloom Lamppost.tscn" id="52_ao30e"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_caym6"]
@@ -85,6 +87,10 @@ layer_0/tile_data = PackedInt32Array(327680, 0, 0)
 position = Vector2(349, 58)
 npc_id = "npc_pierre"
 display_name = "Pierre"
+dialogue_lines = Array[String](["O-Oh, hi!"])
+morning_dialogue_lines = Array[String](["Business, business..."])
+evening_dialogue_lines = Array[String](["Whew, closing time!"])
+night_dialogue_lines = Array[String](["Oh no, did I forget something?"])
 overhead_greeting_lines = Array[String](["Welcome to my shop!"])
 opens_shop = true
 shop_title = "General Store"
@@ -95,9 +101,11 @@ night_spot_path = NodePath("../../NPCSpots/Shopkeeper_NightSpot")
 gift_prefs = ExtResource("6_aojjs")
 
 [node name="Mayor" parent="NPCs" instance=ExtResource("10_ml18c")]
+quest_offers = Array[ExtResource("12_fgqwr")]([])
 
 [node name="Lia" parent="NPCs" instance=ExtResource("50_ml18c")]
 position = Vector2(154, 215)
+quest_offers = Array[ExtResource("12_fgqwr")]([ExtResource("9_01b2m")])
 
 [node name="Alex" parent="NPCs" instance=ExtResource("10_gmfaa")]
 position = Vector2(247, 138)
@@ -277,3 +285,7 @@ interactable_id = "bloom_lamppost_02"
 [node name="Bloom Lamppost3" parent="." instance=ExtResource("52_ao30e")]
 position = Vector2(65, 233)
 interactable_id = "bloom_lamppost_03"
+
+[node name="ShopCounter" parent="." instance=ExtResource("52_01b2m")]
+position = Vector2(193, 46)
+shop_title = "General Store"
