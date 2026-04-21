@@ -1,0 +1,20 @@
+[gd_scene load_steps=6 format=3 uid="uid://dwskpt1bigchh"]
+
+[ext_resource type="PackedScene" uid="uid://bfaurdf2mucr2" path="res://tscn/npcs/NPC.tscn" id="1_hh6yc"]
+[ext_resource type="Texture2D" uid="uid://cd8rv8272flxi" path="res://ui/portraits/default_silhouette.png" id="2_c2ua1"]
+[ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="3_af4yl"]
+[ext_resource type="Resource" uid="uid://d1rk16thm6q8l" path="res://data/quests/keeper_cow_quest.tres" id="4_hh6yc"]
+[ext_resource type="Resource" uid="uid://bycuetshjflh" path="res://data/gifts/gifts_keeper.tres" id="5_c2ua1"]
+
+[node name="NPC" instance=ExtResource("1_hh6yc")]
+npc_id = "npc_clove"
+display_name = "Clove"
+portrait = ExtResource("2_c2ua1")
+dialogue_lines = Array[String](["Howdy! Nice to see you in these parts!"])
+morning_dialogue_lines = Array[String](["The rooster crows and I gotta goes!"])
+evening_dialogue_lines = Array[String](["Time that I start hittin' the hay!"])
+night_dialogue_lines = Array[String](["Don't mind me, just grabbin' some water."])
+overhead_greeting_lines = Array[String](["Howdy!!"])
+overhead_idle_lines = Array[String](["Chickens...!"])
+quest_offers = Array[ExtResource("3_af4yl")]([ExtResource("4_hh6yc")])
+gift_prefs = ExtResource("5_c2ua1")

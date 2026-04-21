@@ -1,0 +1,20 @@
+[gd_scene load_steps=6 format=3 uid="uid://buw2urhb0321w"]
+
+[ext_resource type="PackedScene" uid="uid://bfaurdf2mucr2" path="res://tscn/npcs/NPC.tscn" id="1_md1s5"]
+[ext_resource type="Texture2D" uid="uid://cd8rv8272flxi" path="res://ui/portraits/default_silhouette.png" id="2_8rfya"]
+[ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="3_mp8ci"]
+[ext_resource type="Resource" uid="uid://x7h6dqd7teun" path="res://data/quests/surfer_fish_quest.tres" id="4_bujhf"]
+[ext_resource type="Resource" uid="uid://dyftxqjlgk7ew" path="res://data/gifts/gifts_fisher.tres" id="5_65ddf"]
+
+[node name="NPC" instance=ExtResource("1_md1s5")]
+npc_id = "npc_reed"
+display_name = "Reed"
+portrait = ExtResource("2_8rfya")
+dialogue_lines = Array[String](["Hey, dude! Welcome to the beach!"])
+morning_dialogue_lines = Array[String](["The sun's rays are radical right now!"])
+evening_dialogue_lines = Array[String](["Listening to the shore speak is soothing..."])
+night_dialogue_lines = Array[String](["Man, the twinkling stars are beautiful~"])
+overhead_greeting_lines = Array[String](["Yo!"])
+overhead_idle_lines = Array[String](["Radical!"])
+quest_offers = Array[ExtResource("3_mp8ci")]([ExtResource("4_bujhf")])
+gift_prefs = ExtResource("5_65ddf")

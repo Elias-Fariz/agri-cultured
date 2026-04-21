@@ -1,13 +1,15 @@
-[gd_resource type="Resource" script_class="QuestData" load_steps=12 format=3 uid="uid://bxwj4ue4o4biq"]
+[gd_resource type="Resource" script_class="QuestData" load_steps=14 format=3 uid="uid://bxwj4ue4o4biq"]
 
 [ext_resource type="Script" uid="uid://dqvgpvdaiv010" path="res://data/quests/QuestNpcOverrideData.gd" id="1_sxbms"]
 [ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="2_lil1c"]
-[ext_resource type="Script" uid="uid://i787kejqffp7" path="res://data/quests/QuestDialogueEntryData.gd" id="2_n7orr"]
+[ext_resource type="Script" uid="uid://dt1fjl76x6n5o" path="res://data/dialogue/DialogueBeatData.gd" id="2_n7orr"]
 [ext_resource type="Script" uid="uid://bolxtchvrfo0y" path="res://data/quests/QuestStepData.gd" id="3_n7orr"]
+[ext_resource type="Resource" uid="uid://bb23bima2gaet" path="res://data/dialogue/poppy_gift_turn_in_seq.tres" id="3_qhxev"]
+[ext_resource type="Resource" uid="uid://car1wgxvvq6pu" path="res://data/dialogue/poppy_gift_after_seq.tres" id="4_qhxev"]
 
 [sub_resource type="Resource" id="Resource_qhxev"]
 script = ExtResource("1_sxbms")
-npc_id = "npc_lia"
+npc_id = "npc_poppy"
 lines = Array[String](["Do you think he'll like it?", "I've been trying to make it just right..."])
 metadata/_custom_type_script = "uid://dqvgpvdaiv010"
 
@@ -23,14 +25,14 @@ metadata/_custom_type_script = "uid://dqvgpvdaiv010"
 script = ExtResource("1_sxbms")
 npc_id = "npc_mayor"
 phase = "turn_in_ready"
-lines = Array[String](["This... this is for me? From Poppy?"])
+sequence = ExtResource("3_qhxev")
 metadata/_custom_type_script = "uid://dqvgpvdaiv010"
 
 [sub_resource type="Resource" id="Resource_idoql"]
 script = ExtResource("1_sxbms")
-npc_id = "npc_lia"
+npc_id = "npc_poppy"
 phase = "completed_claimed"
-lines = Array[String](["I'm so glad that went well. Thank you for helping me!"])
+sequence = ExtResource("4_qhxev")
 metadata/_custom_type_script = "uid://dqvgpvdaiv010"
 
 [sub_resource type="Resource" id="Resource_sxbms"]
@@ -57,7 +59,7 @@ metadata/_custom_type_script = "uid://bolxtchvrfo0y"
 
 [resource]
 script = ExtResource("2_lil1c")
-id = "lia_gift_mayor"
+id = "poppy_gift_mayor"
 title = "Present Time!"
 description = "Poppy needs help making a gift for the Mayor."
 quest_type = "chain"
@@ -66,10 +68,10 @@ steps = Array[ExtResource("3_n7orr")]([SubResource("Resource_sxbms"), SubResourc
 turn_in_id = "npc_mayor"
 turn_in_text = "Go give the necklace to the Mayor!"
 reward_money = 5
-giver_id = "npc_lia"
+giver_id = "npc_poppy"
 offer_lines = Array[String](["Hi! So I wanted to do something nice for him, and I hope he likes it!"])
 in_progress_lines = Array[String](["Make sure you get the best flowers!"])
 turn_in_lines = Array[String](["Aww, thank you!"])
-participant_ids = PackedStringArray("npc_lia", "npc_mayor")
+participant_ids = PackedStringArray("npc_poppy", "npc_mayor")
 npc_overrides = Array[ExtResource("1_sxbms")]([SubResource("Resource_qhxev"), SubResource("Resource_y3i3t"), SubResource("Resource_5oib3"), SubResource("Resource_idoql")])
 metadata/_custom_type_script = "uid://cg0ailnic1w71"

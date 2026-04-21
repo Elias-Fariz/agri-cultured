@@ -158,14 +158,14 @@ func get_override_lines_for_npc(npc_id: String, phase: String, step_index: int =
 	if ov == null:
 		return []
 
-	return ov.lines
+	return ov.get_best_plain_lines()
 
-func get_override_dialogue_entries_for_npc(npc_id: String, phase: String, step_index: int = -1) -> Array[QuestDialogueEntryData]:
-	var ov := get_override_for_npc(npc_id, phase, step_index)
-	if ov == null:
-		return []
-
-	return ov.dialogue_entries
+#func get_override_dialogue_entries_for_npc(npc_id: String, phase: String, step_index: int = -1) -> Array[QuestDialogueEntryData]:
+	#var ov := get_override_for_npc(npc_id, phase, step_index)
+	#if ov == null:
+		#return []
+#
+	#return ov.dialogue_entries
 
 func get_best_override_lines_for_npc(npc_id: String, quest_state: Dictionary) -> Array[String]:
 	if npc_id.strip_edges() == "":
@@ -193,3 +193,11 @@ func get_best_override_lines_for_npc(npc_id: String, quest_state: Dictionary) ->
 
 	# Generic active fallback
 	return get_override_lines_for_npc(npc_id, "active_any")
+
+func get_override_sequence_for_npc(npc_id: String, phase: String, step_index: int = -1) -> DialogueSequenceData:
+	var ov := get_override_for_npc(npc_id, phase, step_index)
+	if ov == null:
+		return null
+	return ov.get_sequence()
+	
+	

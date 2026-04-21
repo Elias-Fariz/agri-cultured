@@ -17,11 +17,23 @@ class_name QuestNpcOverrideData
 # -1 means "any step"
 @export var step_index: int = -1
 
+# -------------------------------------------------------------------
+# Legacy/simple content
+# -------------------------------------------------------------------
+
 # Simple current-use lines (works with your current DialogueUI)
 @export var lines: Array[String] = []
 
-# Future-friendly staged/voiced entries
-@export var dialogue_entries: Array[QuestDialogueEntryData] = []
+# Slightly richer per-line entries (future-friendly, but still lightweight)
+@export var dialogue_entries: Array[DialogueBeatData] = []
+
+# -------------------------------------------------------------------
+# Preferred richer content
+# -------------------------------------------------------------------
+
+# Full authored sequence for this override.
+# This is the best place for special quest scenes and staged exchanges.
+@export var sequence: DialogueSequenceData
 
 func matches_phase(query_phase: String, query_step_index: int = -1) -> bool:
 	if phase != query_phase:
@@ -34,4 +46,36 @@ func matches_phase(query_phase: String, query_step_index: int = -1) -> bool:
 	return true
 
 func has_any_content() -> bool:
-	return not lines.is_empty() or not dialogue_entries.is_empty()
+	if sequence != null and sequence.has_beats():
+		return true
+
+	if not dialogue_entries.is_empty():
+		return true
+
+	if not lines.is_empty():
+		return true
+
+	return false
+
+func get_best_plain_lines() -> Array[String]:
+	# 1) Best: full sequence flattened to plain lines
+	if sequence != null and sequence.has_beats():
+		return sequence.to_plain_lines()
+
+	# 2) Next: dialogue entries flattened to plain lines
+	if not dialogue_entries.is_empty():
+		var out: Array[String] = []
+		for beat in dialogue_entries:
+			if beat == null:
+				continue
+			if not beat.has_text():
+				continue
+			out.append(beat.text)
+		if not out.is_empty():
+			return out
+
+	# 3) Fallback: plain lines
+	return lines
+
+func get_sequence() -> DialogueSequenceData:
+	return sequence

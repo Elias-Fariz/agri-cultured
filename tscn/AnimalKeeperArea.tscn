@@ -1,14 +1,11 @@
-[gd_scene load_steps=38 format=3 uid="uid://dcq7dmqwwrac8"]
+[gd_scene load_steps=35 format=3 uid="uid://dcq7dmqwwrac8"]
 
 [ext_resource type="TileSet" uid="uid://bqs5ruk6pejpc" path="res://tiles/GroundTileset.tres" id="1_a8y6s"]
 [ext_resource type="TileSet" uid="uid://bjhy464dgbpg" path="res://tiles/ObjectsTileset.tres" id="2_u1543"]
-[ext_resource type="PackedScene" uid="uid://bfaurdf2mucr2" path="res://tscn/npcs/NPC.tscn" id="5_3a5ef"]
+[ext_resource type="PackedScene" uid="uid://dwskpt1bigchh" path="res://tscn/npcs/Clove.tscn" id="3_ko6g4"]
 [ext_resource type="PackedScene" uid="uid://dv7wem6ftpvdd" path="res://tscn/Player.tscn" id="6_hw5sw"]
-[ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="6_y8126"]
-[ext_resource type="Resource" uid="uid://d1rk16thm6q8l" path="res://data/quests/keeper_cow_quest.tres" id="7_3mm4q"]
 [ext_resource type="Texture2D" uid="uid://bq8o1e8mbe7qm" path="res://art/door.PNG" id="7_hw5sw"]
 [ext_resource type="Script" uid="uid://xl6estd3noyu" path="res://scripts/SceneTravelArea.gd" id="7_ubk8s"]
-[ext_resource type="Resource" uid="uid://bycuetshjflh" path="res://data/gifts/gifts_keeper.tres" id="8_jtagl"]
 [ext_resource type="PackedScene" uid="uid://ded2abuo15uwh" path="res://ui/DialogueUI.tscn" id="8_tdhpq"]
 [ext_resource type="Script" uid="uid://dxx68q28fdnvv" path="res://scripts/SpawnPoint.gd" id="9_8k0p7"]
 [ext_resource type="PackedScene" uid="uid://qxjawwee60n1" path="res://ui/QuestMenuUI.tscn" id="9_ubk8s"]
@@ -57,18 +54,8 @@ layer_0/tile_data = PackedInt32Array(196610, 0, 0, 393219, 0, 0, 327685, 0, 0, 4
 
 [node name="NPCs" type="Node2D" parent="."]
 
-[node name="Rancher" parent="NPCs" instance=ExtResource("5_3a5ef")]
-position = Vector2(347, 122)
-npc_id = "npc_keeper"
-display_name = "Rancher"
-dialogue_lines = Array[String](["Howdy! Nice to see you in these parts!"])
-morning_dialogue_lines = Array[String](["The rooster crows and I gotta goes!"])
-evening_dialogue_lines = Array[String](["Time that I start hittin' the hay!"])
-night_dialogue_lines = Array[String](["Don't mind me, just grabbin' some water."])
-overhead_greeting_lines = Array[String](["Howdy!"])
-overhead_idle_lines = Array[String](["Chickens..."])
-quest_offers = Array[ExtResource("6_y8126")]([ExtResource("7_3mm4q")])
-gift_prefs = ExtResource("8_jtagl")
+[node name="Clove" parent="NPCs" instance=ExtResource("3_ko6g4")]
+position = Vector2(327, 109)
 
 [node name="Player" parent="." instance=ExtResource("6_hw5sw")]
 position = Vector2(228, 111)

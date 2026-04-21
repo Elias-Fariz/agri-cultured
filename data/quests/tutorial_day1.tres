@@ -1,6 +1,7 @@
-[gd_resource type="Resource" script_class="QuestData" load_steps=10 format=3 uid="uid://dc5tn3osodxit"]
+[gd_resource type="Resource" script_class="QuestData" load_steps=11 format=3 uid="uid://dc5tn3osodxit"]
 
 [ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="1_fvlvt"]
+[ext_resource type="Script" uid="uid://dqvgpvdaiv010" path="res://data/quests/QuestNpcOverrideData.gd" id="1_gw17v"]
 [ext_resource type="Script" uid="uid://bolxtchvrfo0y" path="res://data/quests/QuestStepData.gd" id="2_gw17v"]
 
 [sub_resource type="Resource" id="Resource_fvlvt"]
@@ -63,4 +64,5 @@ steps = Array[ExtResource("2_gw17v")]([SubResource("Resource_fvlvt"), SubResourc
 turn_in_id = "townboard"
 turn_in_text = "Once you're ready, go back to the Townboard to claim this quest!"
 reward_money = 50
+participant_ids = null
 metadata/_custom_type_script = "uid://cg0ailnic1w71"

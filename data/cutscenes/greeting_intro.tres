@@ -23,9 +23,9 @@ metadata/_custom_type_script = "uid://b4pm6wxp5ivtk"
 [sub_resource type="Resource" id="Resource_qnkhb"]
 script = ExtResource("1_ma2w5")
 key = "lia"
-npc_id = "npc_lia"
-display_name = "Lia"
-scene_path = "res://tscn/npcs/Lia.tscn"
+npc_id = "npc_poppy"
+display_name = "Poppy"
+scene_path = "res://tscn/npcs/Poppy.tscn"
 metadata/_custom_type_script = "uid://b4pm6wxp5ivtk"
 
 [sub_resource type="Resource" id="Resource_df6ec"]

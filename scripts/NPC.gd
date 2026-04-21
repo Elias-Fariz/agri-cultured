@@ -189,42 +189,42 @@ func start_dialogue() -> void:
 	# --- QUEST PRIORITY 1: TURN-IN READY ---
 	if GameState.has_turn_in_ready(npc_id):
 		var ready_id: String = GameState.get_first_turn_in_ready_id_for(npc_id)
-
-		# Find matching QuestData
 		var qd_ready: QuestData = _find_questdata_by_id(ready_id)
 
-		# Prefer participant override C first
-		var turnin_lines: Array[String] = []
+		var used_special := false
 		if qd_ready != null:
-			var quest_state: Dictionary = _get_active_quest_state_by_id(ready_id)
-			turnin_lines = qd_ready.get_best_override_lines_for_npc(npc_id, quest_state)
+			used_special = _show_override_dialogue(
+				ui,
+				qd_ready,
+				"turn_in_ready",
+				-1,
+				qd_ready.turn_in_lines if qd_ready != null else [],
+				f
+			)
 
-			# Fallback to standard turn-in lines if no override exists
-			if turnin_lines.is_empty() and not qd_ready.turn_in_lines.is_empty():
-				turnin_lines = qd_ready.turn_in_lines
+		if not used_special:
+			ui.show_dialogue(display_name, ["You did it! Here’s your reward."], f, npc_id)
 
-		if turnin_lines.is_empty():
-			turnin_lines = ["You did it! Here’s your reward."]
-
-		# IMPORTANT: fully complete the quest now
 		GameState.complete_quest(ready_id)
 		QuestEvents.quest_state_changed.emit()
 		_update_quest_icon()
-
-		ui.show_dialogue(display_name, turnin_lines, f, npc_id)
 		return
 	
 	# --- QUEST PRIORITY 2: ACTIVE PARTICIPANT OVERRIDE ---
-	var participant_override_lines := _get_best_active_participant_override_lines()
-	if not participant_override_lines.is_empty():
-		ui.show_dialogue(display_name, participant_override_lines, f, npc_id)
-		return
+	var participant_override := _get_best_active_participant_override_quest_and_phase()
+	var participant_qd: QuestData = participant_override.get("quest", null)
+	if participant_qd != null:
+		var participant_phase := String(participant_override.get("phase", "active_any"))
+		var participant_step_index := int(participant_override.get("step_index", -1))
+
+		if _show_override_dialogue(ui, participant_qd, participant_phase, participant_step_index, [], f):
+			return
 
 	# --- QUEST PRIORITY 3: RECENTLY CLAIMED PARTICIPANT OVERRIDE (same day reminiscence) ---
-	var recent_override_lines := _get_best_recently_claimed_override_lines()
-	if not recent_override_lines.is_empty():
-		ui.show_dialogue(display_name, recent_override_lines, f, npc_id)
-		return
+	var recent_qd := _get_best_recently_claimed_override_quest()
+	if recent_qd != null:
+		if _show_override_dialogue(ui, recent_qd, "completed_claimed", -1, [], f):
+			return
 
 	# --- QUEST PRIORITY 4: OFFER FIRST UNLOCKED QUEST ---
 	var offer_q: QuestData = _get_offerable_questdata()
@@ -983,3 +983,90 @@ func _get_best_recently_claimed_override_lines() -> Array[String]:
 			return lines
 
 	return []
+
+func _show_override_dialogue(ui: Node, qd: QuestData, phase: String, step_index: int, fallback_lines: Array[String], friendship: int) -> bool:
+	if qd == null:
+		return false
+
+	var seq := qd.get_override_sequence_for_npc(npc_id, phase, step_index)
+	if seq != null and seq.has_beats():
+		if ui.has_method("show_dialogue_sequence"):
+			ui.show_dialogue_sequence(seq)
+			return true
+
+	var lines := qd.get_override_lines_for_npc(npc_id, phase, step_index)
+	if lines.is_empty():
+		lines = fallback_lines
+
+	if lines.is_empty():
+		return false
+
+	ui.show_dialogue(display_name, lines, friendship, npc_id)
+	return true
+
+func _get_best_active_participant_override_quest_and_phase() -> Dictionary:
+	var best_score := -1
+	var best_qd: QuestData = null
+	var best_phase := ""
+	var best_step_index := -1
+
+	for qid_any in GameState.active_quests.keys():
+		var qid := String(qid_any)
+		var qd := _find_questdata_by_id(qid)
+		if qd == null:
+			continue
+
+		var quest_state: Dictionary = GameState.active_quests[qid]
+		var score := _get_participant_override_priority_score(qd, quest_state)
+		if score < 0:
+			continue
+
+		var phase := "active_any"
+		var step_index := -1
+
+		if qd.quest_type == "chain":
+			step_index = int(quest_state.get("step_index", 0))
+			var step_lines := qd.get_override_lines_for_npc(npc_id, "active_step", step_index)
+			var step_seq := qd.get_override_sequence_for_npc(npc_id, "active_step", step_index)
+			if not step_lines.is_empty() or (step_seq != null and step_seq.has_beats()):
+				phase = "active_step"
+
+		var any_lines := qd.get_override_lines_for_npc(npc_id, phase, step_index)
+		var any_seq := qd.get_override_sequence_for_npc(npc_id, phase, step_index)
+
+		if any_lines.is_empty() and (any_seq == null or not any_seq.has_beats()):
+			continue
+
+		if score > best_score:
+			best_score = score
+			best_qd = qd
+			best_phase = phase
+			best_step_index = step_index
+
+	return {
+		"quest": best_qd,
+		"phase": best_phase,
+		"step_index": best_step_index
+	}
+
+func _get_best_recently_claimed_override_quest() -> QuestData:
+	for qid_any in GameState.completed_quests.keys():
+		var qid := String(qid_any)
+
+		if not GameState.was_quest_claimed_today(qid):
+			continue
+
+		var qd := _find_questdata_by_id(qid)
+		if qd == null:
+			continue
+
+		if not qd.has_participant(npc_id):
+			continue
+
+		var lines := qd.get_override_lines_for_npc(npc_id, "completed_claimed", -1)
+		var seq := qd.get_override_sequence_for_npc(npc_id, "completed_claimed", -1)
+
+		if not lines.is_empty() or (seq != null and seq.has_beats()):
+			return qd
+
+	return null

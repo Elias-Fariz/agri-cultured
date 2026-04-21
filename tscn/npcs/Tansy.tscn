@@ -1,0 +1,17 @@
+[gd_scene load_steps=4 format=3 uid="uid://bapcqqp4p17bj"]
+
+[ext_resource type="PackedScene" uid="uid://bfaurdf2mucr2" path="res://tscn/npcs/NPC.tscn" id="1_xk1lp"]
+[ext_resource type="Texture2D" uid="uid://cd8rv8272flxi" path="res://ui/portraits/default_silhouette.png" id="2_44wvq"]
+[ext_resource type="Resource" uid="uid://be33627y75dr5" path="res://data/gifts/gifts_pierre.tres" id="3_6qqrm"]
+
+[node name="NPC" instance=ExtResource("1_xk1lp")]
+npc_id = "npc_tansy"
+display_name = "Tansy"
+portrait = ExtResource("2_44wvq")
+dialogue_lines = Array[String](["O-Oh, hi!"])
+morning_dialogue_lines = Array[String](["Business, business..."])
+evening_dialogue_lines = Array[String](["Whew, closing time!"])
+night_dialogue_lines = Array[String](["Oh no, did I forget something?"])
+overhead_greeting_lines = Array[String](["Welcome to my shop!"])
+overhead_idle_lines = Array[String](["*scribble*"])
+gift_prefs = ExtResource("3_6qqrm")

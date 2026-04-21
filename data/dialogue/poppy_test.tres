@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="DialogueBeatData" load_steps=2 format=3 uid="uid://bh5xxsjgobg35"]
+
+[ext_resource type="Script" uid="uid://dt1fjl76x6n5o" path="res://data/dialogue/DialogueBeatData.gd" id="1_0au6k"]
+
+[resource]
+script = ExtResource("1_0au6k")
+text = "It's a lovely morning, isn't it?"
+speaker_id = "npc_poppy"
+stage_slot = "center"
+emotion = "happy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"

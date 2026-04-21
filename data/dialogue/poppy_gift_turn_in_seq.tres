@@ -1,0 +1,43 @@
+[gd_resource type="Resource" script_class="DialogueSequenceData" load_steps=7 format=3 uid="uid://bb23bima2gaet"]
+
+[ext_resource type="Script" uid="uid://dt1fjl76x6n5o" path="res://data/dialogue/DialogueBeatData.gd" id="1_gn6b8"]
+[ext_resource type="Script" uid="uid://clb3lhdggkt8d" path="res://data/dialogue/DialogueSequenceData.gd" id="2_arjuu"]
+
+[sub_resource type="Resource" id="Resource_gn6b8"]
+script = ExtResource("1_gn6b8")
+text = "Oh... this is for me?"
+speaker_id = "npc_mayor"
+stage_slot = "right"
+emotion = "surprised"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_arjuu"]
+script = ExtResource("1_gn6b8")
+text = "I-It is. Well... the farmer helped me put it together."
+speaker_id = "npc_poppy"
+stage_slot = "left"
+emotion = "nervous"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_jfbra"]
+script = ExtResource("1_gn6b8")
+text = "It's thoughtful. Truly. Thank you, Poppy... and thank you, too."
+speaker_id = "npc_mayor"
+stage_slot = "right"
+emotion = "soft"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_t51io"]
+script = ExtResource("1_gn6b8")
+text = "I'm glad it reached you safely!"
+speaker_id = "npc_poppy"
+stage_slot = "left"
+emotion = "happy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[resource]
+script = ExtResource("2_arjuu")
+sequence_id = "poppy_gift_turn_in"
+display_name = "Poppy Gift Turn-In"
+beats = Array[ExtResource("1_gn6b8")]([SubResource("Resource_gn6b8"), SubResource("Resource_arjuu"), SubResource("Resource_jfbra"), SubResource("Resource_t51io")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
