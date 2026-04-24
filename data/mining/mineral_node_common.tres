@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="MiningNodeData" load_steps=2 format=3 uid="uid://dro822gjryecn"]
+
+[ext_resource type="Script" uid="uid://cebfo3tcv5que" path="res://data/mining/MiningNodeData.gd" id="1_0taoh"]
+
+[resource]
+script = ExtResource("1_0taoh")
+dormant_source_id = 0
+active_source_id = 0
+active_atlas = Vector2i(1, 0)
+active_bonus_drop_item = "Copper Ore"
+metadata/_custom_type_script = "uid://cebfo3tcv5que"

@@ -1,0 +1,8 @@
+[gd_scene load_steps=3 format=3 uid="uid://ccovw37abv2rb"]
+
+[ext_resource type="Script" uid="uid://p8svk12vjen4" path="res://autoloads/CutsceneEventRouter.gd" id="1_5cfwi"]
+[ext_resource type="Resource" uid="uid://b2ogg43mhd4v8" path="res://data/cutscenes/cutscene_rules.tres" id="2_xkmdh"]
+
+[node name="Node" type="Node"]
+script = ExtResource("1_5cfwi")
+rule_db = ExtResource("2_xkmdh")

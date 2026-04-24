@@ -195,8 +195,8 @@ func _apply_camera_bounds_if_present() -> void:
 	cam.limit_bottom = int(br.global_position.y)
 
 	# Optional: keep limits updated if you switch scenes
-	print("Camera limits set: L/T/R/B = ",
-		cam.limit_left, cam.limit_top, cam.limit_right, cam.limit_bottom)
+	#print("Camera limits set: L/T/R/B = ",
+		#cam.limit_left, cam.limit_top, cam.limit_right, cam.limit_bottom)
 
 func _update_camera_lookahead(delta: float) -> void:
 	if cam == null:
@@ -233,12 +233,12 @@ func camera_focus_on_world_point(world_pos: Vector2) -> void:
 	if cam:
 		cam.position_smoothing_enabled = false
 		
-	print("Limits L/T/R/B: ",
-	cam.limit_left, ", ",
-	cam.limit_top, ", ",
-	cam.limit_right, ", ",
-	cam.limit_bottom,
-	"  Zoom:", cam.zoom)
+	#print("Limits L/T/R/B: ",
+	#cam.limit_left, ", ",
+	#cam.limit_top, ", ",
+	#cam.limit_right, ", ",
+	#cam.limit_bottom,
+	#"  Zoom:", cam.zoom)
 
 func camera_clear_focus() -> void:
 	_camera_focus_active = false

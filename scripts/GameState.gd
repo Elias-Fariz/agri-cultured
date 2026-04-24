@@ -510,6 +510,8 @@ func get_destructible_regrowth_records_for_world(scene_path: String, objects_pat
 
 	return out
 
+var played_cutscenes: Dictionary = {}
+
 # --- Crafting recipe unlocks ---
 var unlocked_recipes: Dictionary = {}  # recipe_id -> true
 
@@ -1615,7 +1617,7 @@ func _play_heart_intro_stub() -> void:
 	lines.append("Meet me at the Heart of the Valley.")
 	
 	var mayor_id := "npc_mayor" # or whatever ID you use consistently
-	var f := GameState.get_friendship(mayor_id) # should return int
+	var f : Variant= GameState.get_friendship(mayor_id) # should return int
 
 	# Show dialogue through your existing dialogue UI
 	var ui := get_tree().get_first_node_in_group("dialogue_ui")
@@ -1734,3 +1736,20 @@ func mark_object_interacted(interactable_id: String) -> void:
 
 func reset_interacted_objects() -> void:
 	interacted_object_ids.clear()
+
+func mark_cutscene_played(cutscene_id: String) -> void:
+	cutscene_id = cutscene_id.strip_edges()
+	if cutscene_id == "":
+		return
+	
+	print("GameState: marking cutscene played:", cutscene_id)
+	played_cutscenes[cutscene_id] = true
+	
+func has_seen_cutscene(cutscene_id: String) -> bool:
+	return played_cutscenes.has(cutscene_id)
+
+func has_played_cutscene(cutscene_id: String) -> bool:
+	cutscene_id = cutscene_id.strip_edges()
+	if cutscene_id == "":
+		return false
+	return bool(played_cutscenes.get(cutscene_id, false))

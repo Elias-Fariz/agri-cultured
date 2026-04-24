@@ -136,6 +136,19 @@ shape = SubResource("RectangleShape2D_k5exi")
 [node name="Sprite2D" type="Sprite2D" parent="TravelPoints/ToAnimalKeeperArea"]
 texture = ExtResource("6_mre8b")
 
+[node name="ToMines" type="Area2D" parent="TravelPoints"]
+position = Vector2(-46, 79)
+collision_mask = 3
+script = ExtResource("29_f2th2")
+target_scene_path = "res://tscn/MineralChamber.tscn"
+target_spawn_tag = "from_farm"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TravelPoints/ToMines"]
+shape = SubResource("RectangleShape2D_k5exi")
+
+[node name="Sprite2D" type="Sprite2D" parent="TravelPoints/ToMines"]
+texture = ExtResource("6_mre8b")
+
 [node name="ToHeart" type="Area2D" parent="TravelPoints"]
 position = Vector2(143, 61)
 collision_mask = 3
@@ -164,6 +177,11 @@ tag = "from_keeper"
 position = Vector2(112, 61)
 script = ExtResource("42_hm1ss")
 tag = "from_heart"
+
+[node name="SpawnFromHeart2" type="Marker2D" parent="TravelPoints" groups=["spawn_points"]]
+position = Vector2(112, 61)
+script = ExtResource("42_hm1ss")
+tag = "from_mines"
 
 [node name="DayNightOverlay" parent="." instance=ExtResource("8_2ywwf")]
 

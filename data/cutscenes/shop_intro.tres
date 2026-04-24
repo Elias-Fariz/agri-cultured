@@ -1,0 +1,60 @@
+[gd_resource type="Resource" script_class="CutsceneData" load_steps=14 format=3 uid="uid://70m1glua8ohh"]
+
+[ext_resource type="Script" uid="uid://b4pm6wxp5ivtk" path="res://data/cutscenes/CutsceneActorData.gd" id="1_juoyx"]
+[ext_resource type="Script" uid="uid://cp2gtb0hckrrj" path="res://data/cutscenes/CutsceneEffectData.gd" id="2_6su7l"]
+[ext_resource type="Script" uid="uid://bjwubxbrbyt2x" path="res://data/cutscenes/CutsceneMarkerSet.gd" id="3_3pc4l"]
+[ext_resource type="Script" uid="uid://camo0lur1qm85" path="res://data/cutscenes/CutsceneData.gd" id="3_aintb"]
+[ext_resource type="Script" uid="uid://0k0f68wqa7mm" path="res://data/cutscenes/CutsceneStepData.gd" id="4_3pc4l"]
+[ext_resource type="Script" uid="uid://dt1fjl76x6n5o" path="res://data/dialogue/DialogueBeatData.gd" id="6_n142m"]
+[ext_resource type="Script" uid="uid://clb3lhdggkt8d" path="res://data/dialogue/DialogueSequenceData.gd" id="7_bmkam"]
+
+[sub_resource type="Resource" id="Resource_juoyx"]
+script = ExtResource("1_juoyx")
+key = "player"
+actor_type = "player"
+metadata/_custom_type_script = "uid://b4pm6wxp5ivtk"
+
+[sub_resource type="Resource" id="Resource_6su7l"]
+script = ExtResource("1_juoyx")
+key = "tansy"
+npc_id = "npc_tansy"
+display_name = "Tansy"
+scene_path = "res://tscn/npcs/Tansy.tscn"
+metadata/_custom_type_script = "uid://b4pm6wxp5ivtk"
+
+[sub_resource type="Resource" id="Resource_8ijr0"]
+script = ExtResource("3_3pc4l")
+markers_by_id = {
+"focus_start": NodePath("ShopMarkers/Focus"),
+"player_start": NodePath("ShopMarkers/Player Start"),
+"tansy_start": NodePath("ShopMarkers/Shop Start")
+}
+metadata/_custom_type_script = "uid://bjwubxbrbyt2x"
+
+[sub_resource type="Resource" id="Resource_jf6ns"]
+script = ExtResource("6_n142m")
+text = "Oh, h-hi!"
+speaker_id = "npc_tansy"
+emotion = "nervous"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_n3oql"]
+script = ExtResource("7_bmkam")
+sequence_id = "tansy_intro_seq"
+beats = Array[ExtResource("6_n142m")]([SubResource("Resource_jf6ns")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_n5ri3"]
+script = ExtResource("4_3pc4l")
+step_type = 2
+dialogue_sequence = SubResource("Resource_n3oql")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[resource]
+script = ExtResource("3_aintb")
+id = "shop_intro"
+scene_name = "Town"
+actors = Array[ExtResource("1_juoyx")]([SubResource("Resource_juoyx"), SubResource("Resource_6su7l")])
+markers = SubResource("Resource_8ijr0")
+steps = Array[ExtResource("4_3pc4l")]([SubResource("Resource_n5ri3")])
+metadata/_custom_type_script = "uid://camo0lur1qm85"

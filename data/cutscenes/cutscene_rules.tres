@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="CutsceneRuleDB" load_steps=4 format=3 uid="uid://b2ogg43mhd4v8"]
+
+[ext_resource type="Script" uid="uid://brhohb215g868" path="res://data/cutscenes/CutsceneRuleData.gd" id="1_68sen"]
+[ext_resource type="Script" uid="uid://b5amndu2fk41s" path="res://data/cutscenes/CutsceneRuleDB.gd" id="2_5rwhc"]
+
+[sub_resource type="Resource" id="Resource_68sen"]
+script = ExtResource("1_68sen")
+rule_id = "shop_intro_rule"
+location_id = "shop"
+cutscene_id = "shop_intro"
+metadata/_custom_type_script = "uid://brhohb215g868"
+
+[resource]
+script = ExtResource("2_5rwhc")
+rules = Array[ExtResource("1_68sen")]([SubResource("Resource_68sen")])
+metadata/_custom_type_script = "uid://b5amndu2fk41s"

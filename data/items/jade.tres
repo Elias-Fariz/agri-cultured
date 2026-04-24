@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3 uid="uid://cxbh5d70x2p4j"]
+
+[ext_resource type="Script" uid="uid://dfoyyckymw8co" path="res://data/items/ItemData.gd" id="1_buiyq"]
+
+[resource]
+script = ExtResource("1_buiyq")
+id = "Jade_Shard"
+display_name = "Jade_Shard"
+sell_price = 25
+description = "Enough of these, and you could piece them together"
+metadata/_custom_type_script = "uid://dfoyyckymw8co"

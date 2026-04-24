@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3 uid="uid://cy4wq23vljddc"]
+
+[ext_resource type="Texture2D" uid="uid://bwudms0hgr4q7" path="res://art/grass.png" id="1_eu3vf"]
+[ext_resource type="Script" uid="uid://bg0ujebhfts5l" path="res://scripts/PulseVisual.gd" id="1_ywfie"]
+
+[node name="PulseVisual" type="Node2D"]
+script = ExtResource("1_ywfie")
+
+[node name="Glow" type="Sprite2D" parent="."]
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("1_eu3vf")

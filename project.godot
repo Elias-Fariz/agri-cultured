@@ -33,6 +33,7 @@ CalendarSystem="*res://autoloads/CalendarSystem.tscn"
 ShopCatalogDb="*res://autoloads/ShopCatalogDb.tscn"
 FestivalManager="*res://autoloads/FestivalManager.tscn"
 QuestCatalogDb="*res://autoloads/QuestCatalogDb.tscn"
+CutsceneEventRouter="*res://autoloads/CutsceneEventRouter.tscn"
 
 [input]
 

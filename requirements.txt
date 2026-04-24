@@ -83,8 +83,9 @@ Phase 4 - 0.0001: okay, i'm adding a LOT more now
 * Separating Shop from NPC *DONE*
 * Revamped QuestData *NOW ALLOWS FOR OVERRIDING VOICELINES*
 * Dialogue Options *ACTUALLY IMPLEMENTING SEQUENCES OF DIFFERENT NPCS*
-* Cutscene Character Staging
-* Puzzle Mining
+* Cutscene Character Staging *DONE*
+* CUTSCENES WHENEVER I WANT IT!!! *DONE*
+* Puzzle Mining *ADDED NODES, DIRECTION, PULSE*
 * Restoration Combat
 
 Phase 4: Inventory/UI Polish

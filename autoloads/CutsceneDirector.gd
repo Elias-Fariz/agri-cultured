@@ -6,6 +6,7 @@ var _queued_id: String = ""
 
 # Nodes we spawned for the cutscene (so we can remove them after)
 var _temp_spawned_actors: Array[Node] = []
+var _original_actor_positions: Array[Dictionary] = []
 
 # Camera lock (prevents snap-back)
 var _camera_lock_active: bool = false
@@ -16,6 +17,7 @@ var _camera_lock_player: Node = null
 var _cutscene_paths := {
 	"heart_intro": "res://data/cutscenes/heart_intro.tres",
 	"greeting_intro": "res://data/cutscenes/greeting_intro.tres",
+	"shop_intro": "res://data/cutscenes/shop_intro.tres",
 }
 
 func _process(_delta: float) -> void:
@@ -48,6 +50,9 @@ func try_play_queued() -> void:
 	play_cutscene(id)
 
 func play_cutscene(id: String) -> void:
+	print("CutsceneDirector: play_cutscene called with:", id)
+	print("Is already playing?", _is_playing)
+	
 	if _is_playing:
 		return
 
@@ -81,12 +86,16 @@ func _run_cutscene_impl(data: CutsceneData) -> void:
 
 	var scene := get_tree().current_scene
 	if scene == null:
+		print("CutsceneDirector: current_scene is null")
 		_finish_cutscene()
 		return
 
-	# Optional: enforce scene name
 	var desired_scene := String(data.scene_name).strip_edges()
+	print("CutsceneDirector: current scene name =", scene.name)
+	print("CutsceneDirector: desired scene name =", desired_scene)
+
 	if desired_scene != "" and scene.name != desired_scene:
+		print("CutsceneDirector: scene mismatch, re-queuing cutscene:", data.id)
 		_queued_id = String(data.id)
 		call_deferred("_cleanup_temp_actors")
 		_finish_cutscene()
@@ -123,6 +132,9 @@ func _run_cutscene_impl(data: CutsceneData) -> void:
 
 		var npc_node := _ensure_npc_actor(scene, a)
 		actors_by_key[key] = npc_node
+	
+	# NEW: remember where reused scene actors were before the cutscene moves them
+	_record_original_actor_positions(actors_by_key)
 
 	# 3) Place START positions for everyone
 	_place_start_positions(scene, data, actors_by_key)
@@ -163,6 +175,7 @@ func _run_cutscene_impl(data: CutsceneData) -> void:
 	if player != null and player.has_method("camera_clear_focus"):
 		player.camera_clear_focus()
 
+	_restore_original_actor_positions()
 	call_deferred("_cleanup_temp_actors")
 	await get_tree().process_frame
 
@@ -223,6 +236,28 @@ func _get_first_marker_by_ids(scene: Node, data: CutsceneData, ids: Array[String
 		if m != null:
 			return m
 	return null
+
+func _record_original_actor_positions(actors_by_key: Dictionary) -> void:
+	_original_actor_positions.clear()
+
+	for k_any in actors_by_key.keys():
+		var k := String(k_any)
+		if k == "player":
+			continue
+
+		var actor: Variant = actors_by_key.get(k, null)
+		if actor == null or not is_instance_valid(actor):
+			continue
+
+		# Only record actors that already existed in the scene.
+		# Temp-spawned actors will just be cleaned up.
+		if _temp_spawned_actors.has(actor):
+			continue
+
+		_original_actor_positions.append({
+			"node": actor,
+			"global_position": actor.global_position
+		})
 
 func _place_start_positions(scene: Node, data: CutsceneData, actors_by_key: Dictionary) -> void:
 	# Player convention: "player_start"
@@ -344,11 +379,22 @@ func _cleanup_temp_actors() -> void:
 			n.queue_free()
 	_temp_spawned_actors.clear()
 
+func _restore_original_actor_positions() -> void:
+	for rec_any in _original_actor_positions:
+		var rec: Dictionary = rec_any
+		var node: Variant = rec.get("node", null)
+		var pos: Variant = rec.get("global_position", null)
+
+		if node != null and is_instance_valid(node) and pos is Vector2:
+			node.global_position = pos
+
+	_original_actor_positions.clear()
+
 # ------------------------------------------------------------
 # Steps
 # ------------------------------------------------------------
 
-func _run_step(step: CutsceneStepData, scene: Node, player: Node, dialogue_ui: Node, data: CutsceneData, actors_by_key: Dictionary) -> void:
+func _run_step(step: CutsceneStepData, scene: Node, player: Node, _dialogue_ui: Node, data: CutsceneData, actors_by_key: Dictionary) -> void:
 	if step == null:
 		return
 
@@ -386,37 +432,44 @@ func _run_step(step: CutsceneStepData, scene: Node, player: Node, dialogue_ui: N
 			await t.finished
 
 		CutsceneStepData.StepType.DIALOGUE:
-			var speaker_key := String(step.speaker_actor_key).strip_edges()
-			if speaker_key == "":
-				# If empty, don’t crash—just do nothing.
+			if _dialogue_ui == null:
+				await get_tree().process_frame
 				return
 
-			# 1) Decide speaker display name
-			var speaker_name := String(step.speaker_name).strip_edges()
-			if speaker_name == "":
-				# Prefer actor display name from resource (so it matches NPC dialogue naming)
-				speaker_name = _get_display_name_for_actor_key(data, speaker_key)
-				if speaker_name.strip_edges() == "":
-					speaker_name = speaker_key.capitalize()
+			# New preferred path: use a full dialogue sequence if present
+			if step.dialogue_sequence != null and step.dialogue_sequence.has_beats():
+				if _dialogue_ui.has_method("show_dialogue_sequence"):
+					_dialogue_ui.show_dialogue_sequence(step.dialogue_sequence)
+					await _dialogue_ui.dialogue_closed
+					await get_tree().process_frame
+					return
 
-			# 2) Friendship (only if this speaker maps to an npc_id)
+			# Legacy fallback path
+			var speaker_name := step.speaker_name
 			var friendship := -1
-			var npc_id := _get_npc_id_for_actor_key(data, speaker_key)
-			if npc_id != "":
-				friendship = int(GameState.get_friendship(npc_id))
+			var npc_id := ""
 
-			# 3) Ensure lines are an Array[String]
+			if step.speaker_actor_key.strip_edges() != "":
+				if speaker_name.strip_edges() == "":
+					speaker_name = _get_display_name_for_actor_key(data, step.speaker_actor_key)
+
+				npc_id = _get_npc_id_for_actor_key(data, step.speaker_actor_key)
+				if npc_id != "":
+					friendship = int(GameState.get_friendship(npc_id))
+
+			if speaker_name.strip_edges() == "":
+				speaker_name = "..."
+
 			var lines: Array[String] = []
 			for l in step.lines:
 				lines.append(String(l))
 
 			if lines.is_empty():
-				return
+				lines = ["..."]
 
-			# 4) Use YOUR DialogueUI exactly as normal
-			if dialogue_ui != null and dialogue_ui.has_method("show_dialogue"):
-				dialogue_ui.show_dialogue(speaker_name, lines, friendship, npc_id)
-				await _await_dialogue_closed(dialogue_ui)
+			_dialogue_ui.show_dialogue(speaker_name, lines, friendship, npc_id)
+			await _dialogue_ui.dialogue_closed
+			await get_tree().process_frame
 
 func _resolve_marker(scene: Node, data: CutsceneData, step: CutsceneStepData) -> Marker2D:
 	# New way: marker_id -> markers_by_id

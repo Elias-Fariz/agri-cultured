@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="MiningNodeData" load_steps=2 format=3 uid="uid://b2sydktobtsjk"]
+
+[ext_resource type="Script" uid="uid://cebfo3tcv5que" path="res://data/mining/MiningNodeData.gd" id="1_twa13"]
+
+[resource]
+script = ExtResource("1_twa13")
+node_id = "jade_directional"
+display_name = "Veined Jade Node"
+mechanic_type = 1
+dormant_source_id = 1
+active_source_id = 1
+active_atlas = Vector2i(1, 0)
+direction_up_source_id = 2
+direction_up_atlas = Vector2i(1, 0)
+direction_down_source_id = 2
+direction_left_source_id = 2
+direction_left_atlas = Vector2i(2, 0)
+direction_right_source_id = 3
+direction_right_atlas = Vector2i(2, 0)
+active_drop_item = "Jade Shard"
+active_drop_qty_min = 1
+active_drop_qty_max = 2
+active_bonus_drop_item = "Jade"
+active_bonus_drop_chance = 0.15
+harmony_on_active_break = 5
+metadata/_custom_type_script = "uid://cebfo3tcv5que"

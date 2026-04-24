@@ -239,7 +239,6 @@ script = ExtResource("26_lyu0f")
 location_id = "shop"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ShopQuestLocation"]
-visible = false
 shape = SubResource("RectangleShape2D_dvr77")
 
 [node name="SpawnManager" type="Node" parent="."]
@@ -274,3 +273,14 @@ interactable_id = "bloom_lamppost_03"
 [node name="ShopCounter" parent="." instance=ExtResource("52_01b2m")]
 position = Vector2(193, 46)
 shop_title = "General Store"
+
+[node name="ShopMarkers" type="Node" parent="."]
+
+[node name="Focus" type="Marker2D" parent="ShopMarkers"]
+position = Vector2(240, -199)
+
+[node name="Shop Start" type="Marker2D" parent="ShopMarkers"]
+position = Vector2(314, -138)
+
+[node name="Player Start" type="Marker2D" parent="ShopMarkers"]
+position = Vector2(168, -139)
