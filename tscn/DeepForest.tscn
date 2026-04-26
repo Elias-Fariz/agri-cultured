@@ -1,0 +1,94 @@
+[gd_scene load_steps=23 format=3 uid="uid://c7rkh414afrgv"]
+
+[ext_resource type="TileSet" uid="uid://bqs5ruk6pejpc" path="res://tiles/GroundTileset.tres" id="1_hnpyl"]
+[ext_resource type="TileSet" uid="uid://bjhy464dgbpg" path="res://tiles/ObjectsTileset.tres" id="2_ra3ic"]
+[ext_resource type="PackedScene" uid="uid://dv7wem6ftpvdd" path="res://tscn/Player.tscn" id="3_4mjv6"]
+[ext_resource type="PackedScene" uid="uid://2o0kc6an36i8" path="res://tscn/FearrootDisturbanceSite.tscn" id="4_ra3ic"]
+[ext_resource type="Script" uid="uid://xl6estd3noyu" path="res://scripts/SceneTravelArea.gd" id="5_lo35j"]
+[ext_resource type="Texture2D" uid="uid://bq8o1e8mbe7qm" path="res://art/door.PNG" id="6_0qif0"]
+[ext_resource type="Script" uid="uid://dxx68q28fdnvv" path="res://scripts/SpawnPoint.gd" id="7_w8oiw"]
+[ext_resource type="PackedScene" uid="uid://c2t6sq4qrohbv" path="res://tscn/ToolWorld.tscn" id="8_pe8do"]
+[ext_resource type="AudioStream" uid="uid://w8xlw7qbvgtu" path="res://audio/sfx/sfx_hit_tree_01.WAV" id="9_nenna"]
+[ext_resource type="AudioStream" uid="uid://dmqutky1tc220" path="res://audio/sfx/sfx_hit_rock_01.WAV" id="10_uyglx"]
+[ext_resource type="Script" uid="uid://dvg0ynlpgst4t" path="res://scripts/WorldSpawn.gd" id="11_a6sjr"]
+[ext_resource type="PackedScene" uid="uid://ded2abuo15uwh" path="res://ui/DialogueUI.tscn" id="12_ygski"]
+[ext_resource type="PackedScene" uid="uid://qxjawwee60n1" path="res://ui/QuestMenuUI.tscn" id="13_rchhe"]
+[ext_resource type="PackedScene" uid="uid://dtrn2d385g5ul" path="res://ui/InventoryUI.tscn" id="14_6hjbk"]
+[ext_resource type="PackedScene" uid="uid://cde8sgn45urws" path="res://ui/HelpOverlay.tscn" id="15_0fxxo"]
+[ext_resource type="PackedScene" uid="uid://d1qqa5bygrbsp" path="res://ui/HUD.tscn" id="16_5ppvc"]
+[ext_resource type="PackedScene" uid="uid://dfcn8oje3hko1" path="res://ui/EndOfDaySummaryUI.tscn" id="17_itkx5"]
+[ext_resource type="PackedScene" uid="uid://c48msaiodeqan" path="res://ui/CraftingUI.tscn" id="18_uwueb"]
+[ext_resource type="PackedScene" uid="uid://ixx7e0mb3ds4" path="res://ui/GiftUI.tscn" id="19_7gn7y"]
+[ext_resource type="PackedScene" uid="uid://ci8kga43aovsx" path="res://ui/DayNightOverlay.tscn" id="20_1vw0i"]
+[ext_resource type="PackedScene" uid="uid://bhvsajr30naqm" path="res://ui/RestorationCombatUI.tscn" id="21_rchhe"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_856j6"]
+
+[node name="DeepForest" type="Node2D"]
+
+[node name="TileMaps" type="Node2D" parent="."]
+
+[node name="Ground" type="TileMap" parent="TileMaps" groups=["footstep_ground"]]
+tile_set = ExtResource("1_hnpyl")
+format = 2
+layer_0/tile_data = PackedInt32Array(65537, 0, 0, 131073, 0, 0, 196609, 0, 0, 262145, 0, 0, 327681, 0, 0, 393217, 0, 0, 458753, 0, 0, 65538, 0, 0, 131074, 0, 0, 196610, 0, 0, 262146, 0, 0, 327682, 0, 0, 393218, 0, 0, 458754, 0, 0, 65539, 0, 0, 131075, 0, 0, 196611, 0, 0, 262147, 0, 0, 327683, 0, 0, 393219, 0, 0, 458755, 0, 0, 65540, 0, 0, 131076, 0, 0, 196612, 0, 0, 262148, 0, 0, 327684, 0, 0, 393220, 0, 0, 458756, 0, 0, 65541, 0, 0, 131077, 0, 0, 196613, 0, 0, 262149, 0, 0, 327685, 0, 0, 393221, 0, 0, 458757, 0, 0, 65542, 0, 0, 131078, 0, 0, 196614, 0, 0, 262150, 0, 0, 327686, 0, 0, 393222, 0, 0, 458758, 0, 0, 65543, 0, 0, 131079, 0, 0, 196615, 0, 0, 262151, 0, 0, 327687, 0, 0, 393223, 0, 0, 458759, 0, 0, 65544, 0, 0, 131080, 0, 0, 196616, 0, 0, 262152, 0, 0, 327688, 0, 0, 393224, 0, 0, 458760, 0, 0, 65545, 0, 0, 131081, 0, 0, 196617, 0, 0, 262153, 0, 0, 327689, 0, 0, 393225, 0, 0, 458761, 0, 0, 65546, 0, 0, 131082, 0, 0, 196618, 0, 0, 262154, 0, 0, 327690, 0, 0, 393226, 0, 0, 458762, 0, 0, 65547, 0, 0, 131083, 0, 0, 196619, 0, 0, 262155, 0, 0, 327691, 0, 0, 393227, 0, 0, 458763, 0, 0, 65548, 0, 0, 131084, 0, 0, 196620, 0, 0, 262156, 0, 0, 327692, 0, 0, 393228, 0, 0, 458764, 0, 0)
+
+[node name="Objects" type="TileMap" parent="TileMaps"]
+tile_set = ExtResource("2_ra3ic")
+format = 2
+
+[node name="Player" parent="." instance=ExtResource("3_4mjv6")]
+position = Vector2(228, 111)
+
+[node name="FearrootDisturbanceSite" parent="." instance=ExtResource("4_ra3ic")]
+position = Vector2(-114, 136)
+
+[node name="TravelPoints" type="Node2D" parent="."]
+
+[node name="ToFarm" type="Area2D" parent="TravelPoints"]
+position = Vector2(457, 37)
+collision_mask = 3
+script = ExtResource("5_lo35j")
+target_scene_path = "res://tscn/Farm.tscn"
+target_spawn_tag = "from_deepforest"
+
+[node name="Sprite2D" type="Sprite2D" parent="TravelPoints/ToFarm"]
+texture = ExtResource("6_0qif0")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TravelPoints/ToFarm"]
+shape = SubResource("RectangleShape2D_856j6")
+
+[node name="SpawnFromFarm" type="Marker2D" parent="TravelPoints" groups=["spawn_points"]]
+position = Vector2(385, 65)
+script = ExtResource("7_w8oiw")
+tag = "from_farm"
+
+[node name="ToolWorld" parent="." instance=ExtResource("8_pe8do")]
+world_id = "Town"
+ground_path = NodePath("../TileMaps/Ground")
+objects_path = NodePath("../TileMaps/Objects")
+sfx_hit_tree = ExtResource("9_nenna")
+sfx_hit_rock = ExtResource("10_uyglx")
+
+[node name="SpawnManager" type="Node" parent="."]
+script = ExtResource("11_a6sjr")
+
+[node name="DialogueUI" parent="." instance=ExtResource("12_ygski")]
+
+[node name="QuestMenuUI" parent="." instance=ExtResource("13_rchhe")]
+
+[node name="InventoryUI" parent="." instance=ExtResource("14_6hjbk")]
+
+[node name="HelpOverlay" parent="." instance=ExtResource("15_0fxxo")]
+
+[node name="HUD" parent="." instance=ExtResource("16_5ppvc")]
+
+[node name="EndOfDaySummaryUI" parent="." instance=ExtResource("17_itkx5")]
+
+[node name="CraftingUI" parent="." instance=ExtResource("18_uwueb")]
+
+[node name="GiftUI" parent="." instance=ExtResource("19_7gn7y")]
+
+[node name="DayNightOverlay" parent="." instance=ExtResource("20_1vw0i")]
+
+[node name="RestorationCombatUI" parent="." instance=ExtResource("21_rchhe")]

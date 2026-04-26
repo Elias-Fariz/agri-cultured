@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="RestorationPatternData" load_steps=2 format=3 uid="uid://uymcrufn53gg"]
+
+[ext_resource type="Script" uid="uid://tlsxp5i6nh0r" path="res://data/restoration/RestorationPatternData.gd" id="1_b44om"]
+
+[resource]
+script = ExtResource("1_b44om")
+pattern_id = "line_from_core"
+pattern_type = 2
+warning_seconds = 1.0
+radius = 30.0
+metadata/_custom_type_script = "uid://tlsxp5i6nh0r"

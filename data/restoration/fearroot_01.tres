@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="RestorationEncounterData" load_steps=5 format=3 uid="uid://2yb01oh3fshr"]
+
+[ext_resource type="Script" uid="uid://tlsxp5i6nh0r" path="res://data/restoration/RestorationPatternData.gd" id="1_jmvan"]
+[ext_resource type="Resource" uid="uid://b2t4kajbc1jna" path="res://data/restoration/pattern_circle_at_player.tres" id="2_m8q8h"]
+[ext_resource type="Script" uid="uid://c6mouwdgtiu8c" path="res://data/restoration/RestorationEncounterData.gd" id="2_s6obv"]
+[ext_resource type="Resource" uid="uid://uymcrufn53gg" path="res://data/restoration/pattern_line_from_core.tres" id="3_cglhp"]
+
+[resource]
+script = ExtResource("2_s6obv")
+core_open_duration = 1.8
+patterns = Array[ExtResource("1_jmvan")]([ExtResource("2_m8q8h"), ExtResource("3_cglhp")])
+rewards = {
+"Calm Root Fiber": 2
+}
+metadata/_custom_type_script = "uid://c6mouwdgtiu8c"

@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://dv7wem6ftpvdd"]
+[gd_scene load_steps=20 format=3 uid="uid://dv7wem6ftpvdd"]
 
 [ext_resource type="Script" uid="uid://lxxgykutkbm4" path="res://scripts/Player.gd" id="1_vvow5"]
 [ext_resource type="AudioStream" uid="uid://e7naj8iuf7u5" path="res://audio/sfx/sfx_talk_01.WAV" id="2_hdrus"]
@@ -14,6 +14,8 @@
 [ext_resource type="AudioStream" uid="uid://byfycenow50f8" path="res://audio/footsteps/stone_steps_02.WAV" id="9_5jfsi"]
 [ext_resource type="AudioStream" uid="uid://bxsrixmfhey82" path="res://audio/footsteps/stone_steps_03.WAV" id="10_r3dvn"]
 [ext_resource type="Script" uid="uid://br7sbrrhxpw40" path="res://scripts/PlayerInteractPrompt.gd" id="14_56q24"]
+[ext_resource type="Script" uid="uid://bsf5y2byqsrtb" path="res://scripts/RestorationCombatController.gd" id="15_exuc5"]
+[ext_resource type="PackedScene" uid="uid://dd8fc48ylbhrl" path="res://tscn/HeartbladeSlashVisual.tscn" id="16_7fkfc"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_xfidv"]
 size = Vector2(31, 31)
@@ -85,3 +87,9 @@ script = ExtResource("14_56q24")
 sense_area_path = NodePath("../InteractSense")
 prompt_label_path = NodePath("../InteractPrompt/PromptLabel")
 prompt_anchor_path = NodePath("../InteractPrompt")
+
+[node name="RestorationCombatController" type="Node" parent="."]
+script = ExtResource("15_exuc5")
+slash_length = 64.0
+slash_width = 48.0
+slash_visual_scene = ExtResource("16_7fkfc")

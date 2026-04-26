@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3 uid="uid://c183gq0vknqv1"]
+
+[ext_resource type="Script" uid="uid://dfoyyckymw8co" path="res://data/items/ItemData.gd" id="1_b4au4"]
+
+[resource]
+script = ExtResource("1_b4au4")
+id = "Calm Root Fiber"
+display_name = "Calm Root Fiber"
+sell_price = 25
+description = "A thanks from the land for purifying the corruption"
+metadata/_custom_type_script = "uid://dfoyyckymw8co"

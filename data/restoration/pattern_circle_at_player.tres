@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="RestorationPatternData" load_steps=2 format=3 uid="uid://b2t4kajbc1jna"]
+
+[ext_resource type="Script" uid="uid://tlsxp5i6nh0r" path="res://data/restoration/RestorationPatternData.gd" id="1_t5i75"]
+
+[resource]
+script = ExtResource("1_t5i75")
+warning_seconds = 0.9
+radius = 48.0
+metadata/_custom_type_script = "uid://tlsxp5i6nh0r"

@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://dd8fc48ylbhrl"]
+
+[ext_resource type="Script" uid="uid://brhrcjk3qqhh5" path="res://scripts/HeartbladeSlashVisual.gd" id="1_g2g2w"]
+
+[node name="HeartbladeSlashVisual" type="Node2D"]
+script = ExtResource("1_g2g2w")
