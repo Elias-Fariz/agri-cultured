@@ -1,10 +1,15 @@
-[gd_scene load_steps=8 format=3 uid="uid://2o0kc6an36i8"]
+[gd_scene load_steps=13 format=3 uid="uid://2o0kc6an36i8"]
 
 [ext_resource type="Texture2D" uid="uid://bu28sneccfwyb" path="res://art/circle.png" id="1_1ls5c"]
 [ext_resource type="Script" uid="uid://c8as7avvqfn7f" path="res://data/restoration/RestorationEncounter.gd" id="1_gydhc"]
 [ext_resource type="Resource" uid="uid://2yb01oh3fshr" path="res://data/restoration/fearroot_01.tres" id="2_17kjy"]
 [ext_resource type="Script" uid="uid://bsjcf5gj53ald" path="res://data/restoration/DisturbanceCore.gd" id="2_56w8p"]
 [ext_resource type="Texture2D" uid="uid://c7c8y2irbg56" path="res://art/npc.PNG" id="3_56w8p"]
+[ext_resource type="PackedScene" uid="uid://bqrwddeoi3g56" path="res://tscn/CropReadySparkle.tscn" id="4_hqqqr"]
+[ext_resource type="Texture2D" uid="uid://bvwrrj2bcxwqh" path="res://art/wood.PNG" id="5_snm6m"]
+[ext_resource type="Script" uid="uid://dm3rbu1b4ebgu" path="res://data/restoration/RestorationInstabilityBar.gd" id="6_8m62j"]
+[ext_resource type="Texture2D" uid="uid://2eju1f1rp7vs" path="res://art/tilled.png" id="6_hqqqr"]
+[ext_resource type="Texture2D" uid="uid://bwudms0hgr4q7" path="res://art/grass.png" id="7_atpek"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_17kjy"]
 radius = 56.0
@@ -21,18 +26,28 @@ texture = ExtResource("1_1ls5c")
 
 [node name="RestorationEncounter" type="Node2D" parent="."]
 script = ExtResource("1_gydhc")
+boundary_mode = 1
+boundary_pushback_distance = 64.0
+boundary_pushback_cooldown = 0.3
 encounter_data = ExtResource("2_17kjy")
 core_path = NodePath("../DisturbanceCore")
 trigger_area_path = NodePath("../TriggerArea")
 danger_container_path = NodePath("../DangerZones")
 fail_exit_marker_path = NodePath("../FailExitMarker")
+auto_start_on_trigger = false
 boundary_visual_path = NodePath("../BoundaryVisual")
+instability_bar_path = NodePath("../InstabilityBar")
+hit_sparkle_scene = ExtResource("4_hqqqr")
+hit_sparkle_scale = 3.0
 
 [node name="DisturbanceCore" type="Area2D" parent="."]
 collision_layer = 33
 script = ExtResource("2_56w8p")
 vulnerable = true
 sprite_path = NodePath("Sprite2D")
+closed_texture = ExtResource("5_snm6m")
+open_texture = ExtResource("6_hqqqr")
+restored_texture = ExtResource("7_atpek")
 
 [node name="Sprite2D" type="Sprite2D" parent="DisturbanceCore"]
 scale = Vector2(2, 2)
@@ -53,3 +68,7 @@ shape = SubResource("CircleShape2D_1ls5c")
 
 [node name="FailExitMarker" type="Marker2D" parent="."]
 position = Vector2(432, -10)
+
+[node name="InstabilityBar" type="Node2D" parent="."]
+position = Vector2(0, -70)
+script = ExtResource("6_8m62j")

@@ -18,7 +18,11 @@ var _cutscene_paths := {
 	"heart_intro": "res://data/cutscenes/heart_intro.tres",
 	"greeting_intro": "res://data/cutscenes/greeting_intro.tres",
 	"shop_intro": "res://data/cutscenes/shop_intro.tres",
+	"fearroot_intro": "res://data/cutscenes/fearroot_intro.tres",
 }
+
+var _pending_restoration_encounter_path: NodePath = NodePath("")
+var _pending_restoration_encounter_id: String = ""
 
 func _process(_delta: float) -> void:
 	# Keep camera steady while a cutscene is playing.
@@ -176,6 +180,10 @@ func _run_cutscene_impl(data: CutsceneData) -> void:
 		player.camera_clear_focus()
 
 	_restore_original_actor_positions()
+
+	# Optional final player placement while screen is faded out.
+	_place_end_positions(scene, data, actors_by_key)
+
 	call_deferred("_cleanup_temp_actors")
 	await get_tree().process_frame
 
@@ -184,10 +192,57 @@ func _run_cutscene_impl(data: CutsceneData) -> void:
 
 	_finish_cutscene()
 
+	await get_tree().process_frame
+	_start_pending_restoration_encounter(scene)
+
 func _finish_cutscene() -> void:
 	GameState.unlock_gameplay()
 	_set_time_paused(false)
 	_is_playing = false
+
+func _start_pending_restoration_encounter(scene: Node) -> void:
+	var path := _pending_restoration_encounter_path
+	var encounter_id := _pending_restoration_encounter_id.strip_edges()
+
+	_pending_restoration_encounter_path = NodePath("")
+	_pending_restoration_encounter_id = ""
+
+	if scene == null:
+		return
+
+	var encounter: Node = null
+
+	# 1) Try exact node path first, if provided.
+	if path != NodePath(""):
+		var direct := scene.get_node_or_null(path)
+		if direct != null:
+			if direct.has_method("start_encounter"):
+				encounter = direct
+			else:
+				encounter = _find_restoration_encounter_under(direct)
+
+	# 2) If no path worked, search by encounter_id.
+	if encounter == null and encounter_id != "":
+		encounter = _find_restoration_encounter_by_id(encounter_id)
+
+	# 3) If still nothing, use first restoration encounter in the current scene as fallback.
+	# This is useful for simple test scenes with only one encounter.
+	if encounter == null:
+		encounter = _find_first_restoration_encounter_in_scene(scene)
+
+	if encounter == null:
+		push_warning(
+			"CutsceneDirector: no restoration encounter found. path="
+			+ str(path)
+			+ " encounter_id="
+			+ encounter_id
+		)
+		return
+
+	if encounter.has_method("start_encounter"):
+		encounter.call("start_encounter")
+	else:
+		push_warning("CutsceneDirector: found target but it does not have start_encounter(): " + str(encounter.name))
 
 # ------------------------------------------------------------
 # Camera lock helpers
@@ -279,6 +334,15 @@ func _place_start_positions(scene: Node, data: CutsceneData, actors_by_key: Dict
 		var m := _get_marker_by_id(scene, data, k + "_start")
 		if m != null:
 			(actor as Node).global_position = m.global_position
+
+func _place_end_positions(scene: Node, data: CutsceneData, actors_by_key: Dictionary) -> void:
+	# Optional convention: if a cutscene has "player_end", place player there
+	# during the final fade-out before revealing normal gameplay again.
+	var player: Variant = actors_by_key.get("player", null)
+	if player != null and is_instance_valid(player):
+		var pm := _get_marker_by_id(scene, data, "player_end")
+		if pm != null:
+			(player as Node).global_position = pm.global_position
 
 # ------------------------------------------------------------
 # Helpers: dialogue waiting
@@ -470,6 +534,40 @@ func _run_step(step: CutsceneStepData, scene: Node, player: Node, _dialogue_ui: 
 			_dialogue_ui.show_dialogue(speaker_name, lines, friendship, npc_id)
 			await _dialogue_ui.dialogue_closed
 			await get_tree().process_frame
+			
+		CutsceneStepData.StepType.MOVE_PLAYER_TO_MARKER:
+			var marker_player := _resolve_marker(scene, data, step)
+			if marker_player == null:
+				return
+
+			var to_player_pos := marker_player.global_position
+
+			# If duration is tiny, teleport instantly.
+			# If duration is larger, tween visibly.
+			if step.duration <= 0.01:
+				player.global_position = to_player_pos
+				await get_tree().process_frame
+				return
+
+			var tp := scene.create_tween()
+			tp.tween_property(player, "global_position", to_player_pos, max(step.duration, 0.01))
+
+			if step.ease_run:
+				tp.set_trans(Tween.TRANS_QUAD)
+				tp.set_ease(Tween.EASE_OUT)
+			else:
+				tp.set_trans(Tween.TRANS_SINE)
+				tp.set_ease(Tween.EASE_IN_OUT)
+
+			await tp.finished
+
+		CutsceneStepData.StepType.START_RESTORATION_ENCOUNTER:
+			# Do not start it immediately while the cutscene is still locked/fading.
+			# Store it and start after _finish_cutscene().
+			_pending_restoration_encounter_path = step.target_path
+			_pending_restoration_encounter_id = String(step.encounter_id).strip_edges()
+			await get_tree().process_frame
+
 
 func _resolve_marker(scene: Node, data: CutsceneData, step: CutsceneStepData) -> Marker2D:
 	# New way: marker_id -> markers_by_id
@@ -536,3 +634,50 @@ func _get_npc_id_for_actor_key(data: CutsceneData, actor_key: String) -> String:
 			return String(a.npc_id).strip_edges()
 
 	return ""
+
+func _find_restoration_encounter_under(root: Node) -> Node:
+	if root == null:
+		return null
+
+	if root.has_method("start_encounter"):
+		return root
+
+	for child in root.get_children():
+		var found := _find_restoration_encounter_under(child)
+		if found != null:
+			return found
+
+	return null
+
+func _find_restoration_encounter_by_id(encounter_id: String) -> Node:
+	encounter_id = encounter_id.strip_edges()
+	if encounter_id == "":
+		return null
+
+	for n in get_tree().get_nodes_in_group("restoration_encounter"):
+		if n == null:
+			continue
+
+		var data = n.get("encounter_data")
+		if data == null:
+			continue
+
+		var id := String(data.get("encounter_id")).strip_edges()
+		if id == encounter_id:
+			return n
+
+	return null
+
+func _find_first_restoration_encounter_in_scene(scene: Node) -> Node:
+	if scene == null:
+		return null
+
+	for n in get_tree().get_nodes_in_group("restoration_encounter"):
+		if n == null:
+			continue
+
+		if scene.is_ancestor_of(n) or n == scene:
+			if n.has_method("start_encounter"):
+				return n
+
+	return null

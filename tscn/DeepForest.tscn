@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=3 uid="uid://c7rkh414afrgv"]
+[gd_scene load_steps=26 format=3 uid="uid://c7rkh414afrgv"]
 
 [ext_resource type="TileSet" uid="uid://bqs5ruk6pejpc" path="res://tiles/GroundTileset.tres" id="1_hnpyl"]
 [ext_resource type="TileSet" uid="uid://bjhy464dgbpg" path="res://tiles/ObjectsTileset.tres" id="2_ra3ic"]
@@ -20,9 +20,13 @@
 [ext_resource type="PackedScene" uid="uid://c48msaiodeqan" path="res://ui/CraftingUI.tscn" id="18_uwueb"]
 [ext_resource type="PackedScene" uid="uid://ixx7e0mb3ds4" path="res://ui/GiftUI.tscn" id="19_7gn7y"]
 [ext_resource type="PackedScene" uid="uid://ci8kga43aovsx" path="res://ui/DayNightOverlay.tscn" id="20_1vw0i"]
-[ext_resource type="PackedScene" uid="uid://bhvsajr30naqm" path="res://ui/RestorationCombatUI.tscn" id="21_rchhe"]
+[ext_resource type="PackedScene" uid="uid://ynnuf38wfdwk" path="res://ui/RestorationFadeOverlay.tscn" id="22_0fxxo"]
+[ext_resource type="PackedScene" uid="uid://blf852yag5wnl" path="res://ui/PlayerResolveUI.tscn" id="22_6hjbk"]
+[ext_resource type="Script" uid="uid://b7n4wv6k3k33k" path="res://scripts/QuestLocation.gd" id="23_0fxxo"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_856j6"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_5ppvc"]
 
 [node name="DeepForest" type="Node2D"]
 
@@ -91,4 +95,31 @@ script = ExtResource("11_a6sjr")
 
 [node name="DayNightOverlay" parent="." instance=ExtResource("20_1vw0i")]
 
-[node name="RestorationCombatUI" parent="." instance=ExtResource("21_rchhe")]
+[node name="PlayerResolveUI" parent="." instance=ExtResource("22_6hjbk")]
+
+[node name="RestorationFadeOverlay" parent="." instance=ExtResource("22_0fxxo")]
+visible = false
+
+[node name="CombatIntroMarkers" type="Node" parent="."]
+
+[node name="focus_start" type="Marker2D" parent="CombatIntroMarkers"]
+position = Vector2(282, 280)
+
+[node name="player_start" type="Marker2D" parent="CombatIntroMarkers"]
+position = Vector2(341, 185)
+
+[node name="ash_start" type="Marker2D" parent="CombatIntroMarkers"]
+position = Vector2(232, 185)
+
+[node name="player_end" type="Marker2D" parent="CombatIntroMarkers"]
+position = Vector2(111, 138)
+
+[node name="DeepForestQuestLocation" type="Area2D" parent="."]
+position = Vector2(283, -68)
+scale = Vector2(7.545272, 15.905272)
+collision_mask = 3
+script = ExtResource("23_0fxxo")
+location_id = "deepforest"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DeepForestQuestLocation"]
+shape = SubResource("RectangleShape2D_5ppvc")

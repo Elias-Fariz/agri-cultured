@@ -1,0 +1,73 @@
+[gd_resource type="Resource" script_class="CutsceneData" load_steps=16 format=3 uid="uid://dod7gebk6ei"]
+
+[ext_resource type="Script" uid="uid://b4pm6wxp5ivtk" path="res://data/cutscenes/CutsceneActorData.gd" id="1_0asig"]
+[ext_resource type="Script" uid="uid://cp2gtb0hckrrj" path="res://data/cutscenes/CutsceneEffectData.gd" id="2_lk4kc"]
+[ext_resource type="Script" uid="uid://camo0lur1qm85" path="res://data/cutscenes/CutsceneData.gd" id="3_3qrtc"]
+[ext_resource type="Script" uid="uid://bjwubxbrbyt2x" path="res://data/cutscenes/CutsceneMarkerSet.gd" id="3_lk4kc"]
+[ext_resource type="Script" uid="uid://0k0f68wqa7mm" path="res://data/cutscenes/CutsceneStepData.gd" id="4_cub7t"]
+[ext_resource type="Script" uid="uid://dt1fjl76x6n5o" path="res://data/dialogue/DialogueBeatData.gd" id="6_cub7t"]
+[ext_resource type="Script" uid="uid://clb3lhdggkt8d" path="res://data/dialogue/DialogueSequenceData.gd" id="7_eeyt2"]
+
+[sub_resource type="Resource" id="Resource_lk4kc"]
+script = ExtResource("1_0asig")
+key = "player"
+actor_type = "player"
+metadata/_custom_type_script = "uid://b4pm6wxp5ivtk"
+
+[sub_resource type="Resource" id="Resource_cub7t"]
+script = ExtResource("1_0asig")
+key = "ash"
+npc_id = "npc_ash"
+display_name = "Ash"
+scene_path = "res://tscn/npcs/Ash.tscn"
+metadata/_custom_type_script = "uid://b4pm6wxp5ivtk"
+
+[sub_resource type="Resource" id="Resource_3qrtc"]
+script = ExtResource("3_lk4kc")
+markers_by_id = {
+"ash_start": NodePath("CombatIntroMarkers/ash_start"),
+"focus_start": NodePath("CombatIntroMarkers/focus_start"),
+"player_end": NodePath("CombatIntroMarkers/player_end"),
+"player_start": NodePath("CombatIntroMarkers/player_start")
+}
+metadata/_custom_type_script = "uid://bjwubxbrbyt2x"
+
+[sub_resource type="Resource" id="Resource_6mh1h"]
+script = ExtResource("6_cub7t")
+text = "Look out!"
+speaker_id = "npc_ash"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_43kdb"]
+script = ExtResource("7_eeyt2")
+sequence_id = "fearroot_intro_01"
+beats = Array[ExtResource("6_cub7t")]([SubResource("Resource_6mh1h")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_e763s"]
+script = ExtResource("4_cub7t")
+step_type = 2
+dialogue_sequence = SubResource("Resource_43kdb")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_eeyt2"]
+script = ExtResource("4_cub7t")
+step_type = 4
+marker_id = "player_end"
+duration = 0.0
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_sufwf"]
+script = ExtResource("4_cub7t")
+step_type = 5
+encounter_id = "fearroot_01"
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[resource]
+script = ExtResource("3_3qrtc")
+id = "fearroot_intro"
+scene_name = "DeepForest"
+actors = Array[ExtResource("1_0asig")]([SubResource("Resource_lk4kc"), SubResource("Resource_cub7t")])
+markers = SubResource("Resource_3qrtc")
+steps = Array[ExtResource("4_cub7t")]([SubResource("Resource_e763s"), SubResource("Resource_eeyt2"), SubResource("Resource_sufwf")])
+metadata/_custom_type_script = "uid://camo0lur1qm85"

@@ -1,6 +1,21 @@
 extends Node2D
 class_name RestorationEncounter
 
+enum BoundaryMode {
+	RETREAT_ON_EXIT,
+	PUSH_BACK_ON_EXIT,
+	IGNORE_EXIT
+}
+
+@export var boundary_mode: BoundaryMode = BoundaryMode.RETREAT_ON_EXIT
+
+# Used only when boundary_mode = PUSH_BACK_ON_EXIT.
+@export var boundary_pushback_distance: float = 56.0
+@export var boundary_pushback_toast: String = "The roots hold the clearing shut."
+@export var boundary_pushback_cooldown: float = 0.6
+
+var _pushback_locked: bool = false
+
 @export var encounter_data: RestorationEncounterData
 
 @export var core_path: NodePath
@@ -23,12 +38,19 @@ class_name RestorationEncounter
 
 @export var boundary_visual_path: NodePath
 
+@export var instability_bar_path: NodePath
+
+@export var hit_sparkle_scene: PackedScene
+@export var hit_sparkle_lifetime: float = 0.6
+@export var hit_sparkle_scale: float = 2.0
+
 @onready var core: DisturbanceCore = get_node_or_null(core_path) as DisturbanceCore
 @onready var trigger_area: Area2D = get_node_or_null(trigger_area_path) as Area2D
 @onready var danger_container: Node2D = get_node_or_null(danger_container_path) as Node2D
 @onready var reward_spawn: Node2D = get_node_or_null(reward_spawn_path) as Node2D
 @onready var fail_exit_marker: Node2D = get_node_or_null(fail_exit_marker_path) as Node2D
 @onready var boundary_visual: CanvasItem = get_node_or_null(boundary_visual_path) as CanvasItem
+@onready var instability_bar: RestorationInstabilityBar = get_node_or_null(instability_bar_path) as RestorationInstabilityBar
 
 var _active: bool = false
 var _resolve: int = 0
@@ -91,7 +113,9 @@ func start_encounter() -> void:
 	_set_boundary_visible(true)
 	_resolve = _get_starting_resolve()
 	_instability = _get_starting_instability()
-	_show_restoration_ui()
+	_show_player_resolve_ui()
+	_show_instability_bar()
+	#_show_restoration_ui()
 
 	if encounter_data.pause_time_during_encounter and TimeManager != null and TimeManager.has_method("enter_timeless_zone"):
 		TimeManager.enter_timeless_zone()
@@ -111,7 +135,9 @@ func fail_encounter(reason: String = "overwhelmed") -> void:
 	_ending = true
 	_clear_danger_zones()
 	_set_boundary_visible(false)
-	_hide_restoration_ui()
+	_hide_instability_bar()
+	_hide_player_resolve_ui()
+	#_hide_restoration_ui()
 
 	if core != null:
 		core.set_vulnerable(false)
@@ -123,8 +149,20 @@ func fail_encounter(reason: String = "overwhelmed") -> void:
 		if GameState.energy <= 0:
 			GameState.exhausted = true
 
-	if fail_exit_marker != null and _player != null:
-		_player.global_position = fail_exit_marker.global_position
+	var fade := _get_restoration_fade_overlay()
+
+	if fade != null and fade.has_method("fade_out_in"):
+		var fade_call = fade.call("fade_out_in", 0.22, 0.12, 0.32)
+
+		await get_tree().create_timer(0.22).timeout
+
+		if fail_exit_marker != null and _player != null:
+			_player.global_position = fail_exit_marker.global_position
+
+		await fade_call
+	else:
+		if fail_exit_marker != null and _player != null:
+			_player.global_position = fail_exit_marker.global_position
 
 	if encounter_data.pause_time_during_encounter and TimeManager != null and TimeManager.has_method("exit_timeless_zone"):
 		TimeManager.exit_timeless_zone()
@@ -151,7 +189,9 @@ func complete_encounter() -> void:
 	_ending = true
 	_clear_danger_zones()
 	_set_boundary_visible(false)
-	_hide_restoration_ui()
+	_hide_instability_bar()
+	_hide_player_resolve_ui()
+	#_hide_restoration_ui()
 
 	if core != null:
 		core.mark_restored()
@@ -327,7 +367,9 @@ func _on_core_restoration_hit() -> void:
 	_hit_registered_this_opening = true
 	_instability -= 1
 	_instability = max(0, _instability)
-	_update_restoration_ui()
+	_update_instability_bar()
+	_update_player_resolve_ui()
+	_spawn_hit_sparkle()
 
 	_debug_toast("The core softens. Instability: %d/%d" % [_instability, encounter_data.max_instability], "success", 1.2)
 
@@ -340,7 +382,8 @@ func _on_danger_zone_player_hit(resolve_damage: int) -> void:
 
 	_resolve -= max(1, resolve_damage)
 	_resolve = max(0, _resolve)
-	_update_restoration_ui()
+	_update_player_resolve_ui()
+	#_update_restoration_ui()
 
 	_debug_toast("Your resolve wavers. Resolve: %d/%d" % [_resolve, encounter_data.max_resolve], "warning", 1.2)
 
@@ -370,8 +413,18 @@ func _on_trigger_body_exited(body: Node) -> void:
 	if body == null:
 		return
 
-	if body.is_in_group("player"):
-		fail_encounter("retreat")
+	if not body.is_in_group("player"):
+		return
+
+	match boundary_mode:
+		BoundaryMode.RETREAT_ON_EXIT:
+			fail_encounter("retreat")
+
+		BoundaryMode.PUSH_BACK_ON_EXIT:
+			_push_player_back_into_boundary(body)
+
+		BoundaryMode.IGNORE_EXIT:
+			return
 
 func _clear_danger_zones() -> void:
 	if danger_container == null:
@@ -453,6 +506,8 @@ func _apply_restored_state_if_needed() -> void:
 		core.mark_restored()
 	else:
 		core.set_vulnerable(false)
+	
+	_hide_player_resolve_ui()
 
 func _debug_toast(msg: String, kind: String = "info", duration: float = 1.5) -> void:
 	if not show_debug_toasts:
@@ -507,3 +562,114 @@ func _hide_restoration_ui() -> void:
 
 	if ui.has_method("hide_ui"):
 		ui.call("hide_ui")
+
+func _show_instability_bar() -> void:
+	if instability_bar == null:
+		return
+
+	instability_bar.show_bar(_instability, _get_starting_instability())
+
+func _update_instability_bar() -> void:
+	if instability_bar == null:
+		return
+
+	instability_bar.set_values(_instability, _get_starting_instability())
+
+func _hide_instability_bar() -> void:
+	if instability_bar == null:
+		return
+
+	instability_bar.hide_bar()
+
+func _get_player_resolve_ui() -> Node:
+	return get_tree().get_first_node_in_group("player_resolve_ui")
+
+func _show_player_resolve_ui() -> void:
+	var ui := _get_player_resolve_ui()
+	if ui == null:
+		return
+
+	if ui.has_method("show_resolve"):
+		ui.call("show_resolve", _resolve, _get_starting_resolve())
+
+func _update_player_resolve_ui() -> void:
+	var ui := _get_player_resolve_ui()
+	if ui == null:
+		return
+
+	if ui.has_method("update_resolve"):
+		ui.call("update_resolve", _resolve, _get_starting_resolve())
+
+func _hide_player_resolve_ui() -> void:
+	var ui := _get_player_resolve_ui()
+	if ui == null:
+		return
+
+	if ui.has_method("hide_resolve"):
+		ui.call("hide_resolve")
+
+func _get_restoration_fade_overlay() -> Node:
+	return get_tree().get_first_node_in_group("restoration_fade_overlay")
+
+func _play_failure_fade() -> void:
+	var fade := _get_restoration_fade_overlay()
+	if fade == null:
+		return
+
+	if fade.has_method("fade_out_in"):
+		await fade.call("fade_out_in", 0.22, 0.12, 0.32)
+
+func _spawn_hit_sparkle() -> void:
+	if hit_sparkle_scene == null:
+		return
+
+	if core == null:
+		return
+
+	var sparkle := hit_sparkle_scene.instantiate()
+	get_tree().current_scene.add_child(sparkle)
+
+	if sparkle is Node2D:
+		var sparkle_2d := sparkle as Node2D
+		sparkle_2d.global_position = core.global_position
+		sparkle_2d.scale = Vector2.ONE * hit_sparkle_scale
+		sparkle_2d.z_index = 250
+
+	await get_tree().create_timer(max(0.05, hit_sparkle_lifetime)).timeout
+
+	if is_instance_valid(sparkle):
+		sparkle.queue_free()
+
+func _push_player_back_into_boundary(body: Node) -> void:
+	if _pushback_locked:
+		return
+
+	if body == null or not (body is Node2D):
+		return
+
+	_pushback_locked = true
+
+	var player_2d := body as Node2D
+
+	var center := global_position
+	if core != null:
+		center = core.global_position
+	elif trigger_area != null:
+		center = trigger_area.global_position
+
+	var dir_to_center := center - player_2d.global_position
+
+	if dir_to_center.length() < 0.01:
+		dir_to_center = Vector2.DOWN
+	else:
+		dir_to_center = dir_to_center.normalized()
+
+	player_2d.global_position += dir_to_center * boundary_pushback_distance
+
+	_debug_toast(boundary_pushback_toast, "warning", 1.2)
+
+	if print_debug:
+		print("[RestorationEncounter] Player pushed back into boundary.")
+
+	await get_tree().create_timer(max(0.05, boundary_pushback_cooldown)).timeout
+	_pushback_locked = false

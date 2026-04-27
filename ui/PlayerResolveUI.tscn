@@ -1,0 +1,38 @@
+[gd_scene load_steps=2 format=3 uid="uid://blf852yag5wnl"]
+
+[ext_resource type="Script" uid="uid://rwph3lwif0h5" path="res://scripts/PlayerResolveUI.gd" id="1_looqv"]
+
+[node name="PlayerResolveUI" type="CanvasLayer"]
+offset = Vector2(24, 96)
+transform = Transform2D(1, 0, 0, 1, 24, 96)
+script = ExtResource("1_looqv")
+visual_node_path = NodePath("Panel")
+start_visible_in_game = false
+
+[node name="Panel" type="Panel" parent="."]
+visible = false
+custom_minimum_size = Vector2(220, 74)
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="MarginContainer" type="MarginContainer" parent="Panel"]
+custom_minimum_size = Vector2(220, 74)
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/MarginContainer"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ResolveBar" type="ProgressBar" parent="Panel/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+max_value = 4.0
+value = 4.0
+show_percentage = false
+
+[node name="ResolveTextLabel" type="Label" parent="Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2

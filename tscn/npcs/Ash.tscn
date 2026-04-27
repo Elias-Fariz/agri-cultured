@@ -1,0 +1,17 @@
+[gd_scene load_steps=4 format=3 uid="uid://br3h0dcobhq4e"]
+
+[ext_resource type="PackedScene" uid="uid://bfaurdf2mucr2" path="res://tscn/npcs/NPC.tscn" id="1_f7d0r"]
+[ext_resource type="Texture2D" uid="uid://ylpu3ria5fxy" path="res://art/cow.PNG" id="2_xwfys"]
+[ext_resource type="Resource" uid="uid://cqycfsbef0r44" path="res://data/gifts/gifts_ash.tres" id="3_xwfys"]
+
+[node name="NPC" instance=ExtResource("1_f7d0r")]
+npc_id = "npc_ash"
+display_name = "Ash"
+portrait = ExtResource("2_xwfys")
+dialogue_lines = Array[String](["What?"])
+morning_dialogue_lines = Array[String](["Leave me alone."])
+evening_dialogue_lines = Array[String](["Go away..."])
+night_dialogue_lines = Array[String](["Get back to the village..."])
+overhead_greeting_lines = Array[String](["Hmph"])
+overhead_idle_lines = Array[String](["Grr..."])
+gift_prefs = ExtResource("3_xwfys")
