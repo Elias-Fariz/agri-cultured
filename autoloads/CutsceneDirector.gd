@@ -24,6 +24,11 @@ var _cutscene_paths := {
 var _pending_restoration_encounter_path: NodePath = NodePath("")
 var _pending_restoration_encounter_id: String = ""
 
+var _pending_player_end_marker_id: String = ""
+
+var _cutscene_original_zoom: float = 1.0
+var _has_cutscene_original_zoom: bool = false
+
 func _process(_delta: float) -> void:
 	# Keep camera steady while a cutscene is playing.
 	if not _camera_lock_active:
@@ -117,6 +122,9 @@ func _run_cutscene_impl(data: CutsceneData) -> void:
 	# 1) Fade OUT immediately (hide spawning/teleporting)
 	if has_node("/root/FadeOverlay"):
 		await FadeOverlay.fade_out(0.15)
+		
+	_store_cutscene_original_zoom(player)
+	await _set_player_cutscene_zoom(player, 1.0, 0.0)
 
 	# 2) Spawn / resolve actors
 	var actors_by_key: Dictionary = {}
@@ -182,7 +190,9 @@ func _run_cutscene_impl(data: CutsceneData) -> void:
 	_restore_original_actor_positions()
 
 	# Optional final player placement while screen is faded out.
-	_place_end_positions(scene, data, actors_by_key)
+	_apply_final_player_placement(scene, data, actors_by_key)
+	
+	await _restore_player_cutscene_zoom(player, 0.0)
 
 	call_deferred("_cleanup_temp_actors")
 	await get_tree().process_frame
@@ -567,6 +577,93 @@ func _run_step(step: CutsceneStepData, scene: Node, player: Node, _dialogue_ui: 
 			_pending_restoration_encounter_path = step.target_path
 			_pending_restoration_encounter_id = String(step.encounter_id).strip_edges()
 			await get_tree().process_frame
+			
+		CutsceneStepData.StepType.SHOW_NODE:
+			var target_show := _resolve_cutscene_target(scene, step)
+			if target_show != null:
+				_set_node_visible_safe(target_show, true)
+			await get_tree().process_frame
+
+		CutsceneStepData.StepType.HIDE_NODE:
+			var target_hide := _resolve_cutscene_target(scene, step)
+			if target_hide != null:
+				_set_node_visible_safe(target_hide, false)
+			await get_tree().process_frame
+
+		CutsceneStepData.StepType.MOVE_NODE_TO_MARKER:
+			var target_move := _resolve_cutscene_target(scene, step)
+			var marker_move := _resolve_marker(scene, data, step)
+
+			if target_move == null or marker_move == null:
+				await get_tree().process_frame
+				return
+
+			if not (target_move is Node2D):
+				push_warning("CutsceneDirector: MOVE_NODE_TO_MARKER target is not Node2D: " + str(target_move.name))
+				await get_tree().process_frame
+				return
+
+			var target_2d := target_move as Node2D
+			var to_pos := marker_move.global_position
+
+			if step.duration <= 0.01:
+				target_2d.global_position = to_pos
+				await get_tree().process_frame
+				return
+
+			var move_tween := scene.create_tween()
+			move_tween.tween_property(target_2d, "global_position", to_pos, max(step.duration, 0.01))
+
+			if step.ease_run:
+				move_tween.set_trans(Tween.TRANS_QUAD)
+				move_tween.set_ease(Tween.EASE_OUT)
+			else:
+				move_tween.set_trans(Tween.TRANS_SINE)
+				move_tween.set_ease(Tween.EASE_IN_OUT)
+
+			await move_tween.finished
+
+		CutsceneStepData.StepType.SET_NODE_TEXTURE:
+			var target_texture := _resolve_cutscene_target(scene, step)
+			if target_texture != null:
+				_set_node_texture_safe(target_texture, step.texture)
+			await get_tree().process_frame
+
+		CutsceneStepData.StepType.SPAWN_SCENE_AT_MARKER:
+			var marker_spawn := _resolve_marker(scene, data, step)
+			if marker_spawn != null:
+				_spawn_scene_at_marker(scene, step, marker_spawn)
+			await get_tree().process_frame
+
+		CutsceneStepData.StepType.PLAY_NODE_ANIMATION:
+			var target_anim := _resolve_cutscene_target(scene, step)
+			if target_anim != null:
+				_play_animation_safe(target_anim, step.animation_name)
+
+			if step.duration > 0.01:
+				await get_tree().create_timer(step.duration).timeout
+			else:
+				await get_tree().process_frame
+				
+		CutsceneStepData.StepType.STORE_PLAYER_END_MARKER:
+			_pending_player_end_marker_id = String(step.marker_id).strip_edges()
+			await get_tree().process_frame
+
+		CutsceneStepData.StepType.CLEAR_STORED_PLAYER_END_MARKER:
+			_pending_player_end_marker_id = ""
+			await get_tree().process_frame
+		
+		CutsceneStepData.StepType.SET_CAMERA_ZOOM:
+			await _set_player_cutscene_zoom(player, step.zoom_value, step.duration)
+
+		CutsceneStepData.StepType.RESTORE_CAMERA_ZOOM:
+			await _restore_player_cutscene_zoom(player, step.duration) 
+			
+		CutsceneStepData.StepType.SHOW_ILLUSTRATION:
+			await _show_cutscene_illustration(step.texture, step.duration)
+
+		CutsceneStepData.StepType.HIDE_ILLUSTRATION:
+			await _hide_cutscene_illustration(step.duration)
 
 
 func _resolve_marker(scene: Node, data: CutsceneData, step: CutsceneStepData) -> Marker2D:
@@ -681,3 +778,198 @@ func _find_first_restoration_encounter_in_scene(scene: Node) -> Node:
 				return n
 
 	return null
+
+func _resolve_cutscene_target(scene: Node, step: CutsceneStepData) -> Node:
+	if scene == null or step == null:
+		return null
+
+	# 1) Direct path first.
+	if step.target_path != NodePath(""):
+		var direct := scene.get_node_or_null(step.target_path)
+		if direct != null:
+			return direct
+
+	# 2) ID fallback.
+	var tid := String(step.target_id).strip_edges()
+	if tid == "":
+		return null
+
+	# Prefer nodes explicitly registered as cutscene targets.
+	for n in get_tree().get_nodes_in_group("cutscene_target"):
+		if n == null:
+			continue
+		if not scene.is_ancestor_of(n) and n != scene:
+			continue
+
+		var id_from_property := String(n.get("cutscene_id")).strip_edges()
+		if id_from_property == tid:
+			return n
+
+		if n.has_meta("cutscene_id"):
+			var id_from_meta := String(n.get_meta("cutscene_id")).strip_edges()
+			if id_from_meta == tid:
+				return n
+
+	# 3) Gentle fallback by node name.
+	return _find_node_by_name_recursive(scene, tid)
+
+func _find_node_by_name_recursive(root: Node, wanted_name: String) -> Node:
+	if root == null:
+		return null
+
+	if root.name == wanted_name:
+		return root
+
+	for child in root.get_children():
+		var found := _find_node_by_name_recursive(child, wanted_name)
+		if found != null:
+			return found
+
+	return null
+
+func _set_node_visible_safe(target: Node, value: bool) -> void:
+	if target == null:
+		return
+
+	if target is CanvasItem:
+		(target as CanvasItem).visible = value
+		return
+
+	# Fallback for nodes/scripts that expose a visible property.
+	target.set("visible", value)
+
+func _set_node_texture_safe(target: Node, texture: Texture2D) -> void:
+	if target == null or texture == null:
+		return
+
+	if target is Sprite2D:
+		(target as Sprite2D).texture = texture
+		return
+
+	if target is TextureRect:
+		(target as TextureRect).texture = texture
+		return
+
+	# Fallback for custom nodes with a texture property.
+	target.set("texture", texture)
+
+func _spawn_scene_at_marker(scene: Node, step: CutsceneStepData, marker: Marker2D) -> Node:
+	if scene == null or step == null or marker == null:
+		return null
+
+	var path := String(step.scene_path).strip_edges()
+	if path == "":
+		return null
+
+	var packed := load(path)
+	if not (packed is PackedScene):
+		push_warning("CutsceneDirector: failed to load PackedScene: " + path)
+		return null
+
+	var inst := (packed as PackedScene).instantiate()
+	scene.add_child(inst)
+
+	if String(step.spawned_name).strip_edges() != "":
+		inst.name = String(step.spawned_name).strip_edges()
+
+	if inst is Node2D:
+		(inst as Node2D).global_position = marker.global_position
+
+	if not step.keep_spawned_after_cutscene:
+		_temp_spawned_actors.append(inst)
+
+	return inst
+
+func _play_animation_safe(target: Node, animation_name: String) -> void:
+	if target == null:
+		return
+
+	animation_name = animation_name.strip_edges()
+	if animation_name == "":
+		return
+
+	if target is AnimationPlayer:
+		(target as AnimationPlayer).play(animation_name)
+		return
+
+	var anim := target.get_node_or_null("AnimationPlayer") as AnimationPlayer
+	if anim != null:
+		anim.play(animation_name)
+		return
+
+	if target.has_method("play"):
+		target.call("play", animation_name)
+
+func _apply_final_player_placement(scene: Node, data: CutsceneData, actors_by_key: Dictionary) -> void:
+	var player: Variant = actors_by_key.get("player", null)
+	if player == null or not is_instance_valid(player):
+		return
+
+	# First priority: explicit stored end marker from a cutscene step.
+	var marker_id := _pending_player_end_marker_id.strip_edges()
+
+	# Second priority: your existing optional convention.
+	# If a cutscene has a marker called player_end, use it.
+	if marker_id == "":
+		marker_id = "player_end"
+
+	var pm := _get_marker_by_id(scene, data, marker_id)
+	if pm != null:
+		(player as Node2D).global_position = pm.global_position
+
+	_pending_player_end_marker_id = ""
+
+func _store_cutscene_original_zoom(player: Node) -> void:
+	if player == null:
+		return
+
+	if _has_cutscene_original_zoom:
+		return
+
+	if player.has_method("camera_get_target_zoom"):
+		_cutscene_original_zoom = float(player.call("camera_get_target_zoom"))
+	else:
+		_cutscene_original_zoom = 1.0
+
+	_has_cutscene_original_zoom = true
+
+func _set_player_cutscene_zoom(player: Node, zoom_value: float, duration: float = 0.0) -> void:
+	if player == null:
+		return
+
+	_store_cutscene_original_zoom(player)
+
+	if player.has_method("camera_set_zoom_for_cutscene"):
+		await player.call("camera_set_zoom_for_cutscene", zoom_value, duration)
+
+func _restore_player_cutscene_zoom(player: Node, duration: float = 0.0) -> void:
+	if player == null:
+		return
+
+	if not _has_cutscene_original_zoom:
+		return
+
+	if player.has_method("camera_set_zoom_for_cutscene"):
+		await player.call("camera_set_zoom_for_cutscene", _cutscene_original_zoom, duration)
+
+	_has_cutscene_original_zoom = false
+
+func _get_cutscene_illustration_overlay() -> Node:
+	return get_tree().get_first_node_in_group("cutscene_illustration_overlay")
+
+func _show_cutscene_illustration(texture: Texture2D, fade_seconds: float = 0.25) -> void:
+	var overlay := _get_cutscene_illustration_overlay()
+	if overlay == null:
+		push_warning("CutsceneDirector: no CutsceneIllustrationOverlay found in scene.")
+		return
+
+	if overlay.has_method("show_illustration"):
+		await overlay.call("show_illustration", texture, fade_seconds)
+
+func _hide_cutscene_illustration(fade_seconds: float = 0.25) -> void:
+	var overlay := _get_cutscene_illustration_overlay()
+	if overlay == null:
+		return
+
+	if overlay.has_method("hide_illustration"):
+		await overlay.call("hide_illustration", fade_seconds)

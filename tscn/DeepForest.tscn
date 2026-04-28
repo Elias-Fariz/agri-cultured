@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=3 uid="uid://c7rkh414afrgv"]
+[gd_scene load_steps=27 format=3 uid="uid://c7rkh414afrgv"]
 
 [ext_resource type="TileSet" uid="uid://bqs5ruk6pejpc" path="res://tiles/GroundTileset.tres" id="1_hnpyl"]
 [ext_resource type="TileSet" uid="uid://bjhy464dgbpg" path="res://tiles/ObjectsTileset.tres" id="2_ra3ic"]
@@ -23,6 +23,7 @@
 [ext_resource type="PackedScene" uid="uid://ynnuf38wfdwk" path="res://ui/RestorationFadeOverlay.tscn" id="22_0fxxo"]
 [ext_resource type="PackedScene" uid="uid://blf852yag5wnl" path="res://ui/PlayerResolveUI.tscn" id="22_6hjbk"]
 [ext_resource type="Script" uid="uid://b7n4wv6k3k33k" path="res://scripts/QuestLocation.gd" id="23_0fxxo"]
+[ext_resource type="PackedScene" uid="uid://dd2lx13mcfcs0" path="res://ui/CutsceneIllustrationOverlay.tscn" id="23_5ppvc"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_856j6"]
 
@@ -99,6 +100,8 @@ script = ExtResource("11_a6sjr")
 
 [node name="RestorationFadeOverlay" parent="." instance=ExtResource("22_0fxxo")]
 visible = false
+
+[node name="CutsceneIllustrationOverlay" parent="." instance=ExtResource("23_5ppvc")]
 
 [node name="CombatIntroMarkers" type="Node" parent="."]
 

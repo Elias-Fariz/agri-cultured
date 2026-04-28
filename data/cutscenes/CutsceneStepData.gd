@@ -7,26 +7,55 @@ enum StepType {
 	DIALOGUE,
 	WAIT,
 
-	# New
+	# Player / gameplay bridge
 	MOVE_PLAYER_TO_MARKER,
-	START_RESTORATION_ENCOUNTER
+	START_RESTORATION_ENCOUNTER,
+
+	# World-changing cutscene steps
+	SHOW_NODE,
+	HIDE_NODE,
+	MOVE_NODE_TO_MARKER,
+	SET_NODE_TEXTURE,
+	SPAWN_SCENE_AT_MARKER,
+	PLAY_NODE_ANIMATION,
+	
+	STORE_PLAYER_END_MARKER,
+	CLEAR_STORED_PLAYER_END_MARKER,
+	
+	SET_CAMERA_ZOOM,
+	RESTORE_CAMERA_ZOOM,
+	
+	SHOW_ILLUSTRATION,
+	HIDE_ILLUSTRATION,
 }
 
 @export var step_type: StepType = StepType.WAIT
 
 # Common fields
 @export var actor_key: String = ""     # "poppy", "mayor", "player"
-@export var marker_id: String = ""     # "poppy_start", "mayor_greet", "focus_intro", "player_end"
+@export var marker_id: String = ""     # "poppy_start", "focus_intro", "root_flare"
 @export var duration: float = 0.5
 @export var ease_run: bool = false
 
-# Used by steps that need to target a node directly.
-# For START_RESTORATION_ENCOUNTER, point this to the RestorationEncounter node.
+# Targeting world objects.
+# Prefer target_path when the object is easy to reach.
+# Use target_id when the object has CutsceneTarget.gd attached.
 @export var target_path: NodePath = NodePath("")
+@export var target_id: String = ""
 
-# Optional restoration encounter lookup.
-# For START_RESTORATION_ENCOUNTER, this can match RestorationEncounterData.encounter_id.
+# Used by START_RESTORATION_ENCOUNTER.
 @export var encounter_id: String = ""
+
+# Used by SET_NODE_TEXTURE.
+@export var texture: Texture2D
+
+# Used by SPAWN_SCENE_AT_MARKER.
+@export var scene_path: String = ""
+@export var spawned_name: String = ""
+@export var keep_spawned_after_cutscene: bool = false
+
+# Used by PLAY_NODE_ANIMATION.
+@export var animation_name: String = ""
 
 # Legacy dialogue fields
 @export var speaker_actor_key: String = ""  # "poppy" / "mayor"
@@ -35,3 +64,5 @@ enum StepType {
 
 # New preferred dialogue field
 @export var dialogue_sequence: DialogueSequenceData
+
+@export var zoom_value: float = 1.0

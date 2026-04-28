@@ -65,6 +65,9 @@ var _shake_seed: float = 0.0
 @onready var interact_prompt: Node = $InteractPromptController
 @onready var gift_ui: Node = get_tree().get_first_node_in_group("gift_ui")
 
+var _camera_zoom_cutscene_override: bool = false
+var _camera_zoom_tween: Tween = null
+
 func _ready() -> void:
 	# Ensure the sensor starts in front of the player (down by default)
 	_update_sensor_position()
@@ -219,11 +222,47 @@ func _update_camera_zoom(delta: float) -> void:
 	if cam == null:
 		return
 
+	if _camera_zoom_cutscene_override:
+		return
+
 	var current: float = cam.zoom.x
 	var t: float = 1.0 - pow(0.001, delta * zoom_smooth)
 	var next_zoom: float = lerp(current, _target_zoom, t)
 
 	cam.zoom = Vector2(next_zoom, next_zoom)
+	
+func camera_get_target_zoom() -> float:
+	return _target_zoom
+
+func camera_set_target_zoom(value: float, instant: bool = false) -> void:
+	_target_zoom = clamp(value, zoom_min, zoom_max)
+
+	if instant and cam != null:
+		cam.zoom = Vector2(_target_zoom, _target_zoom)
+
+func camera_set_zoom_for_cutscene(value: float, duration: float = 0.0) -> void:
+	if cam == null:
+		return
+
+	var z :Variant= clamp(value, zoom_min, zoom_max)
+	_target_zoom = z
+
+	if _camera_zoom_tween != null:
+		_camera_zoom_tween.kill()
+		_camera_zoom_tween = null
+
+	if duration <= 0.01:
+		cam.zoom = Vector2(z, z)
+		_camera_zoom_cutscene_override = false
+		return
+
+	_camera_zoom_cutscene_override = true
+	_camera_zoom_tween = create_tween()
+	_camera_zoom_tween.tween_property(cam, "zoom", Vector2(z, z), duration)
+	await _camera_zoom_tween.finished
+
+	_camera_zoom_tween = null
+	_camera_zoom_cutscene_override = false
 
 func camera_focus_on_world_point(world_pos: Vector2) -> void:
 	_camera_focus_active = true

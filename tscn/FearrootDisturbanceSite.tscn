@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://2o0kc6an36i8"]
+[gd_scene load_steps=14 format=3 uid="uid://2o0kc6an36i8"]
 
 [ext_resource type="Texture2D" uid="uid://bu28sneccfwyb" path="res://art/circle.png" id="1_1ls5c"]
 [ext_resource type="Script" uid="uid://c8as7avvqfn7f" path="res://data/restoration/RestorationEncounter.gd" id="1_gydhc"]
@@ -10,6 +10,7 @@
 [ext_resource type="Script" uid="uid://dm3rbu1b4ebgu" path="res://data/restoration/RestorationInstabilityBar.gd" id="6_8m62j"]
 [ext_resource type="Texture2D" uid="uid://2eju1f1rp7vs" path="res://art/tilled.png" id="6_hqqqr"]
 [ext_resource type="Texture2D" uid="uid://bwudms0hgr4q7" path="res://art/grass.png" id="7_atpek"]
+[ext_resource type="Script" uid="uid://11jv4aelttx0" path="res://data/cutscenes/CutsceneTarget.gd" id="10_atpek"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_17kjy"]
 radius = 56.0
@@ -23,6 +24,8 @@ radius = 300.0
 modulate = Color(1, 1, 1, 0.41960785)
 scale = Vector2(19.004814, 19.004814)
 texture = ExtResource("1_1ls5c")
+script = ExtResource("10_atpek")
+cutscene_id = "boundary_visual"
 
 [node name="RestorationEncounter" type="Node2D" parent="."]
 script = ExtResource("1_gydhc")
@@ -50,8 +53,11 @@ open_texture = ExtResource("6_hqqqr")
 restored_texture = ExtResource("7_atpek")
 
 [node name="Sprite2D" type="Sprite2D" parent="DisturbanceCore"]
+visible = false
 scale = Vector2(2, 2)
 texture = ExtResource("3_56w8p")
+script = ExtResource("10_atpek")
+cutscene_id = "fearroot_core_sprite"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DisturbanceCore"]
 shape = SubResource("CircleShape2D_17kjy")

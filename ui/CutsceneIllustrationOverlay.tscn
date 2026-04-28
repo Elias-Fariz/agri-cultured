@@ -1,0 +1,40 @@
+[gd_scene load_steps=2 format=3 uid="uid://dd2lx13mcfcs0"]
+
+[ext_resource type="Script" uid="uid://bsadqw48m2rk7" path="res://scripts/CutsceneIllustrationOverlay.gd" id="1_mpncu"]
+
+[node name="CutsceneIllustrationOverlay" type="CanvasLayer"]
+layer = 20
+script = ExtResource("1_mpncu")
+visual_node_path = NodePath("Visuals")
+start_visible_in_game = false
+
+[node name="Visuals" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Dimmer" type="ColorRect" parent="Visuals"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.3529412)
+
+[node name="Illustration" type="TextureRect" parent="Visuals"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+expand_mode = 3
+stretch_mode = 5

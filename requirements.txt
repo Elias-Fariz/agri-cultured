@@ -87,8 +87,8 @@ Phase 4 - 0.0001: okay, i'm adding a LOT more now
 * CUTSCENES WHENEVER I WANT IT!!! *DONE*
 * Puzzle Mining *ADDED NODES, DIRECTION, PULSE*
 * Restoration Combat *CREATED FOUNDATION WITH ATTACKS + HEALTHBARS
-* Cutscenes Galore *ALLOWED CUTSCENES TO START COMBAT*
-* Cutscene After Battle? Object Manip?
+* Cutscenes Galore *ALLOWED CUTSCENES TO START COMBAT* *AND ADDED ILLUSTRATIONS, ZOOM, TPing*
+* Cutscene After Battle? Object Manip? *MOVING OBJECTS*
 * Tweak NPC Heads-Up Text
 * Change Tool System
 * Just Add More Content

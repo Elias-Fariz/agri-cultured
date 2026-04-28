@@ -24,6 +24,7 @@ class_name DialogueBeatData
 # - "left"
 # - "center"
 # - "right"
+# - "none"  # speaker talks, but no staged character art is shown
 @export var stage_slot: String = "auto"
 
 # Emotional intent for the line.
@@ -102,7 +103,7 @@ func get_effective_stage_slot() -> String:
 		return "auto"
 
 	match s:
-		"left", "center", "right", "auto":
+		"left", "center", "right", "auto", "none":
 			return s
 		_:
 			return "auto"

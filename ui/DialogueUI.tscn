@@ -5,6 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://cy1st5mk1v1h8" path="res://ui/portraits/sand-imageonline.co-merged.png" id="2_xda8i"]
 
 [node name="DialogueUI" type="CanvasLayer" groups=["dialogue_ui"]]
+layer = 30
 script = ExtResource("1_vvl2g")
 default_portrait = ExtResource("2_xda8i")
 visual_node_path = NodePath("Box")

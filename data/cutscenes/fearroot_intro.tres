@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="CutsceneData" load_steps=16 format=3 uid="uid://dod7gebk6ei"]
+[gd_resource type="Resource" script_class="CutsceneData" load_steps=29 format=3 uid="uid://dod7gebk6ei"]
 
 [ext_resource type="Script" uid="uid://b4pm6wxp5ivtk" path="res://data/cutscenes/CutsceneActorData.gd" id="1_0asig"]
 [ext_resource type="Script" uid="uid://cp2gtb0hckrrj" path="res://data/cutscenes/CutsceneEffectData.gd" id="2_lk4kc"]
@@ -6,7 +6,10 @@
 [ext_resource type="Script" uid="uid://bjwubxbrbyt2x" path="res://data/cutscenes/CutsceneMarkerSet.gd" id="3_lk4kc"]
 [ext_resource type="Script" uid="uid://0k0f68wqa7mm" path="res://data/cutscenes/CutsceneStepData.gd" id="4_cub7t"]
 [ext_resource type="Script" uid="uid://dt1fjl76x6n5o" path="res://data/dialogue/DialogueBeatData.gd" id="6_cub7t"]
+[ext_resource type="Texture2D" uid="uid://2eju1f1rp7vs" path="res://art/tilled.png" id="6_eeyt2"]
+[ext_resource type="Texture2D" uid="uid://b6q6p1rqkpdec" path="res://art/crops.png" id="7_43kdb"]
 [ext_resource type="Script" uid="uid://clb3lhdggkt8d" path="res://data/dialogue/DialogueSequenceData.gd" id="7_eeyt2"]
+[ext_resource type="Texture2D" uid="uid://bvwrrj2bcxwqh" path="res://art/wood.PNG" id="9_6mh1h"]
 
 [sub_resource type="Resource" id="Resource_lk4kc"]
 script = ExtResource("1_0asig")
@@ -32,10 +35,63 @@ markers_by_id = {
 }
 metadata/_custom_type_script = "uid://bjwubxbrbyt2x"
 
+[sub_resource type="Resource" id="Resource_hcjy4"]
+script = ExtResource("4_cub7t")
+step_type = 7
+target_id = "fearroot_core_sprite"
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_eeyt2"]
+script = ExtResource("4_cub7t")
+step_type = 4
+marker_id = "player_end"
+duration = 1.0
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_msqq3"]
+script = ExtResource("4_cub7t")
+step_type = 14
+zoom_value = 1.5
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_f5d6f"]
+script = ExtResource("4_cub7t")
+step_type = 6
+target_id = "boundary_visual"
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_kiic3"]
+script = ExtResource("4_cub7t")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_6nwp7"]
+script = ExtResource("4_cub7t")
+step_type = 6
+target_id = "fearroot_core_sprite"
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_1xhtv"]
+script = ExtResource("4_cub7t")
+step_type = 9
+target_id = "fearroot_core_sprite"
+texture = ExtResource("6_eeyt2")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_rhj0r"]
+script = ExtResource("4_cub7t")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_qtmq2"]
+script = ExtResource("4_cub7t")
+step_type = 16
+texture = ExtResource("7_43kdb")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
 [sub_resource type="Resource" id="Resource_6mh1h"]
 script = ExtResource("6_cub7t")
 text = "Look out!"
 speaker_id = "npc_ash"
+stage_slot = "none"
 metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
 
 [sub_resource type="Resource" id="Resource_43kdb"]
@@ -50,11 +106,16 @@ step_type = 2
 dialogue_sequence = SubResource("Resource_43kdb")
 metadata/_custom_type_script = "uid://0k0f68wqa7mm"
 
-[sub_resource type="Resource" id="Resource_eeyt2"]
+[sub_resource type="Resource" id="Resource_43e1n"]
 script = ExtResource("4_cub7t")
-step_type = 4
-marker_id = "player_end"
-duration = 0.0
+step_type = 17
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_2351v"]
+script = ExtResource("4_cub7t")
+step_type = 9
+target_id = "fearroot_core_sprite"
+texture = ExtResource("9_6mh1h")
 metadata/_custom_type_script = "uid://0k0f68wqa7mm"
 
 [sub_resource type="Resource" id="Resource_sufwf"]
@@ -69,5 +130,5 @@ id = "fearroot_intro"
 scene_name = "DeepForest"
 actors = Array[ExtResource("1_0asig")]([SubResource("Resource_lk4kc"), SubResource("Resource_cub7t")])
 markers = SubResource("Resource_3qrtc")
-steps = Array[ExtResource("4_cub7t")]([SubResource("Resource_e763s"), SubResource("Resource_eeyt2"), SubResource("Resource_sufwf")])
+steps = Array[ExtResource("4_cub7t")]([SubResource("Resource_hcjy4"), SubResource("Resource_eeyt2"), SubResource("Resource_msqq3"), SubResource("Resource_f5d6f"), SubResource("Resource_kiic3"), SubResource("Resource_6nwp7"), SubResource("Resource_1xhtv"), SubResource("Resource_rhj0r"), SubResource("Resource_qtmq2"), SubResource("Resource_e763s"), SubResource("Resource_43e1n"), SubResource("Resource_2351v"), SubResource("Resource_sufwf")])
 metadata/_custom_type_script = "uid://camo0lur1qm85"

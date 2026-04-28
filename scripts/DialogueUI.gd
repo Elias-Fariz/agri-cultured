@@ -19,6 +19,7 @@ extends BaseOverlay
 # NEW: lightweight portrait-based stage visuals
 # -------------------------------------------------------------------
 
+@export var hide_portrait_when_stage_slot_none: bool = false
 @export var enable_stage_visuals: bool = true
 @export var stage_slot_size: Vector2 = Vector2(220, 220)
 @export var stage_bottom_overlap: float = 28.0
@@ -226,13 +227,20 @@ func _show_current_beat() -> void:
 
 func _apply_beat_state(beat: DialogueBeatData) -> void:
 	var speaker_id := String(beat.speaker_id).strip_edges()
+	var no_stage := _beat_requests_no_stage(beat)
 
 	# Narration / speakerless support
 	if beat.should_use_narration_mode():
 		name_label.text = ""
 		friendship_label.visible = false
 		_apply_portrait_texture(null)
-		_apply_stage_for_narration()
+
+		if no_stage:
+			_hide_stage_layer_for_beat()
+		else:
+			_show_stage_layer_for_beat()
+			_apply_stage_for_narration()
+
 		_set_voice_for_speaker("")
 		return
 
@@ -249,7 +257,12 @@ func _apply_beat_state(beat: DialogueBeatData) -> void:
 		friendship = int(GameState.get_friendship(speaker_id))
 
 	_apply_speaker_state(display_name, friendship, speaker_id, beat)
-	_apply_stage_for_beat(beat)
+
+	if no_stage:
+		_hide_stage_layer_for_beat()
+	else:
+		_show_stage_layer_for_beat()
+		_apply_stage_for_beat(beat)
 
 	_set_voice_for_speaker(display_name)
 
@@ -425,6 +438,8 @@ func _clear_stage_visuals() -> void:
 		rect.modulate = Color(1, 1, 1, 1)
 		rect.scale = Vector2.ONE
 		_stage_slot_speaker[slot_name] = ""
+	
+	_show_stage_layer_for_beat()
 
 func _apply_legacy_stage_for_speaker(speaker_id: String) -> void:
 	if not enable_stage_visuals:
@@ -441,11 +456,24 @@ func _apply_stage_for_beat(beat: DialogueBeatData) -> void:
 	if not enable_stage_visuals:
 		return
 
+	if _beat_requests_no_stage(beat):
+		_hide_stage_layer_for_beat()
+		return
+
+	_show_stage_layer_for_beat()
+
 	var speaker_id := String(beat.speaker_id).strip_edges()
 	if speaker_id == "":
 		return
 
 	var slot := _choose_stage_slot_for_beat(beat)
+
+	# Safety: if "none" somehow reaches this point, stop before trying
+	# to use it as a real stage slot.
+	if slot == "none":
+		_hide_stage_layer_for_beat()
+		return
+
 	var tex := _resolve_stage_texture_for_speaker(speaker_id, beat)
 
 	if tex != null:
@@ -466,6 +494,9 @@ func _apply_stage_for_narration() -> void:
 
 func _choose_stage_slot_for_beat(beat: DialogueBeatData) -> String:
 	var requested := beat.get_effective_stage_slot()
+
+	if requested == "none":
+		return "none"
 
 	if requested != "auto":
 		return requested
@@ -582,3 +613,20 @@ func _resolve_stage_texture_for_speaker(speaker_id: String, beat: DialogueBeatDa
 
 	# Fallback: default portrait
 	return default_portrait
+
+func _beat_requests_no_stage(beat: DialogueBeatData) -> bool:
+	if beat == null:
+		return false
+	return beat.get_effective_stage_slot() == "none"
+
+func _hide_stage_layer_for_beat() -> void:
+	if _stage_layer == null:
+		return
+
+	_stage_layer.visible = false
+
+func _show_stage_layer_for_beat() -> void:
+	if _stage_layer == null:
+		return
+
+	_stage_layer.visible = true
