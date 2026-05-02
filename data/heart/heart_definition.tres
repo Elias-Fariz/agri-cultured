@@ -8,7 +8,6 @@ script = ExtResource("1_72vlk")
 id = "land_sprout_1"
 kind = "root"
 counter_key = "harvest"
-required_amount = 3
 hint = "Harvest a few crops to help the soil remember."
 reward_ids = Array[StringName]([&"sprout_shop_discount_1"])
 metadata/_custom_type_script = "uid://c885adlv5mv1"

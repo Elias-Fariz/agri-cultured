@@ -90,8 +90,8 @@ Phase 4 - 0.0001: okay, i'm adding a LOT more now
 * Cutscenes Galore *ALLOWED CUTSCENES TO START COMBAT* *AND ADDED ILLUSTRATIONS, ZOOM, TPing*
 * Cutscene After Battle? Object Manip? *MOVING OBJECTS*
 * Tweak NPC Heads-Up Text
-* Change Tool System
-* Just Add More Content
+* Change Tool System *FINALLY INTO A TOOLBELT!!!*
+* Just Add More Content *ALLOWED QUESTS TO GIVE STUFF ON ACCEPTANCE/COMPLETION*
 
 Phase 4: Inventory/UI Polish
 

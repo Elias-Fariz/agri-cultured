@@ -1,4 +1,4 @@
-[gd_scene load_steps=57 format=3 uid="uid://b7y4cme4an3kb"]
+[gd_scene load_steps=58 format=3 uid="uid://b7y4cme4an3kb"]
 
 [ext_resource type="PackedScene" uid="uid://dv7wem6ftpvdd" path="res://tscn/Player.tscn" id="1_2feps"]
 [ext_resource type="Script" uid="uid://0ofb5xeer5m6" path="res://scripts/Town.gd" id="1_o31te"]
@@ -40,6 +40,7 @@
 [ext_resource type="Script" uid="uid://b7n4wv6k3k33k" path="res://scripts/QuestLocation.gd" id="26_lyu0f"]
 [ext_resource type="PackedScene" uid="uid://qxjawwee60n1" path="res://ui/QuestMenuUI.tscn" id="27_dvr77"]
 [ext_resource type="Script" uid="uid://dwtg0fdx0i363" path="res://scripts/AreaAudio.gd" id="27_ehdlx"]
+[ext_resource type="PackedScene" uid="uid://tiu8n2by1gky" path="res://ui/ToolBeltUI.tscn" id="30_01b2m"]
 [ext_resource type="PackedScene" uid="uid://cde8sgn45urws" path="res://ui/HelpOverlay.tscn" id="34_4f1xo"]
 [ext_resource type="Script" uid="uid://xl6estd3noyu" path="res://scripts/SceneTravelArea.gd" id="34_ewvrf"]
 [ext_resource type="Script" uid="uid://dxx68q28fdnvv" path="res://scripts/SpawnPoint.gd" id="36_caym6"]
@@ -158,6 +159,8 @@ available_quests = Array[ExtResource("12_fgqwr")]([ExtResource("13_seor3"), ExtR
 [node name="CraftingUI" parent="." instance=ExtResource("22_cnrp0")]
 
 [node name="EndOfDaySummaryUI" parent="." instance=ExtResource("22_2rtqk")]
+
+[node name="ToolBeltUI" parent="." instance=ExtResource("30_01b2m")]
 
 [node name="TownBoard" parent="." instance=ExtResource("14_j34sm")]
 position = Vector2(270, 42)

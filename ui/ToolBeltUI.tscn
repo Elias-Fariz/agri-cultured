@@ -1,0 +1,33 @@
+[gd_scene load_steps=2 format=3 uid="uid://tiu8n2by1gky"]
+
+[ext_resource type="Script" uid="uid://dxxl004e3w51y" path="res://scripts/ToolBeltUI.gd" id="1_hk658"]
+
+[node name="ToolBeltUI" type="CanvasLayer"]
+layer = 10
+script = ExtResource("1_hk658")
+visual_node_path = NodePath("Visuals")
+
+[node name="Visuals" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="BottomPanel" type="PanelContainer" parent="Visuals"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -75.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="ToolRow" type="HBoxContainer" parent="Visuals/BottomPanel"]
+layout_mode = 2
+theme_override_constants/separation = 6
+alignment = 1

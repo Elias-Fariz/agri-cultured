@@ -1,4 +1,4 @@
-[gd_scene load_steps=38 format=3 uid="uid://6xr8sk7sok3p"]
+[gd_scene load_steps=39 format=3 uid="uid://6xr8sk7sok3p"]
 
 [ext_resource type="TileSet" uid="uid://bqs5ruk6pejpc" path="res://tiles/GroundTileset.tres" id="1_xg4aa"]
 [ext_resource type="Script" uid="uid://xl6estd3noyu" path="res://scripts/SceneTravelArea.gd" id="2_77khv"]
@@ -33,6 +33,7 @@
 [ext_resource type="Script" uid="uid://dwtg0fdx0i363" path="res://scripts/AreaAudio.gd" id="16_om0ow"]
 [ext_resource type="PackedScene" uid="uid://ixx7e0mb3ds4" path="res://ui/GiftUI.tscn" id="18_qpl2v"]
 [ext_resource type="PackedScene" uid="uid://kqa5wudv68tx" path="res://ui/FIshingMinigameUI.tscn" id="20_db6ds"]
+[ext_resource type="PackedScene" uid="uid://tiu8n2by1gky" path="res://ui/ToolBeltUI.tscn" id="23_dpg8y"]
 [ext_resource type="PackedScene" uid="uid://7rmls8hs1gyd" path="res://tscn/BeachShell.tscn" id="25_xcr3t"]
 [ext_resource type="Script" uid="uid://b7n4wv6k3k33k" path="res://scripts/QuestLocation.gd" id="32_tfrxj"]
 
@@ -114,6 +115,8 @@ possible_fish = Array[ExtResource("11_g6a3n")]([ExtResource("12_v2t45"), ExtReso
 
 [node name="FishingMinigameUI" parent="." instance=ExtResource("20_db6ds")]
 
+[node name="ToolBeltUI" parent="." instance=ExtResource("23_dpg8y")]
+
 [node name="SpawnManager" type="Node" parent="."]
 script = ExtResource("14_6qd0e")
 
@@ -158,4 +161,5 @@ script = ExtResource("32_tfrxj")
 location_id = "beach"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="QuestLocation"]
+position = Vector2(5.7213736, 10.814023)
 shape = SubResource("RectangleShape2D_db6ds")

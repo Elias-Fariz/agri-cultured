@@ -10,33 +10,40 @@ class_name FishingSpot
 @export var energy_cost_on_success: int = 1
 @export var fail_toast: String = "The fish slips away…"
 
+@export var require_fishing_unlocked: bool = true
+@export var require_fishing_rod_selected: bool = true
+
+@export var locked_prompt_text: String = ""
+@export var wrong_tool_prompt_text: String = "Select Fishing Rod"
+
 # Prevent multiple minigames spawning
 var _active_ui: Node = null
 
 
 func get_interact_prompt(_context: Node = null) -> String:
-	return prompt_text
+	if _can_fish_here(false):
+		return prompt_text
+
+	if _has_fishing_rod() and not _is_fishing_rod_selected():
+		return wrong_tool_prompt_text
+
+	return locked_prompt_text
 
 func get_interact_priority(_context: Node = null) -> int:
 	return prompt_priority
 
 
 func interact() -> void:
-	# If a minigame is already open from this spot, ignore.
 	if is_instance_valid(_active_ui):
 		return
 
 	if GameState == null:
 		return
-	
-	var hp := get_node_or_null("/root/HeartProgress")
-	if hp == null or (hp.has_method("is_fishing_unlocked") and not bool(hp.call("is_fishing_unlocked"))):
-		if QuestEvents != null and QuestEvents.has_signal("toast_requested"):
-			QuestEvents.toast_requested.emit("The tide feels quiet… The Sea Wing hasn’t awakened yet.", "info", 2.5)
+
+	if not _can_fish_here(true):
 		return
 
-
-	# Energy check (don’t spend yet)
+	# Energy check
 	if int(GameState.energy) <= 0:
 		if QuestEvents != null and QuestEvents.has_signal("toast_requested"):
 			QuestEvents.toast_requested.emit("You’re too tired to fish right now.", "info", 2.0)
@@ -47,6 +54,8 @@ func interact() -> void:
 		if QuestEvents != null and QuestEvents.has_signal("toast_requested"):
 			QuestEvents.toast_requested.emit("The water is still… maybe later.", "info", 2.0)
 		return
+
+	# rest of your existing function continues...
 
 	# Build the input string
 	var seq := _generate_sequence(fish.sequence_len)
@@ -123,3 +132,48 @@ func _generate_sequence(len: int) -> Array[String]:
 	for i in range(len):
 		out.append(keys[randi() % keys.size()])
 	return out
+
+func _is_fishing_unlocked() -> bool:
+	# Prefer HeartProgress, because the Valley Heart owns this unlock.
+	var hp := get_node_or_null("/root/HeartProgress")
+	if hp != null and hp.has_method("is_fishing_unlocked"):
+		return bool(hp.call("is_fishing_unlocked"))
+
+	# Fallback to GameState flag if needed.
+	if GameState != null and GameState.has_method("has_flag"):
+		return bool(GameState.has_flag("fishing_unlocked"))
+
+	return false
+
+
+func _has_fishing_rod() -> bool:
+	if GameState == null:
+		return false
+	if not GameState.has_method("has_tool"):
+		return false
+	return bool(GameState.has_tool(GameState.ToolType.FISHING_ROD))
+
+
+func _is_fishing_rod_selected() -> bool:
+	if GameState == null:
+		return false
+	return int(GameState.current_tool) == int(GameState.ToolType.FISHING_ROD)
+
+
+func _can_fish_here(show_toast: bool = false) -> bool:
+	if require_fishing_unlocked and not _is_fishing_unlocked():
+		if show_toast and QuestEvents != null and QuestEvents.has_signal("toast_requested"):
+			QuestEvents.toast_requested.emit("The tide feels quiet… The Sea Wing hasn’t awakened yet.", "info", 2.5)
+		return false
+
+	if not _has_fishing_rod():
+		if show_toast and QuestEvents != null and QuestEvents.has_signal("toast_requested"):
+			QuestEvents.toast_requested.emit("You may need someone to teach you how to listen to this water.", "info", 2.5)
+		return false
+
+	if require_fishing_rod_selected and not _is_fishing_rod_selected():
+		if show_toast and QuestEvents != null and QuestEvents.has_signal("toast_requested"):
+			QuestEvents.toast_requested.emit("Select the Fishing Rod first.", "info", 2.0)
+		return false
+
+	return true

@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="QuestData" load_steps=14 format=3 uid="uid://bxwj4ue4o4biq"]
+[gd_resource type="Resource" script_class="QuestData" load_steps=15 format=3 uid="uid://bxwj4ue4o4biq"]
 
 [ext_resource type="Script" uid="uid://dqvgpvdaiv010" path="res://data/quests/QuestNpcOverrideData.gd" id="1_sxbms"]
 [ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="2_lil1c"]
@@ -6,6 +6,7 @@
 [ext_resource type="Script" uid="uid://bolxtchvrfo0y" path="res://data/quests/QuestStepData.gd" id="3_n7orr"]
 [ext_resource type="Resource" uid="uid://bb23bima2gaet" path="res://data/dialogue/poppy_gift_turn_in_seq.tres" id="3_qhxev"]
 [ext_resource type="Resource" uid="uid://car1wgxvvq6pu" path="res://data/dialogue/poppy_gift_after_seq.tres" id="4_qhxev"]
+[ext_resource type="Script" uid="uid://fp28wf3omrn8" path="res://data/quests/QuestSpawnRewardData.gd" id="5_y3i3t"]
 
 [sub_resource type="Resource" id="Resource_qhxev"]
 script = ExtResource("1_sxbms")
@@ -50,11 +51,11 @@ target = "Flower Headband"
 text = "Craft a flower headband."
 metadata/_custom_type_script = "uid://bolxtchvrfo0y"
 
-[sub_resource type="Resource" id="Resource_n7orr"]
+[sub_resource type="Resource" id="Resource_gl0qh"]
 script = ExtResource("3_n7orr")
 type = "talk_to"
 target = "npc_mayor"
-text = "Go give the necklace to the Mayor!"
+text = "We made it!"
 metadata/_custom_type_script = "uid://bolxtchvrfo0y"
 
 [resource]
@@ -64,7 +65,7 @@ title = "Present Time!"
 description = "Poppy needs help making a gift for the Mayor."
 quest_type = "chain"
 oneshot_action = ""
-steps = Array[ExtResource("3_n7orr")]([SubResource("Resource_sxbms"), SubResource("Resource_lil1c"), SubResource("Resource_n7orr")])
+steps = Array[ExtResource("3_n7orr")]([SubResource("Resource_sxbms"), SubResource("Resource_lil1c"), SubResource("Resource_gl0qh")])
 turn_in_id = "npc_mayor"
 turn_in_text = "Go give the necklace to the Mayor!"
 reward_money = 5

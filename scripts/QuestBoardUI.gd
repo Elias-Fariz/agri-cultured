@@ -135,6 +135,11 @@ func _refresh_active() -> void:
 
 	for quest_any in GameState.active_quests.values():
 		var quest: Dictionary = quest_any
+		var qid := String(quest.get("id", ""))
+
+		if GameState.is_quest_ready_to_turn_in(qid):
+			continue
+
 		var title := String(quest.get("title", "Quest"))
 
 		var line := ""
@@ -157,10 +162,40 @@ func _refresh_completed() -> void:
 	_completed_ids.clear()
 	_selected_completed_index = -1
 
+	# 1) Ready-to-turn-in active quests whose turn-in target is this board.
+	for qid_any in GameState.ready_to_turn_in_quests.keys():
+		var quest_id := String(qid_any)
+
+		if not GameState.active_quests.has(quest_id):
+			continue
+
+		var quest: Dictionary = GameState.active_quests[quest_id]
+		if quest.is_empty():
+			continue
+
+		var turn_id := String(quest.get("turn_in_id", "")).strip_edges()
+
+		# This board should only claim quests meant for the townboard.
+		# If you later reuse this UI for other boards, make this an exported board_id.
+		if turn_id != "townboard":
+			continue
+
+		_completed_ids.append(quest_id)
+
+		var title := String(quest.get("title", "Quest"))
+		var subtitle := "READY to claim"
+
+		var card := _make_paper_card_for_completed(title, subtitle, _completed_ids.size() - 1)
+		completed_stack.add_child(card)
+
+	# 2) Already completed but unclaimed/claimed quests.
 	for id_any in GameState.completed_quests.keys():
 		var quest_id := String(id_any)
 		var quest: Dictionary = GameState.completed_quests[quest_id]
 		if quest.is_empty():
+			continue
+
+		if _completed_ids.has(quest_id):
 			continue
 
 		_completed_ids.append(quest_id)
@@ -244,17 +279,29 @@ func _on_claim_pressed() -> void:
 		return
 
 	var quest_id := _completed_ids[_selected_completed_index]
+
+	# Case A: ready active quest, such as tutorial_day1 at townboard.
+	if GameState.active_quests.has(quest_id) and GameState.is_quest_ready_to_turn_in(quest_id):
+		GameState.complete_ready_quest_and_claim_reward(quest_id)
+		QuestEvents.quest_state_changed.emit()
+		if info_label:
+			info_label.text = "Reward claimed!"
+		return
+
+	# Case B: already completed quest.
 	var quest: Dictionary = GameState.completed_quests.get(quest_id, {})
 	if quest.is_empty():
 		return
 
 	if bool(quest.get("claimed", false)):
-		if info_label: info_label.text = "Already claimed."
+		if info_label:
+			info_label.text = "Already claimed."
 		return
 
 	GameState.claim_quest_reward(quest_id)
 	QuestEvents.quest_state_changed.emit()
-	if info_label: info_label.text = "Reward claimed!"
+	if info_label:
+		info_label.text = "Reward claimed!"
 
 # -------------------------------------------------------------------
 # Helpers

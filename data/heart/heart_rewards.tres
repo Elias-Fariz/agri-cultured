@@ -40,7 +40,7 @@ script = ExtResource("1_pldyk")
 id = &"sprout_fishing_unlock_1"
 kind = 2
 flag_key = &"fishing_unlocked"
-description = "The Heart whispers: the sea is ready to be listened to."
+description = "The water begins to answer."
 metadata/_custom_type_script = "uid://du6rd1efphtlv"
 
 [sub_resource type="Resource" id="Resource_yqroa"]

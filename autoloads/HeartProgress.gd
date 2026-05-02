@@ -430,8 +430,7 @@ func _mark_milestone_done_if_supported(domain_id: String, milestone_id: String) 
 		emit_signal("milestone_completed", domain_id, milestone_id)
 
 		# Grant rewards from definition and apply them
-		print("[HP REWARD DBG] calling _apply_rewards_for_milestone domain=", domain_id, " id=", milestone_id)
-		_apply_rewards_for_milestone(domain_id, milestone_id)
+		print("[HP REWARD DBG] milestone completed and waiting for reveal domain=", domain_id, " id=", milestone_id)
 
 		emit_signal("changed")
 		return
@@ -454,8 +453,7 @@ func _mark_milestone_done_if_supported(domain_id: String, milestone_id: String) 
 	print("[HP REWARD DBG] milestone completed NOW (legacy) domain=", domain_id, " id=", milestone_id, " done_list=", done)
 
 	emit_signal("milestone_completed", domain_id, milestone_id)
-	print("[HP REWARD DBG] calling _apply_rewards_for_milestone domain=", domain_id, " id=", milestone_id)
-	_apply_rewards_for_milestone(domain_id, milestone_id)
+	print("[HP REWARD DBG] milestone completed and waiting for reveal domain=", domain_id, " id=", milestone_id)
 
 	emit_signal("changed")
 
@@ -528,6 +526,9 @@ func mark_revealed(domain_id: String, milestone_id: String) -> void:
 	(rm as Dictionary)[key] = true
 	progress.set("revealed_milestones", rm)
 	_save_progress_if_possible()
+	
+	# Rewards are granted only when the player actually witnesses/reveals the milestone.
+	_apply_rewards_for_milestone(domain_id, milestone_id)
 	emit_signal("changed")
 
 # -----------------------------------------------------------------------------
@@ -864,6 +865,9 @@ func _apply_reward_definition(r: HeartRewardDefinition) -> void:
 				_save_progress_if_possible()
 				emit_signal("changed")
 				print("[HP REWARD DBG] FLAG_SET wrote reward_flags[", fkey, "]=", rf[fkey])
+
+				if gs != null and gs.has_method("set_flag"):
+					gs.call("set_flag", fkey, bool(r.flag_value))
 
 		HeartRewardDefinition.RewardKind.UNLOCK_TRAVEL:
 			if gs != null and gs.has_method("unlock_travel") and str(r.travel_id) != "":

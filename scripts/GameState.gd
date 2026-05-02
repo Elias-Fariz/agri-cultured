@@ -1,11 +1,53 @@
 # GameState.gd
 extends Node
 
-enum ToolType { AXE, PICKAXE, HOE, BUCKET, HAND, WATERING_CAN }
-const TOOL_COUNT := 6  # <- THIS MUST BE UPDATED
+enum ToolType { HAND, 
+	HOE, 
+	SEED_POUCH,
+	WATERING_CAN , 
+	AXE, 
+	PICKAXE, 
+	BUCKET,
+	FISHING_ROD
+}
+const TOOL_COUNT := 8  # <- THIS MUST BE UPDATED
 
 @export var starting_tool: ToolType = ToolType.HAND
 var current_tool: ToolType = ToolType.HAND
+
+signal tool_changed(tool_type: int, tool_name: String)
+signal tool_list_changed()
+
+signal inventory_changed()
+signal seed_selection_changed(seed_id: String, display_text: String, quantity: int)
+
+# Tools the player currently owns/unlocked.
+# Bucket and Fishing Rod are intentionally not here yet.
+var owned_tools: Array[int] = []
+
+var game_flags: Dictionary = {}
+
+var default_owned_tools: Array[int] = [
+	ToolType.HAND,
+	ToolType.HOE,
+	ToolType.SEED_POUCH,
+	ToolType.WATERING_CAN,
+	ToolType.AXE,
+	ToolType.PICKAXE,
+]
+
+# This is the preferred display order.
+# The UI will only show tools that are also in owned_tools.
+var tool_display_order: Array[int] = [
+	ToolType.HAND,
+	ToolType.HOE,
+	ToolType.SEED_POUCH,
+	ToolType.WATERING_CAN,
+	ToolType.AXE,
+	ToolType.PICKAXE,
+	ToolType.BUCKET,
+	ToolType.FISHING_ROD,
+]
 
 # ----------------------------
 # Inventory (already working)
@@ -20,7 +62,12 @@ var inventory: Dictionary = {}  # { "Wood": 3, "Stone": 2 }
 func inventory_add(item_name: String, qty: int = 1) -> void:
 	if item_name.is_empty() or qty <= 0:
 		return
+
 	inventory[item_name] = int(inventory.get(item_name, 0)) + qty
+
+	inventory_changed.emit()
+	_refresh_selected_seed_after_inventory_change()
+
 	print("Added to inventory:", item_name, " Inventory now:", inventory)
 
 func inventory_has(item_name: String, qty: int = 1) -> bool:
@@ -37,6 +84,10 @@ func inventory_remove(item_name: String, qty: int = 1) -> bool:
 		inventory.erase(item_name)
 	else:
 		inventory[item_name] = new_qty
+	
+	inventory_changed.emit()
+	_refresh_selected_seed_after_inventory_change()
+	
 	return true
 
 func consume_item(item_id: String) -> bool:
@@ -149,6 +200,8 @@ var seed_to_crop := {
 	"Avocado Seeds": "avocado"
 }
 
+var animal_states: Dictionary = {}
+
 var tracked_quest_id: String = ""  # "" means no quest tracked
 
 var ready_to_turn_in: Dictionary = {}
@@ -167,6 +220,92 @@ func get_crop_for_seed(item_id: String) -> String:
 func set_selected_item(item_id: String) -> void:
 	selected_item_id = item_id
 	print("Selected item:", selected_item_id)
+	_emit_seed_selection_changed()
+
+func get_selected_seed_quantity() -> int:
+	if selected_item_id.strip_edges() == "":
+		return 0
+	return int(inventory.get(selected_item_id, 0))
+
+
+func get_selected_seed_display_text() -> String:
+	if selected_item_id.strip_edges() == "":
+		return "No seeds"
+
+	if not is_seed_item(selected_item_id):
+		return "No seeds"
+
+	var qty := get_selected_seed_quantity()
+	return "%s x%d" % [selected_item_id, qty]
+
+
+func get_selected_seed_short_text() -> String:
+	if selected_item_id.strip_edges() == "":
+		return "Seeds\nNone"
+
+	if not is_seed_item(selected_item_id):
+		return "Seeds\nNone"
+
+	var qty := get_selected_seed_quantity()
+	var name := selected_item_id
+
+	# Keep the tool belt slot readable.
+	name = name.replace(" Seeds", "")
+
+	return "Seeds\n%s x%d" % [name, qty]
+
+
+func cycle_seed_previous() -> void:
+	var seeds := get_all_seed_ids_in_inventory()
+	if seeds.is_empty():
+		selected_item_id = ""
+		print("No seeds in inventory to select.")
+		_emit_seed_selection_changed()
+		return
+
+	if not is_seed_item(selected_item_id) or not seeds.has(selected_item_id):
+		set_selected_item(seeds[seeds.size() - 1])
+		return
+
+	var idx := seeds.find(selected_item_id)
+	idx -= 1
+	if idx < 0:
+		idx = seeds.size() - 1
+
+	set_selected_item(seeds[idx])
+
+
+func _refresh_selected_seed_after_inventory_change() -> void:
+	var seeds := get_all_seed_ids_in_inventory()
+
+	# If there are no seeds at all, clear the selected seed.
+	if seeds.is_empty():
+		if selected_item_id != "":
+			selected_item_id = ""
+		_emit_seed_selection_changed()
+		return
+
+	# If nothing is selected, automatically select the first available seed.
+	if selected_item_id.strip_edges() == "":
+		set_selected_item(seeds[0])
+		return
+
+	# If the selected item is not a seed, switch to the first available seed.
+	if not is_seed_item(selected_item_id):
+		set_selected_item(seeds[0])
+		return
+
+	# If the selected seed still exists, keep it and just refresh quantity.
+	if inventory_has(selected_item_id, 1):
+		_emit_seed_selection_changed()
+		return
+
+	# If the selected seed ran out, move to the next available seed.
+	set_selected_item(seeds[0])
+
+func _emit_seed_selection_changed() -> void:
+	var qty := get_selected_seed_quantity()
+	seed_selection_changed.emit(selected_item_id, get_selected_seed_display_text(), qty)
 
 func get_all_seed_ids_in_inventory() -> Array[String]:
 	var seeds: Array[String] = []
@@ -546,7 +685,10 @@ var interacted_object_ids: Dictionary = {}
 
 func _ready() -> void:
 	reset_energy()
+	_ensure_default_owned_tools()
 	current_tool = starting_tool
+	if not has_tool(int(current_tool)):
+		current_tool = ToolType.HAND
 	
 	QuestEvents.talked_to.connect(_on_quest_talked_to)
 	QuestEvents.went_to.connect(_on_quest_went_to)
@@ -575,18 +717,109 @@ func _ready() -> void:
 		has_played_greeting_intro = true
 
 
+func _ensure_default_owned_tools() -> void:
+	if owned_tools.is_empty():
+		owned_tools = default_owned_tools.duplicate()
+
+
+func has_tool(tool_type: int) -> bool:
+	_ensure_default_owned_tools()
+	return owned_tools.has(tool_type)
+
+
+func unlock_tool(tool_type: int) -> void:
+	if tool_type < 0 or tool_type >= TOOL_COUNT:
+		return
+
+	_ensure_default_owned_tools()
+
+	if owned_tools.has(tool_type):
+		return
+
+	owned_tools.append(tool_type)
+	tool_list_changed.emit()
+
+	var msg := "New tool unlocked: " + get_tool_name_for(tool_type)
+	if QuestEvents != null and QuestEvents.has_signal("toast_requested"):
+		QuestEvents.toast_requested.emit(msg, "success", 2.5)
+
+
+func get_owned_tool_order() -> Array[int]:
+	_ensure_default_owned_tools()
+
+	var out: Array[int] = []
+	for t in tool_display_order:
+		if owned_tools.has(t):
+			out.append(t)
+
+	return out
+
+
 func cycle_tool_next() -> void:
-	current_tool = (int(current_tool) + 1) % TOOL_COUNT
+	var tools := get_owned_tool_order()
+	if tools.is_empty():
+		return
+
+	var idx := tools.find(int(current_tool))
+	if idx < 0:
+		set_current_tool(int(tools[0]))
+		return
+
+	idx = (idx + 1) % tools.size()
+	set_current_tool(int(tools[idx]))
+
+
+func cycle_tool_previous() -> void:
+	var tools := get_owned_tool_order()
+	if tools.is_empty():
+		return
+
+	var idx := tools.find(int(current_tool))
+	if idx < 0:
+		set_current_tool(int(tools[0]))
+		return
+
+	idx -= 1
+	if idx < 0:
+		idx = tools.size() - 1
+
+	set_current_tool(int(tools[idx]))
+
+
+func set_current_tool(tool_type: int) -> void:
+	if tool_type < 0 or tool_type >= TOOL_COUNT:
+		return
+
+	if not has_tool(tool_type):
+		return
+
+	current_tool = tool_type
+	tool_changed.emit(int(current_tool), get_tool_name())
+
+
+func get_tool_name_for(tool_type: int) -> String:
+	match tool_type:
+		ToolType.AXE:
+			return "Axe"
+		ToolType.PICKAXE:
+			return "Pickaxe"
+		ToolType.HOE:
+			return "Hoe"
+		ToolType.BUCKET:
+			return "Bucket"
+		ToolType.HAND:
+			return "Hands"
+		ToolType.WATERING_CAN:
+			return "Watering Can"
+		ToolType.SEED_POUCH:
+			return "Seeds"
+		ToolType.FISHING_ROD:
+			return "Fishing Rod"
+	return "?"
+
 
 func get_tool_name() -> String:
-	match current_tool:
-		ToolType.AXE: return "Axe"
-		ToolType.PICKAXE: return "Pickaxe"
-		ToolType.HOE: return "Hoe"
-		ToolType.BUCKET: return "Bucket"
-		ToolType.HAND: return "Hands"
-		ToolType.WATERING_CAN: return "Watering Can"
-	return "?"
+	return get_tool_name_for(int(current_tool))
 
 func reset_energy() -> void:
 	energy = max_energy
@@ -682,21 +915,27 @@ func add_quest(quest: Dictionary) -> void:
 
 	active_quests[id] = q
 	print("Quest accepted: ", id)
-	
+
+	# NEW: rewards granted immediately when the quest is accepted.
+	# This is what lets the Fisher give the Fishing Rod at quest start.
+	var accept_reward: Dictionary = Dictionary(q.get("accept_reward", {}))
+	if not accept_reward.is_empty():
+		apply_reward_dict(accept_reward, "quest_accept:%s" % id)
+
 	if tracked_quest_id == "":
-		tracked_quest_id = String(quest.get("id",""))
-	
+		tracked_quest_id = id
+
 	# Unlock travel when accepting specific quest(s)
 	var qid := String(q.get("id", ""))
 	if qid == "unlock_animal_keeper":
 		unlock_travel("animal_keeper")
-	
+
 	var title := String(q.get("title", "Quest"))
 	QuestEvents.toast_requested.emit("New Quest: " + title, "info", 2.5)
-	
+
 	if qid != "":
 		(today_tracking["quests_accepted"] as Array).append(title)
-	
+
 	QuestEvents.quest_state_changed.emit()
 
 func complete_quest(quest_id: String) -> void:
@@ -705,21 +944,20 @@ func complete_quest(quest_id: String) -> void:
 
 	var quest: Dictionary = active_quests[quest_id]
 	quest["completed"] = true
-	quest["claimed"] = true
+	quest["claimed"] = false
 
 	active_quests.erase(quest_id)
-	clear_quest_ready_to_turn_in(quest_id)
-
 	completed_quests[quest_id] = quest
-	mark_quest_claimed_today(quest_id)
+	clear_quest_ready_to_turn_in(quest_id)
 
 	print("Quest completed: ", quest_id)
 
-	var q: Dictionary = completed_quests.get(quest_id, {})
-	var title := String(q.get("title", "Quest"))
+	var title := String(quest.get("title", "Quest"))
+	if not (today_tracking["quests_completed"] as Array).has(title):
+		(today_tracking["quests_completed"] as Array).append(title)
 
-	(today_tracking["quests_completed"] as Array).append(title)
 	QuestEvents.toast_requested.emit("Quest Completed: " + title, "success", 3.0)
+	QuestEvents.quest_state_changed.emit()
 
 func is_quest_ready_to_turn_in(quest_id: String) -> bool:
 	if quest_id.strip_edges() == "":
@@ -727,9 +965,29 @@ func is_quest_ready_to_turn_in(quest_id: String) -> bool:
 	return ready_to_turn_in_quests.has(quest_id)
 
 func mark_quest_ready_to_turn_in(quest_id: String) -> void:
-	if quest_id.strip_edges() == "":
+	quest_id = quest_id.strip_edges()
+	if quest_id == "":
 		return
+
+	if not active_quests.has(quest_id):
+		return
+
+	var quest: Dictionary = active_quests[quest_id]
+	quest["ready_to_turn_in"] = true
+	quest["completed"] = false
+	quest["claimed"] = false
+
+	active_quests[quest_id] = quest
 	ready_to_turn_in_quests[quest_id] = true
+
+	var title := String(quest.get("title", "Quest"))
+	print("Quest ready to turn in:", quest_id)
+
+	if QuestEvents != null and QuestEvents.has_signal("toast_requested"):
+		QuestEvents.toast_requested.emit("Quest Ready: " + title, "success", 2.5)
+
+	if QuestEvents != null and QuestEvents.has_signal("quest_state_changed"):
+		QuestEvents.quest_state_changed.emit()
 
 func clear_quest_ready_to_turn_in(quest_id: String) -> void:
 	if quest_id.strip_edges() == "":
@@ -768,24 +1026,17 @@ func claim_quest_reward(quest_id: String) -> void:
 	var reward: Dictionary = Dictionary(quest.get("reward", {}))
 	print("Claiming reward for ", quest_id, " -> ", reward)
 
-	# Money reward
-	if reward.has("money"):
-		MoneySystem.add(int(reward["money"]))
-
-	# Item rewards: { "items": { "Watermelon": 1, "Wood": 5 } }
-	if reward.has("items"):
-		var items_reward: Dictionary = Dictionary(reward["items"])
-		for item_name_any in items_reward.keys():
-			var item_name := String(item_name_any)
-			var qty := int(items_reward[item_name_any])
-			inventory_add(item_name, qty)
-
+	apply_reward_dict(reward, "quest_claim:%s" % quest_id)
+	
 	quest["claimed"] = true
 	
-	if quest_id == "keeper_cow_quest":
-		print("[Reward] Queuing cow spawn!")
-		queue_spawn_reward("farm", "res://tscn/Cow.tscn", "cow_pen_spawn")
-		print("[Reward] pending_spawns now:", pending_spawns)
+	completed_quests[quest_id] = quest
+	clear_quest_ready_to_turn_in(quest_id)
+	
+	#if quest_id == "keeper_cow_quest":
+		#print("[Reward] Queuing cow spawn!")
+		#queue_spawn_reward("farm", "res://tscn/Cow.tscn", "cow_pen_spawn")
+		#print("[Reward] pending_spawns now:", pending_spawns)
 	
 	QuestEvents.quest_state_changed.emit()
 
@@ -1049,7 +1300,19 @@ func get_tracked_objective_text() -> String:
 	var quest := get_tracked_quest()
 	if quest.is_empty():
 		return ""
+	
+	var qid := String(quest.get("id", ""))
+	if is_quest_ready_to_turn_in(qid):
+		var turn_text := String(quest.get("turn_in_text", "")).strip_edges()
+		if turn_text != "":
+			return turn_text
 
+		var turn_id := String(quest.get("turn_in_id", "")).strip_edges()
+		if turn_id != "":
+			return "Return to %s to claim your reward." % turn_id
+
+		return "Return to claim your reward."
+	
 	# If completed but unclaimed -> show turn-in guidance
 	var is_completed := bool(quest.get("completed", false))
 	var claimed := bool(quest.get("claimed", false))
@@ -1239,7 +1502,12 @@ func apply_quest_event(action: String, target: String = "", amount: int = 1, tar
 			quest["steps"] = steps
 
 			if int(step["progress"]) >= int(step.get("amount", 0)):
+				step = _apply_step_reward_once(qid, step_index, step)
+				steps[step_index] = step
+				quest["steps"] = steps
+
 				quest["step_index"] = step_index + 1
+
 				if int(quest["step_index"]) >= steps.size():
 					to_complete.append(qid)
 
@@ -1280,6 +1548,8 @@ func apply_quest_event(action: String, target: String = "", amount: int = 1, tar
 
 	if changed:
 		QuestEvents.quest_state_changed.emit()
+		
+	GameState.debug_print_quest_state("tutorial_day1")
 
 func get_first_turn_in_ready_id_for(npc_id: String) -> String:
 	if npc_id.strip_edges() == "":
@@ -1753,3 +2023,208 @@ func has_played_cutscene(cutscene_id: String) -> bool:
 	if cutscene_id == "":
 		return false
 	return bool(played_cutscenes.get(cutscene_id, false))
+
+func set_flag(flag_id: String, value: bool = true) -> void:
+	flag_id = flag_id.strip_edges()
+	if flag_id == "":
+		return
+
+	game_flags[flag_id] = value
+	print("[Flag]", flag_id, "=", value)
+
+
+func has_flag(flag_id: String) -> bool:
+	flag_id = flag_id.strip_edges()
+	if flag_id == "":
+		return false
+
+	return bool(game_flags.get(flag_id, false))
+
+
+func get_tool_type_from_id(tool_id: String) -> int:
+	var id := tool_id.strip_edges().to_lower()
+
+	match id:
+		"axe":
+			return ToolType.AXE
+		"pickaxe":
+			return ToolType.PICKAXE
+		"hoe":
+			return ToolType.HOE
+		"bucket":
+			return ToolType.BUCKET
+		"hand", "hands":
+			return ToolType.HAND
+		"watering_can", "watering can":
+			return ToolType.WATERING_CAN
+		"seed_pouch", "seeds", "seed pouch":
+			return ToolType.SEED_POUCH
+		"fishing_rod", "fishing rod":
+			return ToolType.FISHING_ROD
+
+	return -1
+
+func debug_print_quest_state(quest_id: String) -> void:
+	print("\n=== QUEST DEBUG:", quest_id, "===")
+
+	if active_quests.has(quest_id):
+		var q: Dictionary = active_quests[quest_id]
+		print("ACTIVE:", q)
+		print("step_index:", q.get("step_index", "none"))
+		print("steps size:", Array(q.get("steps", [])).size())
+		print("completed:", q.get("completed", "none"))
+		print("claimed:", q.get("claimed", "none"))
+		print("turn_in_id:", q.get("turn_in_id", "none"))
+		print("turn_in_text:", q.get("turn_in_text", "none"))
+	else:
+		print("Not in active_quests")
+
+	if completed_quests.has(quest_id):
+		var cq: Dictionary = completed_quests[quest_id]
+		print("COMPLETED:", cq)
+		print("completed claimed:", cq.get("claimed", "none"))
+	else:
+		print("Not in completed_quests")
+
+	if has_method("is_quest_ready_to_turn_in"):
+		print("ready_to_turn_in:", is_quest_ready_to_turn_in(quest_id))
+
+	print("==============================\n")
+
+func complete_ready_quest_and_claim_reward(quest_id: String) -> void:
+	quest_id = quest_id.strip_edges()
+	if quest_id == "":
+		return
+
+	if not active_quests.has(quest_id):
+		return
+
+	var quest: Dictionary = active_quests[quest_id]
+	quest["completed"] = true
+	quest["claimed"] = false
+	quest["ready_to_turn_in"] = false
+
+	active_quests.erase(quest_id)
+	completed_quests[quest_id] = quest
+	clear_quest_ready_to_turn_in(quest_id)
+
+	var title := String(quest.get("title", "Quest"))
+	if not (today_tracking["quests_completed"] as Array).has(title):
+		(today_tracking["quests_completed"] as Array).append(title)
+
+	# Claim normally so money/items/tools/spawns/flags all still work.
+	claim_quest_reward(quest_id)
+
+	mark_quest_claimed_today(quest_id)
+
+	if QuestEvents != null and QuestEvents.has_signal("toast_requested"):
+		QuestEvents.toast_requested.emit("Quest Completed: " + title, "success", 3.0)
+
+	if QuestEvents != null and QuestEvents.has_signal("quest_state_changed"):
+		QuestEvents.quest_state_changed.emit()
+
+func get_animal_state(animal_id: String) -> Dictionary:
+	animal_id = animal_id.strip_edges()
+	if animal_id == "":
+		return {}
+
+	if not animal_states.has(animal_id):
+		animal_states[animal_id] = {
+			"fed_today": false,
+			"has_product_ready": false,
+			"last_pet_day": -999999
+		}
+
+	return animal_states[animal_id]
+
+
+func set_animal_state_value(animal_id: String, key: String, value: Variant) -> void:
+	animal_id = animal_id.strip_edges()
+	key = key.strip_edges()
+
+	if animal_id == "" or key == "":
+		return
+
+	var state := get_animal_state(animal_id)
+	state[key] = value
+	animal_states[animal_id] = state
+
+
+func get_animal_state_value(animal_id: String, key: String, default_value: Variant = null) -> Variant:
+	var state := get_animal_state(animal_id)
+	return state.get(key, default_value)
+
+
+func process_animal_new_day() -> void:
+	for animal_id_any in animal_states.keys():
+		var animal_id := String(animal_id_any)
+		var state: Dictionary = animal_states[animal_id]
+
+		if bool(state.get("fed_today", false)):
+			state["has_product_ready"] = true
+
+		state["fed_today"] = false
+		animal_states[animal_id] = state
+
+func apply_reward_dict(reward: Dictionary, source_id: String = "") -> void:
+	if reward.is_empty():
+		return
+
+	print("[Reward] apply_reward_dict source=", source_id, " reward=", reward)
+
+	# Money
+	if reward.has("money"):
+		MoneySystem.add(int(reward["money"]))
+
+	# Items
+	if reward.has("items"):
+		var items_reward: Dictionary = Dictionary(reward["items"])
+		for item_name_any in items_reward.keys():
+			var item_name := String(item_name_any)
+			var qty := int(items_reward[item_name_any])
+			inventory_add(item_name, qty)
+
+	# Flags
+	if reward.has("flags"):
+		var flags_reward: Array = Array(reward["flags"])
+		for flag_any in flags_reward:
+			set_flag(String(flag_any), true)
+
+	# Tools
+	if reward.has("tools"):
+		var tools_reward: Array = Array(reward["tools"])
+		for tool_any in tools_reward:
+			var tool_id := String(tool_any)
+			var tool_type := get_tool_type_from_id(tool_id)
+
+			if tool_type >= 0:
+				unlock_tool(tool_type)
+			else:
+				push_warning("[Reward] Unknown tool id: " + tool_id)
+
+	# Spawns
+	if reward.has("spawns"):
+		var spawns_reward: Array = Array(reward["spawns"])
+		for spawn_any in spawns_reward:
+			var spawn_dict: Dictionary = Dictionary(spawn_any)
+
+			var scene_key := String(spawn_dict.get("scene_key", "")).strip_edges()
+			var scene_path := String(spawn_dict.get("scene_path", "")).strip_edges()
+			var marker_id := String(spawn_dict.get("marker_id", "")).strip_edges()
+
+			if scene_key != "" and scene_path != "" and marker_id != "":
+				queue_spawn_reward(scene_key, scene_path, marker_id)
+
+func _apply_step_reward_once(quest_id: String, step_index: int, step: Dictionary) -> Dictionary:
+	if bool(step.get("reward_claimed", false)):
+		return step
+
+	var reward: Dictionary = Dictionary(step.get("reward", {}))
+	if reward.is_empty():
+		step["reward_claimed"] = true
+		return step
+
+	apply_reward_dict(reward, "quest_step:%s:%d" % [quest_id, step_index])
+
+	step["reward_claimed"] = true
+	return step

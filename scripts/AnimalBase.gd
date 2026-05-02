@@ -61,6 +61,8 @@ func _ready() -> void:
 	# Listen for day changes
 	TimeManager.day_changed.connect(_on_day_changed)
 	_refresh_pen_rect()
+	
+	_load_animal_state()
 
 
 # =============================
@@ -251,34 +253,27 @@ func _can_wander_to(world_pos: Vector2) -> bool:
 #  FEEDING & PRODUCT CYCLE
 # =============================
 
-func _on_day_changed(day: int) -> void:
-	# If fed yesterday, then we have product ready today.
-	if fed_today:
-		has_product_ready = true
-
-	# Reset fed flag for the new day
-	fed_today = false
+func _on_day_changed(_day: int) -> void:
+	_load_animal_state()
 
 
 func feed() -> bool:
-	# Returns true if feeding actually happened
 	if fed_today:
 		return false
 
 	fed_today = true
-	# Optional: play animation / show hearts / sound
+	_save_animal_state()
 	return true
 
 
 func collect_product() -> bool:
-	# Returns true if product was collected
 	if not has_product_ready:
 		return false
 
 	GameState.inventory_add(product_item, produces_per_feed)
 	has_product_ready = false
+	_save_animal_state()
 
-	# Optional: hearts, sound, etc.
 	return true
 
 
@@ -348,6 +343,7 @@ func _handle_feed_interaction() -> bool:
 		return false
 
 	fed_today = true
+	_save_animal_state()
 	print("[Feed] Animal successfully fed. fed_today now:", fed_today)
 
 	# 🎈 CHATTTER: munch
@@ -463,4 +459,22 @@ func _gain_friendship_once_per_day(amount: int) -> void:
 		return
 
 	_last_pet_day = day
+	_save_animal_state()
 	GameState.add_friendship(animal_id, amount)
+
+func _load_animal_state() -> void:
+	if animal_id.strip_edges() == "":
+		return
+
+	fed_today = bool(GameState.get_animal_state_value(animal_id, "fed_today", fed_today))
+	has_product_ready = bool(GameState.get_animal_state_value(animal_id, "has_product_ready", has_product_ready))
+	_last_pet_day = int(GameState.get_animal_state_value(animal_id, "last_pet_day", _last_pet_day))
+
+
+func _save_animal_state() -> void:
+	if animal_id.strip_edges() == "":
+		return
+
+	GameState.set_animal_state_value(animal_id, "fed_today", fed_today)
+	GameState.set_animal_state_value(animal_id, "has_product_ready", has_product_ready)
+	GameState.set_animal_state_value(animal_id, "last_pet_day", _last_pet_day)

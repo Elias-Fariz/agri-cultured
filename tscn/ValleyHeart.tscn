@@ -1,4 +1,4 @@
-[gd_scene load_steps=59 format=3 uid="uid://cwspce5y4tb13"]
+[gd_scene load_steps=60 format=3 uid="uid://cwspce5y4tb13"]
 
 [ext_resource type="TileSet" uid="uid://bqs5ruk6pejpc" path="res://tiles/GroundTileset.tres" id="1_vkoen"]
 [ext_resource type="Script" uid="uid://bywlb7k2vtqr" path="res://scripts/ValleyHeart.gd" id="1_ye5kf"]
@@ -46,6 +46,7 @@
 [ext_resource type="Script" uid="uid://db23ydj4dqo8r" path="res://data/heart/HeartVisualBinding.gd" id="38_teva3"]
 [ext_resource type="Script" uid="uid://b8h23vsvf630b" path="res://scripts/HeartRevealDirector.gd" id="39_hxn5l"]
 [ext_resource type="PackedScene" uid="uid://s45kp2837ukm" path="res://ui/HeartDomainHubUI.tscn" id="46_c5fuf"]
+[ext_resource type="PackedScene" uid="uid://tiu8n2by1gky" path="res://ui/ToolBeltUI.tscn" id="47_kyy0j"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_qprux"]
 texture = ExtResource("2_05sqv")
@@ -376,6 +377,8 @@ grow_vertical = 2
 [node name="HeartProgressUI" parent="." instance=ExtResource("24_ye5kf")]
 
 [node name="HeartDomainHubUI" parent="." instance=ExtResource("46_c5fuf")]
+
+[node name="ToolBeltUI" parent="." instance=ExtResource("47_kyy0j")]
 
 [node name="SceneBootstrap" type="Node" parent="."]
 

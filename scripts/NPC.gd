@@ -203,9 +203,21 @@ func start_dialogue() -> void:
 			)
 
 		if not used_special:
-			ui.show_dialogue(display_name, ["You did it! Here’s your reward."], f, npc_id)
+			_show_plain_dialogue(ui, display_name, ["You did it! Here’s your reward."], f, npc_id)
 
-		GameState.complete_quest(ready_id)
+		# Important:
+		# Wait until the heartfelt override / fallback dialogue is fully finished.
+		await _await_dialogue_closed(ui)
+
+		# Complete + claim in one clean step.
+		# This keeps story turn-ins from needing a second interaction.
+		if GameState.has_method("complete_ready_quest_and_claim_reward"):
+			GameState.complete_ready_quest_and_claim_reward(ready_id)
+		else:
+			# Fallback, just in case you test in an older version.
+			GameState.complete_quest(ready_id)
+			GameState.claim_quest_reward(ready_id)
+
 		QuestEvents.quest_state_changed.emit()
 		_update_quest_icon()
 		return
@@ -984,6 +996,16 @@ func _get_best_recently_claimed_override_lines() -> Array[String]:
 
 	return []
 
+func _await_dialogue_closed(ui: Node) -> void:
+	if ui == null:
+		return
+
+	if not ui.has_signal("dialogue_closed"):
+		await get_tree().process_frame
+		return
+
+	await ui.dialogue_closed
+
 func _show_override_dialogue(ui: Node, qd: QuestData, phase: String, step_index: int, fallback_lines: Array[String], friendship: int) -> bool:
 	if qd == null:
 		return false
@@ -994,14 +1016,18 @@ func _show_override_dialogue(ui: Node, qd: QuestData, phase: String, step_index:
 			ui.show_dialogue_sequence(seq)
 			return true
 
-	var lines := qd.get_override_lines_for_npc(npc_id, phase, step_index)
+	var lines: Array[String] = qd.get_override_lines_for_npc(npc_id, phase, step_index)
+
 	if lines.is_empty():
-		lines = fallback_lines
+		for line_any in fallback_lines:
+			var line := String(line_any).strip_edges()
+			if line != "":
+				lines.append(line)
 
 	if lines.is_empty():
 		return false
 
-	ui.show_dialogue(display_name, lines, friendship, npc_id)
+	_show_plain_dialogue(ui, display_name, lines, friendship, npc_id)
 	return true
 
 func _get_best_active_participant_override_quest_and_phase() -> Dictionary:
@@ -1070,3 +1096,21 @@ func _get_best_recently_claimed_override_quest() -> QuestData:
 			return qd
 
 	return null
+
+func _show_plain_dialogue(ui: Node, speaker_name: String, raw_lines: Array, friendship: int = -1, speaker_id: String = "") -> void:
+	if ui == null:
+		return
+	if not ui.has_method("show_dialogue"):
+		return
+
+	var lines: Array[String] = []
+
+	for line_any in raw_lines:
+		var line := String(line_any).strip_edges()
+		if line != "":
+			lines.append(line)
+
+	if lines.is_empty():
+		lines.append("...")
+
+	ui.show_dialogue(speaker_name, lines, friendship, speaker_id)

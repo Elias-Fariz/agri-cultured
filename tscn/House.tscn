@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://bjx6v0gjfwt2h"]
+[gd_scene load_steps=22 format=3 uid="uid://bjx6v0gjfwt2h"]
 
 [ext_resource type="Texture2D" uid="uid://bvwrrj2bcxwqh" path="res://art/wood.PNG" id="1_4ogyy"]
 [ext_resource type="Script" uid="uid://kt4as8ri4s71" path="res://scripts/House.gd" id="1_hk67c"]
@@ -17,6 +17,7 @@
 [ext_resource type="PackedScene" uid="uid://dfcn8oje3hko1" path="res://ui/EndOfDaySummaryUI.tscn" id="15_xgfmo"]
 [ext_resource type="PackedScene" uid="uid://c48msaiodeqan" path="res://ui/CraftingUI.tscn" id="16_1v6cy"]
 [ext_resource type="PackedScene" uid="uid://ixx7e0mb3ds4" path="res://ui/GiftUI.tscn" id="17_nhqqd"]
+[ext_resource type="PackedScene" uid="uid://tiu8n2by1gky" path="res://ui/ToolBeltUI.tscn" id="18_te355"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_bfwu5"]
 texture = ExtResource("1_4ogyy")
@@ -76,3 +77,5 @@ position = Vector2(135, 87)
 [node name="CraftingUI" parent="." instance=ExtResource("16_1v6cy")]
 
 [node name="GiftUI" parent="." instance=ExtResource("17_nhqqd")]
+
+[node name="ToolBeltUI" parent="." instance=ExtResource("18_te355")]

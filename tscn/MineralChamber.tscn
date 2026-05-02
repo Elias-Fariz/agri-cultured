@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=3 uid="uid://5frt864bg8gg"]
+[gd_scene load_steps=26 format=3 uid="uid://5frt864bg8gg"]
 
 [ext_resource type="TileSet" uid="uid://bqs5ruk6pejpc" path="res://tiles/GroundTileset.tres" id="1_jhajv"]
 [ext_resource type="Script" uid="uid://di7tcvhu0e7nj" path="res://scripts/MiningChamberWorld.gd" id="1_ysd1x"]
@@ -23,6 +23,7 @@
 [ext_resource type="PackedScene" uid="uid://ixx7e0mb3ds4" path="res://ui/GiftUI.tscn" id="20_j53x8"]
 [ext_resource type="PackedScene" uid="uid://ci8kga43aovsx" path="res://ui/DayNightOverlay.tscn" id="21_oajjv"]
 [ext_resource type="Script" uid="uid://dvg0ynlpgst4t" path="res://scripts/WorldSpawn.gd" id="22_fpa5m"]
+[ext_resource type="PackedScene" uid="uid://tiu8n2by1gky" path="res://ui/ToolBeltUI.tscn" id="23_kbmto"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_huf57"]
 
@@ -95,6 +96,8 @@ sfx_hit_rock = ExtResource("12_l62e4")
 [node name="GiftUI" parent="." instance=ExtResource("20_j53x8")]
 
 [node name="DayNightOverlay" parent="." instance=ExtResource("21_oajjv")]
+
+[node name="ToolBeltUI" parent="." instance=ExtResource("23_kbmto")]
 
 [node name="SpawnManager" type="Node" parent="."]
 script = ExtResource("22_fpa5m")

@@ -46,14 +46,12 @@ size_flags_horizontal = 3
 layout_mode = 2
 
 [node name="SelectedDesc" type="RichTextLabel" parent="Panel/VBox/Content/Right"]
-custom_minimum_size = Vector2(50, 50)
+custom_minimum_size = Vector2(50, 200)
 layout_mode = 2
-size_flags_vertical = 3
 
 [node name="Requirements" type="RichTextLabel" parent="Panel/VBox/Content/Right"]
-custom_minimum_size = Vector2(50, 50)
+custom_minimum_size = Vector2(50, 200)
 layout_mode = 2
-size_flags_vertical = 3
 
 [node name="CraftButton" type="Button" parent="Panel/VBox/Content/Right"]
 layout_mode = 2

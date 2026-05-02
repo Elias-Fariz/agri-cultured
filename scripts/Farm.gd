@@ -228,11 +228,17 @@ func _load_farm_state() -> void:
 	print("Loaded Farm state. Ground:", map["ground"].size(), " Objects:", map["objects"].size(), " Crops:", map["crops"].size(), " Hits:", map["hits"].size())
 
 func _unhandled_input(event: InputEvent) -> void:
-	# ✅ Tool action moved OUT of Farm and into ToolSystem
+	# Planting with the old dedicated plant key still works.
 	if event.is_action_pressed("plant_seed"):
 		_try_plant_selected_seed()
-	if event.is_action_pressed("seed_next"):
-		GameState.cycle_seed_next()
+		return
+
+	# New: if Seed Pouch is selected, the normal tool button plants.
+	if event.is_action_pressed("tool"):
+		if int(GameState.current_tool) == int(GameState.ToolType.SEED_POUCH):
+			_try_plant_selected_seed()
+			get_viewport().set_input_as_handled()
+			return
 
 func _try_plant_selected_seed() -> void:
 	if GameState.is_gameplay_locked():
@@ -337,7 +343,7 @@ func _try_plant_crop_return_success(crop_name: String) -> bool:
 		return false
 
 	# Optional: gentle seasonal gating (OFF by default if allowed_seasons has both)
-	var season_name :Variant= CalendarSystem.season if CalendarSystem != null else "Sunwake"
+	var season_name := _get_current_season_name()
 	if not CropDb.is_allowed_in_season(crop, season_name):
 		print("This crop doesn't like this season:", season_name)
 		return false
@@ -359,8 +365,14 @@ func _try_plant_crop_return_success(crop_name: String) -> bool:
 	_update_crop_indicator(cell)
 	return true
 
+func _get_current_season_name() -> String:
+	if CalendarSystem != null and CalendarSystem.has_method("get_season_name"):
+		return String(CalendarSystem.get_season_name())
+
+	return "Sunwake"
+
 func _advance_all_crops_one_day(raining: bool = false) -> void:
-	var season_name :Variant= CalendarSystem.get_season_name()
+	var season_name := _get_current_season_name()
 
 	var cells := crop_state.keys()
 	for cell in cells:
@@ -450,7 +462,7 @@ func _is_crop_harvestable(cell: Vector2i) -> bool:
 	return stage >= (crop.stage_atlas_coords.size() - 1)
 
 func _harvest_crop(cell: Vector2i) -> void:
-	var season_name :Variant= CalendarSystem.season if CalendarSystem != null else "Sunwake"
+	var season_name := _get_current_season_name()
 
 	var data: Dictionary = crop_state[cell]
 	var crop_name := String(data.get("type", ""))

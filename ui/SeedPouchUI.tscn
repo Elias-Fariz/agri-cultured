@@ -1,0 +1,45 @@
+[gd_scene load_steps=2 format=3 uid="uid://bs7mbapajx756"]
+
+[ext_resource type="Script" uid="uid://dfgp8n2rwrsxq" path="res://scripts/SeedPouchUI.gd" id="1_0pvkt"]
+
+[node name="SeedPouchUI" type="CanvasLayer"]
+layer = 11
+script = ExtResource("1_0pvkt")
+visual_node_path = NodePath("Visuals")
+
+[node name="Visuals" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="SeedPanel" type="PanelContainer" parent="Visuals"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -122.0
+offset_bottom = -91.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="SeedRow" type="HBoxContainer" parent="Visuals/SeedPanel"]
+layout_mode = 2
+
+[node name="PrevButton" type="Button" parent="Visuals/SeedPanel/SeedRow"]
+layout_mode = 2
+text = "<"
+
+[node name="SeedLabel" type="Label" parent="Visuals/SeedPanel/SeedRow"]
+layout_mode = 2
+
+[node name="QtyLabel" type="Label" parent="Visuals/SeedPanel/SeedRow"]
+layout_mode = 2
+
+[node name="NextButton" type="Button" parent="Visuals/SeedPanel/SeedRow"]
+layout_mode = 2
+text = ">"

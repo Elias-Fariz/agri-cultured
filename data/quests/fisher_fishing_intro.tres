@@ -1,0 +1,60 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=12 format=3 uid="uid://ctds0kg2py5iu"]
+
+[ext_resource type="Script" uid="uid://dqvgpvdaiv010" path="res://data/quests/QuestNpcOverrideData.gd" id="1_s7wkc"]
+[ext_resource type="Script" uid="uid://fp28wf3omrn8" path="res://data/quests/QuestSpawnRewardData.gd" id="2_dmgir"]
+[ext_resource type="Script" uid="uid://dt1fjl76x6n5o" path="res://data/dialogue/DialogueBeatData.gd" id="2_j4quq"]
+[ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="3_j4quq"]
+[ext_resource type="Script" uid="uid://clb3lhdggkt8d" path="res://data/dialogue/DialogueSequenceData.gd" id="3_umlrp"]
+[ext_resource type="Script" uid="uid://bolxtchvrfo0y" path="res://data/quests/QuestStepData.gd" id="4_umlrp"]
+
+[sub_resource type="Resource" id="Resource_xbcyw"]
+script = ExtResource("2_j4quq")
+text = "Woah... that's nice."
+speaker_id = "npc_reed"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_e3mnr"]
+script = ExtResource("3_umlrp")
+sequence_id = "fisher_first_catch_sequence"
+display_name = "Fishing Done"
+beats = Array[ExtResource("2_j4quq")]([SubResource("Resource_xbcyw")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_7cvga"]
+script = ExtResource("1_s7wkc")
+npc_id = "npc_reed"
+phase = "turn_in_ready"
+sequence = SubResource("Resource_e3mnr")
+metadata/_custom_type_script = "uid://dqvgpvdaiv010"
+
+[sub_resource type="Resource" id="Resource_s7wkc"]
+script = ExtResource("4_umlrp")
+type = "fish"
+target = "Sardine"
+text = "Catch your first fish."
+metadata/_custom_type_script = "uid://bolxtchvrfo0y"
+
+[sub_resource type="Resource" id="Resource_dmgir"]
+script = ExtResource("4_umlrp")
+type = "talk_to"
+target = "npc_reed"
+text = "Go show him your fish!"
+metadata/_custom_type_script = "uid://bolxtchvrfo0y"
+
+[resource]
+script = ExtResource("3_j4quq")
+id = "fishing_intro"
+title = "The Water Answers"
+description = "yes"
+quest_type = "chain"
+oneshot_action = ""
+steps = Array[ExtResource("4_umlrp")]([SubResource("Resource_s7wkc"), SubResource("Resource_dmgir")])
+turn_in_id = "npc_reed"
+turn_in_text = "Yeah go do that"
+accept_reward_flags = Array[String](["fishing_rod_received"])
+accept_reward_tool_ids = Array[String](["fishing_rod"])
+requires_flags = Array[String](["fishing_unlocked"])
+offer_lines = Array[String](["The water's pleasant... Maybe you can help me out."])
+participant_ids = null
+npc_overrides = Array[ExtResource("1_s7wkc")]([SubResource("Resource_7cvga")])
+metadata/_custom_type_script = "uid://cg0ailnic1w71"

@@ -1,7 +1,8 @@
-[gd_resource type="Resource" script_class="QuestData" load_steps=7 format=3 uid="uid://cntqbb2vy4mrp"]
+[gd_resource type="Resource" script_class="QuestData" load_steps=8 format=3 uid="uid://cntqbb2vy4mrp"]
 
 [ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="1_f8u51"]
 [ext_resource type="Script" uid="uid://dqvgpvdaiv010" path="res://data/quests/QuestNpcOverrideData.gd" id="1_o1cdf"]
+[ext_resource type="Script" uid="uid://fp28wf3omrn8" path="res://data/quests/QuestSpawnRewardData.gd" id="2_i0uvr"]
 [ext_resource type="Script" uid="uid://bolxtchvrfo0y" path="res://data/quests/QuestStepData.gd" id="2_o1cdf"]
 
 [sub_resource type="Resource" id="Resource_f8u51"]

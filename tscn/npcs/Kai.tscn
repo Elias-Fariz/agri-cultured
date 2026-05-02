@@ -1,9 +1,7 @@
-[gd_scene load_steps=6 format=3 uid="uid://dnbhw5lsbu2jr"]
+[gd_scene load_steps=4 format=3 uid="uid://dnbhw5lsbu2jr"]
 
 [ext_resource type="PackedScene" uid="uid://bfaurdf2mucr2" path="res://tscn/npcs/NPC.tscn" id="1_ilh7e"]
 [ext_resource type="Texture2D" uid="uid://cd8rv8272flxi" path="res://ui/portraits/default_silhouette.png" id="2_gmivb"]
-[ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="3_g38rs"]
-[ext_resource type="Resource" uid="uid://x7h6dqd7teun" path="res://data/quests/surfer_fish_quest.tres" id="4_ilh7e"]
 [ext_resource type="Resource" uid="uid://dyftxqjlgk7ew" path="res://data/gifts/gifts_fisher.tres" id="5_gmivb"]
 
 [node name="NPC" instance=ExtResource("1_ilh7e")]
@@ -16,5 +14,4 @@ evening_dialogue_lines = Array[String](["The ocean's going to bed, but I'm not!"
 night_dialogue_lines = Array[String](["Whew, got a bit wet!"])
 overhead_greeting_lines = Array[String](["Sup!"])
 overhead_idle_lines = Array[String](["Waves..."])
-quest_offers = Array[ExtResource("3_g38rs")]([ExtResource("4_ilh7e")])
 gift_prefs = ExtResource("5_gmivb")
