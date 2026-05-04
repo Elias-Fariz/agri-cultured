@@ -50,6 +50,22 @@ var f := GameState.get_friendship(animal_id)
 var _pen_min_cell: Vector2i
 var _pen_max_cell: Vector2i
 
+# --- Animal care clarity text ---
+@export_group("Animal Care Clarity")
+
+@export var prompt_feed: String = "E: Feed"
+@export var prompt_pet: String = "E: Pet"
+@export var prompt_collect: String = "E: Collect"
+@export var prompt_select_bucket: String = "Select Bucket"
+@export var prompt_needs_feed: String = "Needs Feed"
+
+@export var hungry_chatter: String = "hungry?"
+@export var already_fed_chatter: String = "happy!"
+@export var product_ready_chatter: String = "ready!"
+@export var need_bucket_chatter: String = "bucket?"
+@export var no_feed_chatter: String = "hungry..."
+@export var no_product_chatter: String = "not yet"
+
 func _ready() -> void:
 	# Anchor = where the animal starts
 	_anchor_position = _snap_to_grid(global_position)
@@ -274,8 +290,10 @@ func collect_product() -> bool:
 	has_product_ready = false
 	_save_animal_state()
 
-	return true
+	if QuestEvents != null and QuestEvents.has_signal("collected_product"):
+		QuestEvents.collected_product.emit(product_item, produces_per_feed)
 
+	return true
 
 # =============================
 #  INTERACTION ENTRY POINT
@@ -284,79 +302,134 @@ func collect_product() -> bool:
 # We'll implement interact() in the next section once we define
 # how we read the player's current item/tool.
 
-func interact() -> void:
-	# print("\n=== AnimalBase.interact() called ===")
-	# print("Animal ID:", animal_id)
+func get_interact_priority(_context: Node = null) -> int:
+	return 30
 
+
+func get_interact_prompt(_context: Node = null) -> String:
 	var tool := GameState.current_tool
-	var tool_name := GameState.get_tool_name()
-	# print("Current tool:", tool, "(", tool_name, ")")
 
-	# 1) Bucket: try to collect product
-	if tool == GameState.ToolType.BUCKET:
-		# print("Tool is BUCKET → trying to collect product.")
-		_handle_bucket_interaction()
+	# Product ready is the highest priority state.
+	if has_product_ready:
+		if tool == GameState.ToolType.BUCKET:
+			return prompt_collect
+		return prompt_select_bucket
+
+	# Hungry / unfed state.
+	if not fed_today:
+		if tool == GameState.ToolType.HAND:
+			if GameState.inventory_has("Animal Feed", 1):
+				return prompt_feed
+			return prompt_needs_feed
+
+		# If holding another tool, still hint that this animal needs care.
+		return prompt_needs_feed
+
+	# Fed and no product ready: gentle petting fallback.
+	return prompt_pet
+
+
+func _toast_info(msg: String, duration: float = 2.0) -> void:
+	if msg.strip_edges() == "":
 		return
 
-	# 2) Hand: try to feed if not fed yet, otherwise pet
-	if tool == GameState.ToolType.HAND:
-		# print("Tool is HAND → trying to feed or pet.")
+	if QuestEvents != null and QuestEvents.has_signal("toast_requested"):
+		QuestEvents.toast_requested.emit(msg, "info", duration)
 
-		if not fed_today:
-			# print("Animal not fed today → attempting to feed from inventory.")
+
+func _toast_success(msg: String, duration: float = 2.0) -> void:
+	if msg.strip_edges() == "":
+		return
+
+	if QuestEvents != null and QuestEvents.has_signal("toast_requested"):
+		QuestEvents.toast_requested.emit(msg, "success", duration)
+
+
+func _show_current_need_chatter() -> void:
+	if has_product_ready:
+		_show_chatter(product_ready_chatter)
+		return
+
+	if not fed_today:
+		_show_chatter(hungry_chatter)
+		return
+
+	_show_chatter(already_fed_chatter)
+
+func interact() -> void:
+	var tool := GameState.current_tool
+
+	# 1) If product is ready, teach the player to use Bucket.
+	if has_product_ready:
+		if tool == GameState.ToolType.BUCKET:
+			_handle_bucket_interaction()
+			return
+
+		_show_chatter(need_bucket_chatter)
+		_toast_info("Select the Bucket to collect.")
+		return
+
+	# 2) If hungry, Hands + Animal Feed feeds it.
+	if not fed_today:
+		if tool == GameState.ToolType.HAND:
 			var fed_successfully := _handle_feed_interaction()
-			# print("Feeding result:", fed_successfully)
-			if fed_successfully:
-				print("Feeding succeeded → stopping interact() here.")
-				return
-			else:
-				print("Feeding failed (maybe no Animal Feed).")
 
-		# print("Either already fed or no feed available → petting instead.")
-		_handle_pet_interaction()
+			if fed_successfully:
+				return
+
+			# No feed available.
+			_show_chatter(no_feed_chatter)
+			_toast_info("You need Animal Feed.")
+			return
+
+		# Wrong tool while hungry.
+		_show_chatter(hungry_chatter)
+		_toast_info("Use Hands with Animal Feed to feed them.")
 		return
 
-	# 3) Any other tool: just pet
-	# print("Tool is not BUCKET or HAND → treating as pet.")
+	# 3) Already fed and no product ready: pet.
 	_handle_pet_interaction()
 
 func _handle_feed_interaction() -> bool:
-	# print("[Feed] Entered _handle_feed_interaction()")
-	# print("[Feed] fed_today before:", fed_today)
-
 	if fed_today:
 		print("[Feed] Animal already fed today → abort feeding.")
+		_show_chatter(already_fed_chatter)
+		_toast_info("Already fed today.")
 		return false
 
 	var has_feed := GameState.inventory_has("Animal Feed", 1)
-	# print("[Feed] GameState.inventory_has('Animal Feed', 1) =", has_feed)
 
 	if not has_feed:
 		print("[Feed] No Animal Feed in inventory → cannot feed.")
+		_show_chatter(no_feed_chatter)
+		_toast_info("You need Animal Feed.")
 		return false
 
 	var removed := GameState.inventory_remove("Animal Feed", 1)
-	# print("[Feed] inventory_remove('Animal Feed', 1) =", removed)
 
 	if not removed:
 		print("[Feed] Failed to remove Animal Feed → abort.")
+		_show_chatter(no_feed_chatter)
+		_toast_info("You need Animal Feed.")
 		return false
 
 	fed_today = true
 	_save_animal_state()
 	print("[Feed] Animal successfully fed. fed_today now:", fed_today)
 
-	# 🎈 CHATTTER: munch
 	_show_chatter(feed_chatter)
+	_toast_success("Fed animal.")
+
+	if QuestEvents != null and QuestEvents.has_signal("fed_animal"):
+		QuestEvents.fed_animal.emit(animal_id)
 
 	return true
 
 func _handle_bucket_interaction() -> void:
-	# print("[Bucket] Entered _handle_bucket_interaction()")
-	# print("[Bucket] has_product_ready =", has_product_ready)
-
 	if not has_product_ready:
 		print("[Bucket] No product ready → nothing to collect.")
+		_show_chatter(no_product_chatter)
+		_toast_info("Nothing to collect yet.")
 		return
 
 	var collected := collect_product()
@@ -364,16 +437,24 @@ func _handle_bucket_interaction() -> void:
 
 	if collected:
 		print("[Bucket] Product collected →", product_item, "x", produces_per_feed)
-		# 🎈 CHATTTER: happy/thanks
 		_show_chatter(collect_chatter)
+
+		var display_name := product_item
+		if ItemDb != null and ItemDb.has_method("get_item"):
+			var item_data = ItemDb.get_item(product_item)
+			if item_data != null and "display_name" in item_data and String(item_data.display_name).strip_edges() != "":
+				display_name = String(item_data.display_name)
+
+		_toast_success("Collected: %s x%d" % [display_name, int(produces_per_feed)])
 
 func _handle_pet_interaction() -> void:
 	print("[Pet] Petting animal:", animal_id)
 
-	# +1 friendship once per day
 	_gain_friendship_once_per_day(1)
-
 	_show_chatter(pet_chatter)
+
+	if QuestEvents != null and QuestEvents.has_signal("pet_animal"):
+		QuestEvents.pet_animal.emit(animal_id)
 
 func _show_chatter(text: String) -> void:
 	if chatter_label == null:
@@ -402,9 +483,14 @@ func _show_idle_chatter() -> void:
 func _on_ProximityArea_body_entered(body: Node) -> void:
 	if not body.is_in_group("player"):
 		return
-	# Player came near → occasional idle cluck/moo
+
 	print("Proximity ENTER: ", body)
-	_show_idle_chatter()
+
+	# Prioritize useful care state over random idle chatter.
+	if has_product_ready or not fed_today:
+		_show_current_need_chatter()
+	else:
+		_show_idle_chatter()
 
 func _on_ProximityArea_body_exited(body: Node) -> void:
 	if not body.is_in_group("player"):

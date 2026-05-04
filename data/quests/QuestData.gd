@@ -25,6 +25,9 @@ class_name QuestData
 @export var reward_money: int = 0
 @export var reward_items: Dictionary[String, int] = {}
 
+@export var reward_crafting_recipe_ids: Array[String] = []
+@export var reward_cooking_recipe_ids: Array[String] = []
+
 # Optional system/story rewards
 @export var reward_flags: Array[String] = []
 
@@ -43,6 +46,9 @@ class_name QuestData
 @export var accept_reward_items: Dictionary[String, int] = {}
 @export var accept_reward_flags: Array[String] = []
 @export var accept_reward_tool_ids: Array[String] = []
+
+@export var accept_reward_crafting_recipe_ids: Array[String] = []
+@export var accept_reward_cooking_recipe_ids: Array[String] = []
 
 # Optional prerequisite flags.
 # Example: fishing_intro requires "fishing_unlocked"
@@ -92,6 +98,12 @@ func to_dict() -> Dictionary:
 
 	if reward_tool_ids.size() > 0:
 		reward["tools"] = reward_tool_ids.duplicate()
+	
+	if reward_crafting_recipe_ids.size() > 0:
+		reward["crafting_recipes"] = reward_crafting_recipe_ids.duplicate()
+
+	if reward_cooking_recipe_ids.size() > 0:
+		reward["cooking_recipes"] = reward_cooking_recipe_ids.duplicate()
 		
 	var accept_reward: Dictionary = {}
 
@@ -106,6 +118,12 @@ func to_dict() -> Dictionary:
 
 	if accept_reward_tool_ids.size() > 0:
 		accept_reward["tools"] = accept_reward_tool_ids.duplicate()
+		
+	if accept_reward_crafting_recipe_ids.size() > 0:
+		accept_reward["crafting_recipes"] = accept_reward_crafting_recipe_ids.duplicate()
+
+	if accept_reward_cooking_recipe_ids.size() > 0:
+		accept_reward["cooking_recipes"] = accept_reward_cooking_recipe_ids.duplicate()
 
 	var spawn_dicts: Array = []
 	for spawn_reward in reward_spawns:

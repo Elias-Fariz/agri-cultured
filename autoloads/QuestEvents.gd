@@ -60,6 +60,10 @@ func _ready() -> void:
 		GameState.apply_quest_event("fish", fish_id, qty)
 	)
 	
+	action_done.connect(func(action: String, qty: int):
+		GameState.apply_quest_event(action, "", qty)
+	)
+	
 	object_interacted.connect(func(interactable_id: String, quest_target_id: String, qty: int):
 		# Only quest_target_id is used for quest progress.
 		# interactable_id exists so the object itself / GameState can prevent double-counting.

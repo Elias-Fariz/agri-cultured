@@ -69,11 +69,11 @@ func start_new_day() -> void:
 	WeatherChange.roll_new_day_weather()
 	print("Weather today:", WeatherChange.get_weather_name())
 
-	emit_signal("day_changed", day)
-	emit_signal("time_changed", minutes)
-
 	if GameState != null and GameState.has_method("process_animal_new_day"):
 		GameState.process_animal_new_day()
+
+	emit_signal("day_changed", day)
+	emit_signal("time_changed", minutes)
 
 	# Always pay out shipping, regardless of scene
 	GameState.shipping_payout_and_clear()

@@ -92,6 +92,7 @@ Phase 4 - 0.0001: okay, i'm adding a LOT more now
 * Tweak NPC Heads-Up Text
 * Change Tool System *FINALLY INTO A TOOLBELT!!!*
 * Just Add More Content *ALLOWED QUESTS TO GIVE STUFF ON ACCEPTANCE/COMPLETION*
+* COOKING *almost forgot about this!*
 
 Phase 4: Inventory/UI Polish
 

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="CookingRecipeData" load_steps=2 format=3 uid="uid://co0hk0jfn7v4i"]
+
+[ext_resource type="Script" uid="uid://vit47hwmsw5h" path="res://data/cooking/CookingRecipeData.gd" id="1_6d3th"]
+
+[resource]
+script = ExtResource("1_6d3th")
+id = "grilled_sardine"
+display_name = "Grilled Sardine"
+description = "A small cup of milk warmed until it feels like a blanket."
+ingredients = Dictionary[String, int]({
+"Sardine": 1
+})
+output_item_id = "Grilled Fish"
+tags = Array[String](["dairy", "comfort"])
+cooking_note = "The Fisher says simple meals are best by the tide."
+metadata/_custom_type_script = "uid://vit47hwmsw5h"

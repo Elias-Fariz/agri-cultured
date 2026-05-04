@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="CookingRecipeData" load_steps=2 format=3 uid="uid://cwuvj1en2uvt8"]
+
+[ext_resource type="Script" uid="uid://vit47hwmsw5h" path="res://data/cooking/CookingRecipeData.gd" id="1_oyqxc"]
+
+[resource]
+script = ExtResource("1_oyqxc")
+id = "warm_milk"
+display_name = "Warm Milk"
+description = "A small cup of milk warmed until it feels like a blanket."
+ingredients = Dictionary[String, int]({
+"Milk": 1
+})
+output_item_id = "Warm Milk"
+tags = Array[String](["dairy", "comfort"])
+cooking_note = "The Animal Keeper says warm milk helps animals and people settle down."
+metadata/_custom_type_script = "uid://vit47hwmsw5h"

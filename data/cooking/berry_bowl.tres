@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="CookingRecipeData" load_steps=2 format=3 uid="uid://bnfeh06kp730i"]
+
+[ext_resource type="Script" uid="uid://vit47hwmsw5h" path="res://data/cooking/CookingRecipeData.gd" id="1_x4kl4"]
+
+[resource]
+script = ExtResource("1_x4kl4")
+id = "berry_bowl"
+display_name = "Berry Bowl"
+description = "A gentle bowl of berries, bright and sweet."
+ingredients = Dictionary[String, int]({
+"Strawberry": 1
+})
+output_item_id = "Berry Bowl"
+tags = Array[String](["fruit", "comfort"])
+cooking_note = "Poppy seems to like strawberries. Maybe you could give this to her?"
+metadata/_custom_type_script = "uid://vit47hwmsw5h"

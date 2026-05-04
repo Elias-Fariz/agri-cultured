@@ -1,10 +1,12 @@
-[gd_resource type="Resource" script_class="CutsceneData" load_steps=15 format=3 uid="uid://cluprrkrnm8pa"]
+[gd_resource type="Resource" script_class="CutsceneData" load_steps=17 format=3 uid="uid://cluprrkrnm8pa"]
 
 [ext_resource type="Script" uid="uid://camo0lur1qm85" path="res://data/cutscenes/CutsceneData.gd" id="1_art0q"]
 [ext_resource type="Script" uid="uid://b4pm6wxp5ivtk" path="res://data/cutscenes/CutsceneActorData.gd" id="1_idqsu"]
 [ext_resource type="Script" uid="uid://bjwubxbrbyt2x" path="res://data/cutscenes/CutsceneMarkerSet.gd" id="2_4h6s1"]
 [ext_resource type="Script" uid="uid://cbc4hknxa1gfx" path="res://data/cutscenes/CutsceneDialogueData.gd" id="2_7rqi0"]
 [ext_resource type="Script" uid="uid://cp2gtb0hckrrj" path="res://data/cutscenes/CutsceneEffectData.gd" id="3_xae77"]
+[ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="5_f2sxk"]
+[ext_resource type="Script" uid="uid://fp28wf3omrn8" path="res://data/quests/QuestSpawnRewardData.gd" id="6_bb0d6"]
 [ext_resource type="Script" uid="uid://0k0f68wqa7mm" path="res://data/cutscenes/CutsceneStepData.gd" id="6_gusfa"]
 
 [sub_resource type="Resource" id="Resource_4h6s1"]

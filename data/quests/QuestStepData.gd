@@ -24,6 +24,9 @@ class_name QuestStepData
 @export var reward_flags: Array[String] = []
 @export var reward_tool_ids: Array[String] = []
 
+@export var reward_crafting_recipe_ids: Array[String] = []
+@export var reward_cooking_recipe_ids: Array[String] = []
+
 func to_dict() -> Dictionary:
 	var reward: Dictionary = {}
 
@@ -38,6 +41,12 @@ func to_dict() -> Dictionary:
 
 	if reward_tool_ids.size() > 0:
 		reward["tools"] = reward_tool_ids.duplicate()
+		
+	if reward_crafting_recipe_ids.size() > 0:
+		reward["crafting_recipes"] = reward_crafting_recipe_ids.duplicate()
+
+	if reward_cooking_recipe_ids.size() > 0:
+		reward["cooking_recipes"] = reward_cooking_recipe_ids.duplicate()
 
 	return {
 		"type": type,

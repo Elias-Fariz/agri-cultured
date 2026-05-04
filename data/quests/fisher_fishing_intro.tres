@@ -30,7 +30,6 @@ metadata/_custom_type_script = "uid://dqvgpvdaiv010"
 [sub_resource type="Resource" id="Resource_s7wkc"]
 script = ExtResource("4_umlrp")
 type = "fish"
-target = "Sardine"
 text = "Catch your first fish."
 metadata/_custom_type_script = "uid://bolxtchvrfo0y"
 

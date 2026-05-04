@@ -177,6 +177,11 @@ func _run_cutscene_impl(data: CutsceneData) -> void:
 	# 7) Apply effects
 	_apply_effects(data.effects)
 
+	# 7.5) Apply completion rewards
+	# These happen after all cutscene steps/effects are complete,
+	# before cleanup and unlock.
+	_apply_cutscene_completion_rewards(data)
+
 	# 8) Fade OUT, cleanup temp actors, fade IN, unlock
 	if has_node("/root/FadeOverlay"):
 		await FadeOverlay.fade_out(0.20)
@@ -973,3 +978,57 @@ func _hide_cutscene_illustration(fade_seconds: float = 0.25) -> void:
 
 	if overlay.has_method("hide_illustration"):
 		await overlay.call("hide_illustration", fade_seconds)
+
+func _apply_cutscene_completion_rewards(data: CutsceneData) -> void:
+	if data == null:
+		return
+
+	if not data.has_completion_rewards():
+		return
+
+	var cutscene_id := String(data.id).strip_edges()
+	var reward_flag := ""
+	if cutscene_id != "":
+		reward_flag = "cutscene_reward_claimed:" + cutscene_id
+
+	# Safety: prevent repeated rewards if the same cutscene is replayed.
+	if data.rewards_once and reward_flag != "":
+		if GameState != null and GameState.has_method("has_flag"):
+			if bool(GameState.has_flag(reward_flag)):
+				print("[CutsceneReward] Already claimed for cutscene:", cutscene_id)
+				return
+
+	# Apply normal reward dictionary: money, items, flags, tools, spawns.
+	var reward := data.get_completion_reward_dict()
+	if not reward.is_empty():
+		if GameState != null and GameState.has_method("apply_reward_dict"):
+			GameState.apply_reward_dict(reward, "cutscene:%s" % cutscene_id)
+		else:
+			push_warning("CutsceneDirector: GameState.apply_reward_dict missing; cannot apply cutscene reward.")
+
+	# Add quest rewards, if any.
+	for qd in data.reward_quests:
+		if qd == null:
+			continue
+
+		var quest_id := String(qd.id).strip_edges()
+		if quest_id == "":
+			continue
+
+		if GameState.active_quests.has(quest_id):
+			continue
+		if GameState.completed_quests.has(quest_id):
+			continue
+
+		if GameState.has_method("add_quest"):
+			GameState.add_quest(qd.to_dict())
+		else:
+			push_warning("CutsceneDirector: GameState.add_quest missing; cannot add quest: " + quest_id)
+
+	# Mark cutscene rewards as claimed only after everything has been attempted.
+	if data.rewards_once and reward_flag != "":
+		if GameState != null and GameState.has_method("set_flag"):
+			GameState.set_flag(reward_flag, true)
+
+	if QuestEvents != null and QuestEvents.has_signal("quest_state_changed"):
+		QuestEvents.quest_state_changed.emit()

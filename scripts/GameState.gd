@@ -532,6 +532,8 @@ var _rested_block_by_id: Dictionary = {}  # rest_id -> "day:morning" etc.
 @export var passout_spawn_tag: String = "passout_spawn"
 var _day_start_toast_queue: Array[Dictionary] = []
 
+var _last_animal_day_processed: int = -1
+
 # --- World pickup persistence (per-day) ---
 var _picked_up_day_by_id: Dictionary = {}  # pickup_id -> int day number
 
@@ -654,6 +656,37 @@ var played_cutscenes: Dictionary = {}
 # --- Crafting recipe unlocks ---
 var unlocked_recipes: Dictionary = {}  # recipe_id -> true
 
+var unlocked_cooking_recipe_ids: Dictionary = {}
+
+func unlock_cooking_recipe(recipe_id: String) -> void:
+	recipe_id = recipe_id.strip_edges()
+	if recipe_id == "":
+		return
+
+	if unlocked_cooking_recipe_ids.has(recipe_id):
+		return
+
+	unlocked_cooking_recipe_ids[recipe_id] = true
+	print("[Cooking] Recipe unlocked:", recipe_id)
+
+	if QuestEvents != null and QuestEvents.has_signal("toast_requested"):
+		QuestEvents.toast_requested.emit("Recipe learned: " + recipe_id, "success", 2.5)
+
+	if QuestEvents != null and QuestEvents.has_signal("quest_state_changed"):
+		QuestEvents.quest_state_changed.emit()
+
+
+func has_cooking_recipe(recipe_id: String) -> bool:
+	recipe_id = recipe_id.strip_edges()
+	if recipe_id == "":
+		return false
+
+	return bool(unlocked_cooking_recipe_ids.get(recipe_id, false))
+
+
+func get_unlocked_cooking_recipe_ids() -> Dictionary:
+	return unlocked_cooking_recipe_ids.duplicate(true)
+
 func unlock_recipe(recipe_id: String) -> void:
 	if recipe_id.strip_edges() == "":
 		return
@@ -711,6 +744,8 @@ func _ready() -> void:
 	
 	unlock_recipe("shell_necklace")
 	unlock_recipe("flower_headband")
+	
+	#unlock_cooking_recipe("warm_milk")
 	
 	if not has_played_greeting_intro:
 		pending_cutscene_id = "greeting_intro"
@@ -1491,9 +1526,15 @@ func apply_quest_event(action: String, target: String = "", amount: int = 1, tar
 				if step_target2 != "" and target2 == "":
 					continue
 			else:
-				# Existing behavior
-				if target != "" and step_target != target:
-					continue
+				# Blank step target means "any target" for this action.
+				# Example:
+				# type = "fish", target = ""        -> any fish counts
+				# type = "fish", target = "Minnow"  -> only Minnow counts
+				if step_target != "":
+					if target == "":
+						continue
+					if step_target != target:
+						continue
 
 			changed = true
 
@@ -1531,8 +1572,12 @@ func apply_quest_event(action: String, target: String = "", amount: int = 1, tar
 			if q_target2 != "" and target2 == "":
 				continue
 		else:
-			if target != "" and q_target != target:
-				continue
+			# Blank quest target means "any target" for this action.
+			if q_target != "":
+				if target == "":
+					continue
+				if q_target != target:
+					continue
 
 		changed = true
 
@@ -2154,8 +2199,17 @@ func get_animal_state_value(animal_id: String, key: String, default_value: Varia
 	var state := get_animal_state(animal_id)
 	return state.get(key, default_value)
 
-
 func process_animal_new_day() -> void:
+	var current_day := 0
+	if TimeManager != null:
+		current_day = int(TimeManager.day)
+
+	# Prevent double-processing the same day.
+	if _last_animal_day_processed == current_day:
+		return
+
+	_last_animal_day_processed = current_day
+
 	for animal_id_any in animal_states.keys():
 		var animal_id := String(animal_id_any)
 		var state: Dictionary = animal_states[animal_id]
@@ -2165,6 +2219,8 @@ func process_animal_new_day() -> void:
 
 		state["fed_today"] = false
 		animal_states[animal_id] = state
+
+	print("[Animals] Processed new day:", current_day, animal_states)
 
 func apply_reward_dict(reward: Dictionary, source_id: String = "") -> void:
 	if reward.is_empty():
@@ -2201,6 +2257,32 @@ func apply_reward_dict(reward: Dictionary, source_id: String = "") -> void:
 				unlock_tool(tool_type)
 			else:
 				push_warning("[Reward] Unknown tool id: " + tool_id)
+
+		# Crafting recipe unlocks
+	if reward.has("crafting_recipes"):
+		var crafting_recipe_reward: Array = Array(reward["crafting_recipes"])
+		for recipe_any in crafting_recipe_reward:
+			var recipe_id := String(recipe_any).strip_edges()
+			if recipe_id == "":
+				continue
+
+			if has_method("unlock_recipe"):
+				unlock_recipe(recipe_id)
+			else:
+				push_warning("[Reward] GameState.unlock_recipe missing; cannot unlock crafting recipe: " + recipe_id)
+
+	# Cooking recipe unlocks
+	if reward.has("cooking_recipes"):
+		var cooking_recipe_reward: Array = Array(reward["cooking_recipes"])
+		for recipe_any in cooking_recipe_reward:
+			var recipe_id := String(recipe_any).strip_edges()
+			if recipe_id == "":
+				continue
+
+			if has_method("unlock_cooking_recipe"):
+				unlock_cooking_recipe(recipe_id)
+			else:
+				push_warning("[Reward] GameState.unlock_cooking_recipe missing; cannot unlock cooking recipe: " + recipe_id)
 
 	# Spawns
 	if reward.has("spawns"):

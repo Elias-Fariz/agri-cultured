@@ -1,4 +1,4 @@
-[gd_scene load_steps=60 format=3 uid="uid://6ni01dvcs2m2"]
+[gd_scene load_steps=66 format=3 uid="uid://6ni01dvcs2m2"]
 
 [ext_resource type="Script" uid="uid://cevvm7fnmvrhe" path="res://scripts/Farm.gd" id="1_vobxb"]
 [ext_resource type="PackedScene" uid="uid://b0c10lgb0ivgd" path="res://tscn/WaterSplash.tscn" id="2_66215"]
@@ -47,14 +47,20 @@
 [ext_resource type="PackedScene" uid="uid://bs7mbapajx756" path="res://ui/SeedPouchUI.tscn" id="43_5v62u"]
 [ext_resource type="Script" uid="uid://cx0lg4ua6qvj7" path="res://scripts/RewardSpawner.gd" id="43_6jl04"]
 [ext_resource type="Script" uid="uid://c0wb6p01vhywa" path="res://scripts/RewardSpawnPoint.gd" id="44_6jl04"]
+[ext_resource type="PackedScene" uid="uid://gndbb0osuq8k" path="res://ui/CookingUI.tscn" id="45_uk2dd"]
 [ext_resource type="PackedScene" uid="uid://cbaw8nhel818e" path="res://tscn/Bench.tscn" id="46_5apsn"]
+[ext_resource type="Script" uid="uid://vit47hwmsw5h" path="res://data/cooking/CookingRecipeData.gd" id="46_fe1ak"]
+[ext_resource type="Resource" uid="uid://bnfeh06kp730i" path="res://data/cooking/berry_bowl.tres" id="47_tme2c"]
+[ext_resource type="Resource" uid="uid://co0hk0jfn7v4i" path="res://data/cooking/grilled_sardine.tres" id="48_qly5q"]
 [ext_resource type="PackedScene" uid="uid://b2yas8ffxxcxr" path="res://tscn/FishingSpot.tscn" id="49_adcl0"]
+[ext_resource type="Resource" uid="uid://cwuvj1en2uvt8" path="res://data/cooking/warm_milk.tres" id="49_svfjv"]
 [ext_resource type="Script" uid="uid://dwgbix054vtfh" path="res://data/fishing/FishDefinition.gd" id="50_11pgm"]
 [ext_resource type="Resource" uid="uid://c7fnqf4mgteax" path="res://data/fishing/fish_sardine.tres" id="51_yp4mp"]
 [ext_resource type="Resource" uid="uid://bnla4wktaen61" path="res://data/fishing/fish_tuna.tres" id="52_5v62u"]
 [ext_resource type="PackedScene" uid="uid://kqa5wudv68tx" path="res://ui/FIshingMinigameUI.tscn" id="53_11pgm"]
 [ext_resource type="PackedScene" uid="uid://cfyepca1wp5kc" path="res://tscn/Flower.tscn" id="53_yp4mp"]
 [ext_resource type="PackedScene" uid="uid://1f33asibycm2" path="res://tscn/Sign.tscn" id="54_yp4mp"]
+[ext_resource type="PackedScene" uid="uid://dythtjjsbyphx" path="res://tscn/CookingStation.tscn" id="57_nxb7m"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_og6c6"]
 
@@ -151,6 +157,19 @@ shape = SubResource("RectangleShape2D_k5exi")
 [node name="Sprite2D" type="Sprite2D" parent="TravelPoints/ToMines"]
 texture = ExtResource("6_mre8b")
 
+[node name="ToJade" type="Area2D" parent="TravelPoints"]
+position = Vector2(-44, -68)
+collision_mask = 3
+script = ExtResource("29_f2th2")
+target_scene_path = "res://tscn/JadeChamber.tscn"
+target_spawn_tag = "from_farm"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TravelPoints/ToJade"]
+shape = SubResource("RectangleShape2D_k5exi")
+
+[node name="Sprite2D" type="Sprite2D" parent="TravelPoints/ToJade"]
+texture = ExtResource("6_mre8b")
+
 [node name="ToDeepForest" type="Area2D" parent="TravelPoints"]
 position = Vector2(241, -76)
 collision_mask = 3
@@ -194,9 +213,14 @@ script = ExtResource("42_hm1ss")
 tag = "from_heart"
 
 [node name="SpawnFromMines" type="Marker2D" parent="TravelPoints" groups=["spawn_points"]]
-position = Vector2(112, 61)
+position = Vector2(-51, 111)
 script = ExtResource("42_hm1ss")
 tag = "from_mines"
+
+[node name="SpawnFromJade" type="Marker2D" parent="TravelPoints" groups=["spawn_points"]]
+position = Vector2(-43, -35)
+script = ExtResource("42_hm1ss")
+tag = "from_jade"
 
 [node name="SpawnFromDeepForest" type="Marker2D" parent="TravelPoints" groups=["spawn_points"]]
 position = Vector2(247, -24)
@@ -296,6 +320,9 @@ script = ExtResource("38_wdtkt")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="QuestLocation"]
 shape = SubResource("RectangleShape2D_7ea1u")
 
+[node name="CookingUI" parent="." instance=ExtResource("45_uk2dd")]
+recipes = Array[ExtResource("46_fe1ak")]([ExtResource("47_tme2c"), ExtResource("48_qly5q"), ExtResource("49_svfjv")])
+
 [node name="SpawnManager" type="Node" parent="."]
 script = ExtResource("43_3h7oh")
 
@@ -372,3 +399,7 @@ pickup_id = "flower_14"
 [node name="Flower5" parent="." instance=ExtResource("53_yp4mp")]
 position = Vector2(533, 358)
 pickup_id = "flower_15"
+
+[node name="CookingStation" parent="." instance=ExtResource("57_nxb7m")]
+position = Vector2(375, -62)
+cooking_ui_path = NodePath("../CookingUI")
