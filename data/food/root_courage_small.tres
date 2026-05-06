@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="FoodEffectData" load_steps=2 format=3 uid="uid://q1qs4jcn44va"]
+
+[ext_resource type="Script" uid="uid://cswkwxx0fqbww" path="res://data/food/FoodEffectData.gd" id="1_0b424"]
+
+[resource]
+script = ExtResource("1_0b424")
+id = "root_courage_small"
+display_name = "Root Courage"
+description = "A warm tea that steadies your heart when the roots grow restless."
+effect_key = 7
+amount = 1.0
+duration_mode = 2
+category = "combat"
+metadata/_custom_type_script = "uid://cswkwxx0fqbww"

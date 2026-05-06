@@ -15,6 +15,8 @@ extends BaseOverlay
 # NEW (safe): calendar label (won’t crash if you haven’t added it yet)
 @onready var calendar_label: Label = get_node_or_null("TopRightPanel/VBoxContainer/CalendarLabel") as Label
 
+@onready var buffs_label: Label = get_node_or_null("TopRightPanel/VBoxContainer/BuffsLabel") as Label
+
 
 func _ready() -> void:
 	super._ready()
@@ -51,6 +53,8 @@ func _process(_delta: float) -> void:
 		warning_label.visible = true
 	else:
 		warning_label.visible = false
+		
+	_update_buffs_label()
 
 
 func _update_money_label(amount: int) -> void:
@@ -75,3 +79,21 @@ func _enable_ui_on_play(node: CanvasItem) -> void:
 		node.visible = false
 	else:
 		node.visible = true
+
+func _update_buffs_label() -> void:
+	if buffs_label == null:
+		return
+
+	if GameState == null or not GameState.has_method("get_active_food_buff_display_lines"):
+		buffs_label.visible = false
+		return
+
+	var lines: Array[String] = GameState.get_active_food_buff_display_lines()
+
+	if lines.is_empty():
+		buffs_label.text = ""
+		buffs_label.visible = false
+		return
+
+	buffs_label.visible = true
+	buffs_label.text = "Buffs:\n" + "\n".join(lines)

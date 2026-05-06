@@ -171,6 +171,12 @@ func _render_selected(r: CookingRecipeData) -> void:
 	lines.append("")
 	lines.append("Makes: %s x%d" % [r.output_item_id, int(r.output_qty)])
 
+	var effect_lines := r.get_effects_as_lines()
+	if not effect_lines.is_empty():
+		lines.append("")
+		lines.append("Effects:")
+		lines.append_array(effect_lines)
+
 	requirements.text = "\n".join(lines)
 	cook_button.disabled = not r.can_cook(inv)
 

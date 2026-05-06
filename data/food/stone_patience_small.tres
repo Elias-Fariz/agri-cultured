@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="FoodEffectData" load_steps=2 format=3 uid="uid://clr8o6syae4q1"]
+
+[ext_resource type="Script" uid="uid://cswkwxx0fqbww" path="res://data/food/FoodEffectData.gd" id="1_4848o"]
+
+[resource]
+script = ExtResource("1_4848o")
+id = "stone_patience_small"
+display_name = "Stone Patience"
+description = "A grounding meal that softens your first mistake in the mines."
+effect_key = 5
+amount = 1.0
+duration_mode = 1
+category = "mining"
+metadata/_custom_type_script = "uid://cswkwxx0fqbww"

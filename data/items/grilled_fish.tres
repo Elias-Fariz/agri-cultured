@@ -1,6 +1,10 @@
-[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3 uid="uid://cwl5swer23432"]
+[gd_resource type="Resource" script_class="ItemData" load_steps=6 format=3 uid="uid://cwl5swer23432"]
 
+[ext_resource type="Script" uid="uid://cswkwxx0fqbww" path="res://data/food/FoodEffectData.gd" id="1_agrwy"]
 [ext_resource type="Script" uid="uid://dfoyyckymw8co" path="res://data/items/ItemData.gd" id="1_tqiv7"]
+[ext_resource type="Resource" uid="uid://4efp3ng6xy6f" path="res://data/food/bright_step_small.tres" id="2_sdi1d"]
+[ext_resource type="Resource" uid="uid://dbjbqtheagbo6" path="res://data/food/soft_recovery_small.tres" id="3_b3ssm"]
+[ext_resource type="Resource" uid="uid://ovgafi1rwc2m" path="res://data/food/gentle_endurance_small.tres" id="4_32hgw"]
 
 [resource]
 script = ExtResource("1_tqiv7")
@@ -10,4 +14,5 @@ sell_price = 50
 description = "Simple, warm, and salty from the shore."
 tags = Array[String](["food", "cooked", "fish"])
 energy_restore = 14
+food_effects = Array[ExtResource("1_agrwy")]([ExtResource("2_sdi1d"), ExtResource("3_b3ssm"), ExtResource("4_32hgw")])
 metadata/_custom_type_script = "uid://dfoyyckymw8co"

@@ -79,7 +79,7 @@ func tool_action(world: Node, player: Node) -> void:
 			print("Wrong tool! Need ", dkey, " tool.")
 			return
 
-		if not GameState.spend_energy(GameState.tool_action_cost):
+		if not GameState.spend_tool_energy(GameState.tool_action_cost, int(GameState.current_tool)):
 			print("No energy to use tools!")
 			return
 
@@ -107,7 +107,7 @@ func tool_action(world: Node, player: Node) -> void:
 			print("This tile is already wet.")
 			return
 
-		if not GameState.spend_energy(GameState.tool_action_cost):
+		if not GameState.spend_tool_energy(GameState.tool_action_cost, int(GameState.current_tool)):
 			print("No energy to water!")
 			return
 
@@ -120,7 +120,7 @@ func tool_action(world: Node, player: Node) -> void:
 		if GameState.current_tool != GameState.ToolType.HOE:
 			print("Need Hoe to harvest.")
 			return
-		if not GameState.spend_energy(GameState.tool_action_cost):
+		if not GameState.spend_tool_energy(GameState.tool_action_cost, int(GameState.current_tool)):
 			print("No energy to harvest!")
 			return
 		world.call("_harvest_crop", target_cell)
@@ -132,7 +132,7 @@ func tool_action(world: Node, player: Node) -> void:
 		if GameState.current_tool != GameState.ToolType.HOE:
 			print("Need Hoe to till.")
 			return
-		if not GameState.spend_energy(GameState.tool_action_cost):
+		if not GameState.spend_tool_energy(GameState.tool_action_cost, int(GameState.current_tool)):
 			print("No energy to till!")
 			return
 		world.call("_try_till_ground", target_cell)

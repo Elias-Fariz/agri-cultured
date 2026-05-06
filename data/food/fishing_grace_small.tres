@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="FoodEffectData" load_steps=2 format=3 uid="uid://brvy7117p12ie"]
+
+[ext_resource type="Script" uid="uid://cswkwxx0fqbww" path="res://data/food/FoodEffectData.gd" id="1_ipkch"]
+
+[resource]
+script = ExtResource("1_ipkch")
+id = "fishing_grace_small"
+display_name = "Fishing Grace"
+description = "A soft meal that helps you recover from a small mistake by the water."
+effect_key = 2
+amount = 1.0
+duration_mode = 1
+uses = 3
+category = "fishing"
+metadata/_custom_type_script = "uid://cswkwxx0fqbww"

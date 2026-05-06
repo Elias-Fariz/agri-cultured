@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="FoodEffectData" load_steps=2 format=3 uid="uid://bgauqi1bt3ayt"]
+
+[ext_resource type="Script" uid="uid://cswkwxx0fqbww" path="res://data/food/FoodEffectData.gd" id="1_ieuxi"]
+
+[resource]
+script = ExtResource("1_ieuxi")
+id = "miners_fortune_small"
+display_name = "Miner's Fortune"
+description = "A hearty dish that helps your careful work uncover a little more."
+effect_key = 6
+amount = 0.1
+duration_mode = 1
+uses = 5
+category = "mining"
+metadata/_custom_type_script = "uid://cswkwxx0fqbww"

@@ -54,10 +54,13 @@ var _pushback_locked: bool = false
 
 var _active: bool = false
 var _resolve: int = 0
+var _max_resolve_this_encounter: int = 0
 var _instability: int = 0
 var _hit_registered_this_opening: bool = false
 var _player: Node2D = null
 var _ending: bool = false
+
+var _food_first_hit_shield_active: bool = false
 
 func _ready() -> void:
 	add_to_group("restoration_encounter")
@@ -111,16 +114,20 @@ func start_encounter() -> void:
 	_active = true
 	_ending = false
 	_set_boundary_visible(true)
-	_resolve = _get_starting_resolve()
+
+	_max_resolve_this_encounter = _get_starting_resolve()
+	_resolve = _max_resolve_this_encounter
 	_instability = _get_starting_instability()
+
+	_apply_combat_food_buffs_on_start()
+
 	_show_player_resolve_ui()
 	_show_instability_bar()
-	#_show_restoration_ui()
 
 	if encounter_data.pause_time_during_encounter and TimeManager != null and TimeManager.has_method("enter_timeless_zone"):
 		TimeManager.enter_timeless_zone()
 
-	_debug_toast("The disturbance stirs. Resolve: %d/%d" % [_resolve, _get_starting_resolve()], "warning", 1.7)
+	_debug_toast("The disturbance stirs. Resolve: %d/%d" % [_resolve, _get_current_max_resolve()], "warning", 1.7)
 
 	if print_debug:
 		print("[RestorationEncounter] Started. Resolve=", _resolve, " Instability=", _instability, " Patterns=", encounter_data.patterns.size())
@@ -133,6 +140,8 @@ func fail_encounter(reason: String = "overwhelmed") -> void:
 
 	_active = false
 	_ending = true
+	_food_first_hit_shield_active = false
+	
 	_clear_danger_zones()
 	_set_boundary_visible(false)
 	_hide_instability_bar()
@@ -187,6 +196,8 @@ func complete_encounter() -> void:
 
 	_active = false
 	_ending = true
+	_food_first_hit_shield_active = false
+	
 	_clear_danger_zones()
 	_set_boundary_visible(false)
 	_hide_instability_bar()
@@ -380,12 +391,24 @@ func _on_danger_zone_player_hit(resolve_damage: int) -> void:
 	if not _active:
 		return
 
+	if _food_first_hit_shield_active:
+		_food_first_hit_shield_active = false
+		_update_player_resolve_ui()
+		#_update_restoration_ui()
+
+		_debug_toast("Heart Guard softens the blow.", "info", 1.5)
+
+		if print_debug:
+			print("[RestorationEncounter] Heart Guard blocked a hit.")
+
+		return
+
 	_resolve -= max(1, resolve_damage)
 	_resolve = max(0, _resolve)
 	_update_player_resolve_ui()
 	#_update_restoration_ui()
 
-	_debug_toast("Your resolve wavers. Resolve: %d/%d" % [_resolve, encounter_data.max_resolve], "warning", 1.2)
+	_debug_toast("Your resolve wavers. Resolve: %d/%d" % [_resolve, _get_current_max_resolve()], "warning", 1.2)
 
 	if print_debug:
 		print("[RestorationEncounter] Player hit. Resolve now ", _resolve)
@@ -536,7 +559,7 @@ func _show_restoration_ui() -> void:
 			"show_encounter",
 			encounter_data.display_name,
 			_resolve,
-			_get_starting_resolve(),
+			_get_current_max_resolve(),
 			_instability,
 			_get_starting_instability()
 		)
@@ -550,7 +573,7 @@ func _update_restoration_ui() -> void:
 		ui.call(
 			"update_values",
 			_resolve,
-			_get_starting_resolve(),
+			_get_current_max_resolve(),
 			_instability,
 			_get_starting_instability()
 		)
@@ -590,7 +613,7 @@ func _show_player_resolve_ui() -> void:
 		return
 
 	if ui.has_method("show_resolve"):
-		ui.call("show_resolve", _resolve, _get_starting_resolve())
+		ui.call("show_resolve", _resolve, _get_current_max_resolve())
 
 func _update_player_resolve_ui() -> void:
 	var ui := _get_player_resolve_ui()
@@ -598,7 +621,7 @@ func _update_player_resolve_ui() -> void:
 		return
 
 	if ui.has_method("update_resolve"):
-		ui.call("update_resolve", _resolve, _get_starting_resolve())
+		ui.call("update_resolve", _resolve, _get_current_max_resolve())
 
 func _hide_player_resolve_ui() -> void:
 	var ui := _get_player_resolve_ui()
@@ -673,3 +696,53 @@ func _push_player_back_into_boundary(body: Node) -> void:
 
 	await get_tree().create_timer(max(0.05, boundary_pushback_cooldown)).timeout
 	_pushback_locked = false
+
+func _get_current_max_resolve() -> int:
+	if _max_resolve_this_encounter > 0:
+		return _max_resolve_this_encounter
+	return _get_starting_resolve()
+
+func _apply_combat_food_buffs_on_start() -> void:
+	if GameState == null:
+		return
+	if not GameState.has_method("get_food_buff_amount"):
+		return
+
+	# ------------------------------------------------------------
+	# Root Courage: +Resolve for this encounter
+	# ------------------------------------------------------------
+	var resolve_bonus := GameState.get_food_buff_amount(FoodEffectData.EffectKey.COMBAT_RESOLVE_BONUS)
+
+	if resolve_bonus > 0.0:
+		var bonus_int := int(round(resolve_bonus))
+		if bonus_int > 0:
+			_max_resolve_this_encounter += bonus_int
+			_resolve += bonus_int
+
+			if GameState.has_method("consume_food_buff_use"):
+				GameState.consume_food_buff_use(FoodEffectData.EffectKey.COMBAT_RESOLVE_BONUS)
+
+			if QuestEvents != null and QuestEvents.has_signal("toast_requested"):
+				QuestEvents.toast_requested.emit("Root Courage steadies your heart. +" + str(bonus_int) + " Resolve", "success", 2.5)
+
+			if print_debug:
+				print("[RestorationEncounter] Root Courage applied. bonus=", bonus_int, " resolve=", _resolve, "/", _max_resolve_this_encounter)
+
+	# ------------------------------------------------------------
+	# Heart Guard: first hit shield for this encounter
+	# ------------------------------------------------------------
+	var shield_amount := GameState.get_food_buff_amount(FoodEffectData.EffectKey.COMBAT_FIRST_HIT_SHIELD)
+
+	if shield_amount > 0.0:
+		_food_first_hit_shield_active = true
+
+		if GameState.has_method("consume_food_buff_use"):
+			GameState.consume_food_buff_use(FoodEffectData.EffectKey.COMBAT_FIRST_HIT_SHIELD)
+
+		if QuestEvents != null and QuestEvents.has_signal("toast_requested"):
+			QuestEvents.toast_requested.emit("Heart Guard surrounds you.", "success", 2.5)
+
+		if print_debug:
+			print("[RestorationEncounter] Heart Guard applied.")
+	else:
+		_food_first_hit_shield_active = false

@@ -1,6 +1,8 @@
-[gd_resource type="Resource" script_class="CookingRecipeData" load_steps=2 format=3 uid="uid://co0hk0jfn7v4i"]
+[gd_resource type="Resource" script_class="CookingRecipeData" load_steps=4 format=3 uid="uid://co0hk0jfn7v4i"]
 
 [ext_resource type="Script" uid="uid://vit47hwmsw5h" path="res://data/cooking/CookingRecipeData.gd" id="1_6d3th"]
+[ext_resource type="Script" uid="uid://cswkwxx0fqbww" path="res://data/food/FoodEffectData.gd" id="1_dyckr"]
+[ext_resource type="Resource" uid="uid://d2seidvahshci" path="res://data/food/fishing_focus_small.tres" id="2_5ntw4"]
 
 [resource]
 script = ExtResource("1_6d3th")
@@ -13,4 +15,5 @@ ingredients = Dictionary[String, int]({
 output_item_id = "Grilled Fish"
 tags = Array[String](["dairy", "comfort"])
 cooking_note = "The Fisher says simple meals are best by the tide."
+food_effects = Array[ExtResource("1_dyckr")]([ExtResource("2_5ntw4")])
 metadata/_custom_type_script = "uid://vit47hwmsw5h"

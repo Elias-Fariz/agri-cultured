@@ -79,6 +79,7 @@ func _ready() -> void:
 		return
 
 	_ensure_state_exists()
+	_apply_mining_harmony_food_bonus_once_per_day()
 	_refresh_if_needed()
 	_apply_room_visual_state()
 
@@ -290,7 +291,10 @@ func _resolve_node_break(cell: Vector2i, rec: Dictionary, node_data: MiningNodeD
 	if state != "active":
 		_dormant_broken_this_cycle += 1
 		_give_dormant_rewards(node_data)
-		_change_harmony(int(node_data.harmony_on_dormant_break))
+
+		if not _consume_mining_forgiveness_if_available():
+			_change_harmony(int(node_data.harmony_on_dormant_break))
+
 		_play_break_feedback(cell, "dormant")
 		_maybe_emit_feedback_toast("dormant", node_data)
 		return
@@ -302,9 +306,15 @@ func _resolve_node_break(cell: Vector2i, rec: Dictionary, node_data: MiningNodeD
 		if node_data.mechanic_type != MiningNodeData.MechanicType.BASIC:
 			_special_success_this_cycle += 1
 
-		_give_active_rewards(node_data, harmony_before)
+		var bonus_drop_food_amount := _get_mining_bonus_drop_food_amount()
+
+		_give_active_rewards(node_data, harmony_before, bonus_drop_food_amount)
 		_change_harmony(int(node_data.harmony_on_active_break))
-		_maybe_grant_cycle_bonus()
+		_maybe_grant_cycle_bonus(bonus_drop_food_amount)
+
+		if bonus_drop_food_amount > 0.0:
+			_consume_mining_bonus_drop_food_use_if_active()
+
 		_play_break_feedback(cell, "active")
 		_play_special_feedback(cell, true)
 		_maybe_emit_feedback_toast("active", node_data)
@@ -315,7 +325,10 @@ func _resolve_node_break(cell: Vector2i, rec: Dictionary, node_data: MiningNodeD
 		_dormant_broken_this_cycle += 1
 
 		_give_dormant_rewards(node_data)
-		_change_harmony(int(node_data.harmony_on_special_miss))
+
+		if not _consume_mining_forgiveness_if_available():
+			_change_harmony(int(node_data.harmony_on_special_miss))
+
 		_play_break_feedback(cell, "dormant")
 		_play_special_feedback(cell, false)
 		_maybe_emit_feedback_toast("special_miss", node_data)
@@ -371,8 +384,8 @@ func _give_dormant_rewards(node_data: MiningNodeData) -> void:
 	if item_id != "" and qty > 0:
 		GameState.inventory_add(item_id, qty)
 
-func _give_active_rewards(node_data: MiningNodeData, harmony: int) -> void:
-	var drops := node_data.roll_active_drops(harmony)
+func _give_active_rewards(node_data: MiningNodeData, harmony: int, bonus_drop_chance_bonus: float = 0.0) -> void:
+	var drops := node_data.roll_active_drops(harmony, bonus_drop_chance_bonus)
 	for d_any in drops:
 		var d := d_any as Dictionary
 		var item_id := String(d.get("item_id", ""))
@@ -380,7 +393,7 @@ func _give_active_rewards(node_data: MiningNodeData, harmony: int) -> void:
 		if item_id != "" and qty > 0:
 			GameState.inventory_add(item_id, qty)
 
-func _maybe_grant_cycle_bonus() -> void:
+func _maybe_grant_cycle_bonus(bonus_drop_chance_bonus: float = 0.0) -> void:
 	if chamber_data == null:
 		return
 	if chamber_data.bonus_drop_item.strip_edges() == "":
@@ -396,7 +409,11 @@ func _maybe_grant_cycle_bonus() -> void:
 		return
 
 	var harmony := get_chamber_harmony()
-	var chance := chamber_data.get_bonus_drop_chance_for_harmony(harmony)
+	var chance := clampf(
+		chamber_data.get_bonus_drop_chance_for_harmony(harmony) + bonus_drop_chance_bonus,
+		0.0,
+		1.0
+	)
 
 	if randf() <= chance:
 		var drop := chamber_data.roll_bonus_drop()
@@ -671,3 +688,71 @@ func _maybe_spawn_pulse_visual(cell: Vector2i, node_data: MiningNodeData, rec: D
 		v.call("setup", float(node_data.pulse_period_seconds), offset)
 
 	_pulse_visuals_by_cell[key] = v
+
+func _apply_mining_harmony_food_bonus_once_per_day() -> void:
+	if chamber_data == null:
+		return
+	if GameState == null:
+		return
+	if not GameState.has_method("get_food_buff_amount"):
+		return
+
+	var bonus := GameState.get_food_buff_amount(FoodEffectData.EffectKey.MINING_HARMONY_BONUS)
+	if bonus <= 0.0:
+		return
+
+	var chamber_id := String(chamber_data.chamber_id).strip_edges()
+	if chamber_id == "":
+		chamber_id = _state_key()
+
+	if GameState.has_method("has_applied_mining_food_bonus_today"):
+		if GameState.has_applied_mining_food_bonus_today(chamber_id, FoodEffectData.EffectKey.MINING_HARMONY_BONUS):
+			return
+
+	_change_harmony(int(round(bonus)))
+
+	if GameState.has_method("mark_mining_food_bonus_applied_today"):
+		GameState.mark_mining_food_bonus_applied_today(chamber_id, FoodEffectData.EffectKey.MINING_HARMONY_BONUS)
+
+	if QuestEvents != null and QuestEvents.has_signal("toast_requested"):
+		QuestEvents.toast_requested.emit("Mountain Listening helps you hear this chamber more clearly.", "success", 2.5)
+
+func _consume_mining_forgiveness_if_available() -> bool:
+	if GameState == null:
+		return false
+	if not GameState.has_method("get_food_buff_amount"):
+		return false
+
+	var amount := GameState.get_food_buff_amount(FoodEffectData.EffectKey.MINING_FORGIVE_MISTAKE)
+	if amount <= 0.0:
+		return false
+
+	if GameState.has_method("consume_food_buff_use"):
+		GameState.consume_food_buff_use(FoodEffectData.EffectKey.MINING_FORGIVE_MISTAKE)
+
+	if QuestEvents != null and QuestEvents.has_signal("toast_requested"):
+		QuestEvents.toast_requested.emit("Stone Patience softened the mistake.", "info", 2.0)
+
+	return true
+
+func _get_mining_bonus_drop_food_amount() -> float:
+	if GameState == null:
+		return 0.0
+	if not GameState.has_method("get_food_buff_amount"):
+		return 0.0
+
+	return GameState.get_food_buff_amount(FoodEffectData.EffectKey.MINING_BONUS_DROP_CHANCE)
+
+
+func _consume_mining_bonus_drop_food_use_if_active() -> void:
+	if GameState == null:
+		return
+	if not GameState.has_method("get_food_buff_amount"):
+		return
+
+	var amount := GameState.get_food_buff_amount(FoodEffectData.EffectKey.MINING_BONUS_DROP_CHANCE)
+	if amount <= 0.0:
+		return
+
+	if GameState.has_method("consume_food_buff_use"):
+		GameState.consume_food_buff_use(FoodEffectData.EffectKey.MINING_BONUS_DROP_CHANCE)

@@ -74,6 +74,9 @@ layout_mode = 2
 layout_mode = 2
 text = "Press H for Help"
 
+[node name="BuffsLabel" type="Label" parent="TopRightPanel/VBoxContainer"]
+layout_mode = 2
+
 [node name="ToastLayer" type="Control" parent="."]
 custom_minimum_size = Vector2(600, 200)
 layout_mode = 3

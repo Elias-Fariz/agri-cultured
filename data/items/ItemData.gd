@@ -17,6 +17,8 @@ class_name ItemData
 
 @export var energy_restore: int = 0  # 0 = not food, >0 = restores energy when consumed
 
+@export var food_effects: Array[FoodEffectData] = []
+
 # -----------------------------------------------------------------------------
 # Tag helpers (safe, no side effects)
 # -----------------------------------------------------------------------------

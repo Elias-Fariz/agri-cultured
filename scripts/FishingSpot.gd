@@ -57,8 +57,65 @@ func interact() -> void:
 
 	# rest of your existing function continues...
 
-	# Build the input string
-	var seq := _generate_sequence(fish.sequence_len)
+	# Apply food buff modifiers before starting the minigame.
+	var final_time_limit := float(fish.time_limit)
+	var final_sequence_len := int(fish.sequence_len)
+	var final_mistakes_allowed := int(fish.mistakes_allowed)
+
+	# ------------------------------------------------------------
+	# Fishing Focus: +seconds to fishing timer
+	# ------------------------------------------------------------
+	var fishing_time_bonus := 0.0
+	if GameState != null and GameState.has_method("get_food_buff_amount"):
+		fishing_time_bonus = GameState.get_food_buff_amount(FoodEffectData.EffectKey.FISHING_TIME_BONUS)
+
+	if fishing_time_bonus > 0.0:
+		final_time_limit += fishing_time_bonus
+
+		if QuestEvents != null and QuestEvents.has_signal("toast_requested"):
+			QuestEvents.toast_requested.emit("Fishing Focus: +" + str(fishing_time_bonus) + "s", "info", 1.5)
+
+		if GameState.has_method("consume_food_buff_use"):
+			GameState.consume_food_buff_use(FoodEffectData.EffectKey.FISHING_TIME_BONUS)
+
+
+	# ------------------------------------------------------------
+	# Fishing Grace: +mistakes allowed
+	# ------------------------------------------------------------
+	var fishing_mistake_bonus := 0.0
+	if GameState != null and GameState.has_method("get_food_buff_amount"):
+		fishing_mistake_bonus = GameState.get_food_buff_amount(FoodEffectData.EffectKey.FISHING_MISTAKE_BONUS)
+
+	if fishing_mistake_bonus > 0.0:
+		final_mistakes_allowed += int(round(fishing_mistake_bonus))
+
+		if QuestEvents != null and QuestEvents.has_signal("toast_requested"):
+			QuestEvents.toast_requested.emit("Fishing Grace: +" + str(int(round(fishing_mistake_bonus))) + " mistake", "info", 1.5)
+
+		if GameState.has_method("consume_food_buff_use"):
+			GameState.consume_food_buff_use(FoodEffectData.EffectKey.FISHING_MISTAKE_BONUS)
+
+
+	# ------------------------------------------------------------
+	# Clear Rhythm: fewer letters in the sequence
+	# ------------------------------------------------------------
+	var fishing_sequence_reduction := 0.0
+	if GameState != null and GameState.has_method("get_food_buff_amount"):
+		fishing_sequence_reduction = GameState.get_food_buff_amount(FoodEffectData.EffectKey.FISHING_SEQUENCE_REDUCTION)
+
+	if fishing_sequence_reduction > 0.0:
+		final_sequence_len -= int(round(fishing_sequence_reduction))
+		final_sequence_len = max(1, final_sequence_len)
+
+		if QuestEvents != null and QuestEvents.has_signal("toast_requested"):
+			QuestEvents.toast_requested.emit("Clear Rhythm: easier pattern", "info", 1.5)
+
+		if GameState.has_method("consume_food_buff_use"):
+			GameState.consume_food_buff_use(FoodEffectData.EffectKey.FISHING_SEQUENCE_REDUCTION)
+
+
+	# Build the input string after buffs modify the sequence length.
+	var seq := _generate_sequence(final_sequence_len)
 
 	# Spawn UI
 	var ui := fishing_ui_scene.instantiate()
@@ -70,10 +127,10 @@ func interact() -> void:
 
 	# ✅ IMPORTANT: actually start the minigame
 	ui.start_minigame(
-		fish.fish_item_id,     # what inventory item you receive on success
-		seq,                  # input sequence like ["A","D","A"]
-		fish.time_limit,      # seconds to complete
-		fish.mistakes_allowed # how many wrong presses allowed
+		fish.fish_item_id,
+		seq,
+		final_time_limit,
+		final_mistakes_allowed
 	)
 
 
@@ -134,14 +191,16 @@ func _generate_sequence(len: int) -> Array[String]:
 	return out
 
 func _is_fishing_unlocked() -> bool:
+	# Fallback to GameState flag if needed.
+	if GameState != null and GameState.has_method("has_flag"):
+		return bool(GameState.has_flag("fishing_unlocked"))
+	
 	# Prefer HeartProgress, because the Valley Heart owns this unlock.
 	var hp := get_node_or_null("/root/HeartProgress")
 	if hp != null and hp.has_method("is_fishing_unlocked"):
 		return bool(hp.call("is_fishing_unlocked"))
 
-	# Fallback to GameState flag if needed.
-	if GameState != null and GameState.has_method("has_flag"):
-		return bool(GameState.has_flag("fishing_unlocked"))
+	
 
 	return false
 

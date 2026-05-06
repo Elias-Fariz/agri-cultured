@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="FoodEffectData" load_steps=2 format=3 uid="uid://dyxu3xibrdxj7"]
+
+[ext_resource type="Script" uid="uid://cswkwxx0fqbww" path="res://data/food/FoodEffectData.gd" id="1_wtptf"]
+
+[resource]
+script = ExtResource("1_wtptf")
+id = "clear_rhythm_small"
+display_name = "Clear Rhythm"
+description = "A light dish that makes the water’s rhythm easier to follow."
+effect_key = 3
+amount = 1.0
+duration_mode = 1
+uses = 3
+category = "fishing"
+metadata/_custom_type_script = "uid://cswkwxx0fqbww"

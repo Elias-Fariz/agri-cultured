@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="FoodEffectData" load_steps=2 format=3 uid="uid://ds5a7clui3kc0"]
+
+[ext_resource type="Script" uid="uid://cswkwxx0fqbww" path="res://data/food/FoodEffectData.gd" id="1_88w86"]
+
+[resource]
+script = ExtResource("1_88w86")
+id = "tool_ease_small"
+display_name = "Tool Ease"
+description = "A hearty meal that helps your body move through familiar chores with less strain."
+effect_key = 9
+amount = 1.0
+duration_mode = 1
+uses = 8
+category = "tool"
+metadata/_custom_type_script = "uid://cswkwxx0fqbww"

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="FoodEffectData" load_steps=2 format=3 uid="uid://ovgafi1rwc2m"]
+
+[ext_resource type="Script" uid="uid://cswkwxx0fqbww" path="res://data/food/FoodEffectData.gd" id="1_p6hhp"]
+
+[resource]
+script = ExtResource("1_p6hhp")
+id = "gentle_endurance_small"
+display_name = "Gentle Endurance"
+description = "A hearty meal that helps you carry a little more strength through the day."
+effect_key = 11
+amount = 2.0
+duration_mode = 4
+category = "energy"
+metadata/_custom_type_script = "uid://cswkwxx0fqbww"

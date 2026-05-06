@@ -93,6 +93,18 @@ Phase 4 - 0.0001: okay, i'm adding a LOT more now
 * Change Tool System *FINALLY INTO A TOOLBELT!!!*
 * Just Add More Content *ALLOWED QUESTS TO GIVE STUFF ON ACCEPTANCE/COMPLETION*
 * COOKING *almost forgot about this!*
+* Cooking Buffs *SPEED, ENERGY, AND MORE*
+
+Phase lim(n->inf) 4 - 1/n:
+* Devlog Support Tools
+** Cinematic Lock
+** Camera Pan
+** HUD Hiding
+* Energy Revamp
+* Cook Quest Step
+* Character Foods
+* Help Book
+* Gifting UI Revamp
 
 Phase 4: Inventory/UI Polish
 

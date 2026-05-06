@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="FoodEffectData" load_steps=2 format=3 uid="uid://bn7736fq8013f"]
+
+[ext_resource type="Script" uid="uid://cswkwxx0fqbww" path="res://data/food/FoodEffectData.gd" id="1_ormkt"]
+
+[resource]
+script = ExtResource("1_ormkt")
+id = "miners_broth_harmony"
+display_name = "Mountain Listening"
+description = "A warm broth that helps you settle into the chamber’s quiet rhythm."
+effect_key = 4
+amount = 5.0
+duration_mode = 4
+category = "mining"
+metadata/_custom_type_script = "uid://cswkwxx0fqbww"

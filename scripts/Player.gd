@@ -109,8 +109,15 @@ func _physics_process(delta: float) -> void:
 		indicator.set_direction(facing)
 
 	var mult := 1.0
+
+	# Food buff: Bright Step / movement speed multiplier.
+	# This stacks gently with exhausted slowdown.
+	if GameState != null and GameState.has_method("get_movement_speed_multiplier"):
+		mult *= GameState.get_movement_speed_multiplier()
+
 	if GameState.exhausted:
-		mult = exhausted_speed_multiplier
+		mult *= exhausted_speed_multiplier
+
 	velocity = input.normalized() * speed * mult
 	
 	var is_moving := velocity.length() > 5.0

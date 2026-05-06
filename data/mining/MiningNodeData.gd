@@ -183,7 +183,7 @@ func roll_dormant_drop() -> Dictionary:
 		"qty": _roll_qty(dormant_drop_qty_min, dormant_drop_qty_max)
 	}
 
-func roll_active_drops(harmony: int = 50) -> Array[Dictionary]:
+func roll_active_drops(harmony: int = 50, bonus_drop_chance_bonus: float = 0.0) -> Array[Dictionary]:
 	var drops: Array[Dictionary] = []
 
 	var main_qty := _roll_qty(active_drop_qty_min, active_drop_qty_max)
@@ -194,7 +194,12 @@ func roll_active_drops(harmony: int = 50) -> Array[Dictionary]:
 		})
 
 	if active_bonus_drop_item.strip_edges() != "":
-		var chance := clampf(active_bonus_drop_chance + _get_harmony_bonus_chance(harmony), 0.0, 1.0)
+		var chance := clampf(
+			active_bonus_drop_chance + _get_harmony_bonus_chance(harmony) + bonus_drop_chance_bonus,
+			0.0,
+			1.0
+		)
+
 		if randf() <= chance:
 			var bonus_qty := _roll_qty(active_bonus_qty_min, active_bonus_qty_max)
 			if bonus_qty > 0:

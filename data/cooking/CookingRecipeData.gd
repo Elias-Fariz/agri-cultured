@@ -23,6 +23,8 @@ class_name CookingRecipeData
 # Optional flavor text shown in the UI.
 @export_multiline var cooking_note: String = ""
 
+@export var food_effects: Array[FoodEffectData] = []
+
 
 func is_valid() -> bool:
 	return id.strip_edges() != "" and output_item_id.strip_edges() != "" and output_qty > 0
@@ -81,3 +83,16 @@ func has_tag(tag: String) -> bool:
 			return true
 
 	return false
+
+func get_effects_as_lines() -> Array[String]:
+	var lines: Array[String] = []
+
+	for effect in food_effects:
+		if effect == null:
+			continue
+		if not effect.is_valid():
+			continue
+
+		lines.append("✨ " + effect.get_display_line())
+
+	return lines

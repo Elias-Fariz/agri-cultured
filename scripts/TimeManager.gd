@@ -72,6 +72,11 @@ func start_new_day() -> void:
 	if GameState != null and GameState.has_method("process_animal_new_day"):
 		GameState.process_animal_new_day()
 
+	# Clear food buffs before day_changed is emitted.
+	# This makes normal sleep and pass-out behave the same.
+	if GameState != null and GameState.has_method("clear_daily_food_buffs"):
+		GameState.clear_daily_food_buffs()
+
 	emit_signal("day_changed", day)
 	emit_signal("time_changed", minutes)
 

@@ -122,6 +122,10 @@ steps = Array[ExtResource("4_2pgpd")]([SubResource("Resource_cag78"), SubResourc
 reward_money = 69
 reward_items = Dictionary[String, int]({
 "Apple": 1,
-"Milk": 1
+"Grilled Fish": 1,
+"Sardine": 1
 })
+reward_flags = Array[String](["fishing_unlocked"])
+reward_tool_ids = Array[String](["fishing_rod"])
+reward_cooking_recipe_ids = Array[String](["grilled_sardine"])
 metadata/_custom_type_script = "uid://camo0lur1qm85"

@@ -108,30 +108,56 @@ func consume_item(item_id: String) -> bool:
 		print("consume_item: No ItemData found for:", item_id)
 		return false
 
-	# Must be edible
 	var restore := int(data.energy_restore)
-	if restore <= 0:
+
+	# Food effects are optional.
+	# Use data.get() so this does not explode if an older ItemData resource/script
+	# does not have food_effects set up yet.
+	var effects: Array = []
+	var raw_effects = data.get("food_effects")
+	if raw_effects is Array:
+		effects = raw_effects
+
+	var has_effects := false
+	for effect in effects:
+		if effect == null:
+			continue
+		if effect is FoodEffectData and effect.is_valid():
+			has_effects = true
+			break
+
+	var can_restore_energy := restore > 0 and energy < max_energy
+
+	# If the item gives neither usable energy nor a buff, don't consume it.
+	if not can_restore_energy and not has_effects:
+		print("consume_item: Item is not currently useful to consume:", item_id)
 		return false
 
-	# If already full, don't waste it (feels nicer)
-	if energy >= max_energy:
-		return false
+	# Apply energy restore if useful.
+	if can_restore_energy:
+		energy = min(max_energy, energy + restore)
 
-	var before := energy
-	energy = min(max_energy, energy + restore)
+	# Apply food effects if any.
+	if has_effects:
+		for effect in effects:
+			if effect == null:
+				continue
+			if effect is FoodEffectData and effect.is_valid():
+				apply_food_effect(effect)
 
-	# If no change, do not consume
-	if energy == before:
-		return false
-
-	# Consume one
+	# Consume one item only after we know it did something useful.
 	var removed := inventory_remove(item_id, 1)
 	if not removed:
 		return false
 
-	# Optional toast (only if you have it)
+	# Cozy feedback
 	if QuestEvents != null and QuestEvents.has_signal("toast_requested"):
-		QuestEvents.toast_requested.emit("+" + str(restore) + " Energy")
+		if can_restore_energy and has_effects:
+			QuestEvents.toast_requested.emit("+" + str(restore) + " Energy, and you feel prepared.", "success", 2.5)
+		elif can_restore_energy:
+			QuestEvents.toast_requested.emit("+" + str(restore) + " Energy", "success", 2.0)
+		elif has_effects:
+			QuestEvents.toast_requested.emit("You feel prepared.", "success", 2.0)
 
 	return true
 
@@ -471,6 +497,8 @@ var world_state: Dictionary = {}
 # Example:
 # world_state["Farm"] = { ...data... }
 
+var mining_food_bonus_applied_today: Dictionary = {}
+
 # ----------------------------
 # NPC Friending (runtime persistence across scenes)
 # ----------------------------
@@ -716,6 +744,8 @@ var heart_flags: Dictionary = {}   # e.g. { "heart_pond_unlocked": true }
 
 var interacted_object_ids: Dictionary = {}
 
+var active_food_buffs: Dictionary = {}
+
 func _ready() -> void:
 	reset_energy()
 	_ensure_default_owned_tools()
@@ -740,7 +770,11 @@ func _ready() -> void:
 	QuestEvents.ui_opened.connect(_on_quest_ui_opened)
 	var tm := get_node_or_null("/root/TimeManager")
 	if tm:
-		tm.day_changed.connect(_on_day_changed)
+		if not tm.day_changed.is_connected(_on_day_changed):
+			tm.day_changed.connect(_on_day_changed)
+
+		if tm.has_signal("time_changed") and not tm.time_changed.is_connected(_on_time_changed):
+			tm.time_changed.connect(_on_time_changed)
 	
 	unlock_recipe("shell_necklace")
 	unlock_recipe("flower_headband")
@@ -750,6 +784,26 @@ func _ready() -> void:
 	if not has_played_greeting_intro:
 		pending_cutscene_id = "greeting_intro"
 		has_played_greeting_intro = true
+
+var _last_buff_tick_minute: int = -1
+
+func _on_time_changed(current_minutes: int) -> void:
+	if _last_buff_tick_minute < 0:
+		_last_buff_tick_minute = current_minutes
+		return
+
+	var delta := current_minutes - _last_buff_tick_minute
+
+	# If time wrapped or jumped due sleep/passout, don't tick here.
+	# start_new_day() clears buffs separately.
+	if delta < 0:
+		_last_buff_tick_minute = current_minutes
+		return
+
+	if delta > 0:
+		tick_timed_food_buffs(delta)
+
+	_last_buff_tick_minute = current_minutes
 
 
 func _ensure_default_owned_tools() -> void:
@@ -881,16 +935,44 @@ func can_spend(cost: int) -> bool:
 
 # Returns true if spent successfully, false if not enough energy
 func spend_energy(cost: int) -> bool:
+	cost = max(0, cost)
+
+	if cost <= 0:
+		return true
+
 	if energy < cost:
 		exhausted = true
 		return false
 
 	energy -= cost
+
 	if energy <= 0:
 		energy = 0
+
+		if _try_soft_recovery():
+			return true
+
 		exhausted = true
+
 	return true
-	
+
+func _try_soft_recovery() -> bool:
+	var recovery := get_food_buff_amount(FoodEffectData.EffectKey.ENERGY_SOFT_RECOVERY)
+	if recovery <= 0.0:
+		return false
+
+	var recovered :Variant= max(1, int(round(recovery)))
+	energy = min(max_energy, recovered)
+	exhausted = false
+
+	if has_method("consume_food_buff_use"):
+		consume_food_buff_use(FoodEffectData.EffectKey.ENERGY_SOFT_RECOVERY)
+
+	if QuestEvents != null and QuestEvents.has_signal("toast_requested"):
+		QuestEvents.toast_requested.emit("Soft Recovery helped you catch your breath.", "success", 2.5)
+
+	return true
+
 func get_map_state(map_name: String) -> Dictionary:
 	if not world_state.has(map_name):
 		world_state[map_name] = {
@@ -1651,6 +1733,8 @@ func _is_quest_completed(quest_id: String) -> bool:
 	return completed_quests.has(quest_id)
 
 func _on_day_changed(new_day: int) -> void:
+	mining_food_bonus_applied_today.clear()
+	
 	print("Day changed:", new_day)
 	if new_day != 1:
 		return
@@ -2310,3 +2394,351 @@ func _apply_step_reward_once(quest_id: String, step_index: int, step: Dictionary
 
 	step["reward_claimed"] = true
 	return step
+
+func apply_food_effect(effect: FoodEffectData) -> void:
+	if effect == null:
+		return
+	if not effect.is_valid():
+		return
+
+	var key := int(effect.effect_key)
+
+	var remaining_uses := 1
+	var remaining_minutes := 0
+
+	match effect.duration_mode:
+		FoodEffectData.DurationMode.NEXT_N_USES:
+			remaining_uses = max(1, int(effect.uses))
+
+		FoodEffectData.DurationMode.NEXT_USE:
+			remaining_uses = 1
+
+		FoodEffectData.DurationMode.NEXT_SESSION:
+			remaining_uses = 1
+
+		FoodEffectData.DurationMode.TIMED:
+			remaining_uses = 999999
+			remaining_minutes = max(1, int(effect.duration_minutes))
+
+		FoodEffectData.DurationMode.UNTIL_SLEEP:
+			remaining_uses = 999999
+
+		_:
+			remaining_uses = 1
+
+	# If this is replacing an existing max-energy buff, undo the old bonus first.
+	if key == FoodEffectData.EffectKey.MAX_ENERGY_BONUS and active_food_buffs.has(key):
+		var old_buff: Dictionary = Dictionary(active_food_buffs[key])
+		var old_bonus := int(round(float(old_buff.get("amount", 0.0))))
+		if old_bonus > 0:
+			max_energy = max(1, max_energy - old_bonus)
+			energy = min(energy, max_energy)
+
+	active_food_buffs[key] = {
+		"id": effect.id,
+		"display_name": effect.display_name if effect.display_name.strip_edges() != "" else effect.get_effect_key_name(),
+		"amount": float(effect.amount),
+		"remaining_uses": remaining_uses,
+		"remaining_minutes": remaining_minutes,
+		"duration_mode": int(effect.duration_mode),
+		"category": effect.category,
+	}
+
+	print("[FoodBuff] Applied:", active_food_buffs[key])
+	
+	# Apply immediate side effects.
+	if key == FoodEffectData.EffectKey.MAX_ENERGY_BONUS:
+		var bonus := int(round(float(effect.amount)))
+		if bonus > 0:
+			max_energy += bonus
+			energy = min(max_energy, energy + bonus)
+
+	if QuestEvents != null and QuestEvents.has_signal("toast_requested"):
+		var label := effect.display_name
+		if label.strip_edges() == "":
+			label = effect.get_effect_key_name()
+		QuestEvents.toast_requested.emit(label + " is active.", "success", 2.5)
+	
+	if QuestEvents != null and QuestEvents.has_signal("quest_state_changed"):
+		QuestEvents.quest_state_changed.emit()
+
+
+func get_food_buff_amount(effect_key: int) -> float:
+	var key := int(effect_key)
+	if not active_food_buffs.has(key):
+		return 0.0
+
+	var buff: Dictionary = Dictionary(active_food_buffs[key])
+	return float(buff.get("amount", 0.0))
+
+
+func consume_food_buff_use(effect_key: int) -> void:
+	var key := int(effect_key)
+	if not active_food_buffs.has(key):
+		return
+
+	var buff: Dictionary = Dictionary(active_food_buffs[key])
+	var remaining := int(buff.get("remaining_uses", 0))
+
+	# Timed / until-sleep buffs can be wired later.
+	if remaining >= 999999:
+		return
+
+	remaining -= 1
+
+	if remaining <= 0:
+		active_food_buffs.erase(key)
+		print("[FoodBuff] Expired key:", key)
+	else:
+		buff["remaining_uses"] = remaining
+		active_food_buffs[key] = buff
+		print("[FoodBuff] Remaining uses key=", key, " uses=", remaining)
+		
+	if QuestEvents != null and QuestEvents.has_signal("quest_state_changed"):
+		QuestEvents.quest_state_changed.emit()
+
+
+func has_food_buff(effect_key: int) -> bool:
+	return active_food_buffs.has(int(effect_key))
+
+func get_active_food_buff_display_lines() -> Array[String]:
+	var lines: Array[String] = []
+
+	for key_any in active_food_buffs.keys():
+		var key := int(key_any)
+		var buff: Dictionary = Dictionary(active_food_buffs[key_any])
+
+		var name := String(buff.get("display_name", ""))
+		if name.strip_edges() == "":
+			name = _get_food_effect_key_display_name(key)
+
+		var remaining := int(buff.get("remaining_uses", 0))
+		var duration_mode := int(buff.get("duration_mode", FoodEffectData.DurationMode.NEXT_USE))
+
+		var suffix := ""
+
+		match duration_mode:
+			FoodEffectData.DurationMode.NEXT_USE:
+				suffix = "next use"
+			FoodEffectData.DurationMode.NEXT_N_USES:
+				suffix = "%d uses left" % max(0, remaining)
+			FoodEffectData.DurationMode.NEXT_SESSION:
+				suffix = "next session"
+			FoodEffectData.DurationMode.TIMED:
+				var remaining_minutes := int(buff.get("remaining_minutes", 0))
+				var hours := int(remaining_minutes / 60)
+				var mins := remaining_minutes % 60
+
+				if hours > 0:
+					suffix = "%dh %02dm left" % [hours, mins]
+				else:
+					suffix = "%dm left" % mins
+			FoodEffectData.DurationMode.UNTIL_SLEEP:
+				suffix = "until sleep"
+			_:
+				suffix = "active"
+
+		lines.append("%s: %s" % [name, suffix])
+
+	return lines
+
+func _get_food_effect_key_display_name(effect_key: int) -> String:
+	match effect_key:
+		FoodEffectData.EffectKey.FISHING_TIME_BONUS:
+			return "Fishing Focus"
+		FoodEffectData.EffectKey.FISHING_MISTAKE_BONUS:
+			return "Fishing Grace"
+		FoodEffectData.EffectKey.FISHING_SEQUENCE_REDUCTION:
+			return "Clear Rhythm"
+		FoodEffectData.EffectKey.MINING_HARMONY_BONUS:
+			return "Mining Harmony"
+		FoodEffectData.EffectKey.MINING_FORGIVE_MISTAKE:
+			return "Stone Patience"
+		FoodEffectData.EffectKey.MINING_BONUS_DROP_CHANCE:
+			return "Miner's Fortune"
+		FoodEffectData.EffectKey.COMBAT_RESOLVE_BONUS:
+			return "Root Courage"
+		FoodEffectData.EffectKey.COMBAT_FIRST_HIT_SHIELD:
+			return "Heart Guard"
+		FoodEffectData.EffectKey.TOOL_ENERGY_DISCOUNT:
+			return "Tool Ease"
+		_:
+			return "Food Buff"
+
+func has_applied_mining_food_bonus_today(chamber_id: String, effect_key: int) -> bool:
+	chamber_id = chamber_id.strip_edges()
+	if chamber_id == "":
+		return false
+
+	var key := chamber_id + ":" + str(effect_key)
+	return bool(mining_food_bonus_applied_today.get(key, false))
+
+
+func mark_mining_food_bonus_applied_today(chamber_id: String, effect_key: int) -> void:
+	chamber_id = chamber_id.strip_edges()
+	if chamber_id == "":
+		return
+
+	var key := chamber_id + ":" + str(effect_key)
+	mining_food_bonus_applied_today[key] = true
+
+
+func clear_food_buffs_with_duration_mode(duration_mode: int) -> void:
+	var to_remove: Array = []
+
+	for key_any in active_food_buffs.keys():
+		var buff: Dictionary = Dictionary(active_food_buffs[key_any])
+		if int(buff.get("duration_mode", -1)) == int(duration_mode):
+			to_remove.append(key_any)
+
+	for key_any2 in to_remove:
+		active_food_buffs.erase(key_any2)
+
+	if not to_remove.is_empty():
+		if QuestEvents != null and QuestEvents.has_signal("quest_state_changed"):
+			QuestEvents.quest_state_changed.emit()
+
+func clear_daily_food_buffs() -> void:
+	if not ("active_food_buffs" in self):
+		return
+
+	var removed_names: Array[String] = []
+
+	for key_any in active_food_buffs.keys():
+		var buff: Dictionary = Dictionary(active_food_buffs[key_any])
+
+		var name := String(buff.get("display_name", ""))
+		if name.strip_edges() == "":
+			name = "A food blessing"
+
+		removed_names.append(name)
+
+	var keys_to_clear := active_food_buffs.keys().duplicate()
+	for key_any in keys_to_clear:
+		_remove_food_buff_by_key(key_any)
+
+	# Reset mining once-per-day food bonus tracking too.
+	# This lets a new day receive Mountain Listening again.
+	if "mining_food_bonus_applied_today" in self:
+		mining_food_bonus_applied_today.clear()
+
+	if not removed_names.is_empty():
+		print("[FoodBuff] Cleared daily food buffs:", removed_names)
+
+		# Queue this so it appears after the new day/scene settles, if your queued toast helper exists.
+		if has_method("queue_day_start_toast"):
+			queue_day_start_toast("Yesterday’s food blessings have faded.", "info", 2.5)
+		elif QuestEvents != null and QuestEvents.has_signal("toast_requested"):
+			QuestEvents.toast_requested.emit("Yesterday’s food blessings have faded.", "info", 2.5)
+
+	if QuestEvents != null and QuestEvents.has_signal("quest_state_changed"):
+		QuestEvents.quest_state_changed.emit()
+
+func get_tool_energy_cost_with_food_discount(base_cost: int, tool_type: int = -1) -> int:
+	var cost :Variant= max(0, int(base_cost))
+
+	if not has_method("get_food_buff_amount"):
+		return cost
+
+	var discount := get_food_buff_amount(FoodEffectData.EffectKey.TOOL_ENERGY_DISCOUNT)
+	if discount <= 0.0:
+		return cost
+
+	var final_cost :Variant= cost - int(round(discount))
+
+	# For limited-use foods, letting cost reach 0 is okay.
+	# If later this feels too strong, change this to max(1, final_cost).
+	return max(0, final_cost)
+
+
+func spend_tool_energy(base_cost: int, tool_type: int = -1) -> bool:
+	var final_cost := get_tool_energy_cost_with_food_discount(base_cost, tool_type)
+
+	# If final cost is 0, this action is free but still valid.
+	if final_cost <= 0:
+		_consume_tool_energy_discount_use_if_active()
+		return true
+
+	var spent := spend_energy(final_cost)
+	if spent:
+		_consume_tool_energy_discount_use_if_active()
+
+	return spent
+
+
+func _consume_tool_energy_discount_use_if_active() -> void:
+	if not has_method("get_food_buff_amount"):
+		return
+
+	var discount := get_food_buff_amount(FoodEffectData.EffectKey.TOOL_ENERGY_DISCOUNT)
+	if discount <= 0.0:
+		return
+
+	if has_method("consume_food_buff_use"):
+		consume_food_buff_use(FoodEffectData.EffectKey.TOOL_ENERGY_DISCOUNT)
+
+	if QuestEvents != null and QuestEvents.has_signal("toast_requested"):
+		QuestEvents.toast_requested.emit("Tool Ease softened the strain.", "info", 1.2)
+
+func tick_timed_food_buffs(delta_minutes: int = 1) -> void:
+	if active_food_buffs.is_empty():
+		return
+
+	var changed := false
+	var to_remove: Array = []
+
+	for key_any in active_food_buffs.keys():
+		var buff: Dictionary = Dictionary(active_food_buffs[key_any])
+		var duration_mode := int(buff.get("duration_mode", -1))
+
+		if duration_mode != FoodEffectData.DurationMode.TIMED:
+			continue
+
+		var remaining := int(buff.get("remaining_minutes", 0))
+		remaining -= max(1, delta_minutes)
+
+		if remaining <= 0:
+			to_remove.append(key_any)
+		else:
+			buff["remaining_minutes"] = remaining
+			active_food_buffs[key_any] = buff
+
+		changed = true
+
+	for key_remove in to_remove:
+		_remove_food_buff_by_key(key_remove)
+
+	if changed and QuestEvents != null and QuestEvents.has_signal("quest_state_changed"):
+		QuestEvents.quest_state_changed.emit()
+
+func _remove_food_buff_by_key(key_any) -> void:
+	if not active_food_buffs.has(key_any):
+		return
+
+	var key := int(key_any)
+	var buff: Dictionary = Dictionary(active_food_buffs[key_any])
+
+	# Undo max energy side effect if needed.
+	if key == FoodEffectData.EffectKey.MAX_ENERGY_BONUS:
+		var bonus := int(round(float(buff.get("amount", 0.0))))
+		if bonus > 0:
+			max_energy = max(1, max_energy - bonus)
+			energy = min(energy, max_energy)
+
+	active_food_buffs.erase(key_any)
+
+	var name := String(buff.get("display_name", ""))
+	if name.strip_edges() == "":
+		name = "A food blessing"
+
+	print("[FoodBuff] Expired:", name)
+
+func get_movement_speed_multiplier() -> float:
+	var bonus := get_food_buff_amount(FoodEffectData.EffectKey.MOVEMENT_SPEED_MULTIPLIER)
+
+	# amount is treated as an additive multiplier bonus.
+	# Example: amount = 0.15 means 1.15x speed.
+	if bonus <= 0.0:
+		return 1.0
+
+	return max(0.1, 1.0 + bonus)

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="FoodEffectData" load_steps=2 format=3 uid="uid://dbjbqtheagbo6"]
+
+[ext_resource type="Script" uid="uid://cswkwxx0fqbww" path="res://data/food/FoodEffectData.gd" id="1_agrk1"]
+
+[resource]
+script = ExtResource("1_agrk1")
+id = "soft_recovery_small"
+display_name = "Soft Recovery"
+description = "A soothing dish that helps you catch yourself before exhaustion settles in."
+effect_key = 12
+amount = 1.0
+duration_mode = 1
+category = "energy"
+metadata/_custom_type_script = "uid://cswkwxx0fqbww"

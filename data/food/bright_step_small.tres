@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="FoodEffectData" load_steps=2 format=3 uid="uid://4efp3ng6xy6f"]
+
+[ext_resource type="Script" uid="uid://cswkwxx0fqbww" path="res://data/food/FoodEffectData.gd" id="1_nbyvg"]
+
+[resource]
+script = ExtResource("1_nbyvg")
+id = "bright_step_small"
+display_name = "Bright Step"
+description = "A lively drink that makes the path feel a little lighter beneath your feet."
+effect_key = 10
+amount = 0.15
+duration_mode = 3
+duration_minutes = 180
+category = "movement"
+metadata/_custom_type_script = "uid://cswkwxx0fqbww"

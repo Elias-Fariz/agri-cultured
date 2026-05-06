@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="FoodEffectData" load_steps=2 format=3 uid="uid://ltc841e2h71d"]
+
+[ext_resource type="Script" uid="uid://cswkwxx0fqbww" path="res://data/food/FoodEffectData.gd" id="1_gout4"]
+
+[resource]
+script = ExtResource("1_gout4")
+id = "heart_guard_small"
+display_name = "Heart Guard"
+description = "A gentle warmth that protects your courage from the first shock."
+effect_key = 8
+amount = 1.0
+duration_mode = 2
+category = "combat"
+metadata/_custom_type_script = "uid://cswkwxx0fqbww"
