@@ -1,6 +1,8 @@
-[gd_resource type="TileSet" load_steps=3 format=3 uid="uid://bqs5ruk6pejpc"]
+[gd_resource type="TileSet" load_steps=7 format=3 uid="uid://bqs5ruk6pejpc"]
 
 [ext_resource type="Texture2D" uid="uid://bsldlblkqkem5" path="res://art/tiles.png" id="1_dpvya"]
+[ext_resource type="Texture2D" uid="uid://b7ry5n41mrvum" path="res://art/dark_grass.PNG" id="2_3ei24"]
+[ext_resource type="Texture2D" uid="uid://bv2vu8m83qoxx" path="res://art/dark_tree.PNG" id="3_w4o5l"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_pqap4"]
 texture = ExtResource("1_dpvya")
@@ -16,9 +18,23 @@ texture_region_size = Vector2i(32, 32)
 5:0/0 = 0
 5:0/0/custom_data_0 = "sand"
 
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_hqwcr"]
+texture = ExtResource("2_3ei24")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+0:0/0/custom_data_0 = "grass"
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_0mma8"]
+texture = ExtResource("3_w4o5l")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
+
 [resource]
 tile_size = Vector2i(32, 32)
 physics_layer_0/collision_layer = 1
 custom_data_layer_0/name = "footstep"
 custom_data_layer_0/type = 4
 sources/0 = SubResource("TileSetAtlasSource_pqap4")
+sources/1 = SubResource("TileSetAtlasSource_hqwcr")
+sources/2 = SubResource("TileSetAtlasSource_0mma8")

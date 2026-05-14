@@ -1,0 +1,33 @@
+[gd_scene load_steps=7 format=3 uid="uid://eyoxn5bej1lm"]
+
+[ext_resource type="Script" uid="uid://dls37qykjwbps" path="res://scripts/Gate.gd" id="1_r8ajy"]
+[ext_resource type="Script" uid="uid://b41qxadmadfs3" path="res://scripts/GateInteractArea.gd" id="2_255ay"]
+[ext_resource type="Texture2D" uid="uid://bowco0r0qw2be" path="res://art/gate-closed.png" id="2_anwco"]
+[ext_resource type="Texture2D" uid="uid://b4cowvy1fjl83" path="res://art/gate-opened.png" id="3_yen7x"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_anwco"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_yen7x"]
+
+[node name="Gate" type="Node2D"]
+script = ExtResource("1_r8ajy")
+closed_texture = ExtResource("2_anwco")
+open_texture = ExtResource("3_yen7x")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_anwco")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
+visible = false
+scale = Vector2(1.5977299, 1.5977299)
+shape = SubResource("RectangleShape2D_anwco")
+
+[node name="InteractArea" type="Area2D" parent="."]
+script = ExtResource("2_255ay")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractArea"]
+visible = false
+scale = Vector2(2.0386567, 2.0386567)
+shape = SubResource("RectangleShape2D_yen7x")

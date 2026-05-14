@@ -1,0 +1,27 @@
+[gd_scene load_steps=5 format=3 uid="uid://celccxg6n2ye7"]
+
+[ext_resource type="PackedScene" uid="uid://bfaurdf2mucr2" path="res://tscn/npcs/NPC.tscn" id="1_3dbaq"]
+[ext_resource type="Texture2D" uid="uid://geug0cp1e1lv" path="res://art/characters/maren_portrait.png" id="2_rp88f"]
+[ext_resource type="Resource" uid="uid://dolx8ta0de0u0" path="res://data/gifts/gifts_maren.tres" id="3_2etkw"]
+[ext_resource type="Texture2D" uid="uid://bfwl1byywit1n" path="res://art/characters/maren_01-removebg-preview.png" id="4_rp88f"]
+
+[node name="NPC" instance=ExtResource("1_3dbaq")]
+npc_id = "npc_maren"
+display_name = "Maren"
+portrait = ExtResource("2_rp88f")
+dialogue_lines = Array[String](["Hello! Welcome to my bakery!"])
+morning_dialogue_lines = Array[String](["Beautiful day we have!"])
+evening_dialogue_lines = Array[String](["Whew, what a long day..."])
+night_dialogue_lines = Array[String](["Watching the stars disappear..."])
+overhead_greeting_lines = Array[String](["Greetings!"])
+overhead_idle_lines = Array[String](["Loaves of bread..."])
+morning_overhead_lines = Array[String](["Birds chirping..."])
+day_overhead_lines = Array[String](["Sunshine!"])
+evening_overhead_lines = Array[String](["Oof..."])
+night_overhead_lines = Array[String](["Zzz..."])
+gift_prefs = ExtResource("3_2etkw")
+
+[node name="Sprite2D" parent="." index="1"]
+position = Vector2(0, -61)
+scale = Vector2(0.14305522, 0.14305522)
+texture = ExtResource("4_rp88f")

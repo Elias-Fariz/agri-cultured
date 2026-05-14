@@ -1,13 +1,14 @@
-[gd_scene load_steps=4 format=3 uid="uid://dnbhw5lsbu2jr"]
+[gd_scene load_steps=5 format=3 uid="uid://dnbhw5lsbu2jr"]
 
 [ext_resource type="PackedScene" uid="uid://bfaurdf2mucr2" path="res://tscn/npcs/NPC.tscn" id="1_ilh7e"]
-[ext_resource type="Texture2D" uid="uid://cd8rv8272flxi" path="res://ui/portraits/default_silhouette.png" id="2_gmivb"]
+[ext_resource type="Texture2D" uid="uid://cd6ucy0jnypme" path="res://art/characters/kai_portrait.png" id="2_eomt5"]
+[ext_resource type="Texture2D" uid="uid://crl4b3gi44djf" path="res://art/characters/kai_01-removebg-preview.png" id="4_lx8jb"]
 [ext_resource type="Resource" uid="uid://dyftxqjlgk7ew" path="res://data/gifts/gifts_fisher.tres" id="5_gmivb"]
 
 [node name="NPC" instance=ExtResource("1_ilh7e")]
 npc_id = "npc_kai"
 display_name = "Kai"
-portrait = ExtResource("2_gmivb")
+portrait = ExtResource("2_eomt5")
 dialogue_lines = Array[String](["Yoooo wsp?"])
 morning_dialogue_lines = Array[String](["Make sure to put some sunscreen on!"])
 evening_dialogue_lines = Array[String](["The ocean's going to bed, but I'm not!"])
@@ -15,3 +16,8 @@ night_dialogue_lines = Array[String](["Whew, got a bit wet!"])
 overhead_greeting_lines = Array[String](["Sup!"])
 overhead_idle_lines = Array[String](["Waves..."])
 gift_prefs = ExtResource("5_gmivb")
+
+[node name="Sprite2D" parent="." index="1"]
+position = Vector2(0, -42)
+scale = Vector2(0.123589635, 0.123589635)
+texture = ExtResource("4_lx8jb")

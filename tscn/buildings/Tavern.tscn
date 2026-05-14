@@ -1,0 +1,18 @@
+[gd_scene load_steps=4 format=3 uid="uid://c5s0r8ajsjlar"]
+
+[ext_resource type="PackedScene" uid="uid://b2bnsucfmrgo7" path="res://tscn/buildings/BuildingBase.tscn" id="1_hj1b6"]
+[ext_resource type="Texture2D" uid="uid://wbaiq11iv7on" path="res://art/tavern.png" id="2_fsnsm"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hj1b6"]
+size = Vector2(134, 33)
+
+[node name="BuildingBase" instance=ExtResource("1_hj1b6")]
+
+[node name="Sprite2D" parent="." index="0"]
+position = Vector2(0, -48)
+texture = ExtResource("2_fsnsm")
+
+[node name="CollisionShape2D" parent="StaticBody2D" index="0"]
+position = Vector2(0, -41)
+scale = Vector2(0.9599996, 2.4759738)
+shape = SubResource("RectangleShape2D_hj1b6")

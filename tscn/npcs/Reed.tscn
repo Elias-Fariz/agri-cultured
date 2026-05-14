@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=3 uid="uid://buw2urhb0321w"]
 
 [ext_resource type="PackedScene" uid="uid://bfaurdf2mucr2" path="res://tscn/npcs/NPC.tscn" id="1_md1s5"]
-[ext_resource type="Texture2D" uid="uid://cd8rv8272flxi" path="res://ui/portraits/default_silhouette.png" id="2_8rfya"]
+[ext_resource type="Texture2D" uid="uid://bjh1s8anapkbv" path="res://art/characters/reed_01-removebg-preview-removebg-preview.png" id="2_8rfya"]
 [ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="3_md1s5"]
 [ext_resource type="Resource" uid="uid://ctds0kg2py5iu" path="res://data/quests/fisher_fishing_intro.tres" id="4_8rfya"]
 [ext_resource type="Resource" uid="uid://dyftxqjlgk7ew" path="res://data/gifts/gifts_fisher.tres" id="5_65ddf"]
@@ -18,3 +18,7 @@ overhead_greeting_lines = Array[String](["Yo!"])
 overhead_idle_lines = Array[String](["Radical!"])
 quest_offers = Array[ExtResource("3_md1s5")]([ExtResource("4_8rfya")])
 gift_prefs = ExtResource("5_65ddf")
+
+[node name="Sprite2D" parent="." index="1"]
+scale = Vector2(0.19652838, 0.19652838)
+texture = ExtResource("2_8rfya")

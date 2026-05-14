@@ -39,6 +39,14 @@ var _cam_original_parent: Node = null
 var _cam_original_index: int = -1
 var _cam_original_transform: Transform2D
 
+# Developer-only cinematic capture tool.
+# Press Z to freeze the camera in the world while the player keeps moving.
+@export var dev_camera_tools_enabled: bool = true
+@export var dev_camera_lock_key: Key = KEY_Z
+
+var _dev_camera_locked: bool = false
+var _dev_camera_locked_global_transform: Transform2D
+
 @onready var talk_sfx: AudioStreamPlayer2D = $TalkSfx2D
 @export var talk_blips: Array[AudioStream] = []
 
@@ -80,14 +88,18 @@ func _enter_tree() -> void:
 	call_deferred("_apply_camera_bounds_if_present")
 
 func _physics_process(delta: float) -> void:
-	# 1) Camera should ALWAYS update
-	if _camera_focus_active:
-		_update_camera_focus_offset(delta)
+	# 1) Camera should ALWAYS update, unless developer camera lock is active.
+	if _dev_camera_locked:
+		_keep_dev_camera_locked()
+		_update_camera_zoom(delta)
 	else:
-		_update_camera_lookahead(delta)
-		
-	_update_camera_zoom(delta)
-	_update_camera_shake(delta)
+		if _camera_focus_active:
+			_update_camera_focus_offset(delta)
+		else:
+			_update_camera_lookahead(delta)
+			
+		_update_camera_zoom(delta)
+		_update_camera_shake(delta)
 
 	if GameState.is_gameplay_locked():
 		velocity = Vector2.ZERO
@@ -133,6 +145,11 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 
 func _unhandled_input(event: InputEvent) -> void:
+	if _is_dev_camera_toggle_event(event):
+		_toggle_dev_camera_lock()
+		get_viewport().set_input_as_handled()
+		return
+
 	if event.is_action_pressed("interact"):
 		_try_interact()
 		
@@ -424,3 +441,100 @@ func _try_gift() -> void:
 			if gift_ui != null and gift_ui.has_method("open_for_npc"):
 				gift_ui.call("open_for_npc", npc)
 			return
+
+func _is_dev_camera_toggle_event(event: InputEvent) -> bool:
+	if not dev_camera_tools_enabled:
+		return false
+
+	if event is InputEventKey:
+		var key_event := event as InputEventKey
+		return key_event.pressed and not key_event.echo and key_event.keycode == dev_camera_lock_key
+
+	return false
+
+
+func _toggle_dev_camera_lock() -> void:
+	if _dev_camera_locked:
+		_unlock_dev_camera()
+	else:
+		_lock_dev_camera()
+
+
+func _lock_dev_camera() -> void:
+	if cam == null:
+		return
+	if _dev_camera_locked:
+		return
+
+	var scene_root := get_tree().current_scene
+	if scene_root == null:
+		return
+
+	_dev_camera_locked = true
+	_dev_camera_locked_global_transform = cam.global_transform
+
+	_cam_original_parent = cam.get_parent()
+	_cam_original_index = cam.get_index()
+	_cam_original_transform = cam.transform
+
+	# Stop cutscene/focus camera behavior from fighting the lock.
+	_camera_focus_active = false
+	_camera_zoom_cutscene_override = false
+
+	if _camera_zoom_tween != null:
+		_camera_zoom_tween.kill()
+		_camera_zoom_tween = null
+
+	# Detach the camera from the moving player while preserving its world position.
+	cam.reparent(scene_root, true)
+	cam.global_transform = _dev_camera_locked_global_transform
+	cam.position_smoothing_enabled = false
+	cam.enabled = true
+	cam.make_current()
+
+	print("[DevCamera] Locked camera at: ", cam.global_position)
+
+
+func _unlock_dev_camera() -> void:
+	if cam == null:
+		return
+	if not _dev_camera_locked:
+		return
+
+	_dev_camera_locked = false
+
+	if _cam_original_parent != null and is_instance_valid(_cam_original_parent):
+		# Put the camera back under ShakeOffset, but keep its current world position briefly.
+		cam.reparent(_cam_original_parent, true)
+
+		# Start the normal look-ahead system from the camera's current local offset,
+		# so it glides back instead of snapping too harshly.
+		_cam_offset = cam.position
+		_cam_focus_offset = cam.position
+
+		cam.position_smoothing_enabled = true
+		cam.enabled = true
+		cam.make_current()
+	else:
+		# Fallback if something strange happened during a scene change.
+		cam.enabled = true
+		cam.make_current()
+
+	_cam_original_parent = null
+	_cam_original_index = -1
+
+	print("[DevCamera] Unlocked camera; returning to player follow.")
+
+
+func _keep_dev_camera_locked() -> void:
+	if cam == null:
+		return
+
+	# Keep the camera frozen in world space.
+	# This protects the lock from accidental changes elsewhere.
+	cam.global_transform = _dev_camera_locked_global_transform
+	cam.enabled = true
+
+func force_unlock_dev_camera() -> void:
+	if _dev_camera_locked:
+		_unlock_dev_camera()

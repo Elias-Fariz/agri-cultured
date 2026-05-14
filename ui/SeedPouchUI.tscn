@@ -8,6 +8,7 @@ script = ExtResource("1_0pvkt")
 visual_node_path = NodePath("Visuals")
 
 [node name="Visuals" type="Control" parent="."]
+visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
