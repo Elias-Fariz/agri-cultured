@@ -135,11 +135,14 @@ func start_encounter() -> void:
 	call_deferred("_run_encounter_loop")
 
 func fail_encounter(reason: String = "overwhelmed") -> void:
+	if _ending:
+		return
+
 	if not _active:
 		return
 
-	_active = false
 	_ending = true
+	_active = false
 	_food_first_hit_shield_active = false
 	
 	_clear_danger_zones()
@@ -191,11 +194,14 @@ func fail_encounter(reason: String = "overwhelmed") -> void:
 		TimeManager.advance_time(float(encounter_data.failure_time_loss_minutes))
 
 func complete_encounter() -> void:
+	if _ending:
+		return
+
 	if not _active:
 		return
 
-	_active = false
 	_ending = true
+	_active = false
 	_food_first_hit_shield_active = false
 	
 	_clear_danger_zones()
@@ -369,7 +375,7 @@ func _open_core_window() -> void:
 	core.set_vulnerable(false)
 
 func _on_core_restoration_hit() -> void:
-	if not _active:
+	if not _active or _ending:
 		return
 
 	if core == null or not core.vulnerable:
@@ -388,7 +394,7 @@ func _on_core_restoration_hit() -> void:
 		print("[RestorationEncounter] Hit core. Instability now ", _instability)
 
 func _on_danger_zone_player_hit(resolve_damage: int) -> void:
-	if not _active:
+	if not _active or _ending:
 		return
 
 	if _food_first_hit_shield_active:

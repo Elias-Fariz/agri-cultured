@@ -7,6 +7,7 @@ script = ExtResource("1_7lwr7")
 visual_node_path = NodePath("Panel")
 start_visible_in_game = false
 is_modal = true
+modal_overlay_id = "shipping"
 
 [node name="Panel" type="PanelContainer" parent="."]
 visible = false

@@ -11,6 +11,7 @@ buy_sounds = Array[AudioStream]([ExtResource("2_hbhm7"), ExtResource("3_n586u"),
 visual_node_path = NodePath("Panel")
 start_visible_in_game = false
 is_modal = true
+modal_overlay_id = "shop"
 
 [node name="Panel" type="PanelContainer" parent="."]
 visible = false

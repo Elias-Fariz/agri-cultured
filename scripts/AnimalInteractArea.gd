@@ -21,7 +21,7 @@ func get_interact_priority(context: Node = null) -> int:
 
 
 func interact() -> void:
-	print("InteractArea: interact() called on animal:", _animal)
+	# print("InteractArea: interact() called on animal:", _animal)
 
 	if _animal != null and _animal.has_method("interact"):
 		_animal.interact()

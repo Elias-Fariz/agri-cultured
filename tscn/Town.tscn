@@ -51,11 +51,12 @@
 [ext_resource type="Texture2D" uid="uid://cpkecnwhl7wbm" path="res://art/bed.PNG" id="51_gmfaa"]
 [ext_resource type="PackedScene" uid="uid://c5s0r8ajsjlar" path="res://tscn/buildings/Tavern.tscn" id="52_01b2m"]
 [ext_resource type="PackedScene" uid="uid://fw6jgfem1715" path="res://tscn/Bloom Lamppost.tscn" id="52_ao30e"]
-[ext_resource type="PackedScene" uid="uid://ifwtc0xfdr1d" path="res://tscn/ShopCounter.tscn" id="52_qqxe7"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_caym6"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ib40g"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_gmfaa"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_j34sm"]
 vertices = PackedVector2Array(27.78125, 234.96875, 24.21875, 72, 77.09375, 72, 78.09375, 179.15625, 397.07813, 234.02344, 225.27344, 176.84375, 223.27344, 101.89844, 336, 100.90625, 398.90625, 15.0234375, 336, 49.28125, 18.773438, 15.96875, 18.21875, 40.28125)
@@ -106,7 +107,6 @@ collision_mask = 3
 script = ExtResource("34_ewvrf")
 target_scene_path = "res://tscn/AnimalKeeperArea.tscn"
 target_spawn_tag = "from_town"
-required_completed_quests = Array[String](["tutorial_day1"])
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="TravelPoints/ToAnimalKeeperArea"]
 shape = SubResource("RectangleShape2D_caym6")
@@ -154,6 +154,24 @@ tag = "from_generalstore"
 position = Vector2(-58, 1483)
 script = ExtResource("36_caym6")
 tag = "from_keeper"
+
+[node name="ToBeach" type="Area2D" parent="TravelPoints"]
+position = Vector2(892, 1701)
+collision_mask = 3
+script = ExtResource("34_ewvrf")
+target_scene_path = "res://tscn/Beach.tscn"
+target_spawn_tag = "from_town"
+
+[node name="Sprite2D" type="Sprite2D" parent="TravelPoints/ToBeach"]
+texture = ExtResource("2_mua0x")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TravelPoints/ToBeach"]
+shape = SubResource("RectangleShape2D_gmfaa")
+
+[node name="SpawnFromBeach" type="Marker2D" parent="TravelPoints" groups=["spawn_points"]]
+position = Vector2(885, 1660)
+script = ExtResource("36_caym6")
+tag = "from_beach"
 
 [node name="DayNightOverlay" parent="." instance=ExtResource("6_6scx0")]
 
@@ -297,8 +315,3 @@ scale = Vector2(1.8305613, 1.8305613)
 [node name="Store" parent="." instance=ExtResource("52_01b2m")]
 position = Vector2(880, 219)
 scale = Vector2(2.7925189, 2.7925189)
-
-[node name="ShopCounter" parent="." instance=ExtResource("52_qqxe7")]
-position = Vector2(661, 385)
-shop_title = "General Store"
-shop_open_hour = 6

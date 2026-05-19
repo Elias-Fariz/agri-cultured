@@ -37,7 +37,19 @@ class_name DialogueBeatData
 # - "surprised"
 #
 # If you don't have a matching emotion visual later, just fall back to neutral.
-@export var emotion: String = "neutral"
+@export var emotion: String = "neutral" 
+
+# Optional specific art keys.
+# Leave blank to use emotion.
+#
+# Example:
+# emotion = "happy"
+# portrait_key = ""
+# stage_pose_key = "holding_bread"
+#
+# This would use the happy portrait, but the special holding_bread stage pose.
+@export var portrait_key: String = ""
+@export var stage_pose_key: String = ""
 
 # If true, the current speaker should visually be the focus
 # and other staged characters can be dimmed.
@@ -118,3 +130,15 @@ func should_use_narration_mode() -> bool:
 	# Explicit narration wins, but also treat completely speakerless lines
 	# as narration-friendly.
 	return is_narration or speaker_id.strip_edges() == ""
+
+func get_effective_portrait_key() -> String:
+	var k := portrait_key.strip_edges().to_lower()
+	if k != "":
+		return k
+	return get_effective_emotion()
+
+func get_effective_stage_pose_key() -> String:
+	var k := stage_pose_key.strip_edges().to_lower()
+	if k != "":
+		return k
+	return get_effective_emotion()

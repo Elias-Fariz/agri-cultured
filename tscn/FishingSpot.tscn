@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://b2yas8ffxxcxr"]
 
 [ext_resource type="Script" uid="uid://c32txogfrcytt" path="res://scripts/FishingSpot.gd" id="1_2v2ga"]
-[ext_resource type="Texture2D" uid="uid://c0nmap1a7vh5i" path="res://art/player.PNG" id="2_a6gug"]
+[ext_resource type="Texture2D" uid="uid://dfoc488wcqa8c" path="res://art/bottles.PNG" id="2_a6gug"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_03fs6"]
 

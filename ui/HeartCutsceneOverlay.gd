@@ -85,3 +85,7 @@ func _set_alpha(c: CanvasItem, a: float) -> void:
 
 func _get_alpha(c: CanvasItem) -> float:
 	return c.modulate.a
+
+func set_fade_color(color: Color) -> void:
+	# Keep alpha at 1.0 because fade strength is controlled by modulate.a.
+	fade_rect.color = Color(color.r, color.g, color.b, 1.0)

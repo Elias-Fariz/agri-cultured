@@ -4,6 +4,11 @@ extends CharacterBody2D
 
 @export var display_name: String
 @export var portrait: Texture2D
+
+# Flexible portrait/stage art catalog for dialogue.
+# If assigned, DialogueUI can use full-body stage poses separately from the portrait.
+@export var dialogue_art: NPCDialogueArtData
+
 @export var dialogue_lines: Array[String] = []
 
 @export var morning_dialogue_lines: Array[String] = []
@@ -110,9 +115,12 @@ var _talked_block_by_npc: Dictionary = {}  # npc_id -> String "day:morning" etc.
 @export var gift_prefs: NPCGiftPreferences
 
 func _ready() -> void:
+	if not is_in_group("npc"):
+		add_to_group("npc")
+
 	# ... your existing NPC init ...
 	_update_quest_icon()
-	print("NPC ready:", npc_id)
+	# print("NPC ready:", npc_id)
 	if nav_agent:
 		nav_agent.path_desired_distance = 4.0
 		nav_agent.target_desired_distance = 4.0
@@ -124,7 +132,7 @@ func _ready() -> void:
 		_on_time_changed_for_schedule(TimeManager.minutes)
 		
 		if QuestEvents:
-			print("Yeah, I'm in here!")
+			# print("Yeah, I'm in here!")
 			QuestEvents.quest_state_changed.connect(_on_quest_state_changed)
 		
 	_wander_timer.timeout.connect(_on_wander_timer_timeout)
@@ -135,13 +143,13 @@ func start_dialogue() -> void:
 	
 	var ui := get_tree().get_first_node_in_group("dialogue_ui")
 	if ui== null:
-		print("No DialogueUI found in group 'dialogue_ui'. Add DialogueUI.tscn to the scene and put it in that group.")
+		# print("No DialogueUI found in group 'dialogue_ui'. Add DialogueUI.tscn to the scene and put it in that group.")
 		return
 
 	# Make sure it's actually our DialogueUI script, not just any CanvasLayer
 	if not ui.has_method("show_dialogue"):
-		print("Node in group 'dialogue_ui' does not have show_dialogue(). Reattach DialogueUI.gd to the DialogueUI CanvasLayer.")
-		print("Found node:", ui.name, " type:", ui.get_class())
+		# print("Node in group 'dialogue_ui' does not have show_dialogue(). Reattach DialogueUI.gd to the DialogueUI CanvasLayer.")
+		# print("Found node:", ui.name, " type:", ui.get_class())
 		return
 	
 	var f := GameState.get_friendship(npc_id)
@@ -175,7 +183,7 @@ func start_dialogue() -> void:
 	if player == null:
 		print("NPC Dialogue: No node in group 'player' found.")
 	elif player.has_method("camera_focus_on_world_point"):
-		print("NPC Dialogue: Focusing camera on NPC: ", global_position)
+		# print("NPC Dialogue: Focusing camera on NPC: ", global_position)
 		player.camera_focus_on_world_point(global_position + Vector2(0, -10))
 	else:
 		print("NPC Dialogue: Player has no camera_focus_on_world_point()")
@@ -368,8 +376,8 @@ func _update_quest_icon() -> void:
 
 	var show := false
 	
-	print(GameState.has_turn_in_ready(npc_id))
-	print(npc_id)
+	# print(GameState.has_turn_in_ready(npc_id))
+	# print(npc_id)
 	
 	# Turn-in ready takes priority
 	if GameState.has_turn_in_ready(npc_id):
@@ -432,14 +440,14 @@ func _hide_overhead_chatter() -> void:
 func _on_ProximityArea_body_entered(body: Node) -> void:
 	if not body.is_in_group("player"):  # assuming your Player is in group "player"
 		return
-	# print("Proximity ENTER: ", body)
+	# # print("Proximity ENTER: ", body)
 	_show_overhead_chatter()
 
 
 func _on_ProximityArea_body_exited(body: Node) -> void:
 	if not body.is_in_group("player"):
 		return
-	# print("Proximity EXIT: ", body)
+	# # print("Proximity EXIT: ", body)
 	_hide_overhead_chatter()
 
 func _on_ChatterTimer_timeout() -> void:
@@ -869,7 +877,7 @@ func receive_gift(item_id: String, qty: int = 1) -> void:
 		return
 	
 	var d := ItemDb.get_item(item_id)
-	print("[Gift] item:", item_id, " data:", d, " tags:", [] if d == null else d.tags)
+	# print("[Gift] item:", item_id, " data:", d, " tags:", [] if d == null else d.tags)
 
 	# Remove item from inventory
 	if not GameState.inventory_remove(item_id, qty):

@@ -113,10 +113,10 @@ func _process(_delta: float) -> void:
 	if not _is_running:
 		return
 	if Input.is_action_just_pressed("ui_cancel"):
-		print("Pressed Escape!")
+		# print("Pressed Escape!")
 		_skip_requested = true
 		if _overlay and _overlay.has_method("fade_to"):
-			print("[HeartRevealDirector] Skip -> calling overlay fade_to(1.0)")
+			# print("[HeartRevealDirector] Skip -> calling overlay fade_to(1.0)")
 			_overlay.call("fade_to", 1.0, 0.10)
 		else:
 			print("[HeartRevealDirector] Skip -> NO overlay or fade_to() missing")

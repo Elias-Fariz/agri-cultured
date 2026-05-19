@@ -13,6 +13,13 @@ var _slots: Array[InventorySlot] = []
 var _selected_slot_index: int = -1
 var _selected_item_id: String = ""
 
+# Stability guards.
+var _using_item: bool = false
+@export var use_item_cooldown: float = 0.12
+@export var use_item_delay_after_open: float = 0.10
+var _use_item_cooldown_left: float = 0.0
+var _use_item_delay_after_open_left: float = 0.0
+
 var _slot_group := ButtonGroup.new()
 
 func _ready() -> void:
@@ -24,8 +31,13 @@ func _ready() -> void:
 	_build_slots()
 	_refresh_from_gamestate()
 
+func _process(delta: float) -> void:
+	_use_item_cooldown_left = max(0.0, _use_item_cooldown_left - delta)
+	_use_item_delay_after_open_left = max(0.0, _use_item_delay_after_open_left - delta)
+
 func show_ui() -> void:
 	super.show_overlay()
+	_use_item_delay_after_open_left = use_item_delay_after_open
 	_refresh_from_gamestate()
 	_clear_selection()
 
@@ -48,6 +60,13 @@ func _unhandled_input(event: InputEvent) -> void:
 	if not is_open():
 		return
 
+	# Inventory should close with T or Esc.
+	if event.is_action_pressed("open_inventory") or event.is_action_pressed("ui_cancel"):
+		hide_ui()
+		get_viewport().set_input_as_handled()
+		return
+
+	# Space / Interact consumes selected item.
 	if event.is_action_pressed("ui_accept") or event.is_action_pressed("interact"):
 		_try_use_selected()
 		get_viewport().set_input_as_handled()
@@ -147,19 +166,42 @@ func _restore_selection() -> void:
 	_selected_item_id = ""
 
 func _try_use_selected() -> void:
-	# If nothing selected, pick the first item
+	if GameState != null and GameState.has_method("can_use_items_now"):
+		if not GameState.can_use_items_now():
+			return
+	
+	if _using_item:
+		return
+		
+	if _use_item_delay_after_open_left > 0.0:
+		return
+
+	if _use_item_cooldown_left > 0.0:
+		return
+
+	_using_item = true
+	_use_item_cooldown_left = use_item_cooldown
+
+	# If nothing selected, pick the first item.
 	if _selected_item_id == "":
 		_restore_selection()
 		if _selected_item_id == "":
+			_using_item = false
 			return
 
-	# Attempt to consume/eat (your existing GameState logic)
-	var used := GameState.consume_item(_selected_item_id)
+	var item_to_use := _selected_item_id
+
+	# Attempt to consume/eat through existing GameState logic.
+	var used := false
+	if GameState != null and GameState.has_method("consume_item"):
+		used = GameState.consume_item(item_to_use)
+
 	if used:
 		_refresh_from_gamestate()
-	else:
-		# Optional: tiny feedback later (toast) if you want
-		pass
+
+	# Release on next frame so UI refresh and button state can settle.
+	await get_tree().process_frame
+	_using_item = false
 
 func _get_item_icon(item_id: String) -> Texture2D:
 	if ItemDb != null and ItemDb.has_method("get_item"):

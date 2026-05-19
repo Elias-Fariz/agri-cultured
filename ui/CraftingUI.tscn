@@ -11,6 +11,7 @@ recipes = Array[ExtResource("2_g16mu")]([ExtResource("3_kvwqq"), ExtResource("4_
 visual_node_path = NodePath("Panel")
 start_visible_in_game = false
 is_modal = true
+modal_overlay_id = "crafting"
 
 [node name="Panel" type="Panel" parent="."]
 visible = false

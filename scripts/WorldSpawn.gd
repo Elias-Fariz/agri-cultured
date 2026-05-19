@@ -6,7 +6,7 @@ extends Node
 func _ready() -> void:
 	var player := get_node_or_null(player_path)
 	if player == null:
-		print("WorldSpawn: couldn't find Player at path:", player_path)
+		# print("WorldSpawn: couldn't find Player at path:", player_path)
 		return
 
 	var pending_tag := GameState.pending_spawn_tag
@@ -35,7 +35,7 @@ func _ready() -> void:
 	if not found:
 		print("WorldSpawn: no spawn point found for tag:", pending_tag)
 
-	print("WorldSpawn pending tag:", GameState.pending_spawn_tag)
+	# print("WorldSpawn pending tag:", GameState.pending_spawn_tag)
 
 	# Always clear it after attempting
 	GameState.pending_spawn_tag = ""

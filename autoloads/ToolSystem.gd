@@ -17,7 +17,7 @@ func tool_action(world: Node, player: Node) -> void:
 
 	# If exhausted, block tool use
 	if GameState.exhausted and GameState.energy <= 0:
-		print("Too exhausted to use tools!")
+		# print("Too exhausted to use tools!")
 		return
 
 	# We rely on these being present (Farm already has them)
@@ -76,11 +76,11 @@ func tool_action(world: Node, player: Node) -> void:
 		var required_tool := int(def.get("tool", -1))
 
 		if int(GameState.current_tool) != required_tool:
-			print("Wrong tool! Need ", dkey, " tool.")
+			# print("Wrong tool! Need ", dkey, " tool.")
 			return
 
 		if not GameState.spend_tool_energy(GameState.tool_action_cost, int(GameState.current_tool)):
-			print("No energy to use tools!")
+			# print("No energy to use tools!")
 			return
 
 		world.call("_hit_destructible", target_cell, dkey)
@@ -100,15 +100,15 @@ func tool_action(world: Node, player: Node) -> void:
 			and (atlas == world.tilled_coords or atlas == world.wet_tilled_coords))
 
 		if not is_tilled_or_wet:
-			print("Can't water here (not tilled soil).")
+			# print("Can't water here (not tilled soil).")
 			return
 
 		if atlas == world.wet_tilled_coords:
-			print("This tile is already wet.")
+			# print("This tile is already wet.")
 			return
 
 		if not GameState.spend_tool_energy(GameState.tool_action_cost, int(GameState.current_tool)):
-			print("No energy to water!")
+			# print("No energy to water!")
 			return
 
 		world.call("water_cell", target_cell)
@@ -118,10 +118,10 @@ func tool_action(world: Node, player: Node) -> void:
 	var harvestable: bool = bool(world.call("_is_crop_harvestable", target_cell))
 	if harvestable:
 		if GameState.current_tool != GameState.ToolType.HOE:
-			print("Need Hoe to harvest.")
+			# print("Need Hoe to harvest.")
 			return
 		if not GameState.spend_tool_energy(GameState.tool_action_cost, int(GameState.current_tool)):
-			print("No energy to harvest!")
+			# print("No energy to harvest!")
 			return
 		world.call("_harvest_crop", target_cell)
 		return
@@ -130,15 +130,15 @@ func tool_action(world: Node, player: Node) -> void:
 	var can_till: bool = bool(world.call("_can_till_ground", target_cell))
 	if can_till:
 		if GameState.current_tool != GameState.ToolType.HOE:
-			print("Need Hoe to till.")
+			# print("Need Hoe to till.")
 			return
 		if not GameState.spend_tool_energy(GameState.tool_action_cost, int(GameState.current_tool)):
-			print("No energy to till!")
+			# print("No energy to till!")
 			return
 		world.call("_try_till_ground", target_cell)
 		return
 
-	print("Nothing to do here.")
+	# print("Nothing to do here.")
 
 func tool_action_auto(player: Node) -> void:
 	if player == null:

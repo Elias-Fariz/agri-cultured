@@ -21,7 +21,7 @@ extends BaseOverlay
 
 @export var hide_portrait_when_stage_slot_none: bool = false
 @export var enable_stage_visuals: bool = true
-@export var stage_slot_size: Vector2 = Vector2(220, 220)
+@export var stage_slot_size: Vector2 = Vector2(240, 332)
 @export var stage_bottom_overlap: float = 28.0
 @export var stage_active_alpha: float = 1.0
 @export var stage_inactive_alpha: float = 0.38
@@ -44,6 +44,12 @@ var _beat_index: int = 0
 var _using_sequence_mode: bool = false
 
 var _active: bool = false
+
+# Stability guards.
+var _closing_dialogue: bool = false
+var _advancing_dialogue: bool = false
+@export var dialogue_input_cooldown: float = 0.08
+var _dialogue_input_cooldown_left: float = 0.0
 
 @export var chars_per_second: float = 45.0
 
@@ -127,6 +133,11 @@ func show_dialogue_sequence(sequence: DialogueSequenceData) -> void:
 	super.show_overlay()
 
 func hide_dialogue() -> void:
+	if _closing_dialogue:
+		return
+
+	_closing_dialogue = true
+
 	_active = false
 	_typing = false
 	_talk_blip_stop()
@@ -149,17 +160,32 @@ func hide_dialogue() -> void:
 	if player != null and player.has_method("camera_clear_focus"):
 		player.camera_clear_focus()
 
+	# Release the guard on the next frame so repeated close calls in the same frame are ignored.
+	await get_tree().process_frame
+	_closing_dialogue = false
+	_advancing_dialogue = false
+
 func _unhandled_input(event: InputEvent) -> void:
 	if not _active:
 		return
 
+	if _closing_dialogue:
+		get_viewport().set_input_as_handled()
+		return
+
+	if _dialogue_input_cooldown_left > 0.0:
+		return
+
 	if event.is_action_pressed("ui_cancel"):
+		_dialogue_input_cooldown_left = dialogue_input_cooldown
 		hide_dialogue()
 		get_viewport().set_input_as_handled()
 		return
 
 	if event.is_action_pressed("interact"):
-		# If still typing, finish current beat/line instantly
+		_dialogue_input_cooldown_left = dialogue_input_cooldown
+
+		# If still typing, finish current beat/line instantly.
 		if _typing:
 			_typing = false
 			_char_index = _full_text.length()
@@ -168,23 +194,33 @@ func _unhandled_input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 			return
 
-		# Otherwise advance
+		if _advancing_dialogue:
+			get_viewport().set_input_as_handled()
+			return
+
+		_advancing_dialogue = true
+
+		# Otherwise advance.
 		if _using_sequence_mode:
 			_beat_index += 1
 			if _beat_index >= _beats.size():
 				hide_dialogue()
 			else:
 				_show_current_beat()
+				_advancing_dialogue = false
 		else:
 			_index += 1
 			if _index >= _lines.size():
 				hide_dialogue()
 			else:
 				show_line(_lines[_index])
+				_advancing_dialogue = false
 
 		get_viewport().set_input_as_handled()
 
 func _process(delta: float) -> void:
+	_dialogue_input_cooldown_left = max(0.0, _dialogue_input_cooldown_left - delta)
+
 	if not _active:
 		return
 	if not _typing:
@@ -329,7 +365,7 @@ func _set_voice_for_speaker(speaker_name: String) -> void:
 # -------------------------------------------------------------------
 
 func _apply_portrait_for_speaker(speaker_id: String, speaker_name: String, beat: DialogueBeatData = null) -> void:
-	# Beat portrait override wins
+	# Beat portrait override wins.
 	if beat != null and beat.portrait_override != null:
 		_apply_portrait_texture(beat.portrait_override)
 		return
@@ -339,7 +375,17 @@ func _apply_portrait_for_speaker(speaker_id: String, speaker_name: String, beat:
 	if speaker_id.strip_edges() != "":
 		var npc := _find_npc_by_id(speaker_id)
 		if npc != null:
-			if "portrait" in npc:
+			# New flexible dialogue art catalog.
+			if "dialogue_art" in npc:
+				var art = npc.get("dialogue_art")
+				if art != null and art is NPCDialogueArtData:
+					var key := "default"
+					if beat != null:
+						key = beat.get_effective_portrait_key()
+					tex = (art as NPCDialogueArtData).get_portrait_texture(key)
+
+			# Old/simple fallback.
+			if tex == null and "portrait" in npc:
 				var v = npc.get("portrait")
 				if v is Texture2D:
 					tex = v
@@ -347,7 +393,7 @@ func _apply_portrait_for_speaker(speaker_id: String, speaker_name: String, beat:
 	if tex == null:
 		tex = default_portrait
 
-	_apply_portrait_texture(tex)
+	_apply_portrait_texture(tex) 
 
 func _apply_portrait_texture(tex: Texture2D) -> void:
 	if tex != null:
@@ -594,24 +640,38 @@ func _refresh_stage_slot_focus(active_slot: String, dim_others: bool) -> void:
 			rect.scale = Vector2.ONE * stage_inactive_scale
 
 func _resolve_stage_texture_for_speaker(speaker_id: String, beat: DialogueBeatData = null) -> Texture2D:
-	# Future best: exact stage texture override on the beat
+	# Exact stage texture override on the beat wins.
 	if beat != null and beat.stage_texture_override != null:
 		return beat.stage_texture_override
 
-	# Next best: beat portrait override
-	if beat != null and beat.portrait_override != null:
-		return beat.portrait_override
+	var tex: Texture2D = null
 
-	# Next: NPC portrait
 	if speaker_id.strip_edges() != "":
 		var npc := _find_npc_by_id(speaker_id)
 		if npc != null:
+			# New flexible dialogue art catalog.
+			if "dialogue_art" in npc:
+				var art = npc.get("dialogue_art")
+				if art != null and art is NPCDialogueArtData:
+					var key := "default"
+					if beat != null:
+						key = beat.get_effective_stage_pose_key()
+					tex = (art as NPCDialogueArtData).get_stage_texture(key)
+
+			if tex != null:
+				return tex
+
+			# Emergency fallback: if a beat has a special portrait override
+			# but no stage pose exists, allow it to show on stage.
+			if beat != null and beat.portrait_override != null:
+				return beat.portrait_override
+
+			# Old/simple fallback: NPC portrait.
 			if "portrait" in npc:
 				var v = npc.get("portrait")
 				if v is Texture2D:
 					return v
 
-	# Fallback: default portrait
 	return default_portrait
 
 func _beat_requests_no_stage(beat: DialogueBeatData) -> bool:

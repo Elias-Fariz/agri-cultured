@@ -1,4 +1,4 @@
-[gd_scene load_steps=60 format=3 uid="uid://cwspce5y4tb13"]
+[gd_scene load_steps=70 format=3 uid="uid://cwspce5y4tb13"]
 
 [ext_resource type="TileSet" uid="uid://bqs5ruk6pejpc" path="res://tiles/GroundTileset.tres" id="1_vkoen"]
 [ext_resource type="Script" uid="uid://bywlb7k2vtqr" path="res://scripts/ValleyHeart.gd" id="1_ye5kf"]
@@ -11,12 +11,15 @@
 [ext_resource type="Texture2D" uid="uid://bq8o1e8mbe7qm" path="res://art/door.PNG" id="6_qprux"]
 [ext_resource type="Texture2D" uid="uid://c0nmap1a7vh5i" path="res://art/player.PNG" id="6_ye5kf"]
 [ext_resource type="Script" uid="uid://dxx68q28fdnvv" path="res://scripts/SpawnPoint.gd" id="7_opw5b"]
+[ext_resource type="Texture2D" uid="uid://418yhr48janp" path="res://art/flower.png" id="7_pmysg"]
 [ext_resource type="Texture2D" uid="uid://nan0sddf00hl" path="res://art/chest.png" id="8_cix88"]
 [ext_resource type="Texture2D" uid="uid://cpkecnwhl7wbm" path="res://art/bed.PNG" id="8_qprux"]
 [ext_resource type="Script" uid="uid://dwtg0fdx0i363" path="res://scripts/AreaAudio.gd" id="9_0awav"]
 [ext_resource type="AudioStream" uid="uid://c0vxwp7d85xq8" path="res://audio/ambience/life/sfx_bird_01.WAV" id="10_qpypx"]
+[ext_resource type="Texture2D" uid="uid://b0gpr073f3k2p" path="res://art/seed__1_-removebg-preview.png" id="11_s66fj"]
 [ext_resource type="AudioStream" uid="uid://dby2jcrvk4ssy" path="res://audio/ambience/life/sfx_bird_02.WAV" id="11_wrwcu"]
 [ext_resource type="AudioStream" uid="uid://b4kphj6d0xlxg" path="res://audio/ambience/life/sfx_bird_03.WAV" id="12_2nu52"]
+[ext_resource type="Texture2D" uid="uid://bi86367qiq54y" path="res://art/sprout3.png" id="12_or02y"]
 [ext_resource type="Script" uid="uid://dv2v7aj2554or" path="res://scripts/HeartPedestal.gd" id="13_81ihf"]
 [ext_resource type="AudioStream" uid="uid://cvxhlbrm7hew0" path="res://audio/ambience/life/sfx_leaves_01.WAV" id="13_dyf4m"]
 [ext_resource type="AudioStream" uid="uid://bd7fsofv05h57" path="res://audio/ambience/life/sfx_leaves_02.WAV" id="14_k38wn"]
@@ -42,11 +45,16 @@
 [ext_resource type="AudioStream" uid="uid://bo8vbuyt37bti" path="res://audio/sfx/sfx_water_splash_01.WAV" id="30_c5fuf"]
 [ext_resource type="PackedScene" uid="uid://68vtjhtvdbhw" path="res://ui/ShippingUI.tscn" id="30_teva3"]
 [ext_resource type="PackedScene" uid="uid://ixx7e0mb3ds4" path="res://ui/GiftUI.tscn" id="31_hxn5l"]
+[ext_resource type="Script" uid="uid://c8wbg12p4yrt1" path="res://scripts/CinematicUIHider.gd" id="36_8o0eb"]
 [ext_resource type="Script" uid="uid://dtnt771y54j77" path="res://scripts/HeartVisualController.gd" id="37_cix88"]
 [ext_resource type="Script" uid="uid://db23ydj4dqo8r" path="res://data/heart/HeartVisualBinding.gd" id="38_teva3"]
 [ext_resource type="Script" uid="uid://b8h23vsvf630b" path="res://scripts/HeartRevealDirector.gd" id="39_hxn5l"]
 [ext_resource type="PackedScene" uid="uid://s45kp2837ukm" path="res://ui/HeartDomainHubUI.tscn" id="46_c5fuf"]
 [ext_resource type="PackedScene" uid="uid://tiu8n2by1gky" path="res://ui/ToolBeltUI.tscn" id="47_kyy0j"]
+[ext_resource type="Script" uid="uid://btq4bl2srl4uv" path="res://data/heart/ValleyHeartCinematicOrchestrator.gd" id="50_2tbjq"]
+[ext_resource type="PackedScene" uid="uid://dbc6p4387b3x2" path="res://tscn/npcs/Mayor.tscn" id="51_cuvof"]
+[ext_resource type="Script" uid="uid://dt1fjl76x6n5o" path="res://data/dialogue/DialogueBeatData.gd" id="51_or02y"]
+[ext_resource type="Script" uid="uid://clb3lhdggkt8d" path="res://data/dialogue/DialogueSequenceData.gd" id="52_8o0eb"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_qprux"]
 texture = ExtResource("2_05sqv")
@@ -128,9 +136,23 @@ milestone_id = "sea_root_1"
 reveal_tier = 1
 metadata/_custom_type_script = "uid://db23ydj4dqo8r"
 
+[sub_resource type="Resource" id="Resource_pmysg"]
+script = ExtResource("51_or02y")
+text = "Wow... It's been forever..."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_i2ocl"]
+script = ExtResource("52_8o0eb")
+sequence_id = "alder_heart_intro"
+default_speaker_id = "npc_mayor"
+beats = Array[ExtResource("51_or02y")]([SubResource("Resource_pmysg")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
 [node name="ValleyHeart" type="Node2D"]
 script = ExtResource("1_ye5kf")
 heart_progress_res = ExtResource("2_818gh")
+cinematic_orchestrator_path = NodePath("ValleyHeartCinematicOrchestrator")
 reveal_director_path = NodePath("HeartRevealDirector")
 
 [node name="TileMaps" type="Node2D" parent="."]
@@ -154,7 +176,7 @@ format = 2
 
 [node name="Sprout1" type="Sprite2D" parent="Sections/LandWing/Visuals"]
 position = Vector2(-98, -83)
-texture = ExtResource("5_iiyss")
+texture = ExtResource("7_pmysg")
 
 [node name="Sprout1Focus" type="Marker2D" parent="Sections/LandWing/Visuals"]
 position = Vector2(-108, -83)
@@ -235,6 +257,31 @@ texture = ExtResource("8_cix88")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Sections/CraftWing/TriggerArea"]
 shape = SubResource("RectangleShape2D_teva3")
+
+[node name="HeartTreeIntro" type="Node2D" parent="Sections"]
+
+[node name="SeedSprite" type="Sprite2D" parent="Sections/HeartTreeIntro"]
+position = Vector2(216, 145)
+scale = Vector2(0.25200266, 0.25200266)
+texture = ExtResource("11_s66fj")
+
+[node name="SproutSprite" type="Sprite2D" parent="Sections/HeartTreeIntro"]
+visible = false
+position = Vector2(213.99998, 101.99999)
+scale = Vector2(0.1864542, 0.1864542)
+texture = ExtResource("12_or02y")
+
+[node name="SeedFocusMarker" type="Marker2D" parent="Sections/HeartTreeIntro"]
+position = Vector2(216, 268)
+
+[node name="PlayerApproachMarker" type="Marker2D" parent="Sections/HeartTreeIntro"]
+position = Vector2(215, 289)
+
+[node name="AlderStartMarker" type="Marker2D" parent="Sections/HeartTreeIntro"]
+position = Vector2(129, 698)
+
+[node name="AlderEndMarker" type="Marker2D" parent="Sections/HeartTreeIntro"]
+position = Vector2(129, 290)
 
 [node name="CameraBounds" type="Node2D" parent="."]
 
@@ -350,37 +397,68 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="QuestMenuUI" parent="." instance=ExtResource("20_k38wn")]
-
-[node name="CraftingUI" parent="." instance=ExtResource("21_h0wiq")]
-
-[node name="HelpOverlay" parent="." instance=ExtResource("22_1klpk")]
-
-[node name="DayNightOverlay" parent="." instance=ExtResource("23_d3m4b")]
-
-[node name="HUD" parent="." instance=ExtResource("24_vuwqn")]
-
-[node name="DialogueUI" parent="." instance=ExtResource("25_7x0e2")]
-
-[node name="QuestBoardUI" parent="." instance=ExtResource("26_nyydk")]
-
-[node name="EndOfDaySummaryUI" parent="." instance=ExtResource("27_iiyss")]
-
-[node name="ShopUI" parent="." instance=ExtResource("28_ye5kf")]
-
-[node name="InventoryUI" parent="." instance=ExtResource("29_cix88")]
-
-[node name="ShippingUI" parent="." instance=ExtResource("30_teva3")]
-
-[node name="GiftUI" parent="." instance=ExtResource("31_hxn5l")]
-
-[node name="HeartProgressUI" parent="." instance=ExtResource("24_ye5kf")]
-
-[node name="HeartDomainHubUI" parent="." instance=ExtResource("46_c5fuf")]
-
-[node name="ToolBeltUI" parent="." instance=ExtResource("47_kyy0j")]
+[node name="CinematicUIHider" type="Node" parent="UI"]
+script = ExtResource("36_8o0eb")
+debug_enabled = true
 
 [node name="SceneBootstrap" type="Node" parent="."]
 
 [node name="HeartCamera2D" type="Camera2D" parent="."]
 enabled = false
+
+[node name="QuestMenuUI" parent="." groups=["cutscene_hide_ui"] instance=ExtResource("20_k38wn")]
+
+[node name="CraftingUI" parent="." groups=["cutscene_hide_ui"] instance=ExtResource("21_h0wiq")]
+
+[node name="HelpOverlay" parent="." groups=["cutscene_hide_ui"] instance=ExtResource("22_1klpk")]
+
+[node name="DayNightOverlay" parent="." instance=ExtResource("23_d3m4b")]
+
+[node name="HUD" parent="." groups=["cutscene_hide_ui"] instance=ExtResource("24_vuwqn")]
+
+[node name="DialogueUI" parent="." instance=ExtResource("25_7x0e2")]
+
+[node name="QuestBoardUI" parent="." groups=["cutscene_hide_ui"] instance=ExtResource("26_nyydk")]
+
+[node name="EndOfDaySummaryUI" parent="." groups=["cutscene_hide_ui"] instance=ExtResource("27_iiyss")]
+
+[node name="ShopUI" parent="." groups=["cutscene_hide_ui"] instance=ExtResource("28_ye5kf")]
+
+[node name="InventoryUI" parent="." groups=["cutscene_hide_ui"] instance=ExtResource("29_cix88")]
+
+[node name="ShippingUI" parent="." groups=["cutscene_hide_ui"] instance=ExtResource("30_teva3")]
+
+[node name="GiftUI" parent="." groups=["cutscene_hide_ui"] instance=ExtResource("31_hxn5l")]
+
+[node name="HeartProgressUI" parent="." groups=["cutscene_hide_ui"] instance=ExtResource("24_ye5kf")]
+
+[node name="HeartDomainHubUI" parent="." groups=["cutscene_hide_ui"] instance=ExtResource("46_c5fuf")]
+
+[node name="ToolBeltUI" parent="." groups=["cutscene_hide_ui"] instance=ExtResource("47_kyy0j")]
+
+[node name="ValleyHeartCinematicOrchestrator" type="Node2D" parent="."]
+script = ExtResource("50_2tbjq")
+player_path = NodePath("../Player")
+heart_camera_path = NodePath("../HeartCamera2D")
+heart_reveal_director_path = NodePath("../HeartRevealDirector")
+heart_visual_controller_path = NodePath("../HeartVisualController")
+heart_overlay_path = NodePath("../UI/HeartCutsceneOverlay")
+dialogue_ui_path = NodePath("../DialogueUI")
+actor_parent_path = NodePath("../CutsceneActors")
+seed_sprite_path = NodePath("../Sections/HeartTreeIntro/SeedSprite")
+sprout_sprite_path = NodePath("../Sections/HeartTreeIntro/SproutSprite")
+seed_focus_marker_path = NodePath("../Sections/HeartTreeIntro/SeedFocusMarker")
+player_approach_marker_path = NodePath("../Sections/HeartTreeIntro/PlayerApproachMarker")
+alder_scene = ExtResource("51_cuvof")
+alder_start_marker_path = NodePath("../Sections/HeartTreeIntro/AlderStartMarker")
+alder_end_marker_path = NodePath("../Sections/HeartTreeIntro/AlderEndMarker")
+alder_dialogue_sequence = SubResource("Resource_i2ocl")
+player_walk_time = 2.7
+camera_pan_time = 1.8
+sprout_sparkle_count = 5
+sprout_sparkle_radius = 63.0
+sprout_sparkle_lifetime = 2.8
+alder_walk_time = 1.5
+cinematic_ui_hider_path = NodePath("../UI/CinematicUIHider")
+
+[node name="CutsceneActors" type="Node" parent="."]

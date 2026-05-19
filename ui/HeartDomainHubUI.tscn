@@ -7,6 +7,7 @@ script = ExtResource("1_1lk6f")
 visual_node_path = NodePath("Panel")
 start_visible_in_game = false
 is_modal = true
+modal_overlay_id = "heart_hub"
 
 [node name="Panel" type="Panel" parent="."]
 visible = false

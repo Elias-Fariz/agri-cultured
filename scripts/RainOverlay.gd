@@ -7,7 +7,7 @@ func _ready() -> void:
 	super._ready()
 	var wc := get_node_or_null("/root/WeatherChange")
 	if wc == null:
-		print("RainOverlay: WeatherChange autoload not found at /root/WeatherChange")
+		# print("RainOverlay: WeatherChange autoload not found at /root/WeatherChange")
 		visible = false
 		return
 
@@ -29,4 +29,4 @@ func _apply() -> void:
 	if particles:
 		particles.emitting = raining
 
-	print("RainOverlay apply: raining=", raining, " visible=", visible, " emitting=", particles.emitting if particles else "no particles")
+	# print("RainOverlay apply: raining=", raining, " visible=", visible, " emitting=", particles.emitting if particles else "no particles")

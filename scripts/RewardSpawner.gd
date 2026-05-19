@@ -4,7 +4,7 @@ extends Node
 @export var spawn_points_group: String = "reward_spawn_points"
 
 func _ready() -> void:
-	print("[RewardSpawner] ready. pending_spawns:", GameState.pending_spawns)
+	# print("[RewardSpawner] ready. pending_spawns:", GameState.pending_spawns)
 	call_deferred("_spawn_pending_rewards")
 
 func _spawn_pending_rewards() -> void:
@@ -36,20 +36,20 @@ func _spawn_pending_rewards() -> void:
 			remaining.append(reward)
 			continue
 
-		print("[RewardSpawner] loading prefab:", prefab_path)
+		# print("[RewardSpawner] loading prefab:", prefab_path)
 		var packed := load(prefab_path)
 		if packed == null:
 			continue
 		
-		print("[RewardSpawner] markers found:", markers.keys())
-		print("[RewardSpawner] looking for marker_tag:", marker_tag)
+		# print("[RewardSpawner] markers found:", markers.keys())
+		# print("[RewardSpawner] looking for marker_tag:", marker_tag)
 
 		var inst = packed.instantiate()
 		if inst is Node2D:
 			(inst as Node2D).global_position = (marker as Marker2D).global_position
 		
-		print("[RewardSpawner] scene_id=", scene_id)
-		print("[RewardSpawner] reward.scene_id=", str(reward.get("scene_id","")))
+		# print("[RewardSpawner] scene_id=", scene_id)
+		# print("[RewardSpawner] reward.scene_id=", str(reward.get("scene_id","")))
 		
 		# Add to farm scene root (or a dedicated Animals node if you have one)
 		var scene_root := get_tree().current_scene
@@ -58,7 +58,7 @@ func _spawn_pending_rewards() -> void:
 		if inst is Node2D:
 			var spawn_pos := (marker as Marker2D).global_position
 			inst.call_deferred("set_global_position", spawn_pos)
-		print("[RewardSpawner] spawned cow:", inst.name, " at ", (inst as Node2D).global_position)
+		# print("[RewardSpawner] spawned cow:", inst.name, " at ", (inst as Node2D).global_position)
 		
 
 	# Keep only rewards that weren't spawned yet

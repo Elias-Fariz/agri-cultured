@@ -27,7 +27,7 @@ func _ready() -> void:
 	body_text.text = _build_help_text()
 
 	# Debug (temporary): confirm it truly has content
-	print("HelpOverlay body length:", body_text.text.length())
+	# print("HelpOverlay body length:", body_text.text.length())
 
 func _unhandled_input(event: InputEvent) -> void:
 	if Engine.is_editor_hint():

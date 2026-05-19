@@ -11,6 +11,7 @@ default_portrait = ExtResource("2_xda8i")
 visual_node_path = NodePath("Box")
 start_visible_in_game = false
 is_modal = true
+modal_overlay_id = "dialogue"
 
 [node name="Box" type="Panel" parent="."]
 visible = false

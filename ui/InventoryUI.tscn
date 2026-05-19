@@ -9,6 +9,7 @@ columns = 5
 visual_node_path = NodePath("Panel")
 start_visible_in_game = false
 is_modal = true
+modal_overlay_id = "inventory"
 tutorial_ui_id = "inventory"
 
 [node name="Panel" type="Panel" parent="."]

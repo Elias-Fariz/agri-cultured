@@ -7,6 +7,7 @@ script = ExtResource("1_o2is7")
 visual_node_path = NodePath("Panel")
 start_visible_in_game = false
 is_modal = true
+modal_overlay_id = "end_of_day_summary"
 
 [node name="Panel" type="PanelContainer" parent="."]
 visible = false

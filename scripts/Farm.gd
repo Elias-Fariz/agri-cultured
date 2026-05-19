@@ -94,6 +94,18 @@ var destructible_defs := {
 var destructible_hits: Dictionary = {} # { Vector2i: int }
 # --- Destructibles ---
 
+# --- Large tree visual overlay ---
+@export var use_large_tree_visuals: bool = true
+@export var large_tree_texture: Texture2D
+
+# For a 64x96 tree where the bottom of the trunk should sit on the bottom of the 32x32 logic tile,
+# Vector2(0, -32) is a good starting value.
+@export var large_tree_offset: Vector2 = Vector2(0, -32)
+
+@export var large_tree_z_index: int = 5
+
+var _large_tree_visuals: Dictionary = {} # cell_key -> Sprite2D
+
 # --- Destructible regrowth (beta) ---
 @export var tree_regrow_days: int = 3
 @export var rock_regrow_days: int = 2
@@ -138,6 +150,7 @@ var _crop_indicators: Dictionary = {}
 func _ready() -> void:
 	_load_farm_state()
 	_refresh_destructible_regrowth_tiles()
+	_refresh_large_tree_visuals()
 	if ambience_player and not ambience_player.playing:
 		ambience_player.play()
 	life_timer.timeout.connect(_on_life_timer_timeout)
@@ -168,29 +181,20 @@ func _ready() -> void:
 		GameState.try_play_pending_cutscene()
 
 func _on_day_changed(_day: int) -> void:
-	var grew_from_rain := rained_today  # rain that happened during the previous day
+	# Crop growth is now processed globally by GameState.
+	# Farm.gd only reloads and refreshes the visual TileMaps when Farm is loaded.
+	# print("[Farm] Day changed. Reloading Farm visuals from GameState.")
 
-	print("DAY CHANGED: grew_from_rain=", grew_from_rain, " is_raining_today=", _is_raining_today())
-
-	_advance_all_crops_one_day(grew_from_rain)
-
-	watered_today.clear()
-	_clear_watered_visuals_and_state()
-	_dry_wet_tiles_under_crops()
-
-	rained_today = false
-
-	if _is_raining_today():
-		rained_today = true
-		_apply_rain_wet_visuals_today()
-	
+	_load_farm_state()
+	_refresh_all_crop_indicators()
 	_refresh_destructible_regrowth_tiles()
+	_refresh_large_tree_visuals()
 
 func _load_farm_state() -> void:
 	var map := GameState.get_map_state("Farm")
 
 	if not bool(map.get("has_initialized", false)):
-		print("Farm state not initialized yet. Capturing baseline from painted scene...")
+		# print("Farm state not initialized yet. Capturing baseline from painted scene...")
 
 		map["ground"] = {}
 		_save_tilemap_non_default(ground, map["ground"])
@@ -200,13 +204,15 @@ func _load_farm_state() -> void:
 
 		map["crops"] = {}
 		map["hits"] = {}
+		map["watered_today"] = {}
+		map["rained_today"] = _is_raining_today()
 
 		map["has_initialized"] = true
 
 		crop_state.clear()
 		destructible_hits.clear()
 
-		print("Baseline captured. Ground:", map["ground"].size(), " Objects:", map["objects"].size())
+		# print("Baseline captured. Ground:", map["ground"].size(), " Objects:", map["objects"].size())
 		return
 
 	ground.clear_layer(0)
@@ -224,8 +230,15 @@ func _load_farm_state() -> void:
 	for key in map["hits"].keys():
 		var cell := GameState.key_to_cell(key)
 		destructible_hits[cell] = int(map["hits"][key])
+	
+	watered_today.clear()
+	var saved_watered: Dictionary = Dictionary(map.get("watered_today", {}))
+	for key_any in saved_watered.keys():
+		watered_today[String(key_any)] = bool(saved_watered[key_any])
 
-	print("Loaded Farm state. Ground:", map["ground"].size(), " Objects:", map["objects"].size(), " Crops:", map["crops"].size(), " Hits:", map["hits"].size())
+	rained_today = bool(map.get("rained_today", false))
+	
+	# print("Loaded Farm state. Ground:", map["ground"].size(), " Objects:", map["objects"].size(), " Crops:", map["crops"].size(), " Hits:", map["hits"].size())
 
 func _unhandled_input(event: InputEvent) -> void:
 	# Planting with the old dedicated plant key still works.
@@ -246,26 +259,26 @@ func _try_plant_selected_seed() -> void:
 
 	var seed_id := GameState.selected_item_id
 	if seed_id.is_empty():
-		print("No seed selected. (Tip: use your seed cycle key after buying seeds.)")
+		# print("No seed selected. (Tip: use your seed cycle key after buying seeds.)")
 		return
 
 	if not GameState.is_seed_item(seed_id):
-		print("Selected item is not a seed:", seed_id)
+		# print("Selected item is not a seed:", seed_id)
 		return
 
 	if not GameState.inventory_has(seed_id, 1):
-		print("You don't have any", seed_id, "left.")
+		# print("You don't have any", seed_id, "left.")
 		return
 
 	var crop_name := GameState.get_crop_for_seed(seed_id)
 	if crop_name.is_empty():
-		print("Seed has no crop mapping:", seed_id)
+		# print("Seed has no crop mapping:", seed_id)
 		return
 
 	var planted := _try_plant_crop_return_success(crop_name)
 	if planted:
 		GameState.inventory_remove(seed_id, 1)
-		print("Planted", crop_name, "using", seed_id)
+		# print("Planted", crop_name, "using", seed_id)
 
 func _get_destructible_key_at(cell: Vector2i) -> String:
 	var src := objects.get_cell_source_id(0, cell)
@@ -288,7 +301,7 @@ func _hit_destructible(cell: Vector2i, key: String) -> void:
 	var current := int(destructible_hits.get(cell, 0)) + 1
 	destructible_hits[cell] = current
 
-	print("Hit ", key, " ", current, "/", needed, " at ", cell)
+	# print("Hit ", key, " ", current, "/", needed, " at ", cell)
 
 	match key:
 		"tree":
@@ -304,7 +317,7 @@ func _hit_destructible(cell: Vector2i, key: String) -> void:
 		var drop := String(def["drop"])
 		GameState.inventory_add(drop, 1)
 
-		print(key, " destroyed at ", cell, " -> +1 ", drop)
+		# print(key, " destroyed at ", cell, " -> +1 ", drop)
 		match key:
 			"tree":
 				GameState.report_action("chop_tree", 1)
@@ -314,6 +327,7 @@ func _hit_destructible(cell: Vector2i, key: String) -> void:
 				GameState.report_action("break_object", 1)
 
 		_begin_destructible_regrowth(cell, key)
+		_refresh_large_tree_visuals()
 
 func _try_plant_crop_return_success(crop_name: String) -> bool:
 	if GameState.is_gameplay_locked():
@@ -321,7 +335,7 @@ func _try_plant_crop_return_success(crop_name: String) -> bool:
 
 	var crop := CropDb.get_crop(crop_name) if CropDb != null else null
 	if crop == null or not crop.is_valid():
-		print("Unknown/invalid crop: ", crop_name)
+		# print("Unknown/invalid crop: ", crop_name)
 		return false
 
 	var player_cell: Vector2i = ground.local_to_map(ground.to_local(player.global_position))
@@ -335,17 +349,17 @@ func _try_plant_crop_return_success(crop_name: String) -> bool:
 	var is_wet_tilled := (src == ground_source_id and atlas == wet_tilled_coords)
 
 	if not (is_dry_tilled or is_wet_tilled):
-		print("Not tilled soil; can't plant.")
+		# print("Not tilled soil; can't plant.")
 		return false
 
 	if objects.get_cell_source_id(0, cell) != -1:
-		print("Something already on that tile.")
+		# print("Something already on that tile.")
 		return false
 
 	# Optional: gentle seasonal gating (OFF by default if allowed_seasons has both)
 	var season_name := _get_current_season_name()
 	if not CropDb.is_allowed_in_season(crop, season_name):
-		print("This crop doesn't like this season:", season_name)
+		# print("This crop doesn't like this season:", season_name)
 		return false
 
 	# Place stage 0 tile
@@ -360,9 +374,10 @@ func _try_plant_crop_return_success(crop_name: String) -> bool:
 		"days_left": int(days0)
 	}
 
-	print("Planted ", crop_name, " at ", cell)
+	# print("Planted ", crop_name, " at ", cell)
 	_play_sfx(sfx_seed_plant, _cell_to_world_center(cell))
 	_update_crop_indicator(cell)
+	_save_farm_state()
 	return true
 
 func _get_current_season_name() -> String:
@@ -421,8 +436,8 @@ func _advance_all_crops_one_day(raining: bool = false) -> void:
 
 		objects.set_cell(0, cell, crop.tile_source_id, crop.stage_atlas_coords[next_stage])
 
-		print(crop_name, " grew to stage ", next_stage, " at ", cell,
-			" (watered=", watered, ", needs_water=", needs_water, ", season=", season_name, ")")
+		# print(crop_name, " grew to stage ", next_stage, " at ", cell,
+			#" (watered=", watered, ", needs_water=", needs_water, ", season=", season_name, ")")
 
 		_update_crop_indicator(cell)
 
@@ -432,7 +447,9 @@ func _try_till_ground(cell: Vector2i) -> void:
 
 	if src == ground_source_id and atlas == grass_coords:
 		ground.set_cell(0, cell, ground_source_id, tilled_coords)
-		print("Tilled tile at cell: ", cell)
+		# print("Tilled tile at cell: ", cell)
+		
+	_save_farm_state()
 
 func _can_till_ground(cell: Vector2i) -> bool:
 	var src := ground.get_cell_source_id(0, cell)
@@ -476,11 +493,11 @@ func _harvest_crop(cell: Vector2i) -> void:
 	var qty := CropDb.get_harvest_yield(crop, stage, season_name) if CropDb != null else 1
 
 	if item_name == "":
-		print("Harvest failed: no harvest item defined for crop:", crop_name, " stage:", stage)
+		# print("Harvest failed: no harvest item defined for crop:", crop_name, " stage:", stage)
 		return
 
 	GameState.inventory_add(item_name, qty)
-	print("Harvested ", crop_name, " at ", cell, " -> +", qty, " ", item_name)
+	# print("Harvested ", crop_name, " at ", cell, " -> +", qty, " ", item_name)
 
 	QuestEvents.crop_harvested.emit(item_name, qty)
 
@@ -497,13 +514,15 @@ func _harvest_crop(cell: Vector2i) -> void:
 		crop_state[cell] = data
 
 		objects.set_cell(0, cell, crop.tile_source_id, crop.stage_atlas_coords[regrow_stage])
-		print("Regrow: set ", crop_name, " back to stage ", regrow_stage, " for ", regrow_days, " day(s).")
+		# print("Regrow: set ", crop_name, " back to stage ", regrow_stage, " for ", regrow_days, " day(s).")
 		_update_crop_indicator(cell)
+		_save_farm_state()
 		return
 
 	objects.erase_cell(0, cell)
 	crop_state.erase(cell)
 	_update_crop_indicator(cell)
+	_save_farm_state()
 
 func _exit_tree() -> void:
 	_save_farm_state()
@@ -526,8 +545,11 @@ func _save_farm_state() -> void:
 	for cell in destructible_hits.keys():
 		var key := GameState.cell_to_key(cell)
 		map["hits"][key] = int(destructible_hits[cell])
-
-	print("Saved Farm state. Ground:", map["ground"].size(), " Objects:", map["objects"].size(), " Crops:", map["crops"].size())
+	
+	map["watered_today"] = watered_today.duplicate(true)
+	map["rained_today"] = rained_today
+	
+	# print("Saved Farm state. Ground:", map["ground"].size(), " Objects:", map["objects"].size(), " Crops:", map["crops"].size())
 
 func _save_tilemap_non_default(tilemap: TileMap, out_dict: Dictionary) -> void:
 	var used_cells := tilemap.get_used_cells(0)
@@ -551,7 +573,7 @@ func _cell_key(cell: Vector2i) -> String:
 
 func water_cell(cell: Vector2i) -> void:
 	if _is_raining_today():
-		print("Already raining — watering not needed.")
+		# print("Already raining — watering not needed.")
 		return
 
 	var key := _cell_key(cell)
@@ -571,7 +593,8 @@ func water_cell(cell: Vector2i) -> void:
 		sfx_player.stream = sfx_water_splash
 		sfx_player.play()
 
-	print("Watered cell:", key)
+	# print("Watered cell:", key)
+	_save_farm_state()
 
 func is_cell_watered(cell: Vector2i) -> bool:
 	return watered_today.has(_cell_key(cell))
@@ -591,7 +614,7 @@ func _clear_watered_visuals_and_state() -> void:
 	watered_today.clear()
 
 func _apply_rain_wet_visuals_today() -> void:
-	print("Applying rain wet visuals. crops=", crop_state.size())
+	# print("Applying rain wet visuals. crops=", crop_state.size())
 
 	for cell in crop_state.keys():
 		var src := ground.get_cell_source_id(0, cell)
@@ -609,8 +632,8 @@ func _was_raining_yesterday() -> bool:
 	return wc != null and wc.was_raining_yesterday()
 
 func _on_weather_changed(_new_weather: int) -> void:
-	print("WEATHER CHANGED: is_raining_today=", _is_raining_today(),
-		" name=", get_node_or_null("/root/WeatherChange").get_weather_name() if get_node_or_null("/root/WeatherChange") else "no weather")
+	# print("WEATHER CHANGED: is_raining_today=", _is_raining_today(),
+		#" name=", get_node_or_null("/root/WeatherChange").get_weather_name() if get_node_or_null("/root/WeatherChange") else "no weather")
 	if _is_raining_today():
 		_apply_rain_wet_visuals_today()
 
@@ -848,3 +871,50 @@ func _refresh_destructible_regrowth_tiles() -> void:
 			"grown":
 				_restore_mature_destructible_tile(cell, key)
 				GameState.clear_destructible_regrowth_record(spot_id)
+		
+	_refresh_large_tree_visuals()
+
+func _refresh_all_crop_indicators() -> void:
+	for key_any in _crop_indicators.keys():
+		var entry: Dictionary = Dictionary(_crop_indicators[key_any])
+		var node := entry.get("node", null) as Node2D
+		if node != null:
+			node.queue_free()
+
+	_crop_indicators.clear()
+
+	for cell in crop_state.keys():
+		_update_crop_indicator(cell)
+
+func _refresh_large_tree_visuals() -> void:
+	# Clear old visual sprites.
+	for key_any in _large_tree_visuals.keys():
+		var sprite := _large_tree_visuals[key_any] as Sprite2D
+		if sprite != null and is_instance_valid(sprite):
+			sprite.queue_free()
+
+	_large_tree_visuals.clear()
+
+	if not use_large_tree_visuals:
+		return
+
+	if large_tree_texture == null:
+		return
+
+	# Create one visual sprite for every logic tree tile.
+	for cell in objects.get_used_cells(0):
+		if _get_destructible_key_at(cell) != "tree":
+			continue
+
+		var sprite := Sprite2D.new()
+		sprite.name = "LargeTreeVisual_%s_%s" % [cell.x, cell.y]
+		sprite.texture = large_tree_texture
+		sprite.centered = true
+		sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		sprite.z_index = large_tree_z_index
+
+		add_child(sprite)
+
+		sprite.global_position = _cell_to_world_center(cell) + large_tree_offset
+
+		_large_tree_visuals[_cell_key(cell)] = sprite

@@ -392,7 +392,7 @@ func interact() -> void:
 
 func _handle_feed_interaction() -> bool:
 	if fed_today:
-		print("[Feed] Animal already fed today → abort feeding.")
+		# print("[Feed] Animal already fed today → abort feeding.")
 		_show_chatter(already_fed_chatter)
 		_toast_info("Already fed today.")
 		return false
@@ -400,7 +400,7 @@ func _handle_feed_interaction() -> bool:
 	var has_feed := GameState.inventory_has("Animal Feed", 1)
 
 	if not has_feed:
-		print("[Feed] No Animal Feed in inventory → cannot feed.")
+		# print("[Feed] No Animal Feed in inventory → cannot feed.")
 		_show_chatter(no_feed_chatter)
 		_toast_info("You need Animal Feed.")
 		return false
@@ -408,14 +408,14 @@ func _handle_feed_interaction() -> bool:
 	var removed := GameState.inventory_remove("Animal Feed", 1)
 
 	if not removed:
-		print("[Feed] Failed to remove Animal Feed → abort.")
+		# print("[Feed] Failed to remove Animal Feed → abort.")
 		_show_chatter(no_feed_chatter)
 		_toast_info("You need Animal Feed.")
 		return false
 
 	fed_today = true
 	_save_animal_state()
-	print("[Feed] Animal successfully fed. fed_today now:", fed_today)
+	# print("[Feed] Animal successfully fed. fed_today now:", fed_today)
 
 	_show_chatter(feed_chatter)
 	_toast_success("Fed animal.")
@@ -427,16 +427,16 @@ func _handle_feed_interaction() -> bool:
 
 func _handle_bucket_interaction() -> void:
 	if not has_product_ready:
-		print("[Bucket] No product ready → nothing to collect.")
+		# print("[Bucket] No product ready → nothing to collect.")
 		_show_chatter(no_product_chatter)
 		_toast_info("Nothing to collect yet.")
 		return
 
 	var collected := collect_product()
-	print("[Bucket] collect_product() returned:", collected)
+	# print("[Bucket] collect_product() returned:", collected)
 
 	if collected:
-		print("[Bucket] Product collected →", product_item, "x", produces_per_feed)
+		# print("[Bucket] Product collected →", product_item, "x", produces_per_feed)
 		_show_chatter(collect_chatter)
 
 		var display_name := product_item
@@ -448,7 +448,7 @@ func _handle_bucket_interaction() -> void:
 		_toast_success("Collected: %s x%d" % [display_name, int(produces_per_feed)])
 
 func _handle_pet_interaction() -> void:
-	print("[Pet] Petting animal:", animal_id)
+	# print("[Pet] Petting animal:", animal_id)
 
 	_gain_friendship_once_per_day(1)
 	_show_chatter(pet_chatter)
@@ -484,7 +484,7 @@ func _on_ProximityArea_body_entered(body: Node) -> void:
 	if not body.is_in_group("player"):
 		return
 
-	print("Proximity ENTER: ", body)
+	# print("Proximity ENTER: ", body)
 
 	# Prioritize useful care state over random idle chatter.
 	if has_product_ready or not fed_today:
@@ -497,7 +497,7 @@ func _on_ProximityArea_body_exited(body: Node) -> void:
 		return
 	# You can either hide chatter immediately or let timer handle it.
 	# We'll just let the timer finish; no extra code needed here for now.
-	print("Proximity EXIT: ", body)
+	# print("Proximity EXIT: ", body)
 	_hide_chatter()
 
 

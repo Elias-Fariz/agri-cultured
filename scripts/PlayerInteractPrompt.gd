@@ -28,11 +28,11 @@ func _ready() -> void:
 	_label = get_node_or_null(prompt_label_path) as Label
 	_anchor = get_node_or_null(prompt_anchor_path) as CanvasItem
 	
-	print("[Prompt] label path=", prompt_label_path, " found=", _label)
-	if _label:
-		print("[Prompt] label node path=", _label.get_path())
-		print("[Prompt] label initial text=", _label.text)
-		print("[Prompt] label visible=", _label.visible)
+	# print("[Prompt] label path=", prompt_label_path, " found=", _label)
+	#if _label:
+		# print("[Prompt] label node path=", _label.get_path())
+		# print("[Prompt] label initial text=", _label.text)
+		# print("[Prompt] label visible=", _label.visible)
 
 	if debug_enabled:
 		print("[Prompt] ready. sense_area=", _sense_area, " label=", _label, " anchor=", _anchor)

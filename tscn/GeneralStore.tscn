@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=3 uid="uid://cb0bna0ly4x7p"]
+[gd_scene load_steps=31 format=3 uid="uid://cb0bna0ly4x7p"]
 
 [ext_resource type="Texture2D" uid="uid://bvwrrj2bcxwqh" path="res://art/wood.PNG" id="1_8yydb"]
 [ext_resource type="Texture2D" uid="uid://bnulkhi8iub1w" path="res://art/wood_walln.PNG" id="2_51n72"]
@@ -19,6 +19,7 @@
 [ext_resource type="Script" uid="uid://xl6estd3noyu" path="res://scripts/SceneTravelArea.gd" id="13_e8p3a"]
 [ext_resource type="Texture2D" uid="uid://bq8o1e8mbe7qm" path="res://art/door.PNG" id="14_p04tt"]
 [ext_resource type="Script" uid="uid://dxx68q28fdnvv" path="res://scripts/SpawnPoint.gd" id="15_l0ll2"]
+[ext_resource type="PackedScene" uid="uid://dexrjrr1c8jfb" path="res://ui/ShopUI.tscn" id="16_f5jur"]
 [ext_resource type="Script" uid="uid://b7n4wv6k3k33k" path="res://scripts/QuestLocation.gd" id="16_p04tt"]
 [ext_resource type="PackedScene" uid="uid://bapcqqp4p17bj" path="res://tscn/npcs/Tansy.tscn" id="18_mvgwc"]
 [ext_resource type="PackedScene" uid="uid://ifwtc0xfdr1d" path="res://tscn/ShopCounter.tscn" id="19_ibrsf"]
@@ -87,6 +88,8 @@ position = Vector2(-40, 306)
 [node name="DayNightOverlay" parent="." instance=ExtResource("10_51n72")]
 
 [node name="ToolBeltUI" parent="." instance=ExtResource("11_cqdwf")]
+
+[node name="ShopUI" parent="." instance=ExtResource("16_f5jur")]
 
 [node name="SpawnManager" type="Node" parent="."]
 script = ExtResource("12_m8nne")

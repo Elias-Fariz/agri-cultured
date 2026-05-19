@@ -35,7 +35,7 @@ class_name NPCGiftPreferences
 func get_reaction_tier_for_item(item_id: String, item_tags: Array[String]) -> String:
 	# Normalize
 	var id := _norm(item_id)
-	print(item_tags)
+	# print(item_tags)
 
 	# 1) Specific item overrides (always win)
 	if _contains_norm(loves, id):

@@ -12,6 +12,18 @@ enum ToolType { HAND,
 }
 const TOOL_COUNT := 8  # <- THIS MUST BE UPDATED
 
+# ----------------------------
+# Global crop-world processing
+# ----------------------------
+
+const FARM_WORLD_ID := "Farm"
+
+# These must match Farm.gd's tile settings.
+# If you later change Farm.gd's tile source/coords, update these too.
+@export var farm_ground_source_id: int = 0
+@export var farm_tilled_coords: Vector2i = Vector2i(1, 0)
+@export var farm_wet_tilled_coords: Vector2i = Vector2i(2, 0)
+
 @export var starting_tool: ToolType = ToolType.HAND
 var current_tool: ToolType = ToolType.HAND
 
@@ -53,6 +65,7 @@ var tool_display_order: Array[int] = [
 # Inventory (already working)
 # ----------------------------
 var inventory: Dictionary = {}  # { "Wood": 3, "Stone": 2 }
+var _consume_item_locked: bool = false
 	
 # -------------------------
 # INVENTORY HELPERS
@@ -68,7 +81,7 @@ func inventory_add(item_name: String, qty: int = 1) -> void:
 	inventory_changed.emit()
 	_refresh_selected_seed_after_inventory_change()
 
-	print("Added to inventory:", item_name, " Inventory now:", inventory)
+	# print("Added to inventory:", item_name, " Inventory now:", inventory)
 
 func inventory_has(item_name: String, qty: int = 1) -> bool:
 	return int(inventory.get(item_name, 0)) >= qty
@@ -90,14 +103,23 @@ func inventory_remove(item_name: String, qty: int = 1) -> bool:
 	
 	return true
 
+func _finish_consume_item(result: bool) -> bool:
+	_consume_item_locked = false
+	return result
+
 func consume_item(item_id: String) -> bool:
+	if _consume_item_locked:
+		return _finish_consume_item(false)
+
+	_consume_item_locked = true
+	
 	item_id = item_id.strip_edges()
 	if item_id == "":
-		return false
+		return _finish_consume_item(false)
 
 	# Must have item
 	if not inventory_has(item_id, 1):
-		return false
+		return _finish_consume_item(false)
 
 	# Look up ItemData
 	var data = null
@@ -105,8 +127,8 @@ func consume_item(item_id: String) -> bool:
 		data = ItemDb.get_item(item_id)
 
 	if data == null:
-		print("consume_item: No ItemData found for:", item_id)
-		return false
+		# print("consume_item: No ItemData found for:", item_id)
+		return _finish_consume_item(false)
 
 	var restore := int(data.energy_restore)
 
@@ -130,8 +152,8 @@ func consume_item(item_id: String) -> bool:
 
 	# If the item gives neither usable energy nor a buff, don't consume it.
 	if not can_restore_energy and not has_effects:
-		print("consume_item: Item is not currently useful to consume:", item_id)
-		return false
+		# print("consume_item: Item is not currently useful to consume:", item_id)
+		return _finish_consume_item(false)
 
 	# Apply energy restore if useful.
 	if can_restore_energy:
@@ -148,7 +170,7 @@ func consume_item(item_id: String) -> bool:
 	# Consume one item only after we know it did something useful.
 	var removed := inventory_remove(item_id, 1)
 	if not removed:
-		return false
+		return _finish_consume_item(false)
 
 	# Cozy feedback
 	if QuestEvents != null and QuestEvents.has_signal("toast_requested"):
@@ -159,7 +181,7 @@ func consume_item(item_id: String) -> bool:
 		elif has_effects:
 			QuestEvents.toast_requested.emit("You feel prepared.", "success", 2.0)
 
-	return true
+	return _finish_consume_item(true)
 
 # --- Shipping / Sell Box global state ---
 var shipping_bin: Dictionary = {}  # { "Wood": 5, "Watermelon": 2 }
@@ -245,7 +267,7 @@ func get_crop_for_seed(item_id: String) -> String:
 
 func set_selected_item(item_id: String) -> void:
 	selected_item_id = item_id
-	print("Selected item:", selected_item_id)
+	# print("Selected item:", selected_item_id)
 	_emit_seed_selection_changed()
 
 func get_selected_seed_quantity() -> int:
@@ -285,7 +307,7 @@ func cycle_seed_previous() -> void:
 	var seeds := get_all_seed_ids_in_inventory()
 	if seeds.is_empty():
 		selected_item_id = ""
-		print("No seeds in inventory to select.")
+		# print("No seeds in inventory to select.")
 		_emit_seed_selection_changed()
 		return
 
@@ -346,7 +368,7 @@ func cycle_seed_next() -> void:
 	var seeds := get_all_seed_ids_in_inventory()
 	if seeds.is_empty():
 		selected_item_id = ""
-		print("No seeds in inventory to select.")
+		# print("No seeds in inventory to select.")
 		return
 
 	# If current selection isn't a seed (or empty), pick first seed
@@ -619,6 +641,77 @@ func mark_destructible_regrowing(
 		"respawn_day": respawn_day,
 		"sprout_day": sprout_day,
 	}
+	
+	# ----------------------------
+# Modal Overlay Guard
+# ----------------------------
+# This prevents multiple modal UI overlays from opening at the same time.
+# Examples: Inventory, Shop, Crafting, Cooking, Dialogue, Quest Board, Fishing UI.
+
+var active_modal_overlay_id: String = ""
+var _modal_overlay_block_until_msec: int = 0
+
+func block_modal_overlays_for(seconds: float = 0.35) -> void:
+	var duration_msec := int(max(0.0, seconds) * 1000.0)
+	_modal_overlay_block_until_msec = max(
+		_modal_overlay_block_until_msec,
+		Time.get_ticks_msec() + duration_msec
+	)
+
+func are_modal_overlays_temporarily_blocked() -> bool:
+	return Time.get_ticks_msec() < _modal_overlay_block_until_msec
+
+func can_open_modal_overlay(overlay_id: String) -> bool:
+	overlay_id = overlay_id.strip_edges()
+
+	if are_modal_overlays_temporarily_blocked():
+		return false
+
+	if active_modal_overlay_id == "":
+		return true
+
+	# Allow the same overlay to refresh/re-show itself safely.
+	return active_modal_overlay_id == overlay_id
+
+func try_open_modal_overlay(overlay_id: String) -> bool:
+	overlay_id = overlay_id.strip_edges()
+	if overlay_id == "":
+		overlay_id = "unnamed_modal_overlay"
+
+	if not can_open_modal_overlay(overlay_id):
+		return false
+
+	active_modal_overlay_id = overlay_id
+	return true
+
+func close_modal_overlay(overlay_id: String) -> void:
+	overlay_id = overlay_id.strip_edges()
+
+	if active_modal_overlay_id == "":
+		return
+
+	if active_modal_overlay_id == overlay_id:
+		active_modal_overlay_id = ""
+
+func get_active_modal_overlay_id() -> String:
+	return active_modal_overlay_id
+
+# ----------------------------
+# Item Use Safety Guard
+# ----------------------------
+# Prevents item consumption during tiny cleanup windows after cutscenes/dialogues.
+
+var _item_use_block_until_msec: int = 0
+
+func block_item_use_for(seconds: float = 0.75) -> void:
+	var duration_msec := int(max(0.0, seconds) * 1000.0)
+	_item_use_block_until_msec = max(
+		_item_use_block_until_msec,
+		Time.get_ticks_msec() + duration_msec
+	)
+
+func can_use_items_now() -> bool:
+	return Time.get_ticks_msec() >= _item_use_block_until_msec
 
 func get_destructible_regrowth_record(spot_id: String) -> Dictionary:
 	return _regrowing_destructibles.get(spot_id, {})
@@ -695,7 +788,7 @@ func unlock_cooking_recipe(recipe_id: String) -> void:
 		return
 
 	unlocked_cooking_recipe_ids[recipe_id] = true
-	print("[Cooking] Recipe unlocked:", recipe_id)
+	# print("[Cooking] Recipe unlocked:", recipe_id)
 
 	if QuestEvents != null and QuestEvents.has_signal("toast_requested"):
 		QuestEvents.toast_requested.emit("Recipe learned: " + recipe_id, "success", 2.5)
@@ -719,7 +812,7 @@ func unlock_recipe(recipe_id: String) -> void:
 	if recipe_id.strip_edges() == "":
 		return
 	unlocked_recipes[recipe_id] = true
-	print("Unlocked: " + recipe_id)
+	# print("Unlocked: " + recipe_id)
 
 func get_unlocked_recipe_ids() -> Dictionary:
 	# Return dictionary so we can do unlocked.has(id)
@@ -977,12 +1070,209 @@ func get_map_state(map_name: String) -> Dictionary:
 	if not world_state.has(map_name):
 		world_state[map_name] = {
 			"has_initialized": false,
-			"ground": {},   # cell_key -> tile info
-			"objects": {},  # cell_key -> tile info
-			"crops": {},    # cell_key -> crop info
-			"hits": {}
+			"ground": {},          # cell_key -> tile info
+			"objects": {},         # cell_key -> tile info
+			"crops": {},           # cell_key -> crop info
+			"hits": {},
+			"watered_today": {},   # cell_key -> true
+			"rained_today": false
 		}
-	return world_state[map_name]
+
+	var map: Dictionary = world_state[map_name]
+
+	# Backward-compatible safety for older saved state.
+	if not map.has("ground"):
+		map["ground"] = {}
+	if not map.has("objects"):
+		map["objects"] = {}
+	if not map.has("crops"):
+		map["crops"] = {}
+	if not map.has("hits"):
+		map["hits"] = {}
+	if not map.has("watered_today"):
+		map["watered_today"] = {}
+	if not map.has("rained_today"):
+		map["rained_today"] = false
+	if not map.has("has_initialized"):
+		map["has_initialized"] = false
+
+	world_state[map_name] = map
+	return map
+
+func process_crop_worlds_new_day() -> void:
+	# If the current scene is Farm and has unsaved changes, save them first.
+	# This protects the case where the player sleeps/passes out while Farm is loaded.
+	var scene := get_tree().current_scene
+	if scene != null and scene.has_method("_save_farm_state"):
+		scene.call("_save_farm_state")
+
+	_process_farm_crops_new_day()
+
+
+func _process_farm_crops_new_day() -> void:
+	if not world_state.has(FARM_WORLD_ID):
+		return
+
+	var map: Dictionary = get_map_state(FARM_WORLD_ID)
+
+	if not bool(map.get("has_initialized", false)):
+		return
+
+	var crops: Dictionary = Dictionary(map.get("crops", {}))
+	if crops.is_empty():
+		# Still clear old watering if needed.
+		map["watered_today"] = {}
+		map["rained_today"] = _is_raining_today_global()
+		world_state[FARM_WORLD_ID] = map
+		return
+
+	var watered_today: Dictionary = Dictionary(map.get("watered_today", {}))
+
+	# This is the rain from the day that just ended.
+	var grew_from_rain := bool(map.get("rained_today", false))
+
+	# Extra safety if your WeatherChange autoload tracks yesterday.
+	if WeatherChange != null and WeatherChange.has_method("was_raining_yesterday"):
+		grew_from_rain = grew_from_rain or bool(WeatherChange.was_raining_yesterday())
+
+	# print("[Crops] Processing Farm new day. grew_from_rain=", grew_from_rain, " crops=", crops.size())
+
+	_advance_crop_map_one_day(FARM_WORLD_ID, map, grew_from_rain, watered_today)
+
+	# Overnight: old watering dries.
+	map["watered_today"] = {}
+	_dry_farm_ground_tiles(map)
+
+	# New day rain state.
+	var raining_now := _is_raining_today_global()
+	map["rained_today"] = raining_now
+
+	if raining_now:
+		_apply_farm_rain_wet_visuals_to_saved_map(map)
+
+	world_state[FARM_WORLD_ID] = map
+
+	if QuestEvents != null and QuestEvents.has_signal("quest_state_changed"):
+		QuestEvents.quest_state_changed.emit()
+
+
+func _advance_crop_map_one_day(
+	world_id: String,
+	map: Dictionary,
+	raining_previous_day: bool,
+	watered_today: Dictionary
+) -> void:
+	var crops: Dictionary = Dictionary(map.get("crops", {}))
+	var objects: Dictionary = Dictionary(map.get("objects", {}))
+	var season_name := _get_current_season_name_global()
+
+	for cell_key_any in crops.keys():
+		var cell_key := String(cell_key_any)
+		var data: Dictionary = Dictionary(crops[cell_key_any])
+
+		var crop_name := String(data.get("type", ""))
+		if crop_name == "":
+			continue
+
+		var crop :CropData= CropDb.get_crop(crop_name) if CropDb != null else null
+		if crop == null or not crop.is_valid():
+			continue
+
+		var stage := int(data.get("stage", 0))
+		var watered := raining_previous_day or bool(watered_today.get(cell_key, false))
+
+		var ignore_after := int(crop.ignore_water_after_stage)
+		var needs_water := true
+		if ignore_after != -1 and stage >= ignore_after:
+			needs_water = false
+
+		if needs_water and not watered:
+			crops[cell_key_any] = data
+			continue
+
+		if CropDb != null and CropDb.should_chill_today(crop, season_name):
+			crops[cell_key_any] = data
+			continue
+
+		var days_left := int(data.get("days_left", 1)) - 1
+		data["days_left"] = days_left
+
+		if days_left > 0:
+			crops[cell_key_any] = data
+			continue
+
+		var next_stage := stage + 1
+
+		if next_stage >= crop.stage_atlas_coords.size():
+			data["stage"] = crop.stage_atlas_coords.size() - 1
+			data["days_left"] = 9999
+			crops[cell_key_any] = data
+			continue
+
+		data["stage"] = next_stage
+		data["days_left"] = CropDb.get_effective_stage_days(crop, next_stage, season_name)
+		crops[cell_key_any] = data
+
+		objects[cell_key] = {
+			"src": int(crop.tile_source_id),
+			"atlas": crop.stage_atlas_coords[next_stage]
+		}
+
+		# print("[Crops] ", world_id, " ", crop_name, " grew to stage ", next_stage, " at ", cell_key)
+
+	map["crops"] = crops
+	map["objects"] = objects
+
+
+func _dry_farm_ground_tiles(map: Dictionary) -> void:
+	var ground: Dictionary = Dictionary(map.get("ground", {}))
+
+	for cell_key_any in ground.keys():
+		var entry: Dictionary = Dictionary(ground[cell_key_any])
+		var src := int(entry.get("src", -1))
+		var atlas := Vector2i(entry.get("atlas", Vector2i.ZERO))
+
+		if src == farm_ground_source_id and atlas == farm_wet_tilled_coords:
+			entry["atlas"] = farm_tilled_coords
+			ground[cell_key_any] = entry
+
+	map["ground"] = ground
+
+
+func _apply_farm_rain_wet_visuals_to_saved_map(map: Dictionary) -> void:
+	var ground: Dictionary = Dictionary(map.get("ground", {}))
+	var crops: Dictionary = Dictionary(map.get("crops", {}))
+
+	for cell_key_any in crops.keys():
+		var cell_key := String(cell_key_any)
+
+		if not ground.has(cell_key):
+			continue
+
+		var entry: Dictionary = Dictionary(ground[cell_key])
+		var src := int(entry.get("src", -1))
+		var atlas := Vector2i(entry.get("atlas", Vector2i.ZERO))
+
+		if src == farm_ground_source_id and atlas == farm_tilled_coords:
+			entry["atlas"] = farm_wet_tilled_coords
+			ground[cell_key] = entry
+
+	map["ground"] = ground
+
+
+func _is_raining_today_global() -> bool:
+	if WeatherChange == null:
+		return false
+	if not WeatherChange.has_method("is_raining"):
+		return false
+	return bool(WeatherChange.is_raining())
+
+
+func _get_current_season_name_global() -> String:
+	if CalendarSystem != null and CalendarSystem.has_method("get_season_name"):
+		return String(CalendarSystem.get_season_name())
+
+	return "Sunwake"
 
 func cell_to_key(cell: Vector2i) -> String:
 	return "%d,%d" % [cell.x, cell.y]
@@ -1031,7 +1321,7 @@ func add_quest(quest: Dictionary) -> void:
 	q["claimed"] = bool(q.get("claimed", false))
 
 	active_quests[id] = q
-	print("Quest accepted: ", id)
+	# print("Quest accepted: ", id)
 
 	# NEW: rewards granted immediately when the quest is accepted.
 	# This is what lets the Fisher give the Fishing Rod at quest start.
@@ -1067,7 +1357,7 @@ func complete_quest(quest_id: String) -> void:
 	completed_quests[quest_id] = quest
 	clear_quest_ready_to_turn_in(quest_id)
 
-	print("Quest completed: ", quest_id)
+	# print("Quest completed: ", quest_id)
 
 	var title := String(quest.get("title", "Quest"))
 	if not (today_tracking["quests_completed"] as Array).has(title):
@@ -1098,7 +1388,7 @@ func mark_quest_ready_to_turn_in(quest_id: String) -> void:
 	ready_to_turn_in_quests[quest_id] = true
 
 	var title := String(quest.get("title", "Quest"))
-	print("Quest ready to turn in:", quest_id)
+	# print("Quest ready to turn in:", quest_id)
 
 	if QuestEvents != null and QuestEvents.has_signal("toast_requested"):
 		QuestEvents.toast_requested.emit("Quest Ready: " + title, "success", 2.5)
@@ -1131,7 +1421,7 @@ func cleanup_old_recently_claimed_quests(keep_days: int = 1) -> void:
 			recently_claimed_quests.erase(qid)
 	
 func claim_quest_reward(quest_id: String) -> void:
-	print("[Reward] claim_quest_reward:", quest_id)
+	# print("[Reward] claim_quest_reward:", quest_id)
 	
 	if not completed_quests.has(quest_id):
 		return
@@ -1141,7 +1431,7 @@ func claim_quest_reward(quest_id: String) -> void:
 		return
 
 	var reward: Dictionary = Dictionary(quest.get("reward", {}))
-	print("Claiming reward for ", quest_id, " -> ", reward)
+	# print("Claiming reward for ", quest_id, " -> ", reward)
 
 	apply_reward_dict(reward, "quest_claim:%s" % quest_id)
 	
@@ -1151,13 +1441,13 @@ func claim_quest_reward(quest_id: String) -> void:
 	clear_quest_ready_to_turn_in(quest_id)
 	
 	#if quest_id == "keeper_cow_quest":
-		#print("[Reward] Queuing cow spawn!")
+		## print("[Reward] Queuing cow spawn!")
 		#queue_spawn_reward("farm", "res://tscn/Cow.tscn", "cow_pen_spawn")
-		#print("[Reward] pending_spawns now:", pending_spawns)
+		## print("[Reward] pending_spawns now:", pending_spawns)
 	
 	QuestEvents.quest_state_changed.emit()
 
-	print("Quest reward claimed for ", quest_id)
+	# print("Quest reward claimed for ", quest_id)
 
 func _on_quest_talked_to(npc_id: String) -> void:
 	_debug_chain("BEFORE talk " + npc_id)
@@ -1295,8 +1585,8 @@ func _try_advance_chain_quest(qid: String, event_type: String, target: String, d
 		return
 
 	var step: Dictionary = steps[step_index]
-	if qid == "tutorial_day1":
-		print("[Tutorial] waiting step_index=", step_index, " step_type=", String(step.get("type","")), " step_target=", String(step.get("target","")))
+	#if qid == "tutorial_day1":
+		# print("[Tutorial] waiting step_index=", step_index, " step_type=", String(step.get("type","")), " step_target=", String(step.get("target","")))
 
 	if String(step.get("type", "")) != event_type:
 		return
@@ -1350,7 +1640,7 @@ func get_chain_step_text(qid: String) -> String:
 func _debug_chain(tag: String) -> void:
 	var q: Dictionary = active_quests.get("main_mayor_strawberry", {}) as Dictionary
 	if q.is_empty():
-		print(tag, " CHAIN not active")
+		# print(tag, " CHAIN not active")
 		return
 
 	var idx: int = int(q.get("step_index", -1))
@@ -1365,7 +1655,7 @@ func _debug_chain(tag: String) -> void:
 			int(step.get("amount",1))
 		]
 
-	print(tag, " step_index=", idx, " current=", step_desc)
+	# print(tag, " step_index=", idx, " current=", step_desc)
 
 func is_quest_available_to_accept(quest_id: String) -> bool:
 	return not active_quests.has(quest_id) and not completed_quests.has(quest_id)
@@ -1735,7 +2025,7 @@ func _is_quest_completed(quest_id: String) -> bool:
 func _on_day_changed(new_day: int) -> void:
 	mining_food_bonus_applied_today.clear()
 	
-	print("Day changed:", new_day)
+	# print("Day changed:", new_day)
 	if new_day != 1:
 		return
 
@@ -2071,7 +2361,7 @@ func apply_heart_reward(r) -> void:
 		_:
 			pass
 
-	print("[GameState] Applied Heart reward:", r.id, " stats=", heart_stats, " flags=", heart_flags)
+	# print("[GameState] Applied Heart reward:", r.id, " stats=", heart_stats, " flags=", heart_flags)
 
 func get_shop_discount_multiplier() -> float:
 	if has_node("/root/HeartProgress"):
@@ -2141,7 +2431,7 @@ func mark_cutscene_played(cutscene_id: String) -> void:
 	if cutscene_id == "":
 		return
 	
-	print("GameState: marking cutscene played:", cutscene_id)
+	# print("GameState: marking cutscene played:", cutscene_id)
 	played_cutscenes[cutscene_id] = true
 	
 func has_seen_cutscene(cutscene_id: String) -> bool:
@@ -2159,7 +2449,7 @@ func set_flag(flag_id: String, value: bool = true) -> void:
 		return
 
 	game_flags[flag_id] = value
-	print("[Flag]", flag_id, "=", value)
+	# print("[Flag]", flag_id, "=", value)
 
 
 func has_flag(flag_id: String) -> bool:
@@ -2194,31 +2484,31 @@ func get_tool_type_from_id(tool_id: String) -> int:
 	return -1
 
 func debug_print_quest_state(quest_id: String) -> void:
-	print("\n=== QUEST DEBUG:", quest_id, "===")
+	# print("\n=== QUEST DEBUG:", quest_id, "===")
 
 	if active_quests.has(quest_id):
 		var q: Dictionary = active_quests[quest_id]
-		print("ACTIVE:", q)
-		print("step_index:", q.get("step_index", "none"))
-		print("steps size:", Array(q.get("steps", [])).size())
-		print("completed:", q.get("completed", "none"))
-		print("claimed:", q.get("claimed", "none"))
-		print("turn_in_id:", q.get("turn_in_id", "none"))
-		print("turn_in_text:", q.get("turn_in_text", "none"))
+		# print("ACTIVE:", q)
+		# print("step_index:", q.get("step_index", "none"))
+		# print("steps size:", Array(q.get("steps", [])).size())
+		# print("completed:", q.get("completed", "none"))
+		# print("claimed:", q.get("claimed", "none"))
+		# print("turn_in_id:", q.get("turn_in_id", "none"))
+		# print("turn_in_text:", q.get("turn_in_text", "none"))
 	else:
 		print("Not in active_quests")
 
 	if completed_quests.has(quest_id):
 		var cq: Dictionary = completed_quests[quest_id]
-		print("COMPLETED:", cq)
-		print("completed claimed:", cq.get("claimed", "none"))
+		# print("COMPLETED:", cq)
+		# print("completed claimed:", cq.get("claimed", "none"))
 	else:
 		print("Not in completed_quests")
 
 	if has_method("is_quest_ready_to_turn_in"):
 		print("ready_to_turn_in:", is_quest_ready_to_turn_in(quest_id))
 
-	print("==============================\n")
+	# print("==============================\n")
 
 func complete_ready_quest_and_claim_reward(quest_id: String) -> void:
 	quest_id = quest_id.strip_edges()
@@ -2304,13 +2594,13 @@ func process_animal_new_day() -> void:
 		state["fed_today"] = false
 		animal_states[animal_id] = state
 
-	print("[Animals] Processed new day:", current_day, animal_states)
+	# print("[Animals] Processed new day:", current_day, animal_states)
 
 func apply_reward_dict(reward: Dictionary, source_id: String = "") -> void:
 	if reward.is_empty():
 		return
 
-	print("[Reward] apply_reward_dict source=", source_id, " reward=", reward)
+	# print("[Reward] apply_reward_dict source=", source_id, " reward=", reward)
 
 	# Money
 	if reward.has("money"):
@@ -2444,7 +2734,7 @@ func apply_food_effect(effect: FoodEffectData) -> void:
 		"category": effect.category,
 	}
 
-	print("[FoodBuff] Applied:", active_food_buffs[key])
+	# print("[FoodBuff] Applied:", active_food_buffs[key])
 	
 	# Apply immediate side effects.
 	if key == FoodEffectData.EffectKey.MAX_ENERGY_BONUS:
@@ -2488,11 +2778,11 @@ func consume_food_buff_use(effect_key: int) -> void:
 
 	if remaining <= 0:
 		active_food_buffs.erase(key)
-		print("[FoodBuff] Expired key:", key)
+		# print("[FoodBuff] Expired key:", key)
 	else:
 		buff["remaining_uses"] = remaining
 		active_food_buffs[key] = buff
-		print("[FoodBuff] Remaining uses key=", key, " uses=", remaining)
+		# print("[FoodBuff] Remaining uses key=", key, " uses=", remaining)
 		
 	if QuestEvents != null and QuestEvents.has_signal("quest_state_changed"):
 		QuestEvents.quest_state_changed.emit()
@@ -2623,7 +2913,7 @@ func clear_daily_food_buffs() -> void:
 		mining_food_bonus_applied_today.clear()
 
 	if not removed_names.is_empty():
-		print("[FoodBuff] Cleared daily food buffs:", removed_names)
+		# print("[FoodBuff] Cleared daily food buffs:", removed_names)
 
 		# Queue this so it appears after the new day/scene settles, if your queued toast helper exists.
 		if has_method("queue_day_start_toast"):
@@ -2731,7 +3021,7 @@ func _remove_food_buff_by_key(key_any) -> void:
 	if name.strip_edges() == "":
 		name = "A food blessing"
 
-	print("[FoodBuff] Expired:", name)
+	# print("[FoodBuff] Expired:", name)
 
 func get_movement_speed_multiplier() -> float:
 	var bonus := get_food_buff_amount(FoodEffectData.EffectKey.MOVEMENT_SPEED_MULTIPLIER)

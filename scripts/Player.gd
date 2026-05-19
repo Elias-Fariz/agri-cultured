@@ -76,6 +76,20 @@ var _shake_seed: float = 0.0
 var _camera_zoom_cutscene_override: bool = false
 var _camera_zoom_tween: Tween = null
 
+@export var interact_cooldown_seconds: float = 0.15
+@export var tool_cooldown_seconds: float = 0.10
+@export var inventory_toggle_cooldown_seconds: float = 0.15
+
+# Safety grace after dialogue/cutscene/modal gameplay unlocks.
+# This prevents instant T -> click -> Space chains from firing while systems are still cleaning up.
+@export var post_gameplay_unlock_input_grace_seconds: float = 0.35
+
+var _interact_cooldown_left: float = 0.0
+var _tool_cooldown_left: float = 0.0
+var _inventory_toggle_cooldown_left: float = 0.0
+var _post_gameplay_unlock_input_grace_left: float = 0.0
+var _was_gameplay_locked_last_frame: bool = false
+
 func _ready() -> void:
 	# Ensure the sensor starts in front of the player (down by default)
 	_update_sensor_position()
@@ -83,11 +97,27 @@ func _ready() -> void:
 	call_deferred("_apply_camera_bounds_if_present")
 	_target_zoom = cam.zoom.x
 	shake_offset.position = Vector2.ZERO
+	_was_gameplay_locked_last_frame = _is_gameplay_locked_now()
 
 func _enter_tree() -> void:
 	call_deferred("_apply_camera_bounds_if_present")
 
 func _physics_process(delta: float) -> void:
+	_interact_cooldown_left = max(0.0, _interact_cooldown_left - delta)
+	_tool_cooldown_left = max(0.0, _tool_cooldown_left - delta)
+	_inventory_toggle_cooldown_left = max(0.0, _inventory_toggle_cooldown_left - delta)
+	_post_gameplay_unlock_input_grace_left = max(0.0, _post_gameplay_unlock_input_grace_left - delta)
+
+	var locked_now := _is_gameplay_locked_now()
+
+	if _was_gameplay_locked_last_frame and not locked_now:
+		_post_gameplay_unlock_input_grace_left = max(
+			_post_gameplay_unlock_input_grace_left,
+			post_gameplay_unlock_input_grace_seconds
+		)
+
+	_was_gameplay_locked_last_frame = locked_now
+	
 	# 1) Camera should ALWAYS update, unless developer camera lock is active.
 	if _dev_camera_locked:
 		_keep_dev_camera_locked()
@@ -150,11 +180,35 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 		return
 
+	# Allow Inventory to close itself even while gameplay is locked.
+	# This is important because Inventory is modal, so opening it locks gameplay.
+	if event.is_action_pressed("open_inventory") or event.is_action_pressed("ui_cancel"):
+		if inventory_ui != null and inventory_ui.has_method("is_open") and bool(inventory_ui.call("is_open")):
+			if inventory_ui.has_method("hide_ui"):
+				inventory_ui.call("hide_ui")
+			else:
+				inventory_ui.hide_overlay()
+
+			get_viewport().set_input_as_handled()
+			return
+
+	# Do not start new gameplay/UI actions while a cutscene/dialogue/modal system
+	# is still locked, or during the tiny grace period right after it unlocks.
+	if _should_block_new_gameplay_input():
+		if _is_player_gameplay_input_event(event):
+			get_viewport().set_input_as_handled()
+		return
+
 	if event.is_action_pressed("interact"):
-		_try_interact()
-		
+		if _interact_cooldown_left <= 0.0:
+			_interact_cooldown_left = interact_cooldown_seconds
+			_try_interact()
+		return
+
 	if event.is_action_pressed("tool"):
-		ToolSystem.tool_action_auto(self)
+		if _tool_cooldown_left <= 0.0:
+			_tool_cooldown_left = tool_cooldown_seconds
+			ToolSystem.tool_action_auto(self)
 		return
 	
 	if event.is_action_pressed("open_gift"):
@@ -162,13 +216,16 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 		
 	if event.is_action_pressed("open_inventory"):
-		# Refresh UI content then toggle
-		inventory_ui.toggle_ui()
+		if _inventory_toggle_cooldown_left <= 0.0:
+			_inventory_toggle_cooldown_left = inventory_toggle_cooldown_seconds
+			if inventory_ui != null and inventory_ui.has_method("toggle_ui"):
+				inventory_ui.toggle_ui()
+		get_viewport().set_input_as_handled()
 		return
 	
 	if event.is_action_pressed("tool_next"):
 		GameState.cycle_tool_next()
-		print("Selected tool:", GameState.get_tool_name())
+		# print("Selected tool:", GameState.get_tool_name())
 		
 	if event.is_action_pressed("camera_zoom_in"):
 		_target_zoom = clamp(_target_zoom - zoom_step, zoom_min, zoom_max)
@@ -206,13 +263,13 @@ func _apply_camera_bounds_if_present() -> void:
 
 	var bounds := scene_root.get_node_or_null("CameraBounds")
 	if bounds == null:
-		print("No CameraBounds found in this scene (optional).")
+		# print("No CameraBounds found in this scene (optional).")
 		return
 
 	var tl := bounds.get_node_or_null("TopLeft") as Marker2D
 	var br := bounds.get_node_or_null("BottomRight") as Marker2D
 	if tl == null or br == null:
-		print("CameraBounds needs Marker2D children named TopLeft and BottomRight.")
+		# print("CameraBounds needs Marker2D children named TopLeft and BottomRight.")
 		return
 
 	# Godot Camera2D limits are in pixels (world coordinates)
@@ -222,7 +279,7 @@ func _apply_camera_bounds_if_present() -> void:
 	cam.limit_bottom = int(br.global_position.y)
 
 	# Optional: keep limits updated if you switch scenes
-	#print("Camera limits set: L/T/R/B = ",
+	## print("Camera limits set: L/T/R/B = ",
 		#cam.limit_left, cam.limit_top, cam.limit_right, cam.limit_bottom)
 
 func _update_camera_lookahead(delta: float) -> void:
@@ -296,7 +353,7 @@ func camera_focus_on_world_point(world_pos: Vector2) -> void:
 	if cam:
 		cam.position_smoothing_enabled = false
 		
-	#print("Limits L/T/R/B: ",
+	## print("Limits L/T/R/B: ",
 	#cam.limit_left, ", ",
 	#cam.limit_top, ", ",
 	#cam.limit_right, ", ",
@@ -492,7 +549,7 @@ func _lock_dev_camera() -> void:
 	cam.enabled = true
 	cam.make_current()
 
-	print("[DevCamera] Locked camera at: ", cam.global_position)
+	# print("[DevCamera] Locked camera at: ", cam.global_position)
 
 
 func _unlock_dev_camera() -> void:
@@ -523,7 +580,7 @@ func _unlock_dev_camera() -> void:
 	_cam_original_parent = null
 	_cam_original_index = -1
 
-	print("[DevCamera] Unlocked camera; returning to player follow.")
+	# print("[DevCamera] Unlocked camera; returning to player follow.")
 
 
 func _keep_dev_camera_locked() -> void:
@@ -538,3 +595,31 @@ func _keep_dev_camera_locked() -> void:
 func force_unlock_dev_camera() -> void:
 	if _dev_camera_locked:
 		_unlock_dev_camera()
+
+func _is_gameplay_locked_now() -> bool:
+	if GameState == null:
+		return false
+	if not GameState.has_method("is_gameplay_locked"):
+		return false
+	return bool(GameState.is_gameplay_locked())
+
+
+func _should_block_new_gameplay_input() -> bool:
+	if _is_gameplay_locked_now():
+		return true
+
+	if _post_gameplay_unlock_input_grace_left > 0.0:
+		return true
+
+	return false
+
+
+func _is_player_gameplay_input_event(event: InputEvent) -> bool:
+	return (
+		event.is_action_pressed("interact")
+		or event.is_action_pressed("tool")
+		or event.is_action_pressed("open_gift")
+		or event.is_action_pressed("open_inventory")
+		or event.is_action_pressed("tool_next")
+		or event.is_action_pressed("tool_previous")
+	)

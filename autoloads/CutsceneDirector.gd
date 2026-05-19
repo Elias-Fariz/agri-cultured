@@ -59,8 +59,8 @@ func try_play_queued() -> void:
 	play_cutscene(id)
 
 func play_cutscene(id: String) -> void:
-	print("CutsceneDirector: play_cutscene called with:", id)
-	print("Is already playing?", _is_playing)
+	# print("CutsceneDirector: play_cutscene called with:", id)
+	# print("Is already playing?", _is_playing)
 	
 	if _is_playing:
 		return
@@ -95,16 +95,16 @@ func _run_cutscene_impl(data: CutsceneData) -> void:
 
 	var scene := get_tree().current_scene
 	if scene == null:
-		print("CutsceneDirector: current_scene is null")
+		# print("CutsceneDirector: current_scene is null")
 		_finish_cutscene()
 		return
 
 	var desired_scene := String(data.scene_name).strip_edges()
-	print("CutsceneDirector: current scene name =", scene.name)
-	print("CutsceneDirector: desired scene name =", desired_scene)
+	# print("CutsceneDirector: current scene name =", scene.name)
+	# print("CutsceneDirector: desired scene name =", desired_scene)
 
 	if desired_scene != "" and scene.name != desired_scene:
-		print("CutsceneDirector: scene mismatch, re-queuing cutscene:", data.id)
+		# print("CutsceneDirector: scene mismatch, re-queuing cutscene:", data.id)
 		_queued_id = String(data.id)
 		call_deferred("_cleanup_temp_actors")
 		_finish_cutscene()
@@ -214,6 +214,17 @@ func _finish_cutscene() -> void:
 	GameState.unlock_gameplay()
 	_set_time_paused(false)
 	_is_playing = false
+
+	# Safety: prevent instant UI opening during the tiny cleanup window
+	# after cutscene/dialogue/fade systems release control.
+	if GameState != null and GameState.has_method("block_modal_overlays_for"):
+		GameState.block_modal_overlays_for(0.45)
+
+	# Extra safety: item consumption can trigger inventory changes, food buffs,
+	# quest refreshes, toasts, and HUD updates. Give those systems a little
+	# more time after a cutscene before allowing item use.
+	if GameState != null and GameState.has_method("block_item_use_for"):
+		GameState.block_item_use_for(0.90)
 
 func _start_pending_restoration_encounter(scene: Node) -> void:
 	var path := _pending_restoration_encounter_path
@@ -995,7 +1006,7 @@ func _apply_cutscene_completion_rewards(data: CutsceneData) -> void:
 	if data.rewards_once and reward_flag != "":
 		if GameState != null and GameState.has_method("has_flag"):
 			if bool(GameState.has_flag(reward_flag)):
-				print("[CutsceneReward] Already claimed for cutscene:", cutscene_id)
+				# print("[CutsceneReward] Already claimed for cutscene:", cutscene_id)
 				return
 
 	# Apply normal reward dictionary: money, items, flags, tools, spawns.

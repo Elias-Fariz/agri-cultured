@@ -98,7 +98,6 @@ collision_mask = 3
 script = ExtResource("7_ubk8s")
 target_scene_path = "res://tscn/Beach.tscn"
 target_spawn_tag = "from_keeper"
-required_completed_quests = Array[String](["keeper_cow_quest"])
 
 [node name="Sprite2D" type="Sprite2D" parent="TravelPoints/ToBeach"]
 texture = ExtResource("7_hw5sw")

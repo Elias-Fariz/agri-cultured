@@ -77,7 +77,7 @@ func _load_resources() -> void:
 	if DEV_FORCE_FRESH_ON_START:
 		progress = _make_fresh_progress_resource()
 		_reset_progress_in_memory()
-		print("[HeartProgress] DEV_FORCE_FRESH_ON_START: using fresh in-memory progress.")
+		# print("[HeartProgress] DEV_FORCE_FRESH_ON_START: using fresh in-memory progress.")
 		return
 
 	# Try to load user save; if missing, create it from template (unless DEV_DISABLE_SAVE)
@@ -92,21 +92,21 @@ func _load_resources() -> void:
 		if not ("unlocked_rewards" in progress) or progress.get("unlocked_rewards") == null:
 			progress.set("unlocked_rewards", {})
 	
-	if progress != null:
-		print("[HP] completed_milestones=", progress.get("completed_milestones"))
-	print("[HP] legacy land=", counters.get("__milestones_done__land", null))
-	print("[HP] harvest count=", counters.get("harvest", 0), " ship=", counters.get("ship", 0))
+	#if progress != null:
+		# print("[HP] completed_milestones=", progress.get("completed_milestones"))
+	# print("[HP] legacy land=", counters.get("__milestones_done__land", null))
+	# print("[HP] harvest count=", counters.get("harvest", 0), " ship=", counters.get("ship", 0))
 	
 	# Pull dictionaries out safely
 	_ingest_progress_dicts()
 	_normalize_numeric_dicts()
 
-	print("[HeartProgress-BEFORE] Loaded. counters=", counters, " item_counters=", item_counters, " stats=", stats) 
+	# print("[HeartProgress-BEFORE] Loaded. counters=", counters, " item_counters=", item_counters, " stats=", stats) 
 	
 	_dev_clear_legacy_milestone_keys()
 	_clear_legacy_milestone_lists()
 	
-	print("[HeartProgress-AFTER] Loaded. counters=", counters, " item_counters=", item_counters, " stats=", stats) 
+	# print("[HeartProgress-AFTER] Loaded. counters=", counters, " item_counters=", item_counters, " stats=", stats) 
 	
 	_evaluate_definition_milestones()
 
@@ -231,7 +231,7 @@ func reset_progress_runtime(save_after: bool = false) -> void:
 	_reset_progress_in_memory()
 	if save_after:
 		_save_progress_if_possible()
-	print("[HeartProgress] reset_progress_runtime(save_after=%s)" % str(save_after))
+	# print("[HeartProgress] reset_progress_runtime(save_after=%s)" % str(save_after))
 
 
 func _reset_progress_in_memory() -> void:
@@ -270,18 +270,18 @@ func _connect_signals() -> void:
 	_try_connect(qe, "went_to", "_on_went_to")
 	_try_connect(qe, "item_picked_up", "_on_item_picked_up")
 	
-	# ADD THESE PRINTS:
-	if qe.has_signal("went_to"):
-		print("[HP SIG] went_to connections: ", qe.get_signal_connection_list("went_to"))
-	else:
-		print("[HP SIG] QuestEvents is missing signal: went_to")
-
-	if qe.has_signal("item_picked_up"):
-		print("[HP SIG] item_picked_up connections: ", qe.get_signal_connection_list("item_picked_up"))
-	else:
-		print("[HP SIG] QuestEvents is missing signal: item_picked_up")
+	## ADD THESE PRINTS:
+	#if qe.has_signal("went_to"):
+		## print("[HP SIG] went_to connections: ", qe.get_signal_connection_list("went_to"))
+	#else:
+		## print("[HP SIG] QuestEvents is missing signal: went_to")
+#
+	#if qe.has_signal("item_picked_up"):
+		## print("[HP SIG] item_picked_up connections: ", qe.get_signal_connection_list("item_picked_up"))
+	#else:
+		## print("[HP SIG] QuestEvents is missing signal: item_picked_up")
 	
-	print("crop_harvested connections:", qe.get_signal_connection_list("crop_harvested"))
+	# print("crop_harvested connections:", qe.get_signal_connection_list("crop_harvested"))
 
 
 func _try_connect(obj: Object, sig: String, method: String) -> void:
@@ -307,7 +307,7 @@ func _on_crop_harvested(item_id: String, amount: int) -> void:
 
 	_add_item(item_id, amount)
 	
-	print("[HP] crop_harvested item=", item_id, " amount=", amount)
+	# print("[HP] crop_harvested item=", item_id, " amount=", amount)
 	
 	_evaluate_definition_milestones()
 	emit_signal("changed")
@@ -416,7 +416,7 @@ func _mark_milestone_done_if_supported(domain_id: String, milestone_id: String) 
 		var arr: Array = arr_any
 
 		if arr.has(milestone_id):
-			print("[HP REWARD DBG] milestone already in completed_milestones domain=", domain_id, " id=", milestone_id)
+			# print("[HP REWARD DBG] milestone already in completed_milestones domain=", domain_id, " id=", milestone_id)
 			return
 
 		# Mark complete
@@ -424,13 +424,13 @@ func _mark_milestone_done_if_supported(domain_id: String, milestone_id: String) 
 		cm[domain_id] = arr
 		progress.set("completed_milestones", cm)
 
-		print("[HP REWARD DBG] milestone completed NOW domain=", domain_id, " id=", milestone_id, " completed_list=", arr)
+		# print("[HP REWARD DBG] milestone completed NOW domain=", domain_id, " id=", milestone_id, " completed_list=", arr)
 
 		_save_progress_if_possible()
 		emit_signal("milestone_completed", domain_id, milestone_id)
 
 		# Grant rewards from definition and apply them
-		print("[HP REWARD DBG] milestone completed and waiting for reveal domain=", domain_id, " id=", milestone_id)
+		# print("[HP REWARD DBG] milestone completed and waiting for reveal domain=", domain_id, " id=", milestone_id)
 
 		emit_signal("changed")
 		return
@@ -444,16 +444,16 @@ func _mark_milestone_done_if_supported(domain_id: String, milestone_id: String) 
 	var done: Array = done_any
 
 	if done.has(milestone_id):
-		print("[HP REWARD DBG] milestone already in legacy done list domain=", domain_id, " id=", milestone_id)
+		# print("[HP REWARD DBG] milestone already in legacy done list domain=", domain_id, " id=", milestone_id)
 		return
 
 	done.append(milestone_id)
 	counters[key] = done
 
-	print("[HP REWARD DBG] milestone completed NOW (legacy) domain=", domain_id, " id=", milestone_id, " done_list=", done)
+	# print("[HP REWARD DBG] milestone completed NOW (legacy) domain=", domain_id, " id=", milestone_id, " done_list=", done)
 
 	emit_signal("milestone_completed", domain_id, milestone_id)
-	print("[HP REWARD DBG] milestone completed and waiting for reveal domain=", domain_id, " id=", milestone_id)
+	# print("[HP REWARD DBG] milestone completed and waiting for reveal domain=", domain_id, " id=", milestone_id)
 
 	emit_signal("changed")
 
@@ -465,9 +465,9 @@ func has_milestone(domain_id: String, milestone_id: String) -> bool:
 	var legacy_key := "__milestones_done__%s" % domain_id
 	var legacy_val = counters.get(legacy_key, null)
 
-	print("[HP] has_milestone ", domain_id, "/", milestone_id,
-		" completed_milestones=", cm_val,
-		" legacy_done=", legacy_val)
+	## print("[HP] has_milestone ", domain_id, "/", milestone_id,
+		#" completed_milestones=", cm_val,
+		#" legacy_done=", legacy_val)
 
 	# ✅ Use the real persisted dictionary whenever possible
 	if progress != null and ("completed_milestones" in progress):
@@ -616,8 +616,8 @@ func _apply_reward(r: HeartRewardDefinition) -> void:
 			# Keep your existing behavior too (so UI/toasts/etc keep working)
 			if gs != null and gs.has_method("apply_heart_reward"):
 				gs.call("apply_heart_reward", r)
-			else:
-				print("[HeartProgress] Reward unlocked: ", r.id, " kind=", r.kind, " desc=", r.description)
+			#else:
+				# print("[HeartProgress] Reward unlocked: ", r.id, " kind=", r.kind, " desc=", r.description)
 
 func _evaluate_definition_milestones() -> void:
 	if definition == null or progress == null:
@@ -666,9 +666,9 @@ func _evaluate_definition_milestones() -> void:
 		else:
 			have = get_count(counter_key)
 
-		print("[HP CHECK] %s/%s key=%s filter=%s have=%d req=%d order=%d kind=%s" % [
-			domain_id, milestone_id, counter_key, filter_item, have, required, int(m.order), String(m.kind)
-		])
+		## print("[HP CHECK] %s/%s key=%s filter=%s have=%d req=%d order=%d kind=%s" % [
+			#domain_id, milestone_id, counter_key, filter_item, have, required, int(m.order), String(m.kind)
+		#])
 
 		if have >= required:
 			_mark_milestone_done_if_supported(domain_id, milestone_id)
@@ -679,7 +679,7 @@ func _evaluate_definition_milestones() -> void:
 
 func dev_dump_progress_state(tag: String = "") -> void:
 	if progress == null:
-		print("[HP DUMP] progress=null ", tag)
+		# print("[HP DUMP] progress=null ", tag)
 		return
 	
 	var cm = null
@@ -691,11 +691,11 @@ func dev_dump_progress_state(tag: String = "") -> void:
 	if ("revealed_milestones" in progress):
 		rm = progress.get("revealed_milestones")
 
-	print("[HP DUMP] ", tag,
-		" completed_milestones=", cm,
-		" revealed_milestones=", rm,
-		" counters=", counters,
-		" item_counters=", item_counters)
+	## print("[HP DUMP] ", tag,
+		#" completed_milestones=", cm,
+		#" revealed_milestones=", rm,
+		#" counters=", counters,
+		#" item_counters=", item_counters)
 
 
 func dev_clear_milestones_and_reveals_runtime() -> void:
@@ -713,7 +713,7 @@ func dev_clear_milestones_and_reveals_runtime() -> void:
 	if "reward_stats" in progress: progress.set("reward_stats", {})
 	
 	emit_signal("changed")
-	print("[HeartProgress] DEV cleared completed_milestones + revealed_milestones + fallback done lists.")
+	# print("[HeartProgress] DEV cleared completed_milestones + revealed_milestones + fallback done lists.")
 
 func _get_milestone(domain_id: String, milestone_id: String) -> Resource:
 	# heart_definition.tres should have domains with milestones; adapt if your structure differs.
@@ -812,18 +812,18 @@ func _apply_reward_definition(r: HeartRewardDefinition) -> void:
 
 	# If you want “only apply once”, gate using unlocked_rewards:
 	if has_unlocked_reward(r.id):
-		print("[HP REWARD DBG] already unlocked, skipping apply id=", str(r.id))
+		# print("[HP REWARD DBG] already unlocked, skipping apply id=", str(r.id))
 		return
 
 	# Mark unlocked first
 	_mark_reward_unlocked(r.id)
 
-	print("[HP REWARD DBG] APPLY reward id=", str(r.id),
-		" kind=", int(r.kind),
-		" stat_key=", str(r.stat_key),
-		" amount=", r.amount,
-		" flag_key=", str(r.flag_key),
-		" flag_value=", r.flag_value)
+	## print("[HP REWARD DBG] APPLY reward id=", str(r.id),
+		#" kind=", int(r.kind),
+		#" stat_key=", str(r.stat_key),
+		#" amount=", r.amount,
+		#" flag_key=", str(r.flag_key),
+		#" flag_value=", r.flag_value)
 
 	var gs := get_node_or_null("/root/GameState")
 
@@ -839,7 +839,7 @@ func _apply_reward_definition(r: HeartRewardDefinition) -> void:
 				progress.set("reward_stats", rs)
 				_save_progress_if_possible()
 				emit_signal("changed")
-				print("[HP REWARD DBG] STAT_ADD wrote reward_stats[", key, "]=", rs[key])
+				# print("[HP REWARD DBG] STAT_ADD wrote reward_stats[", key, "]=", rs[key])
 
 		HeartRewardDefinition.RewardKind.STAT_MULTIPLY:
 			var rs := _ensure_reward_stats_dict()
@@ -852,7 +852,7 @@ func _apply_reward_definition(r: HeartRewardDefinition) -> void:
 				progress.set("reward_stats", rs)
 				_save_progress_if_possible()
 				emit_signal("changed")
-				print("[HP REWARD DBG] STAT_MULTIPLY wrote reward_stats[", key, "]=", rs[key])
+				# print("[HP REWARD DBG] STAT_MULTIPLY wrote reward_stats[", key, "]=", rs[key])
 
 		HeartRewardDefinition.RewardKind.FLAG_SET:
 			var rf := _ensure_reward_flags_dict()
@@ -864,7 +864,7 @@ func _apply_reward_definition(r: HeartRewardDefinition) -> void:
 				progress.set("reward_flags", rf)
 				_save_progress_if_possible()
 				emit_signal("changed")
-				print("[HP REWARD DBG] FLAG_SET wrote reward_flags[", fkey, "]=", rf[fkey])
+				# print("[HP REWARD DBG] FLAG_SET wrote reward_flags[", fkey, "]=", rf[fkey])
 
 				if gs != null and gs.has_method("set_flag"):
 					gs.call("set_flag", fkey, bool(r.flag_value))
@@ -881,19 +881,19 @@ func _apply_reward_definition(r: HeartRewardDefinition) -> void:
 				qe.toast_requested.emit(r.description if r.description != "" else "A blessing has awakened.", "success", 3.0)
 
 func _apply_rewards_for_milestone(domain_id: String, milestone_id: String) -> void:
-	print("[HP REWARD DBG] apply_rewards begin domain=", domain_id, " id=", milestone_id)
+	# print("[HP REWARD DBG] apply_rewards begin domain=", domain_id, " id=", milestone_id)
 	
 	if progress == null:
-		print("[HP REWARD DBG] progress is null, cannot persist rewards")
+		# print("[HP REWARD DBG] progress is null, cannot persist rewards")
 		return
 
 	if reward_catalog == null:
-		print("[HP REWARD DBG] reward_catalog is null, cannot lookup reward ids")
+		# print("[HP REWARD DBG] reward_catalog is null, cannot lookup reward ids")
 		return
 
 	var m := _get_milestone(domain_id, milestone_id)
 	if m == null:
-		print("[HP REWARD DBG] _get_milestone returned null for domain=", domain_id, " id=", milestone_id)
+		# print("[HP REWARD DBG] _get_milestone returned null for domain=", domain_id, " id=", milestone_id)
 		return
 
 	# Safe read of reward_ids from Resource
@@ -907,30 +907,30 @@ func _apply_rewards_for_milestone(domain_id: String, milestone_id: String) -> vo
 		ids_any = m.reward_ids
 
 	if ids_any == null:
-		print("[HP REWARD DBG] milestone has reward_ids=null domain=", domain_id, " id=", milestone_id)
+		# print("[HP REWARD DBG] milestone has reward_ids=null domain=", domain_id, " id=", milestone_id)
 		return
 
 	if typeof(ids_any) != TYPE_ARRAY:
-		print("[HP REWARD DBG] milestone reward_ids not an Array. type=", typeof(ids_any), " value=", ids_any)
+		# print("[HP REWARD DBG] milestone reward_ids not an Array. type=", typeof(ids_any), " value=", ids_any)
 		return
 
 	var ids: Array = ids_any
-	print("[HP REWARD DBG] milestone reward_ids=", ids)
+	# print("[HP REWARD DBG] milestone reward_ids=", ids)
 
 	if ids.is_empty():
-		print("[HP REWARD DBG] milestone reward_ids is empty, nothing to apply")
+		# print("[HP REWARD DBG] milestone reward_ids is empty, nothing to apply")
 		return
 
 	for rid_any in ids:
 		var rid := StringName(str(rid_any))
-		print("[HP REWARD DBG] attempting reward id=", str(rid))
+		# print("[HP REWARD DBG] attempting reward id=", str(rid))
 
 		var defn: HeartRewardDefinition = reward_catalog.get_reward_by_id(rid)
 		if defn == null:
-			print("[HP REWARD DBG] MISSING reward definition for id=", str(rid))
+			# print("[HP REWARD DBG] MISSING reward definition for id=", str(rid))
 			continue
 
-		print("[HP REWARD DBG] found reward def id=", str(defn.id), " kind=", int(defn.kind), " stat_key=", str(defn.stat_key), " amount=", defn.amount)
+		# print("[HP REWARD DBG] found reward def id=", str(defn.id), " kind=", int(defn.kind), " stat_key=", str(defn.stat_key), " amount=", defn.amount)
 		_apply_reward_definition(defn)
 
 	# After applying, dump reward_stats so you can see if it persisted
@@ -938,11 +938,11 @@ func _apply_rewards_for_milestone(domain_id: String, milestone_id: String) -> vo
 	var rf_any: Variant = progress.get("reward_flags") if ("reward_flags" in progress) else null
 	var ur_any: Variant = progress.get("unlocked_rewards") if ("unlocked_rewards" in progress) else null
 
-	print("[HP REWARD DBG] after apply reward_stats=", rs_any)
-	print("[HP REWARD DBG] after apply reward_flags=", rf_any)
-	print("[HP REWARD DBG] after apply unlocked_rewards=", ur_any)
+	# print("[HP REWARD DBG] after apply reward_stats=", rs_any)
+	# print("[HP REWARD DBG] after apply reward_flags=", rf_any)
+	# print("[HP REWARD DBG] after apply unlocked_rewards=", ur_any)
 
-	print("[HP REWARD DBG] apply_rewards end domain=", domain_id, " id=", milestone_id)
+	# print("[HP REWARD DBG] apply_rewards end domain=", domain_id, " id=", milestone_id)
 
 func _ensure_unlocked_rewards_dict() -> Dictionary:
 	if progress == null:
@@ -1092,7 +1092,7 @@ func dev_clear_rewards_runtime(save_after: bool = false) -> void:
 	if save_after:
 		_save_progress_if_possible()
 
-	print("[HP REWARD DBG] dev_clear_rewards_runtime completed. reward_stats/reward_flags/unlocked_rewards cleared.")
+	# print("[HP REWARD DBG] dev_clear_rewards_runtime completed. reward_stats/reward_flags/unlocked_rewards cleared.")
 	emit_signal("changed")
 
 func _on_went_to(location_id: String) -> void:
@@ -1100,7 +1100,7 @@ func _on_went_to(location_id: String) -> void:
 	if location_id == "":
 		return
 
-	print("[HP EVT] went_to:", location_id, " -> counters[go_to] + location_counters[%s]" % location_id)
+	# print("[HP EVT] went_to:", location_id, " -> counters[go_to] + location_counters[%s]" % location_id)
 
 	# ✅ Your quest keyword
 	_add_action("go_to", 1)
@@ -1117,7 +1117,7 @@ func _on_item_picked_up(item_id: String, qty: int) -> void:
 	if item_id == "" or qty <= 0:
 		return
 
-	print("[HP EVT] item_picked_up:", item_id, " qty=", qty, " -> counters[pickup] + item_counters[%s]" % item_id)
+	# print("[HP EVT] item_picked_up:", item_id, " qty=", qty, " -> counters[pickup] + item_counters[%s]" % item_id)
 
 	# ✅ Your quest keyword
 	_add_action("pickup", qty)

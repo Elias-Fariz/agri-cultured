@@ -67,10 +67,15 @@ func start_new_day() -> void:
 	minutes = int(minutes_float)
 
 	WeatherChange.roll_new_day_weather()
-	print("Weather today:", WeatherChange.get_weather_name())
+	# print("Weather today:", WeatherChange.get_weather_name())
 
 	if GameState != null and GameState.has_method("process_animal_new_day"):
 		GameState.process_animal_new_day()
+	
+	# Advance crops globally before scene-specific day_changed handlers run.
+	# This lets Farm crops grow even if the Farm scene is not loaded.
+	if GameState != null and GameState.has_method("process_crop_worlds_new_day"):
+		GameState.process_crop_worlds_new_day()
 
 	# Clear food buffs before day_changed is emitted.
 	# This makes normal sleep and pass-out behave the same.

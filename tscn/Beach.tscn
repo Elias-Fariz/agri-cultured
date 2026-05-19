@@ -1,4 +1,4 @@
-[gd_scene load_steps=39 format=3 uid="uid://6xr8sk7sok3p"]
+[gd_scene load_steps=40 format=3 uid="uid://6xr8sk7sok3p"]
 
 [ext_resource type="TileSet" uid="uid://bqs5ruk6pejpc" path="res://tiles/GroundTileset.tres" id="1_xg4aa"]
 [ext_resource type="Script" uid="uid://xl6estd3noyu" path="res://scripts/SceneTravelArea.gd" id="2_77khv"]
@@ -39,6 +39,8 @@
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_vnqom"]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_dpg8y"]
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_db6ds"]
 
 [node name="Beach" type="Node2D"]
@@ -53,7 +55,7 @@ layer_0/tile_data = PackedInt32Array(655328, 327680, 0, 720864, 327680, 0, 78640
 [node name="TravelPoints" type="Node2D" parent="."]
 
 [node name="ToAnimalKeeper" type="Area2D" parent="TravelPoints"]
-position = Vector2(137, 58)
+position = Vector2(-432, 36)
 collision_mask = 3
 script = ExtResource("2_77khv")
 target_scene_path = "res://tscn/AnimalKeeperArea.tscn"
@@ -66,9 +68,26 @@ texture = ExtResource("3_udil2")
 shape = SubResource("RectangleShape2D_vnqom")
 
 [node name="SpawnFromKeeper" type="Marker2D" parent="TravelPoints" groups=["spawn_points"]]
-position = Vector2(98, 79)
+position = Vector2(-471, 57)
 script = ExtResource("4_sjhdg")
 tag = "from_keeper"
+
+[node name="ToTown" type="Area2D" parent="TravelPoints"]
+position = Vector2(383, 45)
+script = ExtResource("2_77khv")
+target_scene_path = "res://tscn/Town.tscn"
+target_spawn_tag = "from_beach"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TravelPoints/ToTown"]
+shape = SubResource("RectangleShape2D_dpg8y")
+
+[node name="Sprite2D" type="Sprite2D" parent="TravelPoints/ToTown"]
+texture = ExtResource("3_udil2")
+
+[node name="SpawnFromTown" type="Marker2D" parent="TravelPoints" groups=["spawn_points"]]
+position = Vector2(385, 83)
+script = ExtResource("4_sjhdg")
+tag = "from_beach"
 
 [node name="NPCs" type="Node2D" parent="."]
 
@@ -90,7 +109,7 @@ position = Vector2(1598, 972)
 position = Vector2(332, 129)
 
 [node name="FishingSpot" parent="." instance=ExtResource("10_kuapj")]
-position = Vector2(-1, 731)
+position = Vector2(-13, 730)
 possible_fish = Array[ExtResource("11_g6a3n")]([ExtResource("12_v2t45"), ExtResource("13_n2awl")])
 
 [node name="DialogueUI" parent="." instance=ExtResource("6_8ebig")]

@@ -2,8 +2,12 @@
 extends Node2D
 
 @export var pause_time_in_heart: bool = true
-@export var heart_progress_res: Resource  # optional, if your UI wants it
+@export var heart_progress_res: Resource
 
+# New preferred route.
+@export var cinematic_orchestrator_path: NodePath
+
+# Legacy fallback if you want to keep it assigned for safety.
 @export var reveal_director_path: NodePath
 
 
@@ -13,13 +17,11 @@ func _ready() -> void:
 		if tm != null and tm.has_method("enter_timeless_zone"):
 			tm.call("enter_timeless_zone")
 
-	# Optional: pass resource to UI (correct path: UI/HeartProgressUI)
 	var ui := get_node_or_null("HeartProgressUI")
 	if ui != null and ui.has_method("set_progress_data") and heart_progress_res != null:
 		ui.call("set_progress_data", heart_progress_res)
 
-	# Kick the reveal sequence (if anything is pending).
-	_start_heart_reveal_if_needed()
+	_start_heart_sequence_if_needed()
 
 
 func _exit_tree() -> void:
@@ -29,7 +31,13 @@ func _exit_tree() -> void:
 			tm.call("exit_timeless_zone")
 
 
-func _start_heart_reveal_if_needed() -> void:
+func _start_heart_sequence_if_needed() -> void:
+	var orchestrator := get_node_or_null(cinematic_orchestrator_path)
+	if orchestrator != null and orchestrator.has_method("run_if_needed"):
+		orchestrator.call_deferred("run_if_needed")
+		return
+
+	# Fallback to old behavior if orchestrator is not assigned yet.
 	var director := get_node_or_null(reveal_director_path)
-	if director and director.has_method("run_reveals_if_any"):
+	if director != null and director.has_method("run_reveals_if_any"):
 		director.call_deferred("run_reveals_if_any")

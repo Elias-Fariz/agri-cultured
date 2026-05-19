@@ -116,6 +116,14 @@ func _unhandled_input(event: InputEvent) -> void:
 	var key := OS.get_keycode_string((event as InputEventKey).keycode).to_upper()
 	if key not in ["A", "D", "W", "S"]:
 		return
+	
+	if _sequence.is_empty():
+		_fail("The line slips loose.")
+		return
+
+	if _index < 0 or _index >= _sequence.size():
+		_success()
+		return
 
 	var expected := _sequence[_index]
 
@@ -176,13 +184,21 @@ func _fail(msg: String) -> void:
 
 
 func _close_and_restore() -> void:
+	if not is_inside_tree():
+		return
+
+	_running = false
+	_closing = true
+
 	# Hide overlay first (BaseOverlay may do pause/lock cleanup)
 	super.hide_overlay()
 
-	# Failsafe restore (only if we detect we’re “stuck paused” compared to when we opened)
+	# Failsafe restore.
 	_force_restore_world_state_if_needed()
 
-	# Free ourselves after cleanup is done
+	if is_queued_for_deletion():
+		return
+
 	queue_free()
 
 

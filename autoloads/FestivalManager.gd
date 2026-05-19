@@ -10,11 +10,11 @@ signal festival_day_tomorrow(festival_id: String)
 var _current_festival: FestivalData = null
 
 func _ready() -> void:
-	print("[FestivalManager] Ready. festivals loaded = ", festivals.size())
+	# print("[FestivalManager] Ready. festivals loaded = ", festivals.size())
 
 	if TimeManager != null and TimeManager.has_signal("day_changed"):
 		TimeManager.day_changed.connect(_on_day_changed)
-		print("[FestivalManager] Connected to TimeManager.day_changed")
+		# print("[FestivalManager] Connected to TimeManager.day_changed")
 	else:
 		print("[FestivalManager] WARNING: TimeManager.day_changed not found")
 
@@ -25,7 +25,7 @@ func _ready() -> void:
 # -------------------------------------------------------------------
 
 func _on_day_changed(_day: int) -> void:
-	print("[FestivalManager] Day changed -> recomputing festival state")
+	# print("[FestivalManager] Day changed -> recomputing festival state")
 	_recompute_for_today(false)
 
 func _recompute_for_today(is_bootstrap: bool) -> void:
@@ -39,8 +39,8 @@ func _recompute_for_today(is_bootstrap: bool) -> void:
 	if _current_festival != null:
 		new_id = _current_festival.festival_id
 
-	print("[FestivalManager] Today = season ", _get_current_season(), ", day_in_season ", _get_current_day_in_season())
-	print("[FestivalManager] Current festival today = ", new_id if new_id != "" else "<none>")
+	# print("[FestivalManager] Today = season ", _get_current_season(), ", day_in_season ", _get_current_day_in_season())
+	# print("[FestivalManager] Current festival today = ", new_id if new_id != "" else "<none>")
 
 	if old_id != new_id:
 		festival_changed.emit(new_id)
@@ -48,7 +48,7 @@ func _recompute_for_today(is_bootstrap: bool) -> void:
 	# Festival today
 	if not is_bootstrap and _current_festival != null:
 		if _current_festival.day_of_toast.strip_edges() != "":
-			print("[FestivalManager] Queueing day-of festival toast: ", _current_festival.day_of_toast)
+			# print("[FestivalManager] Queueing day-of festival toast: ", _current_festival.day_of_toast)
 			if GameState != null and GameState.has_method("queue_day_start_toast"):
 				GameState.queue_day_start_toast(_current_festival.day_of_toast, "info", 3.0)
 			else:
@@ -59,9 +59,9 @@ func _recompute_for_today(is_bootstrap: bool) -> void:
 	if not is_bootstrap:
 		var tomorrow_festival := get_tomorrow_festival()
 		if tomorrow_festival != null:
-			print("[FestivalManager] Festival tomorrow = ", tomorrow_festival.festival_id)
+			# print("[FestivalManager] Festival tomorrow = ", tomorrow_festival.festival_id)
 			if tomorrow_festival.day_before_toast.strip_edges() != "":
-				print("[FestivalManager] Queueing day-before festival toast: ", tomorrow_festival.day_before_toast)
+				# print("[FestivalManager] Queueing day-before festival toast: ", tomorrow_festival.day_before_toast)
 				if GameState != null and GameState.has_method("queue_day_start_toast"):
 					GameState.queue_day_start_toast(tomorrow_festival.day_before_toast, "info", 3.0)
 				else:

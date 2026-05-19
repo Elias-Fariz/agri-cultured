@@ -47,7 +47,7 @@ func load_items_from_folder() -> void:
 
 	dir.list_dir_end()
 
-	print("ItemDB: Loaded items:", items.keys())
+	# print("ItemDB: Loaded items:", items.keys())
 
 # --- Existing API (keep) ---
 func get_item(id: String) -> ItemData:

@@ -1,6 +1,6 @@
 [gd_resource type="TileSet" load_steps=15 format=3 uid="uid://bjhy464dgbpg"]
 
-[ext_resource type="Texture2D" uid="uid://caerjv5h3fdyv" path="res://art/tree.png" id="1_r5rek"]
+[ext_resource type="Texture2D" uid="uid://cnbmj37pkj4o" path="res://art/transparent (1).png" id="1_itga5"]
 [ext_resource type="Texture2D" uid="uid://b6q6p1rqkpdec" path="res://art/crops.png" id="2_825n7"]
 [ext_resource type="Texture2D" uid="uid://1d6ygtxnkroh" path="res://art/rock.PNG" id="3_itga5"]
 [ext_resource type="Texture2D" uid="uid://bcvka4x2af0m1" path="res://art/sapling.png" id="4_8fm3l"]
@@ -9,10 +9,15 @@
 [ext_resource type="Texture2D" uid="uid://b6kat5jrgygx6" path="res://art/flowers.PNG" id="7_itga5"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_0m8ol"]
-texture = ExtResource("1_r5rek")
+texture = ExtResource("1_itga5")
 texture_region_size = Vector2i(32, 32)
 0:0/0 = 0
 0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
+1:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_eipp1"]
 texture = ExtResource("2_825n7")

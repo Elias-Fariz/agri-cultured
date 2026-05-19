@@ -7,15 +7,15 @@ func _ready() -> void:
 		QuestEvents.went_to.connect(_on_location_entered)
 
 func _on_location_entered(location_id: String) -> void:
-	print("CutsceneRouter: entered location:", location_id)
+	# print("CutsceneRouter: entered location:", location_id)
 	if rule_db == null:
 		push_warning("CutsceneEventRouter: rule_db is not assigned!")
 		return
 	
-	print("kept going")
+	# print("kept going")
 	
 	for rule in rule_db.rules:
-		print("Checking rule:", rule.rule_id)
+		# print("Checking rule:", rule.rule_id)
 		if not _matches_location(rule, location_id):
 			continue
 
@@ -25,7 +25,7 @@ func _on_location_entered(location_id: String) -> void:
 		if _should_skip_one_shot(rule):
 			continue
 
-		print("TRIGGERING CUTSCENE:", rule.cutscene_id)
+		# print("TRIGGERING CUTSCENE:", rule.cutscene_id)
 		_trigger_rule(rule)
 		return  # first match wins (your preference!)
 
