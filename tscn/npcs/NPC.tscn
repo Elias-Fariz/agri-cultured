@@ -1,9 +1,10 @@
-[gd_scene load_steps=8 format=3 uid="uid://bfaurdf2mucr2"]
+[gd_scene load_steps=9 format=3 uid="uid://bfaurdf2mucr2"]
 
 [ext_resource type="Script" uid="uid://ourvqmsp1j3a" path="res://scripts/NPC.gd" id="1_8j625"]
 [ext_resource type="Texture2D" uid="uid://c7c8y2irbg56" path="res://art/npc.PNG" id="1_u040o"]
 [ext_resource type="Script" uid="uid://yfylv68o2tk6" path="res://scripts/NPCInteract.gd" id="3_7xv34"]
 [ext_resource type="Texture2D" uid="uid://7giptdna0h4q" path="res://art/exclamation_mark.png" id="4_h582y"]
+[ext_resource type="PackedScene" uid="uid://d2x1sdumae6pf" path="res://ui/OverheadBubbleController.tscn" id="5_7catb"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_8j625"]
 
@@ -42,12 +43,21 @@ visible = false
 shape = SubResource("RectangleShape2D_h582y")
 
 [node name="BubbleAnchor" type="Node2D" parent="."]
-position = Vector2(-20, -53)
+position = Vector2(0, -53)
 
 [node name="QuestIcon" type="TextureRect" parent="BubbleAnchor"]
 visible = false
-offset_right = 40.0
-offset_bottom = 40.0
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
 texture = ExtResource("4_h582y")
 expand_mode = 2
 
@@ -56,6 +66,9 @@ visible = false
 offset_right = 40.0
 offset_bottom = 23.0
 horizontal_alignment = 1
+
+[node name="OverheadBubbleController" parent="BubbleAnchor" instance=ExtResource("5_7catb")]
+position = Vector2(0, -8)
 
 [node name="ChatterTimer" type="Timer" parent="."]
 wait_time = 2.5

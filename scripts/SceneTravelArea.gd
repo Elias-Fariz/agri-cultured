@@ -17,6 +17,7 @@ extends Area2D
 
 # Prompt priority (tune to your system)
 @export var prompt_priority: int = 30
+@export var locked_text: String = "This path is locked for now."
 
 
 func get_interact_priority(_context :Node= null) -> int:
@@ -31,12 +32,14 @@ func interact() -> void:
 	if not _is_unlocked():
 		# Optional: tiny toast feedback if you want
 		if QuestEvents != null and QuestEvents.has_signal("toast_requested"):
-			QuestEvents.toast_requested.emit("This path is locked for now.", "info", 2.0)
+			QuestEvents.toast_requested.emit(locked_text, "info", 2.0)
 		return
 
 	if target_scene_path.strip_edges() == "":
 		return
-
+	
+	print(target_scene_path)
+	
 	GameState.pending_spawn_tag = target_spawn_tag
 	get_tree().change_scene_to_file(target_scene_path)
 

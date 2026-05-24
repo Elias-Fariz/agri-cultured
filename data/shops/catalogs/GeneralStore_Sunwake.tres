@@ -14,8 +14,8 @@ metadata/_custom_type_script = "uid://bevaiudfi1jy0"
 
 [sub_resource type="Resource" id="Resource_3eow7"]
 script = ExtResource("2_hoy6q")
-item_id = "Blueberry Seeds"
-display_name_override = "Blueberry Seeds"
+item_id = "Strawberry Seeds"
+display_name_override = "Strawberry Seeds"
 base_price = 25
 requires_completed_quests = PackedStringArray("tutorial_day1")
 tags = PackedStringArray("seed")
@@ -24,7 +24,7 @@ metadata/_custom_type_script = "uid://bevaiudfi1jy0"
 [sub_resource type="Resource" id="Resource_405d8"]
 script = ExtResource("2_hoy6q")
 item_id = "Animal Feed"
-display_name_override = "Animal Feed"
+display_name_override = "Critter Feed"
 base_price = 5
 requires_completed_quests = null
 tags = PackedStringArray()

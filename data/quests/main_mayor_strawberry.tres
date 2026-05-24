@@ -8,8 +8,8 @@
 [sub_resource type="Resource" id="Resource_cpycv"]
 script = ExtResource("2_u2day")
 type = "talk_to"
-target = "npc_alex"
-text = "Talk to Alex."
+target = "npc_maren"
+text = "Talk to Maren."
 metadata/_custom_type_script = "uid://bolxtchvrfo0y"
 
 [sub_resource type="Resource" id="Resource_u2day"]

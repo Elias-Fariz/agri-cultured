@@ -277,7 +277,14 @@ func _try_plant_selected_seed() -> void:
 
 	var planted := _try_plant_crop_return_success(crop_name)
 	if planted:
-		GameState.inventory_remove(seed_id, 1)
+		var removed := GameState.inventory_remove(seed_id, 1)
+		if removed:
+			# NEW: quest progress for planting.
+			# target is crop_name, like "watermelon", "strawberry", "blueberry".
+			# A blank quest target means "plant anything."
+			if QuestEvents != null and QuestEvents.has_signal("seed_planted"):
+				QuestEvents.seed_planted.emit(crop_name, 1)
+
 		# print("Planted", crop_name, "using", seed_id)
 
 func _get_destructible_key_at(cell: Vector2i) -> String:
@@ -447,8 +454,14 @@ func _try_till_ground(cell: Vector2i) -> void:
 
 	if src == ground_source_id and atlas == grass_coords:
 		ground.set_cell(0, cell, ground_source_id, tilled_coords)
-		# print("Tilled tile at cell: ", cell)
-		
+
+		# NEW: quest progress for tilling.
+		# target "soil" lets you make either:
+		# - type="till", target=""       -> any tilling counts
+		# - type="till", target="soil"   -> soil tilling counts
+		if QuestEvents != null and QuestEvents.has_signal("soil_tilled"):
+			QuestEvents.soil_tilled.emit("soil", 1)
+
 	_save_farm_state()
 
 func _can_till_ground(cell: Vector2i) -> bool:
@@ -577,21 +590,40 @@ func water_cell(cell: Vector2i) -> void:
 		return
 
 	var key := _cell_key(cell)
-	watered_today[key] = true
+	var was_already_watered := watered_today.has(key)
 
 	var src := ground.get_cell_source_id(0, cell)
 	var atlas := ground.get_cell_atlas_coords(0, cell)
 	var is_tilled := (src == ground_source_id and atlas == tilled_coords)
+	var is_wet_tilled := (src == ground_source_id and atlas == wet_tilled_coords)
+	var has_crop := crop_state.has(cell)
+
+	# Keep your existing behavior: mark the tile as watered.
+	watered_today[key] = true
 
 	if is_tilled:
 		ground.set_cell(0, cell, ground_source_id, wet_tilled_coords)
-
-	_spawn_water_splash(cell)
+		_spawn_water_splash(cell)
 
 	if sfx_player and sfx_water_splash:
 		sfx_player.global_position = _cell_to_world_center(cell)
 		sfx_player.stream = sfx_water_splash
 		sfx_player.play()
+
+	# NEW: quest progress for watering.
+	# Only count meaningful watering once per day per tile.
+	# This prevents the player from watering the same tile repeatedly to finish a quest.
+	if not was_already_watered and (is_tilled or is_wet_tilled or has_crop):
+		var target_id := "soil"
+
+		if has_crop:
+			var crop_data: Dictionary = Dictionary(crop_state[cell])
+			var crop_name := String(crop_data.get("type", "")).strip_edges()
+			if crop_name != "":
+				target_id = crop_name
+
+		if QuestEvents != null and QuestEvents.has_signal("crop_watered"):
+			QuestEvents.crop_watered.emit(target_id, 1)
 
 	# print("Watered cell:", key)
 	_save_farm_state()

@@ -297,7 +297,7 @@ position = Vector2(2035, 1197)
 position = Vector2(225, 849)
 collision_mask = 3
 script = ExtResource("5_se66s")
-target_scene_path = "res://tscn/Farm.tscn"
+target_scene_path = "res://tscn/Connector.tscn"
 target_spawn_tag = "from_heart"
 
 [node name="Sprite2D" type="Sprite2D" parent="TravelPoints/ToFarm"]
@@ -309,7 +309,7 @@ shape = SubResource("RectangleShape2D_62bci")
 [node name="SpawnFromFarm" type="Marker2D" parent="TravelPoints" groups=["spawn_points"]]
 position = Vector2(224, 810)
 script = ExtResource("7_opw5b")
-tag = "from_farm"
+tag = "from_connector"
 
 [node name="HeartPedestal" type="Area2D" parent="."]
 position = Vector2(215, 230)

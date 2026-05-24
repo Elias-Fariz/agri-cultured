@@ -1,0 +1,58 @@
+[gd_scene load_steps=2 format=3 uid="uid://cfpgu03gpauoq"]
+
+[ext_resource type="Script" uid="uid://csew3yd4mkcia" path="res://scripts/SliceEndOverlay.gd" id="1_57ma5"]
+
+[node name="SliceEndOverlay" type="CanvasLayer"]
+script = ExtResource("1_57ma5")
+visual_node_path = NodePath("Panel")
+start_visible_in_game = false
+is_modal = true
+
+[node name="Panel" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CenterContainer" type="CenterContainer" parent="Panel"]
+custom_minimum_size = Vector2(1000, 0)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Card" type="PanelContainer" parent="Panel/CenterContainer"]
+custom_minimum_size = Vector2(800, 400)
+layout_mode = 2
+
+[node name="VBox" type="VBoxContainer" parent="Panel/CenterContainer/Card"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="Panel/CenterContainer/Card/VBox"]
+layout_mode = 2
+
+[node name="MessageLabel" type="Label" parent="Panel/CenterContainer/Card/VBox"]
+layout_mode = 2
+
+[node name="ButtonRow" type="HBoxContainer" parent="Panel/CenterContainer/Card/VBox"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+alignment = 1
+
+[node name="ContinueButton" type="Button" parent="Panel/CenterContainer/Card/VBox/ButtonRow"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "Continue"
+
+[node name="FeedbackButton" type="Button" parent="Panel/CenterContainer/Card/VBox/ButtonRow"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "Feedback"
+
+[node name="HintLabel" type="Label" parent="Panel/CenterContainer/Card/VBox"]
+layout_mode = 2

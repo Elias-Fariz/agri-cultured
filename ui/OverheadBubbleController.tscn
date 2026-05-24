@@ -1,0 +1,34 @@
+[gd_scene load_steps=2 format=3 uid="uid://d2x1sdumae6pf"]
+
+[ext_resource type="Script" uid="uid://dtyen1uqlvexn" path="res://scripts/OverheadBubbleController.gd" id="1_0rips"]
+
+[node name="OverheadBubbleController" type="Node2D"]
+position = Vector2(0, -36)
+script = ExtResource("1_0rips")
+
+[node name="BubbleRoot" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="BubblePanel" type="PanelContainer" parent="BubbleRoot"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+mouse_filter = 2
+
+[node name="BubbleLabel" type="Label" parent="BubbleRoot/BubblePanel"]
+layout_mode = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3

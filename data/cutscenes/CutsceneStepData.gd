@@ -27,6 +27,9 @@ enum StepType {
 	
 	SHOW_ILLUSTRATION,
 	HIDE_ILLUSTRATION,
+
+	# Cute overhead emotes / thought bubbles
+	SHOW_OVERHEAD_TEXT,
 }
 
 @export var step_type: StepType = StepType.WAIT
@@ -66,3 +69,9 @@ enum StepType {
 @export var dialogue_sequence: DialogueSequenceData
 
 @export var zoom_value: float = 1.0
+
+# Used by SHOW_OVERHEAD_TEXT.
+# actor_key chooses who shows the bubble: "player", "mayor", "maren", etc.
+@export_multiline var overhead_text: String = "?"
+@export var overhead_duration: float = 1.0
+@export var overhead_offset: Vector2 = Vector2(0, -34)

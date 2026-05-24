@@ -90,6 +90,10 @@ var _inventory_toggle_cooldown_left: float = 0.0
 var _post_gameplay_unlock_input_grace_left: float = 0.0
 var _was_gameplay_locked_last_frame: bool = false
 
+var _overhead_text_timer: SceneTreeTimer = null
+
+@onready var overhead_bubble: Node = $OverheadBubbleController
+
 func _ready() -> void:
 	# Ensure the sensor starts in front of the player (down by default)
 	_update_sensor_position()
@@ -623,3 +627,62 @@ func _is_player_gameplay_input_event(event: InputEvent) -> bool:
 		or event.is_action_pressed("tool_next")
 		or event.is_action_pressed("tool_previous")
 	)
+
+func show_overhead_text(text: String, duration: float = 1.0, offset: Vector2 = Vector2.ZERO) -> void:
+	text = text.strip_edges()
+	if text == "":
+		return
+
+	if overhead_bubble != null and overhead_bubble.has_method("show_text"):
+		overhead_bubble.call("show_text", text, duration, offset)
+
+
+func clear_overhead_text() -> void:
+	if overhead_bubble != null and overhead_bubble.has_method("hide_bubble"):
+		overhead_bubble.call("hide_bubble")
+
+func _schedule_clear_overhead_text(duration: float) -> void:
+	duration = max(0.05, duration)
+
+	var timer := get_tree().create_timer(duration)
+	_overhead_text_timer = timer
+	await timer.timeout
+
+	if _overhead_text_timer == timer:
+		clear_overhead_text()
+		_overhead_text_timer = null
+
+
+func _find_first_label_recursive(root: Node) -> Label:
+	if root == null:
+		return null
+
+	if root is Label:
+		return root as Label
+
+	for child in root.get_children():
+		var found := _find_first_label_recursive(child)
+		if found != null:
+			return found
+
+	return null
+
+
+func _spawn_fallback_overhead_label(text: String, duration: float, offset: Vector2) -> void:
+	var label := Label.new()
+	label.text = text
+	label.z_index = 999
+	label.position = offset
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+
+	add_child(label)
+
+	var tween := create_tween()
+	tween.tween_property(label, "position", offset + Vector2(0, -8), max(duration, 0.05))
+	tween.parallel().tween_property(label, "modulate:a", 0.0, max(duration, 0.05))
+
+	await tween.finished
+
+	if label != null and is_instance_valid(label):
+		label.queue_free()

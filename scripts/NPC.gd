@@ -85,6 +85,8 @@ var _anchor_position: Vector2         # where this NPC “belongs” right now
 
 @export var mayor_main_quest: QuestData
 
+@onready var overhead_bubble: Node = $BubbleAnchor/OverheadBubbleController
+
 
 #var quest_mayor_intro: Dictionary = {
 	#"id": "main_mayor_strawberry",
@@ -1122,3 +1124,16 @@ func _show_plain_dialogue(ui: Node, speaker_name: String, raw_lines: Array, frie
 		lines.append("...")
 
 	ui.show_dialogue(speaker_name, lines, friendship, speaker_id)
+
+func show_overhead_text(text: String, duration: float = 1.0, offset: Vector2 = Vector2.ZERO) -> void:
+	text = text.strip_edges()
+	if text == "":
+		return
+
+	if overhead_bubble != null and overhead_bubble.has_method("show_text"):
+		overhead_bubble.call("show_text", text, duration, offset)
+
+
+func clear_overhead_text() -> void:
+	if overhead_bubble != null and overhead_bubble.has_method("hide_bubble"):
+		overhead_bubble.call("hide_bubble")

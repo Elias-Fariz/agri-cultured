@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://dv7wem6ftpvdd"]
+[gd_scene load_steps=21 format=3 uid="uid://dv7wem6ftpvdd"]
 
 [ext_resource type="Script" uid="uid://lxxgykutkbm4" path="res://scripts/Player.gd" id="1_vvow5"]
 [ext_resource type="AudioStream" uid="uid://e7naj8iuf7u5" path="res://audio/sfx/sfx_talk_01.WAV" id="2_hdrus"]
@@ -16,6 +16,7 @@
 [ext_resource type="Script" uid="uid://br7sbrrhxpw40" path="res://scripts/PlayerInteractPrompt.gd" id="14_56q24"]
 [ext_resource type="Script" uid="uid://bsf5y2byqsrtb" path="res://scripts/RestorationCombatController.gd" id="15_exuc5"]
 [ext_resource type="PackedScene" uid="uid://dd8fc48ylbhrl" path="res://tscn/HeartbladeSlashVisual.tscn" id="16_7fkfc"]
+[ext_resource type="PackedScene" uid="uid://d2x1sdumae6pf" path="res://ui/OverheadBubbleController.tscn" id="17_5jfsi"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_xfidv"]
 size = Vector2(31, 31)
@@ -75,11 +76,20 @@ visible = false
 shape = SubResource("CircleShape2D_34em8")
 
 [node name="InteractPrompt" type="Node2D" parent="."]
-position = Vector2(-25, -38)
+position = Vector2(0, -30)
 
 [node name="PromptLabel" type="Label" parent="InteractPrompt"]
-offset_right = 40.0
-offset_bottom = 23.0
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -25.0
+offset_top = -11.5
+offset_right = 25.0
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
 text = "E: Talk"
 horizontal_alignment = 1
 
@@ -94,3 +104,5 @@ script = ExtResource("15_exuc5")
 slash_length = 64.0
 slash_width = 48.0
 slash_visual_scene = ExtResource("16_7fkfc")
+
+[node name="OverheadBubbleController" parent="." instance=ExtResource("17_5jfsi")]

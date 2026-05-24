@@ -39,6 +39,14 @@ var owned_tools: Array[int] = []
 
 var game_flags: Dictionary = {}
 
+# flag_id -> day number when the flag was set true.
+# Used by cutscene rules that wait N days after a flag is set.
+var game_flag_set_days: Dictionary = {}
+
+# rule_id -> day number when all non-flag conditions first passed.
+# Used as fallback delay tracking for rules without required flags.
+var cutscene_rule_ready_days: Dictionary = {}
+
 var default_owned_tools: Array[int] = [
 	ToolType.HAND,
 	ToolType.HOE,
@@ -403,14 +411,16 @@ func report_item_shipped(item_name: String, qty: int) -> void:
 	QuestEvents.quest_state_changed.emit()
 
 func report_action(action: String, amount: int = 1) -> void:
-	# If you used report_action("chop_tree"), map it to the new signal
+	action = action.strip_edges()
+	if action == "":
+		return
+
 	if action == "chop_tree":
 		QuestEvents.chopped_tree.emit(amount)
 	elif action == "break_rock":
 		QuestEvents.broke_rock.emit(amount)
 	else:
-		# Optional: a generic event later, but for now:
-		print("Unknown quest action:", action)
+		QuestEvents.action_done.emit(action, amount)
 
 func shipping_remove(item_name: String, qty: int = 1) -> bool:
 	if item_name.is_empty() or qty <= 0:
@@ -846,21 +856,14 @@ func _ready() -> void:
 	if not has_tool(int(current_tool)):
 		current_tool = ToolType.HAND
 	
-	QuestEvents.talked_to.connect(_on_quest_talked_to)
-	QuestEvents.went_to.connect(_on_quest_went_to)
+	# QuestEvents.gd is now the central place that maps gameplay signals
+	# into GameState.apply_quest_event(...).
+	#
+	# GameState should only connect to QuestEvents when it needs special
+	# side effects beyond normal quest progress.
 
-	QuestEvents.shipped.connect(_on_quest_shipped)
-	QuestEvents.chopped_tree.connect(_on_quest_chopped_tree)
-	QuestEvents.broke_rock.connect(_on_quest_broke_rock)
-	QuestEvents.item_purchased.connect(_on_item_purchased)
+	QuestEvents.crop_harvested.connect(_on_first_harvest_heart_intro_check)
 	
-	QuestEvents.item_picked_up.connect(_on_item_picked_up)
-	QuestEvents.item_crafted.connect(_on_item_crafted)
-	QuestEvents.item_gifted.connect(_on_item_gifted)
-	
-	QuestEvents.crop_harvested.connect(_on_crop_harvested)
-	
-	QuestEvents.ui_opened.connect(_on_quest_ui_opened)
 	var tm := get_node_or_null("/root/TimeManager")
 	if tm:
 		if not tm.day_changed.is_connected(_on_day_changed):
@@ -869,8 +872,8 @@ func _ready() -> void:
 		if tm.has_signal("time_changed") and not tm.time_changed.is_connected(_on_time_changed):
 			tm.time_changed.connect(_on_time_changed)
 	
-	unlock_recipe("shell_necklace")
-	unlock_recipe("flower_headband")
+	#unlock_recipe("shell_necklace")
+	#unlock_recipe("flower_headband")
 	
 	#unlock_cooking_recipe("warm_milk")
 	
@@ -1502,20 +1505,17 @@ func _on_quest_broke_rock(amount: int) -> void:
 	GameState.apply_quest_event("break_rock", "", amount)
 	QuestEvents.quest_state_changed.emit()
 
-func _on_crop_harvested(item_id: String, qty: int) -> void:
-	apply_quest_event("harvest", item_id, qty)
-	QuestEvents.quest_state_changed.emit()
-	
-	# Only queue once, ever (or you can reset later if you want)
-	if _heart_intro_queued:
+func _on_first_harvest_heart_intro_check(_item_id: String, _qty: int) -> void:
+	# Quest progress for harvesting is handled centrally in QuestEvents.gd.
+	# This function only marks the world/story state for cutscene rules.
+
+	if has_flag("first_crop_harvested"):
 		return
-	_heart_intro_queued = true
 
-	# Queue the cutscene for the next morning
-	pending_cutscene_id = "heart_intro"
+	set_flag("first_crop_harvested", true)
 
-	# Optional: a tiny hint toast (can be subtle)
-	QuestEvents.toast_requested.emit("Something stirs in the valley...")
+	if QuestEvents != null and QuestEvents.has_signal("toast_requested"):
+		QuestEvents.toast_requested.emit("Something stirs beyond the path...", "info", 2.5)
 
 func _on_quest_ui_opened(ui_id: String) -> void:
 	GameState.apply_quest_event("ui_open", ui_id, 1)
@@ -1787,6 +1787,16 @@ func _format_objective_fallback(t: String, target: String, amount: int, progress
 			return "Go to: " + target
 		"ship":
 			return "Ship: %s (%d/%d)" % [target, progress, amount]
+		"till":
+			return "Till soil"
+		"plant":
+			if target.strip_edges() != "":
+				return "Plant: " + target
+			return "Plant a seed"
+		"water":
+			if target.strip_edges() != "":
+				return "Water: " + target
+			return "Water a crop"
 		"action":
 			return "Do: " + target
 		_:
@@ -2078,6 +2088,16 @@ func _format_step_fallback(step: Dictionary) -> String:
 			return "Go to: " + target
 		"talk_to":
 			return "Talk to: " + target
+		"till":
+			return "Till soil"
+		"plant":
+			if target.strip_edges() != "":
+				return "Plant: " + target
+			return "Plant a seed"
+		"water":
+			if target.strip_edges() != "":
+				return "Water: " + target
+			return "Water a crop"
 		_:
 			return "Objective"
 
@@ -2449,6 +2469,16 @@ func set_flag(flag_id: String, value: bool = true) -> void:
 		return
 
 	game_flags[flag_id] = value
+
+	if value:
+		if TimeManager != null:
+			game_flag_set_days[flag_id] = int(TimeManager.day)
+		else:
+			game_flag_set_days[flag_id] = 0
+	else:
+		if game_flag_set_days.has(flag_id):
+			game_flag_set_days.erase(flag_id)
+
 	# print("[Flag]", flag_id, "=", value)
 
 
@@ -2459,6 +2489,41 @@ func has_flag(flag_id: String) -> bool:
 
 	return bool(game_flags.get(flag_id, false))
 
+
+func get_flag_set_day(flag_id: String) -> int:
+	flag_id = flag_id.strip_edges()
+	if flag_id == "":
+		return -1
+
+	if not has_flag(flag_id):
+		return -1
+
+	return int(game_flag_set_days.get(flag_id, 0))
+
+
+func get_cutscene_rule_ready_day(rule_id: String) -> int:
+	rule_id = rule_id.strip_edges()
+	if rule_id == "":
+		return -1
+
+	return int(cutscene_rule_ready_days.get(rule_id, -1))
+
+
+func mark_cutscene_rule_ready(rule_id: String, day_value: int) -> void:
+	rule_id = rule_id.strip_edges()
+	if rule_id == "":
+		return
+
+	cutscene_rule_ready_days[rule_id] = int(day_value)
+
+
+func clear_cutscene_rule_ready(rule_id: String) -> void:
+	rule_id = rule_id.strip_edges()
+	if rule_id == "":
+		return
+
+	if cutscene_rule_ready_days.has(rule_id):
+		cutscene_rule_ready_days.erase(rule_id)
 
 func get_tool_type_from_id(tool_id: String) -> int:
 	var id := tool_id.strip_edges().to_lower()

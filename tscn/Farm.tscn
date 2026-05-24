@@ -1,4 +1,4 @@
-[gd_scene load_steps=66 format=3 uid="uid://6ni01dvcs2m2"]
+[gd_scene load_steps=68 format=3 uid="uid://6ni01dvcs2m2"]
 
 [ext_resource type="Script" uid="uid://cevvm7fnmvrhe" path="res://scripts/Farm.gd" id="1_vobxb"]
 [ext_resource type="PackedScene" uid="uid://b0c10lgb0ivgd" path="res://tscn/WaterSplash.tscn" id="2_66215"]
@@ -61,6 +61,8 @@
 [ext_resource type="Resource" uid="uid://c7fnqf4mgteax" path="res://data/fishing/fish_sardine.tres" id="59_tme2c"]
 [ext_resource type="Resource" uid="uid://bnla4wktaen61" path="res://data/fishing/fish_tuna.tres" id="60_qly5q"]
 [ext_resource type="Texture2D" uid="uid://wbaiq11iv7on" path="res://art/tavern.png" id="61_fe1ak"]
+[ext_resource type="Script" uid="uid://b6e88und28hko" path="res://scripts/SliceEndTrigger.gd" id="62_qly5q"]
+[ext_resource type="PackedScene" uid="uid://cfpgu03gpauoq" path="res://ui/SliceEndOverlay.tscn" id="63_svfjv"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_og6c6"]
 
@@ -119,20 +121,21 @@ texture = ExtResource("6_mre8b")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="TravelPoints/DoorToHouse"]
 shape = SubResource("RectangleShape2D_og6c6")
 
-[node name="ToTown" type="Area2D" parent="TravelPoints"]
+[node name="ToConnector" type="Area2D" parent="TravelPoints"]
 position = Vector2(378, 234)
+collision_mask = 3
 script = ExtResource("29_f2th2")
-target_scene_path = "res://tscn/Town.tscn"
+target_scene_path = "res://tscn/Connector.tscn"
 target_spawn_tag = "from_farm"
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="TravelPoints/ToTown"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TravelPoints/ToConnector"]
 shape = SubResource("RectangleShape2D_k5exi")
 
-[node name="Sprite2D" type="Sprite2D" parent="TravelPoints/ToTown"]
+[node name="Sprite2D" type="Sprite2D" parent="TravelPoints/ToConnector"]
 texture = ExtResource("6_mre8b")
 
 [node name="ToAnimalKeeperArea" type="Area2D" parent="TravelPoints"]
-position = Vector2(-1272, 407)
+position = Vector2(158, 497)
 collision_mask = 3
 script = ExtResource("29_f2th2")
 target_scene_path = "res://tscn/AnimalKeeperArea.tscn"
@@ -197,13 +200,13 @@ shape = SubResource("RectangleShape2D_k5exi")
 [node name="Sprite2D" type="Sprite2D" parent="TravelPoints/ToHeart"]
 texture = ExtResource("6_mre8b")
 
-[node name="SpawnFromTown" type="Marker2D" parent="TravelPoints" groups=["spawn_points"]]
+[node name="SpawnFromConnector" type="Marker2D" parent="TravelPoints" groups=["spawn_points"]]
 position = Vector2(398, 296)
 script = ExtResource("42_hm1ss")
-tag = "from_town"
+tag = "from_connector"
 
 [node name="SpawnFromAnimalKeeper" type="Marker2D" parent="TravelPoints" groups=["spawn_points"]]
-position = Vector2(-1232, 415)
+position = Vector2(198, 505)
 script = ExtResource("42_hm1ss")
 tag = "from_keeper"
 
@@ -321,6 +324,7 @@ collision_mask = 3
 script = ExtResource("38_wdtkt")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="QuestLocation"]
+visible = false
 shape = SubResource("RectangleShape2D_7ea1u")
 
 [node name="SpawnManager" type="Node" parent="."]
@@ -339,13 +343,14 @@ position = Vector2(60, 148)
 script = ExtResource("42_hm1ss")
 tag = "passout_spawn"
 
+[node name="Bed" parent="." instance=ExtResource("52_blq0h")]
+position = Vector2(-175, 199)
+
 [node name="CutsceneMarkers" type="Node2D" parent="." groups=["cutscene_anchor"]]
+visible = false
 
 [node name="HeartIntro_Player" type="Marker2D" parent="CutsceneMarkers"]
 position = Vector2(-333, 414)
-
-[node name="Bed" parent="CutsceneMarkers/HeartIntro_Player" instance=ExtResource("52_blq0h")]
-position = Vector2(158, -215)
 
 [node name="HeartIntro_Mayor" type="Marker2D" parent="CutsceneMarkers"]
 position = Vector2(-251, 417)
@@ -390,3 +395,9 @@ position = Vector2(-656, 367)
 [node name="FishingSpot" parent="." instance=ExtResource("57_blq0h")]
 position = Vector2(-90, 484)
 possible_fish = Array[ExtResource("58_fe1ak")]([ExtResource("59_tme2c"), ExtResource("60_qly5q")])
+
+[node name="SliceEndTrigger" type="Node" parent="."]
+script = ExtResource("62_qly5q")
+slice_end_overlay_path = NodePath("../SliceEndOverlay")
+
+[node name="SliceEndOverlay" parent="." instance=ExtResource("63_svfjv")]

@@ -96,17 +96,47 @@ Phase 4 - 0.0001: okay, i'm adding a LOT more now
 * Cooking Buffs *SPEED, ENERGY, AND MORE*
 
 Phase lim(n->inf) 4 - 1/n:
-* Devlog Support Tools
-** Cinematic Lock
-** Camera Pan
-** HUD Hiding
+* Devlog Support Tools *DONE*
+** Cinematic Lock *DONE*
+** Camera Pan *DONE*
+** HUD Hiding *DONE*
 * Energy Revamp
 * Cook Quest Step
 * Character Foods
 * Help Book
 * Gifting UI Revamp
 
+Phase i gotta stop adding so many phases, just please: VERTICAL SLICE
+* Finalizing Quests
+** Day 1 Tutorial
+** Day 2 Crafting Quest
+** Day 3 Friendship Quest
+** Possible Townboard Extras
+* Post-Slice Dialogues
+* Help Book again
+* Playtesting
+* Grayboxing UI layouts for artists
+* Signs and more Interactables
+
+Phase YouTube: the different videos I want
+* Devlog 1 *PRETTY MUCH DONE*
+* Shorts
+* Video Essays
+* Memes
+
 Phase 4: Inventory/UI Polish
+handmade storybook cozy
+warm parchment
+stitched cloth
+carved wood
+paper slips
+shelf/cart/shop visuals
+soft panels
+rounded borders
+not anime
+not chibi
+not modern glass UI
+not sci-fi
 
 Phase 5: Expanding
 - Seasons

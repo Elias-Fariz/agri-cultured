@@ -1,0 +1,41 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=7 format=3 uid="uid://cmcxb6x850iru"]
+
+[ext_resource type="Script" uid="uid://dqvgpvdaiv010" path="res://data/quests/QuestNpcOverrideData.gd" id="1_c675o"]
+[ext_resource type="Script" uid="uid://fp28wf3omrn8" path="res://data/quests/QuestSpawnRewardData.gd" id="2_yyku2"]
+[ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="3_e0oh2"]
+[ext_resource type="Script" uid="uid://bolxtchvrfo0y" path="res://data/quests/QuestStepData.gd" id="4_s4s8u"]
+
+[sub_resource type="Resource" id="Resource_f8u51"]
+script = ExtResource("4_s4s8u")
+type = "pickup"
+target = "Flower"
+amount = 3
+text = "Pick up 3 Flowers. They'll grow back the next day."
+metadata/_custom_type_script = "uid://bolxtchvrfo0y"
+
+[sub_resource type="Resource" id="Resource_o1cdf"]
+script = ExtResource("4_s4s8u")
+type = "craft"
+target = "Flower Headband"
+text = "Press C to open the crafting menu, then craft a Flower Headband."
+metadata/_custom_type_script = "uid://bolxtchvrfo0y"
+
+[resource]
+script = ExtResource("3_e0oh2")
+id = "fisher_craft_quest"
+title = "Crafting a Gift"
+description = "These flowers look lovely! Maybe we could turn them into something fashionable..."
+quest_type = "chain"
+oneshot_action = ""
+steps = Array[ExtResource("4_s4s8u")]([SubResource("Resource_f8u51"), SubResource("Resource_o1cdf")])
+turn_in_id = "npc_mayor"
+turn_in_text = "Go show the Mayor your beautiful creation!"
+reward_money = 100
+accept_reward_crafting_recipe_ids = Array[String](["flower_headband"])
+requires_day = 2
+offer_lines = Array[String](["Have you noticed those lovely flowers between your farm and the town?", "They could make a lovely headband.", "Would you like to try making one? I have the recipe right here."])
+in_progress_lines = Array[String](["You can pick items off the floor with E.", "And to access the crafting menu, click C."])
+turn_in_lines = Array[String](["This headband is beautifully crafted, good work!", "You know, this would be a lovely gift for another villager.", "Just walk up to someone and press G. Gifting is a wonderful way to increase your friendship.", "And there's no rush at all. The world is your oyster, and you've just started your journey..."])
+after_thanks_lines = Array[String](["Thinking about giving the flower headband to me?", "Remember, press G and then select the gift you want to present."])
+participant_ids = null
+metadata/_custom_type_script = "uid://cg0ailnic1w71"

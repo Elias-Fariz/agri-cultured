@@ -1,0 +1,73 @@
+[gd_resource type="Resource" script_class="CutsceneData" load_steps=17 format=3 uid="uid://fsqlwurwlwj1"]
+
+[ext_resource type="Script" uid="uid://b4pm6wxp5ivtk" path="res://data/cutscenes/CutsceneActorData.gd" id="1_q241j"]
+[ext_resource type="Script" uid="uid://cbc4hknxa1gfx" path="res://data/cutscenes/CutsceneDialogueData.gd" id="2_pwaex"]
+[ext_resource type="Script" uid="uid://cp2gtb0hckrrj" path="res://data/cutscenes/CutsceneEffectData.gd" id="3_o6bst"]
+[ext_resource type="Script" uid="uid://bjwubxbrbyt2x" path="res://data/cutscenes/CutsceneMarkerSet.gd" id="4_ejxrg"]
+[ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="5_u13nn"]
+[ext_resource type="Script" uid="uid://fp28wf3omrn8" path="res://data/quests/QuestSpawnRewardData.gd" id="6_155iw"]
+[ext_resource type="Script" uid="uid://camo0lur1qm85" path="res://data/cutscenes/CutsceneData.gd" id="7_gpais"]
+[ext_resource type="Script" uid="uid://0k0f68wqa7mm" path="res://data/cutscenes/CutsceneStepData.gd" id="8_o7kuy"]
+
+[sub_resource type="Resource" id="Resource_4h6s1"]
+script = ExtResource("1_q241j")
+key = "player"
+actor_type = "player"
+metadata/_custom_type_script = "uid://b4pm6wxp5ivtk"
+
+[sub_resource type="Resource" id="Resource_idqsu"]
+script = ExtResource("1_q241j")
+key = "mayor"
+npc_id = "npc_mayor"
+display_name = "Mayor"
+scene_path = "res://tscn/npcs/Mayor.tscn"
+metadata/_custom_type_script = "uid://b4pm6wxp5ivtk"
+
+[sub_resource type="Resource" id="Resource_xae77"]
+script = ExtResource("2_pwaex")
+metadata/_custom_type_script = "uid://cbc4hknxa1gfx"
+
+[sub_resource type="Resource" id="Resource_gusfa"]
+script = ExtResource("3_o6bst")
+effect_type = "unlock_travel"
+id = "valley_heart"
+metadata/_custom_type_script = "uid://cp2gtb0hckrrj"
+
+[sub_resource type="Resource" id="Resource_a7apk"]
+script = ExtResource("3_o6bst")
+effect_type = "toast"
+msg = "A gentle pull draws you toward the valley..."
+metadata/_custom_type_script = "uid://cp2gtb0hckrrj"
+
+[sub_resource type="Resource" id="Resource_7rqi0"]
+script = ExtResource("4_ejxrg")
+markers_by_id = {
+"focus_start": NodePath("CutsceneMarkers/HeartIntro_Focus"),
+"mayor_start": NodePath("CutsceneMarkers/HeartIntro_Mayor"),
+"player_start": NodePath("CutsceneMarkers/HeartIntro_Player")
+}
+metadata/_custom_type_script = "uid://bjwubxbrbyt2x"
+
+[sub_resource type="Resource" id="Resource_tqc3f"]
+script = ExtResource("8_o7kuy")
+step_type = 1
+marker_id = "focus"
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_dmbhf"]
+script = ExtResource("8_o7kuy")
+step_type = 2
+speaker_actor_key = "mayor"
+lines = Array[String](["Good morning…", "I need to show you something special.", "Meet me at the Heart of the Valley."])
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[resource]
+script = ExtResource("7_gpais")
+id = "connector_valley_discovery"
+scene_name = "Connector"
+actors = Array[ExtResource("1_q241j")]([SubResource("Resource_4h6s1"), SubResource("Resource_idqsu")])
+markers = SubResource("Resource_7rqi0")
+dialogue = SubResource("Resource_xae77")
+effects = Array[ExtResource("3_o6bst")]([SubResource("Resource_gusfa"), SubResource("Resource_a7apk")])
+steps = Array[ExtResource("8_o7kuy")]([SubResource("Resource_tqc3f"), SubResource("Resource_dmbhf")])
+metadata/_custom_type_script = "uid://camo0lur1qm85"

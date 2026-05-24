@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="QuestData" load_steps=12 format=3 uid="uid://dc5tn3osodxit"]
+[gd_resource type="Resource" script_class="QuestData" load_steps=16 format=3 uid="uid://dc5tn3osodxit"]
 
 [ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="1_fvlvt"]
 [ext_resource type="Script" uid="uid://dqvgpvdaiv010" path="res://data/quests/QuestNpcOverrideData.gd" id="1_gw17v"]
@@ -47,11 +47,36 @@ target = "townboard"
 text = "Walk to the townboard (yellow square) and press E to open it"
 metadata/_custom_type_script = "uid://bolxtchvrfo0y"
 
+[sub_resource type="Resource" id="Resource_1kbf8"]
+script = ExtResource("2_gw17v")
+type = "buy"
+target = "Watermelon Seeds"
+text = "Go to the General Store (upwards) and buy some watermelon seeds."
+metadata/_custom_type_script = "uid://bolxtchvrfo0y"
+
 [sub_resource type="Resource" id="Resource_12pbc"]
 script = ExtResource("2_gw17v")
 type = "go_to"
 target = "farm"
-text = "Return to the Farm, and welcome!"
+text = "Return to the Farm with the left travel pad."
+metadata/_custom_type_script = "uid://bolxtchvrfo0y"
+
+[sub_resource type="Resource" id="Resource_6e1om"]
+script = ExtResource("2_gw17v")
+type = "till"
+text = "Switch to your Hoe and till a grass tile for the seed."
+metadata/_custom_type_script = "uid://bolxtchvrfo0y"
+
+[sub_resource type="Resource" id="Resource_sdq8m"]
+script = ExtResource("2_gw17v")
+type = "plant"
+text = "Switch to your Seed Pouch and plant the seed into the tilled tile."
+metadata/_custom_type_script = "uid://bolxtchvrfo0y"
+
+[sub_resource type="Resource" id="Resource_dnr2a"]
+script = ExtResource("2_gw17v")
+type = "water"
+text = "Then finally, switch to your Watering Can to water the planted seed."
 metadata/_custom_type_script = "uid://bolxtchvrfo0y"
 
 [resource]
@@ -61,9 +86,9 @@ title = "Getting Started"
 description = "Learn the basics: help, inventory, quests, and talking to townsfolk."
 quest_type = "chain"
 oneshot_action = ""
-steps = Array[ExtResource("2_gw17v")]([SubResource("Resource_fvlvt"), SubResource("Resource_gw17v"), SubResource("Resource_ie44q"), SubResource("Resource_15lpo"), SubResource("Resource_klcmf"), SubResource("Resource_aqkft"), SubResource("Resource_12pbc")])
+steps = Array[ExtResource("2_gw17v")]([SubResource("Resource_fvlvt"), SubResource("Resource_gw17v"), SubResource("Resource_ie44q"), SubResource("Resource_15lpo"), SubResource("Resource_klcmf"), SubResource("Resource_aqkft"), SubResource("Resource_1kbf8"), SubResource("Resource_12pbc"), SubResource("Resource_6e1om"), SubResource("Resource_sdq8m"), SubResource("Resource_dnr2a")])
 turn_in_id = "townboard"
-turn_in_text = "Once you're ready, go back to the Townboard to claim this quest!"
+turn_in_text = "And now we wait! While you wait, go back to the townboard to claim your reward!"
 reward_money = 50
 participant_ids = null
 metadata/_custom_type_script = "uid://cg0ailnic1w71"

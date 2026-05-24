@@ -19,6 +19,7 @@ var _cutscene_paths := {
 	"greeting_intro": "res://data/cutscenes/greeting_intro.tres",
 	"shop_intro": "res://data/cutscenes/shop_intro.tres",
 	"fearroot_intro": "res://data/cutscenes/fearroot_intro.tres",
+	"connector_valley_discovery": "res://data/cutscenes/connector_valley_discovery.tres",
 }
 
 var _pending_restoration_encounter_path: NodePath = NodePath("")
@@ -58,6 +59,23 @@ func try_play_queued() -> void:
 	_queued_id = ""
 	play_cutscene(id)
 
+func _get_cutscene_path(id: String) -> String:
+	id = id.strip_edges()
+	if id == "":
+		return ""
+
+	# 1) Manual registry wins.
+	var manual_path := String(_cutscene_paths.get(id, "")).strip_edges()
+	if manual_path != "":
+		return manual_path
+
+	# 2) Automatic fallback by file name.
+	var fallback_path := "res://data/cutscenes/%s.tres" % id
+	if ResourceLoader.exists(fallback_path):
+		return fallback_path
+
+	return ""
+
 func play_cutscene(id: String) -> void:
 	# print("CutsceneDirector: play_cutscene called with:", id)
 	# print("Is already playing?", _is_playing)
@@ -66,7 +84,7 @@ func play_cutscene(id: String) -> void:
 		return
 
 	id = id.strip_edges()
-	var path := String(_cutscene_paths.get(id, ""))
+	var path := _get_cutscene_path(id)
 	if path == "":
 		push_warning("CutsceneDirector: no resource path for cutscene id: " + id)
 		return
@@ -680,6 +698,27 @@ func _run_step(step: CutsceneStepData, scene: Node, player: Node, _dialogue_ui: 
 
 		CutsceneStepData.StepType.HIDE_ILLUSTRATION:
 			await _hide_cutscene_illustration(step.duration)
+		
+		CutsceneStepData.StepType.SHOW_OVERHEAD_TEXT:
+			var actor_overhead: Variant = actors_by_key.get(String(step.actor_key).strip_edges(), null)
+
+			if actor_overhead == null or not is_instance_valid(actor_overhead):
+				await get_tree().process_frame
+				return
+
+			var text := String(step.overhead_text).strip_edges()
+			var hold_time := float(step.overhead_duration)
+			if hold_time <= 0.0:
+				hold_time = max(step.duration, 0.5)
+
+			var offset := step.overhead_offset
+
+			if actor_overhead.has_method("show_overhead_text"):
+				actor_overhead.call("show_overhead_text", text, hold_time, offset)
+			else:
+				_show_fallback_overhead_text(actor_overhead, text, hold_time, offset)
+
+			await get_tree().create_timer(hold_time).timeout
 
 
 func _resolve_marker(scene: Node, data: CutsceneData, step: CutsceneStepData) -> Marker2D:
@@ -1043,3 +1082,32 @@ func _apply_cutscene_completion_rewards(data: CutsceneData) -> void:
 
 	if QuestEvents != null and QuestEvents.has_signal("quest_state_changed"):
 		QuestEvents.quest_state_changed.emit()
+
+func _show_fallback_overhead_text(actor: Node, text: String, duration: float, offset: Vector2 = Vector2(0, -34)) -> void:
+	if actor == null:
+		return
+
+	text = text.strip_edges()
+	if text == "":
+		return
+
+	if not (actor is Node2D):
+		return
+
+	var label := Label.new()
+	label.text = text
+	label.z_index = 999
+	label.position = offset
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+
+	(actor as Node2D).add_child(label)
+
+	var tween := (actor as Node).create_tween()
+	tween.tween_property(label, "position", offset + Vector2(0, -8), max(duration, 0.05))
+	tween.parallel().tween_property(label, "modulate:a", 0.0, max(duration, 0.05))
+
+	await tween.finished
+
+	if label != null and is_instance_valid(label):
+		label.queue_free()

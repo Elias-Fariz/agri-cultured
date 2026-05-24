@@ -7,7 +7,7 @@ script = ExtResource("1_jqsml")
 id = "flower_headband"
 display_name = "Flower Headband"
 requires = {
-"Flower": 5
+"Flower": 3
 }
 output_item_id = "Flower Headband"
 description = "A floral headpiece with the smell of morning sunshine"
