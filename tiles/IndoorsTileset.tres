@@ -1,0 +1,36 @@
+[gd_resource type="TileSet" load_steps=9 format=3 uid="uid://chypvyk38hcyn"]
+
+[ext_resource type="Texture2D" uid="uid://bvwrrj2bcxwqh" path="res://art/wood.PNG" id="1_6pn04"]
+[ext_resource type="Texture2D" uid="uid://bnulkhi8iub1w" path="res://art/wood_walln.PNG" id="2_u8h38"]
+[ext_resource type="Texture2D" uid="uid://dfoc488wcqa8c" path="res://art/bottles.PNG" id="3_wo50v"]
+[ext_resource type="Texture2D" uid="uid://v26j5rtyi62e" path="res://art/rug.PNG" id="4_5f5hm"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_tro06"]
+texture = ExtResource("1_6pn04")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_cqdwf"]
+texture = ExtResource("2_u8h38")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_m8nne"]
+texture = ExtResource("3_wo50v")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_f5jur"]
+texture = ExtResource("4_5f5hm")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+
+[resource]
+tile_size = Vector2i(32, 32)
+physics_layer_0/collision_layer = 1
+sources/0 = SubResource("TileSetAtlasSource_tro06")
+sources/1 = SubResource("TileSetAtlasSource_cqdwf")
+sources/2 = SubResource("TileSetAtlasSource_m8nne")
+sources/3 = SubResource("TileSetAtlasSource_f5jur")

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="HelpBookPageData" load_steps=2 format=3 uid="uid://djrjd7yc0btch"]
+
+[ext_resource type="Script" uid="uid://ex3ariy65b4m" path="res://data/help/HelpBookPageData.gd" id="1_y2lx3"]
+
+[resource]
+script = ExtResource("1_y2lx3")
+page_id = "friendship"
+title = "Friendship"
+unlock_flag = "help_page:friendship"
+locked_until_flag = true
+body = "Friendship grows through kindness.
+
+Talking, helping, and giving thoughtful gifts can bring you closer to the people of the valley. Some villagers may enjoy certain gifts more than others.
+
+[b]Tip:[/b] Listen out to dialogue to learn which gifts villagers like better."
+metadata/_custom_type_script = "uid://ex3ariy65b4m"

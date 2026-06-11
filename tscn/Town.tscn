@@ -1,4 +1,4 @@
-[gd_scene load_steps=56 format=3 uid="uid://b7y4cme4an3kb"]
+[gd_scene load_steps=58 format=3 uid="uid://b7y4cme4an3kb"]
 
 [ext_resource type="PackedScene" uid="uid://dv7wem6ftpvdd" path="res://tscn/Player.tscn" id="1_2feps"]
 [ext_resource type="Script" uid="uid://0ofb5xeer5m6" path="res://scripts/Town.gd" id="1_o31te"]
@@ -37,6 +37,8 @@
 [ext_resource type="Script" uid="uid://b7n4wv6k3k33k" path="res://scripts/QuestLocation.gd" id="26_lyu0f"]
 [ext_resource type="PackedScene" uid="uid://qxjawwee60n1" path="res://ui/QuestMenuUI.tscn" id="27_dvr77"]
 [ext_resource type="Script" uid="uid://dwtg0fdx0i363" path="res://scripts/AreaAudio.gd" id="27_ehdlx"]
+[ext_resource type="PackedScene" uid="uid://todaqmfqrphb" path="res://ui/HelpBookOverlay.tscn" id="28_gmfaa"]
+[ext_resource type="Resource" uid="uid://dkece5jomsis5" path="res://data/help/help_book.tres" id="29_ao30e"]
 [ext_resource type="PackedScene" uid="uid://tiu8n2by1gky" path="res://ui/ToolBeltUI.tscn" id="30_01b2m"]
 [ext_resource type="PackedScene" uid="uid://cde8sgn45urws" path="res://ui/HelpOverlay.tscn" id="34_4f1xo"]
 [ext_resource type="Script" uid="uid://xl6estd3noyu" path="res://scripts/SceneTravelArea.gd" id="34_ewvrf"]
@@ -112,7 +114,7 @@ shape = SubResource("RectangleShape2D_caym6")
 texture = ExtResource("2_mua0x")
 
 [node name="ToFarm" type="Area2D" parent="TravelPoints"]
-position = Vector2(-37, 547)
+position = Vector2(36, 586)
 script = ExtResource("34_ewvrf")
 target_scene_path = "res://tscn/Connector.tscn"
 target_spawn_tag = "from_town"
@@ -125,7 +127,7 @@ position = Vector2(-1, 0)
 texture = ExtResource("2_mua0x")
 
 [node name="SpawnFromFarm" type="Marker2D" parent="TravelPoints" groups=["spawn_points"]]
-position = Vector2(-33, 599)
+position = Vector2(40, 638)
 script = ExtResource("36_caym6")
 tag = "from_connector"
 
@@ -207,6 +209,9 @@ visible = false
 navigation_polygon = SubResource("NavigationPolygon_j34sm")
 
 [node name="RainOverlay" parent="." instance=ExtResource("16_vlptm")]
+
+[node name="HelpBookOverlay" parent="." instance=ExtResource("28_gmfaa")]
+help_book_data = ExtResource("29_ao30e")
 
 [node name="CameraBounds" type="Node2D" parent="."]
 position = Vector2(175, 32)

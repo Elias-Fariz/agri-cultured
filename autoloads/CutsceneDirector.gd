@@ -549,6 +549,13 @@ func _run_step(step: CutsceneStepData, scene: Node, player: Node, _dialogue_ui: 
 				if _dialogue_ui.has_method("show_dialogue_sequence"):
 					_dialogue_ui.show_dialogue_sequence(step.dialogue_sequence)
 					await _dialogue_ui.dialogue_closed
+
+					if GameState != null and GameState.has_method("apply_dialogue_sequence_rewards"):
+						GameState.apply_dialogue_sequence_rewards(
+							step.dialogue_sequence,
+							"cutscene_step:%s" % String(data.id)
+						)
+
 					await get_tree().process_frame
 					return
 

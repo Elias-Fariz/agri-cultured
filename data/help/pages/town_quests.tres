@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="HelpBookPageData" load_steps=2 format=3 uid="uid://druehpkm1jjke"]
+
+[ext_resource type="Script" uid="uid://ex3ariy65b4m" path="res://data/help/HelpBookPageData.gd" id="1_7c5dr"]
+
+[resource]
+script = ExtResource("1_7c5dr")
+page_id = "town_quests"
+title = "Town Quests"
+body = "The townboard will have small tasks occasionally, and townsfolk may ask for help from time to time.
+
+Quests are small ways to learn the valley, meet people, and bring warmth back into the town. Your current task will appear in the quest tracker.
+
+[b]Tip:[/b] If you feel unsure, check the quest tracker first."
+metadata/_custom_type_script = "uid://ex3ariy65b4m"

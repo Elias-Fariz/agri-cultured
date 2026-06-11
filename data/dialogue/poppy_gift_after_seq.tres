@@ -1,7 +1,9 @@
-[gd_resource type="Resource" script_class="DialogueSequenceData" load_steps=5 format=3 uid="uid://car1wgxvvq6pu"]
+[gd_resource type="Resource" script_class="DialogueSequenceData" load_steps=7 format=3 uid="uid://car1wgxvvq6pu"]
 
 [ext_resource type="Script" uid="uid://dt1fjl76x6n5o" path="res://data/dialogue/DialogueBeatData.gd" id="1_3i8nt"]
 [ext_resource type="Script" uid="uid://clb3lhdggkt8d" path="res://data/dialogue/DialogueSequenceData.gd" id="2_dngqt"]
+[ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="2_lijhh"]
+[ext_resource type="Script" uid="uid://fp28wf3omrn8" path="res://data/quests/QuestSpawnRewardData.gd" id="3_u8x7t"]
 
 [sub_resource type="Resource" id="Resource_3i8nt"]
 script = ExtResource("1_3i8nt")

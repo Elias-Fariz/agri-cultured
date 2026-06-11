@@ -11,7 +11,6 @@
 [ext_resource type="AudioStream" uid="uid://bo8vbuyt37bti" path="res://audio/sfx/sfx_water_splash_01.WAV" id="5_5ju6g"]
 [ext_resource type="AudioStream" uid="uid://dd08q6sbhq04r" path="res://audio/sfx/sfx_seed_plant_01.WAV" id="6_eei24"]
 [ext_resource type="Texture2D" uid="uid://bq8o1e8mbe7qm" path="res://art/door.PNG" id="6_mre8b"]
-[ext_resource type="Script" uid="uid://sh30tjkuwdh7" path="res://scripts/DoorToHouse.gd" id="7_d13le"]
 [ext_resource type="AudioStream" uid="uid://b3hqj80ovverl" path="res://audio/sfx/sfx_harvest_chime_01.WAV" id="7_tu1ii"]
 [ext_resource type="PackedScene" uid="uid://ci8kga43aovsx" path="res://ui/DayNightOverlay.tscn" id="8_2ywwf"]
 [ext_resource type="PackedScene" uid="uid://dtrn2d385g5ul" path="res://ui/InventoryUI.tscn" id="8_og6c6"]
@@ -47,8 +46,10 @@
 [ext_resource type="PackedScene" uid="uid://bs7mbapajx756" path="res://ui/SeedPouchUI.tscn" id="43_5v62u"]
 [ext_resource type="Script" uid="uid://cx0lg4ua6qvj7" path="res://scripts/RewardSpawner.gd" id="43_6jl04"]
 [ext_resource type="Script" uid="uid://c0wb6p01vhywa" path="res://scripts/RewardSpawnPoint.gd" id="44_6jl04"]
+[ext_resource type="PackedScene" uid="uid://todaqmfqrphb" path="res://ui/HelpBookOverlay.tscn" id="45_svfjv"]
 [ext_resource type="PackedScene" uid="uid://gndbb0osuq8k" path="res://ui/CookingUI.tscn" id="45_uk2dd"]
 [ext_resource type="Script" uid="uid://vit47hwmsw5h" path="res://data/cooking/CookingRecipeData.gd" id="46_fe1ak"]
+[ext_resource type="Resource" uid="uid://dkece5jomsis5" path="res://data/help/help_book.tres" id="46_uvnem"]
 [ext_resource type="Resource" uid="uid://bnfeh06kp730i" path="res://data/cooking/berry_bowl.tres" id="47_tme2c"]
 [ext_resource type="Resource" uid="uid://co0hk0jfn7v4i" path="res://data/cooking/grilled_sardine.tres" id="48_qly5q"]
 [ext_resource type="Resource" uid="uid://cwuvj1en2uvt8" path="res://data/cooking/warm_milk.tres" id="49_svfjv"]
@@ -63,8 +64,6 @@
 [ext_resource type="Texture2D" uid="uid://wbaiq11iv7on" path="res://art/tavern.png" id="61_fe1ak"]
 [ext_resource type="Script" uid="uid://b6e88und28hko" path="res://scripts/SliceEndTrigger.gd" id="62_qly5q"]
 [ext_resource type="PackedScene" uid="uid://cfpgu03gpauoq" path="res://ui/SliceEndOverlay.tscn" id="63_svfjv"]
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_og6c6"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_k5exi"]
 
@@ -110,16 +109,6 @@ position = Vector2(-243, 153)
 position = Vector2(168, 146)
 
 [node name="TravelPoints" type="Node2D" parent="."]
-
-[node name="DoorToHouse" type="Area2D" parent="TravelPoints"]
-position = Vector2(-305, 152)
-script = ExtResource("7_d13le")
-
-[node name="Sprite2D" type="Sprite2D" parent="TravelPoints/DoorToHouse"]
-texture = ExtResource("6_mre8b")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="TravelPoints/DoorToHouse"]
-shape = SubResource("RectangleShape2D_og6c6")
 
 [node name="ToConnector" type="Area2D" parent="TravelPoints"]
 position = Vector2(378, 234)
@@ -230,6 +219,24 @@ position = Vector2(528, -296)
 script = ExtResource("42_hm1ss")
 tag = "from_deepforest"
 
+[node name="SpawnFromHouse" type="Marker2D" parent="TravelPoints" groups=["spawn_points"]]
+position = Vector2(-305, 188)
+script = ExtResource("42_hm1ss")
+tag = "from_deepforest"
+
+[node name="ToHouse" type="Area2D" parent="TravelPoints"]
+position = Vector2(-310, 152)
+collision_mask = 3
+script = ExtResource("29_f2th2")
+target_scene_path = "res://tscn/House.tscn"
+target_spawn_tag = "from_farm"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TravelPoints/ToHouse"]
+shape = SubResource("RectangleShape2D_k5exi")
+
+[node name="Sprite2D" type="Sprite2D" parent="TravelPoints/ToHouse"]
+texture = ExtResource("6_mre8b")
+
 [node name="SellBox" parent="." instance=ExtResource("16_rgi15")]
 position = Vector2(266, 145)
 
@@ -265,6 +272,9 @@ position = Vector2(266, 145)
 
 [node name="CookingUI" parent="." instance=ExtResource("45_uk2dd")]
 recipes = Array[ExtResource("46_fe1ak")]([ExtResource("47_tme2c"), ExtResource("48_qly5q"), ExtResource("49_svfjv")])
+
+[node name="HelpBookOverlay" parent="." instance=ExtResource("45_svfjv")]
+help_book_data = ExtResource("46_uvnem")
 
 [node name="FireflyLayer" parent="." groups=["firefly_layer"] instance=ExtResource("20_8lty6")]
 visible = false

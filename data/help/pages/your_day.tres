@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="HelpBookPageData" load_steps=2 format=3 uid="uid://dlyx7qhkm653r"]
+
+[ext_resource type="Script" uid="uid://ex3ariy65b4m" path="res://data/help/HelpBookPageData.gd" id="1_kg4dj"]
+
+[resource]
+script = ExtResource("1_kg4dj")
+page_id = "your_day"
+title = "Your Day"
+body = "Each day begins in the morning.
+
+You can tend your farm, visit town, talk with villagers, gather items, craft, shop, or explore open paths.
+
+When you are ready, return home and rest for the next day.
+
+[b]Tip:[/b] Sleeping in your bed starts a new day. And try not to stay up after 2AM..."
+metadata/_custom_type_script = "uid://ex3ariy65b4m"

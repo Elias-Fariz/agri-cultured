@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=3 uid="uid://5yq150fm6r0f"]
+[gd_scene load_steps=29 format=3 uid="uid://5yq150fm6r0f"]
 
 [ext_resource type="TileSet" uid="uid://bqs5ruk6pejpc" path="res://tiles/GroundTileset.tres" id="1_cqmf0"]
 [ext_resource type="TileSet" uid="uid://bjhy464dgbpg" path="res://tiles/ObjectsTileset.tres" id="2_frw7d"]
@@ -18,7 +18,9 @@
 [ext_resource type="PackedScene" uid="uid://cde8sgn45urws" path="res://ui/HelpOverlay.tscn" id="16_a4fbk"]
 [ext_resource type="PackedScene" uid="uid://tiu8n2by1gky" path="res://ui/ToolBeltUI.tscn" id="17_mtsq7"]
 [ext_resource type="Script" uid="uid://dvg0ynlpgst4t" path="res://scripts/WorldSpawn.gd" id="18_0mmh6"]
+[ext_resource type="PackedScene" uid="uid://todaqmfqrphb" path="res://ui/HelpBookOverlay.tscn" id="18_y2j0d"]
 [ext_resource type="Script" uid="uid://xl6estd3noyu" path="res://scripts/SceneTravelArea.gd" id="19_hd48n"]
+[ext_resource type="Resource" uid="uid://dkece5jomsis5" path="res://data/help/help_book.tres" id="19_p5ree"]
 [ext_resource type="Texture2D" uid="uid://bq8o1e8mbe7qm" path="res://art/door.PNG" id="20_f36mv"]
 [ext_resource type="Script" uid="uid://dxx68q28fdnvv" path="res://scripts/SpawnPoint.gd" id="21_v2rab"]
 [ext_resource type="PackedScene" uid="uid://cfyepca1wp5kc" path="res://tscn/Flower.tscn" id="22_f36mv"]
@@ -31,6 +33,7 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_p5ree"]
 
 [node name="Connector" type="Node2D"]
+position = Vector2(-4, 158)
 
 [node name="TileMaps" type="Node2D" parent="."]
 
@@ -74,6 +77,9 @@ position = Vector2(320, -77)
 [node name="HelpOverlay" parent="." instance=ExtResource("16_a4fbk")]
 
 [node name="ToolBeltUI" parent="." instance=ExtResource("17_mtsq7")]
+
+[node name="HelpBookOverlay" parent="." instance=ExtResource("18_y2j0d")]
+help_book_data = ExtResource("19_p5ree")
 
 [node name="CameraBounds" type="Node2D" parent="."]
 
@@ -161,6 +167,7 @@ script = ExtResource("23_v2rab")
 location_id = "connector"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="QuestLocation"]
+visible = false
 shape = SubResource("RectangleShape2D_p5ree")
 
 [node name="CutsceneMarkers" type="Node2D" parent="." groups=["cutscene_anchor"]]

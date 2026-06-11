@@ -1,4 +1,4 @@
-[gd_scene load_steps=70 format=3 uid="uid://cwspce5y4tb13"]
+[gd_scene load_steps=74 format=3 uid="uid://cwspce5y4tb13"]
 
 [ext_resource type="TileSet" uid="uid://bqs5ruk6pejpc" path="res://tiles/GroundTileset.tres" id="1_vkoen"]
 [ext_resource type="Script" uid="uid://bywlb7k2vtqr" path="res://scripts/ValleyHeart.gd" id="1_ye5kf"]
@@ -55,6 +55,10 @@
 [ext_resource type="PackedScene" uid="uid://dbc6p4387b3x2" path="res://tscn/npcs/Mayor.tscn" id="51_cuvof"]
 [ext_resource type="Script" uid="uid://dt1fjl76x6n5o" path="res://data/dialogue/DialogueBeatData.gd" id="51_or02y"]
 [ext_resource type="Script" uid="uid://clb3lhdggkt8d" path="res://data/dialogue/DialogueSequenceData.gd" id="52_8o0eb"]
+[ext_resource type="PackedScene" uid="uid://todaqmfqrphb" path="res://ui/HelpBookOverlay.tscn" id="52_i2ocl"]
+[ext_resource type="Resource" uid="uid://dkece5jomsis5" path="res://data/help/help_book.tres" id="53_3frw5"]
+[ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="57_r5nbu"]
+[ext_resource type="Script" uid="uid://fp28wf3omrn8" path="res://data/quests/QuestSpawnRewardData.gd" id="58_3lvqc"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_qprux"]
 texture = ExtResource("2_05sqv")
@@ -147,6 +151,7 @@ script = ExtResource("52_8o0eb")
 sequence_id = "alder_heart_intro"
 default_speaker_id = "npc_mayor"
 beats = Array[ExtResource("51_or02y")]([SubResource("Resource_pmysg")])
+reward_flags = Array[String](["help_page:valley_heart"])
 metadata/_custom_type_script = "uid://clb3lhdggkt8d"
 
 [node name="ValleyHeart" type="Node2D"]
@@ -435,6 +440,9 @@ enabled = false
 [node name="HeartDomainHubUI" parent="." groups=["cutscene_hide_ui"] instance=ExtResource("46_c5fuf")]
 
 [node name="ToolBeltUI" parent="." groups=["cutscene_hide_ui"] instance=ExtResource("47_kyy0j")]
+
+[node name="HelpBookOverlay" parent="." instance=ExtResource("52_i2ocl")]
+help_book_data = ExtResource("53_3frw5")
 
 [node name="ValleyHeartCinematicOrchestrator" type="Node2D" parent="."]
 script = ExtResource("50_2tbjq")

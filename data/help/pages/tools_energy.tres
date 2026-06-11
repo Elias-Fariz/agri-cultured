@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="HelpBookPageData" load_steps=2 format=3 uid="uid://dhc6ruvd3kipj"]
+
+[ext_resource type="Script" uid="uid://ex3ariy65b4m" path="res://data/help/HelpBookPageData.gd" id="1_w2voy"]
+
+[resource]
+script = ExtResource("1_w2voy")
+page_id = "tools_energy"
+title = "Tools and Energy"
+body = "Tools help you interact with the world.
+
+Using tools take energy. If your energy runs low, you may need to rest at benches, eat food, or take the rest of the day gently.
+
+[b]Tip:[/b] Running out will leave you exhausted and sluggish, so try avoiding it."
+metadata/_custom_type_script = "uid://ex3ariy65b4m"

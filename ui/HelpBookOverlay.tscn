@@ -1,0 +1,80 @@
+[gd_scene load_steps=2 format=3 uid="uid://todaqmfqrphb"]
+
+[ext_resource type="Script" uid="uid://cqkylp6cdlf4e" path="res://scripts/HelpBookOverlay.gd" id="1_v4l5q"]
+
+[node name="HelpBookOverlay" type="CanvasLayer" groups=["help_book_ui"]]
+script = ExtResource("1_v4l5q")
+visual_node_path = NodePath("Panel")
+start_visible_in_game = false
+is_modal = true
+modal_overlay_id = "help_book"
+
+[node name="Panel" type="Panel" parent="." groups=["cutscene_hide_ui"]]
+visible = false
+custom_minimum_size = Vector2(1000, 500)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -500.0
+offset_top = -250.0
+offset_right = 500.0
+offset_bottom = 250.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Margin" type="MarginContainer" parent="Panel"]
+custom_minimum_size = Vector2(800, 400)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -400.0
+offset_top = -200.0
+offset_right = 400.0
+offset_bottom = 200.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="Panel/Margin"]
+layout_mode = 2
+
+[node name="HeaderRow" type="HBoxContainer" parent="Panel/Margin/VBox"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="Panel/Margin/VBox/HeaderRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CloseButton" type="Button" parent="Panel/Margin/VBox/HeaderRow"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+text = "Close (Esc)"
+
+[node name="PageBodyText" type="RichTextLabel" parent="Panel/Margin/VBox"]
+custom_minimum_size = Vector2(0, 300)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="FooterRow" type="HBoxContainer" parent="Panel/Margin/VBox"]
+layout_mode = 2
+
+[node name="PrevButton" type="Button" parent="Panel/Margin/VBox/FooterRow"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+text = "Previous ←"
+
+[node name="PageNumberLabel" type="Label" parent="Panel/Margin/VBox/FooterRow"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+
+[node name="NextButton" type="Button" parent="Panel/Margin/VBox/FooterRow"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+text = "→ Next"
+
+[node name="HintLabel" type="Label" parent="Panel/Margin/VBox"]
+layout_mode = 2

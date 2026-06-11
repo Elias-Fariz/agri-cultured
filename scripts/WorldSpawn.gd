@@ -1,17 +1,26 @@
 extends Node
 
 @export var spawn_points_group: StringName = &"spawn_points"
-@export var player_path: NodePath = ^"../Player"  # adjust if your Player lives elsewhere
+@export var player_path: NodePath = ^"../Player"
+
 
 func _ready() -> void:
+	# Defer so Player, Camera2D, and spawn markers are fully ready.
+	call_deferred("_apply_pending_spawn")
+
+
+func _apply_pending_spawn() -> void:
 	var player := get_node_or_null(player_path)
 	if player == null:
 		# print("WorldSpawn: couldn't find Player at path:", player_path)
 		return
 
-	var pending_tag := GameState.pending_spawn_tag
+	var pending_tag := String(GameState.pending_spawn_tag).strip_edges()
 	if pending_tag == "":
-		return  # no special spawn requested
+		# Still snap the camera once on scene start, just in case.
+		if player.has_method("snap_camera_to_player"):
+			player.call("snap_camera_to_player")
+		return
 
 	var found := false
 
@@ -35,8 +44,12 @@ func _ready() -> void:
 	if not found:
 		print("WorldSpawn: no spawn point found for tag:", pending_tag)
 
-	# print("WorldSpawn pending tag:", GameState.pending_spawn_tag)
-
-	# Always clear it after attempting
+	# Clear after attempting, even if not found.
 	GameState.pending_spawn_tag = ""
-	
+
+	# Let physics/camera nodes register the new player position.
+	await get_tree().process_frame
+
+	if player != null and is_instance_valid(player):
+		if player.has_method("snap_camera_to_player"):
+			await player.call("snap_camera_to_player")

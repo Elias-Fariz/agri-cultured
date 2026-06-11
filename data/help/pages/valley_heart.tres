@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="HelpBookPageData" load_steps=2 format=3 uid="uid://b4q00hm1dkq65"]
+
+[ext_resource type="Script" uid="uid://ex3ariy65b4m" path="res://data/help/HelpBookPageData.gd" id="1_b6bqj"]
+
+[resource]
+script = ExtResource("1_b6bqj")
+page_id = "valley_heart"
+title = "Valley Heart"
+unlock_flag = "help_page:valley_heart"
+locked_until_flag = true
+body = "The Valley Heart responds to care.
+
+Farming, friendship, helping others, and restoring the land can awaken new signs of life. As the Heart grows stronger, the valley may begin to change.
+
+[b]Tip:[/b] Completing certain milestones will reward you with helpful perks and gifts, so make sure to tend the world often~"
+metadata/_custom_type_script = "uid://ex3ariy65b4m"

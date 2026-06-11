@@ -266,6 +266,12 @@ var ready_to_turn_in: Dictionary = {}
 var next_spawn_name: String = ""      # your existing system
 var pending_spawn_tag: String = ""    # optional future tag system
 
+var is_scene_traveling: bool = false
+
+@export var travel_fade_out_time: float = 0.18
+@export var travel_fade_in_time: float = 0.24
+@export var travel_frames_after_scene_change: int = 4
+
 
 func is_seed_item(item_id: String) -> bool:
 	return seed_to_crop.has(item_id)
@@ -310,6 +316,94 @@ func get_selected_seed_short_text() -> String:
 
 	return "Seeds\n%s x%d" % [name, qty]
 
+func apply_dialogue_sequence_rewards(sequence: DialogueSequenceData, source_id: String = "") -> void:
+	if sequence == null:
+		return
+
+	if not sequence.has_completion_rewards():
+		return
+
+	var sequence_id := String(sequence.sequence_id).strip_edges()
+
+	var reward_flag := ""
+	if sequence_id != "":
+		reward_flag = "dialogue_reward_claimed:" + sequence_id
+	elif source_id.strip_edges() != "":
+		reward_flag = "dialogue_reward_claimed:" + source_id
+
+	# Prevent repeated rewards if requested.
+	if sequence.rewards_once and reward_flag != "":
+		if has_flag(reward_flag):
+			return
+
+	var reward := sequence.get_completion_reward_dict()
+	if not reward.is_empty():
+		apply_reward_dict(reward, "dialogue:%s" % (sequence_id if sequence_id != "" else source_id))
+
+	# Add quest rewards, if any.
+	for qd in sequence.reward_quests:
+		if qd == null:
+			continue
+
+		var quest_id := String(qd.id).strip_edges()
+		if quest_id == "":
+			continue
+
+		if active_quests.has(quest_id):
+			continue
+		if completed_quests.has(quest_id):
+			continue
+
+		add_quest(qd.to_dict())
+
+	if sequence.rewards_once and reward_flag != "":
+		set_flag(reward_flag, true)
+
+	if sequence.show_reward_toast:
+		_show_dialogue_reward_toast(sequence)
+
+	if QuestEvents != null and QuestEvents.has_signal("quest_state_changed"):
+		QuestEvents.quest_state_changed.emit()
+
+
+func _show_dialogue_reward_toast(sequence: DialogueSequenceData) -> void:
+	if QuestEvents == null:
+		return
+	if not QuestEvents.has_signal("toast_requested"):
+		return
+
+	# Keep this gentle and not too spammy.
+	if not sequence.reward_items.is_empty():
+		for item_id_any in sequence.reward_items.keys():
+			var item_id := String(item_id_any)
+			var qty := int(sequence.reward_items[item_id_any])
+			if qty > 0:
+				QuestEvents.toast_requested.emit("Received: %s x%d" % [item_id, qty], "success", 2.5)
+				return
+
+	if sequence.reward_money > 0:
+		QuestEvents.toast_requested.emit("Received: %d coins" % sequence.reward_money, "success", 2.5)
+		return
+
+	if not sequence.reward_crafting_recipe_ids.is_empty():
+		QuestEvents.toast_requested.emit("New crafting idea learned.", "success", 2.5)
+		return
+
+	if not sequence.reward_cooking_recipe_ids.is_empty():
+		QuestEvents.toast_requested.emit("New recipe learned.", "success", 2.5)
+		return
+
+	if not sequence.reward_flags.is_empty():
+		# Help page flags already get their own toast from set_flag(), if you added that patch.
+		var has_only_help_pages := true
+		for flag_any in sequence.reward_flags:
+			var flag_id := String(flag_any)
+			if not flag_id.begins_with("help_page:"):
+				has_only_help_pages = false
+				break
+
+		if not has_only_help_pages:
+			QuestEvents.toast_requested.emit("Something changed.", "info", 2.0)
 
 func cycle_seed_previous() -> void:
 	var seeds := get_all_seed_ids_in_inventory()
@@ -2468,6 +2562,8 @@ func set_flag(flag_id: String, value: bool = true) -> void:
 	if flag_id == "":
 		return
 
+	var was_enabled := bool(game_flags.get(flag_id, false))
+
 	game_flags[flag_id] = value
 
 	if value:
@@ -2479,8 +2575,15 @@ func set_flag(flag_id: String, value: bool = true) -> void:
 		if game_flag_set_days.has(flag_id):
 			game_flag_set_days.erase(flag_id)
 
-	# print("[Flag]", flag_id, "=", value)
+	# Tiny cozy feedback for newly unlocked Help Book pages.
+	if value and not was_enabled and flag_id.begins_with("help_page:"):
+		var page_name := flag_id.replace("help_page:", "").replace("_", " ").capitalize()
 
+		if QuestEvents != null and QuestEvents.has_signal("toast_requested"):
+			QuestEvents.toast_requested.emit("New Help Book page: " + page_name, "success", 2.5)
+
+	if QuestEvents != null and QuestEvents.has_signal("quest_state_changed"):
+		QuestEvents.quest_state_changed.emit()
 
 func has_flag(flag_id: String) -> bool:
 	flag_id = flag_id.strip_edges()
@@ -3097,3 +3200,61 @@ func get_movement_speed_multiplier() -> float:
 		return 1.0
 
 	return max(0.1, 1.0 + bonus)
+
+func travel_to_scene(
+	target_scene_path: String,
+	target_spawn_tag: String = "",
+	fade_out_time: float = -1.0,
+	fade_in_time: float = -1.0,
+	frames_after_scene_change: int = -1
+) -> void:
+	target_scene_path = target_scene_path.strip_edges()
+	target_spawn_tag = target_spawn_tag.strip_edges()
+
+	if is_scene_traveling:
+		return
+
+	if target_scene_path == "":
+		return
+
+	is_scene_traveling = true
+
+	if fade_out_time < 0.0:
+		fade_out_time = travel_fade_out_time
+
+	if fade_in_time < 0.0:
+		fade_in_time = travel_fade_in_time
+
+	if frames_after_scene_change < 0:
+		frames_after_scene_change = travel_frames_after_scene_change
+
+	lock_gameplay()
+
+	if FadeOverlay != null:
+		await FadeOverlay.fade_out(fade_out_time)
+
+	pending_spawn_tag = target_spawn_tag
+
+	var err := get_tree().change_scene_to_file(target_scene_path)
+	if err != OK:
+		push_warning("GameState.travel_to_scene: failed to change scene to: " + target_scene_path)
+
+		pending_spawn_tag = ""
+
+		if FadeOverlay != null:
+			await FadeOverlay.fade_in(fade_in_time)
+
+		unlock_gameplay()
+		is_scene_traveling = false
+		return
+
+	# Because GameState is an autoload, it survives the scene change.
+	# This gives WorldSpawn time to place the player and snap the camera.
+	for i in range(max(1, frames_after_scene_change)):
+		await get_tree().process_frame
+
+	if FadeOverlay != null:
+		await FadeOverlay.fade_in(fade_in_time)
+
+	unlock_gameplay()
+	is_scene_traveling = false

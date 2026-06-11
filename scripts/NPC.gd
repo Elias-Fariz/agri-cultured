@@ -1024,6 +1024,7 @@ func _show_override_dialogue(ui: Node, qd: QuestData, phase: String, step_index:
 	if seq != null and seq.has_beats():
 		if ui.has_method("show_dialogue_sequence"):
 			ui.show_dialogue_sequence(seq)
+			_apply_dialogue_rewards_after_close(ui, seq, "npc:%s" % npc_id)
 			return true
 
 	var lines: Array[String] = qd.get_override_lines_for_npc(npc_id, phase, step_index)
@@ -1039,6 +1040,18 @@ func _show_override_dialogue(ui: Node, qd: QuestData, phase: String, step_index:
 
 	_show_plain_dialogue(ui, display_name, lines, friendship, npc_id)
 	return true
+
+func _apply_dialogue_rewards_after_close(ui: Node, seq: DialogueSequenceData, source_id: String = "") -> void:
+	if ui == null or seq == null:
+		return
+
+	if ui.has_signal("dialogue_closed"):
+		await ui.dialogue_closed
+	else:
+		await get_tree().process_frame
+
+	if GameState != null and GameState.has_method("apply_dialogue_sequence_rewards"):
+		GameState.apply_dialogue_sequence_rewards(seq, source_id)
 
 func _get_best_active_participant_override_quest_and_phase() -> Dictionary:
 	var best_score := -1

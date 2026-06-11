@@ -1,0 +1,29 @@
+[gd_scene load_steps=5 format=3 uid="uid://b6gc2u6w1dme1"]
+
+[ext_resource type="Script" uid="uid://b777233rwrcyx" path="res://scripts/ToggleVisualInteractable.gd" id="1_wcrql"]
+[ext_resource type="Texture2D" uid="uid://nan0sddf00hl" path="res://art/chest.png" id="2_h4j3g"]
+[ext_resource type="Texture2D" uid="uid://b7q154wmqtntx" path="res://art/luxa.org-opacity-changed-light-yellow-circle-md.png" id="3_h4j3g"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_h4j3g"]
+
+[node name="HouseLamp" type="Area2D"]
+script = ExtResource("1_wcrql")
+on_visual_path = NodePath("GlowSprite")
+light_path = NodePath("PointLight2D")
+on_toast_text = "The lamp glows warmly."
+off_toast_text = "The lamp goes quiet."
+interactable_id = "lamp"
+metadata/_custom_type_script = "uid://b777233rwrcyx"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+scale = Vector2(1.5980363, 1.5980363)
+shape = SubResource("RectangleShape2D_h4j3g")
+
+[node name="LampSprite" type="Sprite2D" parent="."]
+texture = ExtResource("2_h4j3g")
+
+[node name="GlowSprite" type="Sprite2D" parent="."]
+scale = Vector2(0.3170204, 0.3170204)
+texture = ExtResource("3_h4j3g")
+
+[node name="PointLight2D" type="PointLight2D" parent="."]

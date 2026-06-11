@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="HelpBookPageData" load_steps=2 format=3 uid="uid://dykcbvpw3jr6h"]
+
+[ext_resource type="Script" uid="uid://ex3ariy65b4m" path="res://data/help/HelpBookPageData.gd" id="1_abt2f"]
+
+[resource]
+script = ExtResource("1_abt2f")
+page_id = "crafting_cooking"
+title = "Crafting and Cooking"
+unlock_flag = "help_page:crafting_cooking"
+locked_until_flag = true
+body = "Some useful things can be made from gathered materials.
+
+Crafting turns simple items into something helpful or heartfelt. Cooking can restore energy and may give small blessings for the day.
+
+[b]Tip:[/b] Discover recipes through quests, friendship, or just wandering the world."
+metadata/_custom_type_script = "uid://ex3ariy65b4m"

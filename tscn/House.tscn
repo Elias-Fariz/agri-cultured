@@ -1,16 +1,16 @@
-[gd_scene load_steps=22 format=3 uid="uid://bjx6v0gjfwt2h"]
+[gd_scene load_steps=25 format=3 uid="uid://bjx6v0gjfwt2h"]
 
-[ext_resource type="Texture2D" uid="uid://bvwrrj2bcxwqh" path="res://art/wood.PNG" id="1_4ogyy"]
-[ext_resource type="Script" uid="uid://kt4as8ri4s71" path="res://scripts/House.gd" id="1_hk67c"]
+[ext_resource type="TileSet" uid="uid://chypvyk38hcyn" path="res://tiles/IndoorsTileset.tres" id="2_gef2e"]
 [ext_resource type="PackedScene" uid="uid://dv7wem6ftpvdd" path="res://tscn/Player.tscn" id="3_jpwvr"]
-[ext_resource type="Script" uid="uid://t8o1qvqbjqpc" path="res://scripts/DoorToFarm.gd" id="4_jpwvr"]
 [ext_resource type="Texture2D" uid="uid://bq8o1e8mbe7qm" path="res://art/door.PNG" id="5_anwwx"]
 [ext_resource type="PackedScene" uid="uid://ci8kga43aovsx" path="res://ui/DayNightOverlay.tscn" id="6_1y4db"]
 [ext_resource type="PackedScene" uid="uid://dtrn2d385g5ul" path="res://ui/InventoryUI.tscn" id="6_8rafo"]
 [ext_resource type="PackedScene" uid="uid://d1qqa5bygrbsp" path="res://ui/HUD.tscn" id="8_harv6"]
 [ext_resource type="PackedScene" uid="uid://be1wby7b2m0st" path="res://tscn/Bed.tscn" id="9_xjdd2"]
 [ext_resource type="PackedScene" uid="uid://68vtjhtvdbhw" path="res://ui/ShippingUI.tscn" id="9_y3bo4"]
+[ext_resource type="PackedScene" uid="uid://b6gc2u6w1dme1" path="res://tscn/HouseLamp.tscn" id="10_iuft3"]
 [ext_resource type="PackedScene" uid="uid://dk1aaefcs7nwf" path="res://ui/QuestBoardUI.tscn" id="11_obga2"]
+[ext_resource type="PackedScene" uid="uid://dythtjjsbyphx" path="res://tscn/CookingStation.tscn" id="12_g8yf3"]
 [ext_resource type="PackedScene" uid="uid://dexrjrr1c8jfb" path="res://ui/ShopUI.tscn" id="12_ur3p0"]
 [ext_resource type="PackedScene" uid="uid://qxjawwee60n1" path="res://ui/QuestMenuUI.tscn" id="13_cud0w"]
 [ext_resource type="PackedScene" uid="uid://cde8sgn45urws" path="res://ui/HelpOverlay.tscn" id="14_0ot87"]
@@ -18,40 +18,24 @@
 [ext_resource type="PackedScene" uid="uid://c48msaiodeqan" path="res://ui/CraftingUI.tscn" id="16_1v6cy"]
 [ext_resource type="PackedScene" uid="uid://ixx7e0mb3ds4" path="res://ui/GiftUI.tscn" id="17_nhqqd"]
 [ext_resource type="PackedScene" uid="uid://tiu8n2by1gky" path="res://ui/ToolBeltUI.tscn" id="18_te355"]
+[ext_resource type="PackedScene" uid="uid://todaqmfqrphb" path="res://ui/HelpBookOverlay.tscn" id="19_71tvj"]
+[ext_resource type="Resource" uid="uid://dkece5jomsis5" path="res://data/help/help_book.tres" id="20_gef2e"]
+[ext_resource type="Script" uid="uid://dvg0ynlpgst4t" path="res://scripts/WorldSpawn.gd" id="21_8dwd5"]
+[ext_resource type="Script" uid="uid://xl6estd3noyu" path="res://scripts/SceneTravelArea.gd" id="22_gk44a"]
+[ext_resource type="Script" uid="uid://dxx68q28fdnvv" path="res://scripts/SpawnPoint.gd" id="24_o06uo"]
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_bfwu5"]
-texture = ExtResource("1_4ogyy")
-texture_region_size = Vector2i(32, 32)
-0:0/0 = 0
-
-[sub_resource type="TileSet" id="TileSet_jqqft"]
-sources/0 = SubResource("TileSetAtlasSource_bfwu5")
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_eym5a"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_r31n5"]
 
 [node name="House" type="Node2D" groups=["world"]]
-script = ExtResource("1_hk67c")
+position = Vector2(2, 1)
 
 [node name="Ground" type="TileMap" parent="." groups=["footstep_ground"]]
-tile_set = SubResource("TileSet_jqqft")
+tile_set = ExtResource("2_gef2e")
 format = 2
-layer_0/tile_data = PackedInt32Array(-65536, 0, 0, 0, 0, 0, 65536, 0, 0, 131072, 0, 0, 196608, 0, 0, 262144, 0, 0, 327680, 0, 0, 393216, 0, 0, 458752, 0, 0, 524288, 0, 0, -65535, 0, 0, 1, 0, 0, 65537, 0, 0, 131073, 0, 0, 196609, 0, 0, 262145, 0, 0, 327681, 0, 0, 393217, 0, 0, 458753, 0, 0, 524289, 0, 0, -65534, 0, 0, 2, 0, 0, 65538, 0, 0, 131074, 0, 0, 196610, 0, 0, 262146, 0, 0, 327682, 0, 0, 393218, 0, 0, 458754, 0, 0, 524290, 0, 0, -65533, 0, 0, 3, 0, 0, 65539, 0, 0, 131075, 0, 0, 196611, 0, 0, 262147, 0, 0, 327683, 0, 0, 393219, 0, 0, 458755, 0, 0, 524291, 0, 0, -65532, 0, 0, 4, 0, 0, 65540, 0, 0, 131076, 0, 0, 196612, 0, 0, 262148, 0, 0, 327684, 0, 0, 393220, 0, 0, 458756, 0, 0, 524292, 0, 0, -65531, 0, 0, 5, 0, 0, 65541, 0, 0, 131077, 0, 0, 196613, 0, 0, 262149, 0, 0, 327685, 0, 0, 393221, 0, 0, 458757, 0, 0, 524293, 0, 0, -65530, 0, 0, 6, 0, 0, 65542, 0, 0, 131078, 0, 0, 196614, 0, 0, 262150, 0, 0, 327686, 0, 0, 393222, 0, 0, 458758, 0, 0, 524294, 0, 0, -65529, 0, 0, 7, 0, 0, 65543, 0, 0, 131079, 0, 0, 196615, 0, 0, 262151, 0, 0, 327687, 0, 0, 393223, 0, 0, 458759, 0, 0, 524295, 0, 0, -65528, 0, 0, 8, 0, 0, 65544, 0, 0, 131080, 0, 0, 196616, 0, 0, 262152, 0, 0, 327688, 0, 0, 393224, 0, 0, 458760, 0, 0, 524296, 0, 0, -65527, 0, 0, 9, 0, 0, 65545, 0, 0, 131081, 0, 0, 196617, 0, 0, 262153, 0, 0, 327689, 0, 0, 393225, 0, 0, 458761, 0, 0, 524297, 0, 0, -65526, 0, 0, 10, 0, 0, 65546, 0, 0, 131082, 0, 0, 196618, 0, 0, 262154, 0, 0, 327690, 0, 0, 393226, 0, 0, 458762, 0, 0, 524298, 0, 0, -65525, 0, 0, 11, 0, 0, 65547, 0, 0, 131083, 0, 0, 196619, 0, 0, 262155, 0, 0, 327691, 0, 0, 393227, 0, 0, 458763, 0, 0, 524299, 0, 0, -65524, 0, 0, 12, 0, 0, 65548, 0, 0, 131084, 0, 0, 196620, 0, 0, 262156, 0, 0, 327692, 0, 0, 393228, 0, 0, 458764, 0, 0, 524300, 0, 0, -65523, 0, 0, 13, 0, 0, 65549, 0, 0, 131085, 0, 0, 196621, 0, 0, 262157, 0, 0, 327693, 0, 0, 393229, 0, 0, 458765, 0, 0, 524301, 0, 0, -65522, 0, 0, 14, 0, 0, 65550, 0, 0, 131086, 0, 0, 196622, 0, 0, 262158, 0, 0, 327694, 0, 0, 393230, 0, 0, 458766, 0, 0, 524302, 0, 0, -65521, 0, 0, 15, 0, 0, 65551, 0, 0, 131087, 0, 0, 196623, 0, 0, 262159, 0, 0, 327695, 0, 0, 393231, 0, 0, 458767, 0, 0, 524303, 0, 0)
-
-[node name="Spawn" type="Marker2D" parent="."]
-position = Vector2(13, -6)
+layer_0/tile_data = PackedInt32Array(2, 1, 0, 65538, 1, 0, 131074, 1, 0, 196610, 1, 0, 262146, 1, 0, 327682, 1, 0, 393218, 1, 0, 458754, 1, 0, 524290, 1, 0, 3, 1, 0, 65539, 0, 0, 131075, 0, 0, 196611, 0, 0, 262147, 0, 0, 327683, 0, 0, 393219, 0, 0, 458755, 0, 0, 524291, 0, 0, 4, 1, 0, 65540, 0, 0, 131076, 0, 0, 196612, 0, 0, 262148, 0, 0, 327684, 0, 0, 393220, 0, 0, 458756, 0, 0, 524292, 0, 0, 5, 1, 0, 65541, 0, 0, 131077, 0, 0, 196613, 0, 0, 262149, 0, 0, 327685, 0, 0, 393221, 0, 0, 458757, 0, 0, 524293, 0, 0, 6, 1, 0, 65542, 0, 0, 131078, 0, 0, 196614, 0, 0, 262150, 0, 0, 327686, 0, 0, 393222, 0, 0, 458758, 3, 0, 524294, 3, 0, 7, 1, 0, 65543, 0, 0, 131079, 0, 0, 196615, 0, 0, 262151, 0, 0, 327687, 0, 0, 393223, 0, 0, 458759, 3, 0, 524295, 3, 0, 8, 1, 0, 65544, 0, 0, 131080, 0, 0, 196616, 0, 0, 262152, 0, 0, 327688, 0, 0, 393224, 0, 0, 458760, 3, 0, 524296, 3, 0, 9, 1, 0, 65545, 0, 0, 131081, 0, 0, 196617, 0, 0, 262153, 0, 0, 327689, 0, 0, 393225, 0, 0, 458761, 3, 0, 524297, 3, 0, 10, 1, 0, 65546, 0, 0, 131082, 0, 0, 196618, 0, 0, 262154, 0, 0, 327690, 0, 0, 393226, 0, 0, 458762, 0, 0, 524298, 0, 0, 11, 1, 0, 65547, 0, 0, 131083, 0, 0, 196619, 0, 0, 262155, 0, 0, 327691, 0, 0, 393227, 0, 0, 458763, 0, 0, 524299, 0, 0, 12, 1, 0, 65548, 0, 0, 131084, 0, 0, 196620, 0, 0, 262156, 0, 0, 327692, 0, 0, 393228, 0, 0, 458764, 0, 0, 524300, 0, 0, 13, 1, 0, 65549, 1, 0, 131085, 1, 0, 196621, 1, 0, 262157, 1, 0, 327693, 1, 0, 393229, 1, 0, 458765, 1, 0, 524301, 1, 0, 14, 1, 0, 65550, 1, 0, 131086, 1, 0, 196622, 1, 0, 262158, 1, 0, 327694, 1, 0, 393230, 1, 0, 458766, 1, 0, 524302, 1, 0, 589838, 1, 0, 589837, 1, 0, 589836, 1, 0, 589835, 1, 0, 589834, 1, 0, 589833, 1, 0, 589832, 1, 0, 589831, 1, 0, 589830, 1, 0, 589829, 1, 0, 589828, 1, 0, 589827, 1, 0, 589826, 1, 0)
 
 [node name="Player" parent="." instance=ExtResource("3_jpwvr")]
-position = Vector2(13, -6)
-
-[node name="DoorToFarm" type="Area2D" parent="."]
-position = Vector2(40, 140)
-script = ExtResource("4_jpwvr")
-
-[node name="Sprite2D" type="Sprite2D" parent="DoorToFarm"]
-texture = ExtResource("5_anwwx")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="DoorToFarm"]
-shape = SubResource("RectangleShape2D_eym5a")
+position = Vector2(255, 240)
 
 [node name="DayNightOverlay" parent="." instance=ExtResource("6_1y4db")]
 
@@ -61,8 +45,14 @@ shape = SubResource("RectangleShape2D_eym5a")
 
 [node name="ShippingUI" parent="." instance=ExtResource("9_y3bo4")]
 
+[node name="HouseLamp" parent="." instance=ExtResource("10_iuft3")]
+position = Vector2(221, 66)
+
 [node name="Bed" parent="." instance=ExtResource("9_xjdd2")]
-position = Vector2(135, 87)
+position = Vector2(291, 67)
+
+[node name="CookingStation" parent="." instance=ExtResource("12_g8yf3")]
+position = Vector2(143, 250)
 
 [node name="QuestBoardUI" parent="." instance=ExtResource("11_obga2")]
 
@@ -79,3 +69,29 @@ position = Vector2(135, 87)
 [node name="GiftUI" parent="." instance=ExtResource("17_nhqqd")]
 
 [node name="ToolBeltUI" parent="." instance=ExtResource("18_te355")]
+
+[node name="HelpBookOverlay" parent="." instance=ExtResource("19_71tvj")]
+help_book_data = ExtResource("20_gef2e")
+
+[node name="SpawnManager" type="Node" parent="."]
+script = ExtResource("21_8dwd5")
+
+[node name="TravelPoints" type="Node2D" parent="."]
+
+[node name="ToFarm" type="Area2D" parent="TravelPoints"]
+position = Vector2(256, 268)
+script = ExtResource("22_gk44a")
+target_scene_path = "res://tscn/Farm.tscn"
+target_spawn_tag = "from_house"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TravelPoints/ToFarm"]
+shape = SubResource("RectangleShape2D_r31n5")
+
+[node name="Sprite2D" type="Sprite2D" parent="TravelPoints/ToFarm"]
+position = Vector2(-1, 0)
+texture = ExtResource("5_anwwx")
+
+[node name="SpawnFromFarm" type="Marker2D" parent="TravelPoints" groups=["spawn_points"]]
+position = Vector2(253, 237)
+script = ExtResource("24_o06uo")
+tag = "from_farm"

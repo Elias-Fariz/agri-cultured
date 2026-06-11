@@ -30,11 +30,38 @@ class_name DialogueSequenceData
 @export var beats: Array[DialogueBeatData] = []
 
 # -------------------------------------------------------------------
+# Completion rewards
+# -------------------------------------------------------------------
+# These are granted after the whole dialogue sequence finishes.
+
+@export var reward_money: int = 0
+@export var reward_items: Dictionary[String, int] = {}
+@export var reward_flags: Array[String] = []
+@export var reward_tool_ids: Array[String] = []
+
+@export var reward_crafting_recipe_ids: Array[String] = []
+@export var reward_cooking_recipe_ids: Array[String] = []
+
+# Optional: sequence can start/accept quests directly.
+@export var reward_quests: Array[QuestData] = []
+
+# Optional: scene spawns, same style as quest/cutscene rewards.
+@export var reward_spawns: Array[QuestSpawnRewardData] = []
+
+# If true, rewards are only granted once for this sequence_id.
+# Recommended true for gift/flag/recipe/story dialogues.
+@export var rewards_once: bool = true
+
+# If true, a small toast appears when rewards are granted.
+@export var show_reward_toast: bool = true
+
+# -------------------------------------------------------------------
 # Helpers
 # -------------------------------------------------------------------
 
 func has_beats() -> bool:
 	return not beats.is_empty()
+
 
 func get_valid_beats() -> Array[DialogueBeatData]:
 	var out: Array[DialogueBeatData] = []
@@ -46,21 +73,81 @@ func get_valid_beats() -> Array[DialogueBeatData]:
 		out.append(beat)
 	return out
 
+
 func add_beat(beat: DialogueBeatData) -> void:
 	if beat == null:
 		return
 	beats.append(beat)
 
+
 func clear_beats() -> void:
 	beats.clear()
 
+
 func get_beat_count() -> int:
 	return beats.size()
+
 
 func get_beat(index: int) -> DialogueBeatData:
 	if index < 0 or index >= beats.size():
 		return null
 	return beats[index]
+
+
+func has_completion_rewards() -> bool:
+	if reward_money != 0:
+		return true
+	if not reward_items.is_empty():
+		return true
+	if not reward_flags.is_empty():
+		return true
+	if not reward_tool_ids.is_empty():
+		return true
+	if not reward_crafting_recipe_ids.is_empty():
+		return true
+	if not reward_cooking_recipe_ids.is_empty():
+		return true
+	if not reward_quests.is_empty():
+		return true
+	if not reward_spawns.is_empty():
+		return true
+
+	return false
+
+
+func get_completion_reward_dict() -> Dictionary:
+	var reward: Dictionary = {}
+
+	if reward_money != 0:
+		reward["money"] = reward_money
+
+	if not reward_items.is_empty():
+		reward["items"] = reward_items.duplicate(true)
+
+	if not reward_flags.is_empty():
+		reward["flags"] = reward_flags.duplicate()
+
+	if not reward_tool_ids.is_empty():
+		reward["tools"] = reward_tool_ids.duplicate()
+
+	if not reward_crafting_recipe_ids.is_empty():
+		reward["crafting_recipes"] = reward_crafting_recipe_ids.duplicate()
+
+	if not reward_cooking_recipe_ids.is_empty():
+		reward["cooking_recipes"] = reward_cooking_recipe_ids.duplicate()
+
+	if not reward_spawns.is_empty():
+		var spawns: Array = []
+		for spawn in reward_spawns:
+			if spawn == null:
+				continue
+			if spawn.has_method("to_dict"):
+				spawns.append(spawn.to_dict())
+		if not spawns.is_empty():
+			reward["spawns"] = spawns
+
+	return reward
+
 
 # -------------------------------------------------------------------
 # Legacy conversion support
@@ -96,6 +183,7 @@ func build_from_lines(lines: Array[String], speaker_id: String = "", stage_slot:
 
 		beats.append(beat)
 
+
 func to_plain_lines() -> Array[String]:
 	var lines: Array[String] = []
 
@@ -107,6 +195,7 @@ func to_plain_lines() -> Array[String]:
 		lines.append(beat.text)
 
 	return lines
+
 
 func is_narration_only() -> bool:
 	if beats.is_empty():

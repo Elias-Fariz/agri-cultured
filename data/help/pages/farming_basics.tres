@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="HelpBookPageData" load_steps=2 format=3 uid="uid://ctbmp0f63804y"]
+
+[ext_resource type="Script" uid="uid://ex3ariy65b4m" path="res://data/help/HelpBookPageData.gd" id="1_6mq20"]
+
+[resource]
+script = ExtResource("1_6mq20")
+page_id = "farming_basics"
+title = "Farming Basics"
+body = "To grow crops, till the soil, plant your seeds, and then water them.
+
+Crops usually need care across several days before they are ready to harvest, so make sure to tend them constantly. Rain can help water the land for you.
+
+[b]Tip:[/b] Till → Plant → Water → Wait → Harvest."
+metadata/_custom_type_script = "uid://ex3ariy65b4m"

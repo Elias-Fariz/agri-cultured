@@ -625,7 +625,7 @@ func _is_player_gameplay_input_event(event: InputEvent) -> bool:
 		or event.is_action_pressed("open_gift")
 		or event.is_action_pressed("open_inventory")
 		or event.is_action_pressed("tool_next")
-		or event.is_action_pressed("tool_previous")
+		#or event.is_action_pressed("tool_previous")
 	)
 
 func show_overhead_text(text: String, duration: float = 1.0, offset: Vector2 = Vector2.ZERO) -> void:
@@ -686,3 +686,46 @@ func _spawn_fallback_overhead_label(text: String, duration: float, offset: Vecto
 
 	if label != null and is_instance_valid(label):
 		label.queue_free()
+
+func snap_camera_to_player() -> void:
+	# Used after scene travel, while the screen is faded out.
+	# This prevents the camera from visibly sliding/warping from the
+	# editor-placed Player position to the actual spawn point.
+
+	if cam == null:
+		return
+
+	# If dev camera lock was active for recording, release it.
+	if has_method("force_unlock_dev_camera"):
+		force_unlock_dev_camera()
+
+	_camera_focus_active = false
+	_camera_focus_point = global_position
+	_cam_offset = Vector2.ZERO
+	_cam_focus_offset = Vector2.ZERO
+
+	# Reset shake so a previous scene doesn't carry jitter into the new one.
+	if shake_offset != null:
+		shake_offset.position = Vector2.ZERO
+
+	_shake_time_left = 0.0
+	_shake_duration = 0.0
+	_shake_intensity = 0.0
+
+	# Put the camera directly back on the player.
+	cam.position = Vector2.ZERO
+	cam.position_smoothing_enabled = false
+	cam.enabled = true
+	cam.make_current()
+
+	# Godot 4 Camera2D helpers, if available.
+	if cam.has_method("reset_smoothing"):
+		cam.call("reset_smoothing")
+
+	if cam.has_method("force_update_scroll"):
+		cam.call("force_update_scroll")
+
+	# Re-enable smoothing on the next frame so normal camera behavior resumes.
+	await get_tree().process_frame
+	if cam != null:
+		cam.position_smoothing_enabled = true

@@ -41,6 +41,10 @@ bbcode_enabled = true
 [node name="ButtonsRow" type="HBoxContainer" parent="Panel/Margin/VBox"]
 layout_mode = 2
 
+[node name="OpenBookButton" type="Button" parent="Panel/Margin/VBox/ButtonsRow"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+
 [node name="CloseButton" type="Button" parent="Panel/Margin/VBox/ButtonsRow"]
 layout_mode = 2
 text = "Close (Esc)"

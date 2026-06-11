@@ -492,7 +492,17 @@ func _run_alder_followup() -> void:
 
 		if _dialogue_ui.has_signal("dialogue_closed"):
 			await _dialogue_ui.dialogue_closed
+		else:
+			await get_tree().process_frame
 
+		# NEW:
+		# DialogueSequenceData can now grant rewards after the whole sequence finishes.
+		# This is where the Valley Heart Help Book page can unlock.
+		if GameState != null and GameState.has_method("apply_dialogue_sequence_rewards"):
+			GameState.apply_dialogue_sequence_rewards(
+				alder_dialogue_sequence,
+				"valley_heart:alder_followup"
+			)
 
 func _get_or_spawn_alder() -> Node2D:
 	# Prefer an existing assigned node if provided.

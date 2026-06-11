@@ -113,10 +113,16 @@ Phase i gotta stop adding so many phases, just please: VERTICAL SLICE
 ** Day 3 Friendship Quest
 ** Possible Townboard Extras
 * Post-Slice Dialogues
-* Help Book again
+* Help Book again *DONE*
 * Playtesting
 * Grayboxing UI layouts for artists
-* Signs and more Interactables
+* Signs and more Interactables *DID LAMP*
+* Fade Transitions for Travel *DONE*
+* More Fade Transitions, maybe little jingles too
+* Path Blocking/Locking
+* Prompt Polish
+* Gameplay Feedback
+* Audio Polish
 
 Phase YouTube: the different videos I want
 * Devlog 1 *PRETTY MUCH DONE*

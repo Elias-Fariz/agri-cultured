@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="HelpBookPageData" load_steps=2 format=3 uid="uid://dejt4mh8nta07"]
+
+[ext_resource type="Script" uid="uid://ex3ariy65b4m" path="res://data/help/HelpBookPageData.gd" id="1_imw3x"]
+
+[resource]
+script = ExtResource("1_imw3x")
+page_id = "welcome"
+title = "Welcome"
+body = "Welcome to the valley.
+
+This place may feel quiet at first, but it is not empty. Care for the land, speak with the townsfolk, and take each day one step at a time.
+
+[b]Tip:[/b] Small actions can lead to new growth."
+metadata/_custom_type_script = "uid://ex3ariy65b4m"

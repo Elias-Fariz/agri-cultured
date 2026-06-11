@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="HelpBookData" load_steps=11 format=3 uid="uid://dkece5jomsis5"]
+
+[ext_resource type="Script" uid="uid://ex3ariy65b4m" path="res://data/help/HelpBookPageData.gd" id="1_va7h8"]
+[ext_resource type="Script" uid="uid://b5fqurqdk4ivy" path="res://data/help/HelpBookData.gd" id="2_2vnuh"]
+[ext_resource type="Resource" uid="uid://dejt4mh8nta07" path="res://data/help/pages/welcome.tres" id="2_sr6to"]
+[ext_resource type="Resource" uid="uid://dlyx7qhkm653r" path="res://data/help/pages/your_day.tres" id="3_t8k0f"]
+[ext_resource type="Resource" uid="uid://ctbmp0f63804y" path="res://data/help/pages/farming_basics.tres" id="4_ojk8m"]
+[ext_resource type="Resource" uid="uid://dhc6ruvd3kipj" path="res://data/help/pages/tools_energy.tres" id="5_fknl7"]
+[ext_resource type="Resource" uid="uid://druehpkm1jjke" path="res://data/help/pages/town_quests.tres" id="6_ksw2m"]
+[ext_resource type="Resource" uid="uid://djrjd7yc0btch" path="res://data/help/pages/friendship.tres" id="7_yxm3u"]
+[ext_resource type="Resource" uid="uid://dykcbvpw3jr6h" path="res://data/help/pages/crafting_cooking.tres" id="8_fkm2m"]
+[ext_resource type="Resource" uid="uid://b4q00hm1dkq65" path="res://data/help/pages/valley_heart.tres" id="9_4ldov"]
+
+[resource]
+script = ExtResource("2_2vnuh")
+pages = Array[ExtResource("1_va7h8")]([ExtResource("2_sr6to"), ExtResource("3_t8k0f"), ExtResource("4_ojk8m"), ExtResource("5_fknl7"), ExtResource("6_ksw2m"), ExtResource("7_yxm3u"), ExtResource("8_fkm2m"), ExtResource("9_4ldov")])
+metadata/_custom_type_script = "uid://b5fqurqdk4ivy"
