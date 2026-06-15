@@ -6,6 +6,13 @@ extends CharacterBody2D
 # Last facing direction (cardinal: up/down/left/right)
 var facing: Vector2 = Vector2.DOWN
 
+var facing_direction: String = "down"
+var facing_vector: Vector2 = Vector2.DOWN
+
+# Future-friendly optional sprite support.
+# Later, when you have real player sprites, assign your AnimatedSprite2D here.
+@export var animated_sprite_path: NodePath
+
 # How far in front of the player the interact sensor sits (pixels)
 @export var interact_offset: float = 18.0
 
@@ -95,9 +102,8 @@ var _overhead_text_timer: SceneTreeTimer = null
 @onready var overhead_bubble: Node = $OverheadBubbleController
 
 func _ready() -> void:
-	# Ensure the sensor starts in front of the player (down by default)
-	_update_sensor_position()
-	indicator.set_direction(facing)
+	# Ensure the sensor and facing indicator start in the correct direction.
+	_set_facing_vector(facing, true)
 	call_deferred("_apply_camera_bounds_if_present")
 	_target_zoom = cam.zoom.x
 	shake_offset.position = Vector2.ZERO
@@ -729,3 +735,84 @@ func snap_camera_to_player() -> void:
 	await get_tree().process_frame
 	if cam != null:
 		cam.position_smoothing_enabled = true
+
+func set_facing_direction(direction: String) -> void:
+	# Called by WorldSpawn after scene travel.
+	# Also future-friendly for cutscenes/NPC scripts if they need
+	# to turn the player toward something.
+
+	var v := _direction_to_vector(direction)
+	_set_facing_vector(v, true)
+
+
+func set_facing_vector(new_facing: Vector2) -> void:
+	# Optional public helper if another script wants to pass a Vector2 directly.
+	_set_facing_vector(new_facing, true)
+
+
+func _set_facing_vector(new_facing: Vector2, force: bool = false) -> void:
+	if new_facing == Vector2.ZERO:
+		return
+
+	# Snap to cardinal just in case a diagonal/vector slips through.
+	if abs(new_facing.x) > abs(new_facing.y):
+		new_facing = Vector2(sign(new_facing.x), 0)
+	else:
+		new_facing = Vector2(0, sign(new_facing.y))
+
+	if not force and facing == new_facing:
+		return
+
+	facing = new_facing
+	facing_vector = facing
+	facing_direction = _vector_to_direction(facing)
+
+	_update_sensor_position()
+
+	if indicator != null and indicator.has_method("set_direction"):
+		indicator.call("set_direction", facing)
+
+	_apply_player_visual_for_facing()
+
+
+func _direction_to_vector(direction: String) -> Vector2:
+	direction = direction.strip_edges().to_lower()
+
+	match direction:
+		"up":
+			return Vector2.UP
+		"left":
+			return Vector2.LEFT
+		"right":
+			return Vector2.RIGHT
+		"down":
+			return Vector2.DOWN
+		_:
+			return Vector2.DOWN
+
+
+func _vector_to_direction(v: Vector2) -> String:
+	if abs(v.x) > abs(v.y):
+		if v.x > 0.0:
+			return "right"
+		return "left"
+
+	if v.y < 0.0:
+		return "up"
+
+	return "down"
+
+
+func _apply_player_visual_for_facing() -> void:
+	# Future-friendly hook.
+	# Right now, your FacingIndicator handles the placeholder arrow.
+	# Later, if you assign an AnimatedSprite2D here, the player can
+	# automatically switch to idle_up / idle_down / idle_left / idle_right.
+
+	var sprite := get_node_or_null(animated_sprite_path) as AnimatedSprite2D
+	if sprite == null:
+		return
+
+	var idle_anim := "idle_" + facing_direction
+	if sprite.sprite_frames != null and sprite.sprite_frames.has_animation(idle_anim):
+		sprite.play(idle_anim)

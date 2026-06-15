@@ -4,61 +4,96 @@
 
 [node name="EndOfDaySummaryUI" type="CanvasLayer" groups=["end_of_day_ui"]]
 script = ExtResource("1_o2is7")
-visual_node_path = NodePath("Panel")
+visual_node_path = NodePath("Root")
 start_visible_in_game = false
 is_modal = true
 modal_overlay_id = "end_of_day_summary"
 
-[node name="Panel" type="PanelContainer" parent="."]
+[node name="Root" type="Control" parent="."]
 visible = false
-offset_right = 40.0
-offset_bottom = 40.0
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="VBox" type="VBoxContainer" parent="Panel"]
+[node name="BackgroundTexture" type="TextureRect" parent="Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Dimmer" type="ColorRect" parent="Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.4509804)
+
+[node name="Panel" type="PanelContainer" parent="Root"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -81.0
+offset_top = -269.0
+offset_right = 81.0
+offset_bottom = 269.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="Root/Panel"]
 layout_mode = 2
 
-[node name="TitleLabel" type="Label" parent="Panel/VBox"]
+[node name="TitleLabel" type="Label" parent="Root/Panel/VBox"]
 layout_mode = 2
 text = "End of Day Summary"
 
-[node name="DayLabel" type="Label" parent="Panel/VBox"]
+[node name="DayLabel" type="Label" parent="Root/Panel/VBox"]
 layout_mode = 2
 
-[node name="MoneyLabel" type="Label" parent="Panel/VBox"]
+[node name="MoneyLabel" type="Label" parent="Root/Panel/VBox"]
 layout_mode = 2
 
-[node name="ShippedRichText" type="RichTextLabel" parent="Panel/VBox"]
+[node name="ShippedRichText" type="RichTextLabel" parent="Root/Panel/VBox"]
 custom_minimum_size = Vector2(50, 200)
 layout_mode = 2
 
-[node name="QuestsScroll" type="ScrollContainer" parent="Panel/VBox"]
+[node name="QuestsScroll" type="ScrollContainer" parent="Root/Panel/VBox"]
 custom_minimum_size = Vector2(0, 80)
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="QuestRichText" type="RichTextLabel" parent="Panel/VBox/QuestsScroll"]
+[node name="QuestRichText" type="RichTextLabel" parent="Root/Panel/VBox/QuestsScroll"]
 custom_minimum_size = Vector2(50, 20)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 bbcode_enabled = true
 
-[node name="CompletedScroll" type="ScrollContainer" parent="Panel/VBox"]
+[node name="CompletedScroll" type="ScrollContainer" parent="Root/Panel/VBox"]
 custom_minimum_size = Vector2(0, 80)
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="CompletedRichText" type="RichTextLabel" parent="Panel/VBox/CompletedScroll"]
+[node name="CompletedRichText" type="RichTextLabel" parent="Root/Panel/VBox/CompletedScroll"]
 custom_minimum_size = Vector2(50, 20)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 bbcode_enabled = true
 
-[node name="UnlockedRichText" type="RichTextLabel" parent="Panel/VBox"]
+[node name="UnlockedRichText" type="RichTextLabel" parent="Root/Panel/VBox"]
 custom_minimum_size = Vector2(50, 50)
 layout_mode = 2
 
-[node name="ContinueButton" type="Button" parent="Panel/VBox"]
+[node name="ContinueButton" type="Button" parent="Root/Panel/VBox"]
 layout_mode = 2
 text = "Continue"

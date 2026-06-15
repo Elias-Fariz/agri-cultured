@@ -100,7 +100,7 @@ format = 2
 layer_0/tile_data = PackedInt32Array(1572830, 0, 0, 1834975, 0, 0, 1245152, 0, 0, 2031585, 0, 0, 1703906, 0, 0, 1507299, 0, 0, 1900516, 0, 0, 1310693, 0, 0, 1638374, 0, 0, 1966055, 0, 0, 1703913, 0, 0, 1769454, 2, 0, 1572848, 2, 0, 1966064, 2, 0, 1376241, 2, 0, 1703922, 2, 0, 2097139, 2, 0, 1507316, 2, 0, 1703925, 2, 0, 1900533, 2, 0, 1703928, 2, 0, 1507321, 2, 0, 1966073, 2, 0, 1507327, 0, 0, 1179648, 0, 0, 1638400, 0, 0, 1441793, 0, 0, 1114115, 0, 0, 1638403, 0, 0, 1245189, 0, 0, 1441797, 0, 0, 1703942, 0, 0, 1376264, 0, 0, 1638410, 0, 0, 393189, 131077, 2, 393190, 131077, 0, 393191, 131077, 0, 393192, 131077, 0, 393193, 131077, 0, 393194, 131077, 0, 393195, 131077, 0, 393196, 131077, 0, 393197, 196613, 2, 458733, 65541, 0, 524269, 65541, 0, 720877, 65541, 0, 786413, 65541, 2, 786412, 196613, 1, 786407, 131077, 0, 786406, 131077, 0, 786405, 5, 2, 720869, 65541, 0, 655333, 65541, 0, 589797, 65541, 0, 524261, 65541, 0, 458725, 65541, 0, 589805, 65541, 0, 655341, 65541, 0, 786408, 131077, 0, 786409, 131077, 0, 786410, 65541, 1)
 
 [node name="Player" parent="." instance=ExtResource("3_vobxb")]
-position = Vector2(320, -77)
+position = Vector2(272, -79)
 
 [node name="Chest" parent="." instance=ExtResource("5_2ywwf")]
 position = Vector2(-243, 153)
@@ -193,6 +193,7 @@ texture = ExtResource("6_mre8b")
 position = Vector2(398, 296)
 script = ExtResource("42_hm1ss")
 tag = "from_connector"
+facing_direction = "left"
 
 [node name="SpawnFromAnimalKeeper" type="Marker2D" parent="TravelPoints" groups=["spawn_points"]]
 position = Vector2(198, 505)
@@ -222,7 +223,7 @@ tag = "from_deepforest"
 [node name="SpawnFromHouse" type="Marker2D" parent="TravelPoints" groups=["spawn_points"]]
 position = Vector2(-305, 188)
 script = ExtResource("42_hm1ss")
-tag = "from_deepforest"
+tag = "from_house"
 
 [node name="ToHouse" type="Area2D" parent="TravelPoints"]
 position = Vector2(-310, 152)

@@ -244,20 +244,28 @@ func _can_play_now() -> bool:
 
 
 func _play_now(rule: CutsceneRuleData) -> void:
-	CutsceneDirector.play_cutscene(rule.cutscene_id)
+	if CutsceneDirector == null:
+		return
 
-	if rule.one_shot and GameState != null:
-		GameState.mark_cutscene_played(rule.cutscene_id)
+	if debug_enabled:
+		print("[CutsceneRouter] Playing now:", rule.cutscene_id)
+
+	CutsceneDirector.play_cutscene(rule.cutscene_id)
 
 	if GameState != null and GameState.has_method("clear_cutscene_rule_ready"):
 		GameState.clear_cutscene_rule_ready(rule.rule_id)
-
 
 func _queue(rule: CutsceneRuleData) -> void:
 	if GameState == null:
 		return
 
-	GameState.queue_pending_cutscene(rule.cutscene_id, rule.one_shot)
+	if debug_enabled:
+		print("[CutsceneRouter] Queueing cutscene:", rule.cutscene_id)
+
+	if GameState.has_method("queue_pending_cutscene"):
+		GameState.queue_pending_cutscene(rule.cutscene_id, rule.one_shot)
+	else:
+		push_warning("CutsceneEventRouter: GameState.queue_pending_cutscene() missing.")
 
 	if GameState.has_method("clear_cutscene_rule_ready"):
 		GameState.clear_cutscene_rule_ready(rule.rule_id)

@@ -1,4 +1,4 @@
-[gd_scene load_steps=29 format=3 uid="uid://5yq150fm6r0f"]
+[gd_scene load_steps=30 format=3 uid="uid://5yq150fm6r0f"]
 
 [ext_resource type="TileSet" uid="uid://bqs5ruk6pejpc" path="res://tiles/GroundTileset.tres" id="1_cqmf0"]
 [ext_resource type="TileSet" uid="uid://bjhy464dgbpg" path="res://tiles/ObjectsTileset.tres" id="2_frw7d"]
@@ -25,6 +25,7 @@
 [ext_resource type="Script" uid="uid://dxx68q28fdnvv" path="res://scripts/SpawnPoint.gd" id="21_v2rab"]
 [ext_resource type="PackedScene" uid="uid://cfyepca1wp5kc" path="res://tscn/Flower.tscn" id="22_f36mv"]
 [ext_resource type="Script" uid="uid://b7n4wv6k3k33k" path="res://scripts/QuestLocation.gd" id="23_v2rab"]
+[ext_resource type="Texture2D" uid="uid://bwudms0hgr4q7" path="res://art/grass.png" id="26_5h8gf"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_y2j0d"]
 
@@ -114,7 +115,9 @@ script = ExtResource("19_hd48n")
 target_scene_path = "res://tscn/ValleyHeart.tscn"
 target_spawn_tag = "from_connector"
 travel_id = "valley_heart"
+prompt_travel = "E: Follow the Roots"
 locked_text = "A soothing melody resonates from beyond... Maybe later."
+locked_visual_path = NodePath("../../BlockerVisual")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="TravelPoints/ToHeart"]
 shape = SubResource("RectangleShape2D_y2j0d")
@@ -126,6 +129,7 @@ texture = ExtResource("20_f36mv")
 position = Vector2(398, 296)
 script = ExtResource("21_v2rab")
 tag = "from_town"
+facing_direction = "left"
 
 [node name="SpawnFromHeart" type="Marker2D" parent="TravelPoints" groups=["spawn_points"]]
 position = Vector2(-5, -126)
@@ -149,6 +153,7 @@ texture = ExtResource("20_f36mv")
 position = Vector2(-576, 301)
 script = ExtResource("21_v2rab")
 tag = "from_farm"
+facing_direction = "right"
 
 [node name="Flower" parent="." instance=ExtResource("22_f36mv")]
 position = Vector2(-283, 75)
@@ -180,3 +185,7 @@ position = Vector2(-251, 417)
 
 [node name="HeartIntro_Focus" type="Marker2D" parent="CutsceneMarkers"]
 position = Vector2(-295, 477)
+
+[node name="BlockerVisual" type="Sprite2D" parent="."]
+position = Vector2(-58, -180)
+texture = ExtResource("26_5h8gf")

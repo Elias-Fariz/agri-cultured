@@ -118,11 +118,27 @@ Phase i gotta stop adding so many phases, just please: VERTICAL SLICE
 * Grayboxing UI layouts for artists
 * Signs and more Interactables *DID LAMP*
 * Fade Transitions for Travel *DONE*
-* More Fade Transitions, maybe little jingles too
-* Path Blocking/Locking
+* More Fade Transitions, maybe little jingles too *DONE*
+* Path Blocking/Locking *DONE*
 * Prompt Polish
 * Gameplay Feedback
 * Audio Polish
+
+Phase ALRIGHT... more things
+* Smooth scene travel fade transitions *DONE*
+* Camera snap after spawn *DONE*
+* House lamp toggle interaction *DONE*
+* Help Book as progressive resource UI *DONE*
+* Dialogue rewards for flags/items/recipes *DONE*
+* Travel SFX by destination *DONE*
+* Spawn-facing direction support *DONE*
+* Bed confirmation popup *DONE*
+* Sleep fade transition *DONE*
+* End-of-day summary polish *DONE*
+* Help Book notebook interactable
+* Locked path blockers with E: Check *DONE*
+* Generic interactable state persistence
+* Small Joy Interactions / delight actions
 
 Phase YouTube: the different videos I want
 * Devlog 1 *PRETTY MUCH DONE*

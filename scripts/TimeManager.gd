@@ -171,34 +171,59 @@ func _trigger_passout() -> void:
 
 
 func _passout_sequence() -> void:
-	# Lock everything so the player can't move during the "oops" moment
-	GameState.lock_gameplay()
+	# Lock everything so the player can't move during the "oops" moment.
+	if GameState != null and GameState.has_method("lock_gameplay"):
+		GameState.lock_gameplay()
+
 	pause_time()
 
-	# Immediate toast at 2:00 AM
+	# Immediate warning before the screen fades.
 	if QuestEvents != null and QuestEvents.has_signal("toast_requested"):
 		QuestEvents.toast_requested.emit("You’re getting really sleepy…", "warning", 1.5)
 
-	# Let the player actually see it
 	await get_tree().create_timer(1.2).timeout
 
-	# Now do the actual rollover
+	# Fade out into the passout transition.
+	if FadeOverlay != null:
+		await FadeOverlay.fade_out(0.45)
+
+	# Process the new day while the screen is black.
 	start_new_day()
-	GameState.apply_passout_penalty()
 
-	# Queue the morning reminder (you already have this working)
-	GameState.queue_day_start_toast("You passed out last night… Energy reduced today. Try sleeping earlier.", "warning", 3.5)
+	if GameState != null:
+		if GameState.has_method("apply_passout_penalty"):
+			GameState.apply_passout_penalty()
 
-	# Warp home (your existing function)
-	GameState.warp_to_farm_after_passout()
+		if GameState.has_method("queue_day_start_toast"):
+			GameState.queue_day_start_toast(
+				"You passed out last night… Energy reduced today. Try sleeping earlier.",
+				"warning",
+				3.5
+			)
 
-	# Show summary (your method is show_summary; group is end_of_day_ui)
-	GameState.request_end_of_day_summary()
+		# This may move the player or change scene.
+		if GameState.has_method("warp_to_farm_after_passout"):
+			GameState.warp_to_farm_after_passout()
 
-	GameState.unlock_gameplay()
+	# Give any scene warp / spawn manager / camera reset time to settle.
+	for i in range(5):
+		await get_tree().process_frame
 
-	# Note: time resumes after summary closes, handled elsewhere.
+	# Show the end-of-day summary.
+	if GameState != null and GameState.has_method("request_end_of_day_summary"):
+		GameState.request_end_of_day_summary()
+	else:
+		var summary_ui := get_tree().get_first_node_in_group("end_of_day_ui")
+		if summary_ui != null and summary_ui.has_method("show_summary"):
+			summary_ui.show_summary()
 
+	# Fade in to the summary screen.
+	if FadeOverlay != null:
+		await FadeOverlay.fade_in(0.20)
+
+	# Do NOT unlock gameplay here.
+	# EndOfDaySummaryUI handles unlock_gameplay() and resume_time()
+	# when the player presses Continue.
 
 func _flush_day_start_toasts_deferred() -> void:
 	# Wait 1–2 frames so HUD/toast UI is in-tree after scene changes

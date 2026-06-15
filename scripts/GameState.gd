@@ -2400,17 +2400,6 @@ func mark_gifted_to_npc(npc_id: String) -> void:
 	wk_map[wk] = count_this_week + 1
 	_gifted_week_count_by_npc[npc_id] = wk_map
 
-func try_play_pending_cutscene() -> void:
-	if pending_cutscene_id == "":
-		return
-
-	var id := pending_cutscene_id
-	pending_cutscene_id = ""
-
-	if has_node("/root/CutsceneDirector"):
-		CutsceneDirector.queue_cutscene(id)
-		CutsceneDirector.try_play_queued()
-
 func _play_heart_intro_stub() -> void:
 	lock_gameplay()
 	
@@ -3206,7 +3195,10 @@ func travel_to_scene(
 	target_spawn_tag: String = "",
 	fade_out_time: float = -1.0,
 	fade_in_time: float = -1.0,
-	frames_after_scene_change: int = -1
+	frames_after_scene_change: int = -1,
+	travel_sfx: AudioStream = null,
+	travel_sfx_volume_db: float = 0.0,
+	travel_sfx_delay: float = 0.0
 ) -> void:
 	target_scene_path = target_scene_path.strip_edges()
 	target_spawn_tag = target_spawn_tag.strip_edges()
@@ -3230,6 +3222,11 @@ func travel_to_scene(
 
 	lock_gameplay()
 
+	# Optional travel sound.
+	# Played from GameState so it survives the scene being unloaded.
+	if travel_sfx != null:
+		_play_travel_sfx(travel_sfx, travel_sfx_volume_db, travel_sfx_delay)
+
 	if FadeOverlay != null:
 		await FadeOverlay.fade_out(fade_out_time)
 
@@ -3248,13 +3245,171 @@ func travel_to_scene(
 		is_scene_traveling = false
 		return
 
-	# Because GameState is an autoload, it survives the scene change.
-	# This gives WorldSpawn time to place the player and snap the camera.
 	for i in range(max(1, frames_after_scene_change)):
 		await get_tree().process_frame
 
+	# If entering this scene queued a cutscene while we were still faded out,
+	# merge the travel fade directly into the cutscene reveal.
+	if _can_merge_pending_cutscene_into_travel():
+		unlock_gameplay()
+		is_scene_traveling = false
+
+		await get_tree().process_frame
+
+		if _play_pending_cutscene_from_travel_black():
+			return
+
+	# Normal travel path: no immediate cutscene, so reveal gameplay.
 	if FadeOverlay != null:
 		await FadeOverlay.fade_in(fade_in_time)
 
 	unlock_gameplay()
 	is_scene_traveling = false
+
+	call_deferred("_try_play_pending_cutscene_deferred")
+
+
+func _play_travel_sfx(stream: AudioStream, volume_db: float = 0.0, delay: float = 0.0) -> void:
+	if stream == null:
+		return
+
+	if delay > 0.0:
+		await get_tree().create_timer(delay).timeout
+
+	var player := AudioStreamPlayer.new()
+	player.stream = stream
+	player.volume_db = volume_db
+	add_child(player)
+
+	player.play()
+
+	await player.finished
+
+	if player != null and is_instance_valid(player):
+		player.queue_free()
+
+var pending_cutscene_one_shot: bool = true
+
+func queue_pending_cutscene(cutscene_id: String, one_shot: bool = true) -> void:
+	cutscene_id = cutscene_id.strip_edges()
+	if cutscene_id == "":
+		return
+
+	if one_shot and has_method("has_played_cutscene"):
+		if has_played_cutscene(cutscene_id):
+			if cutscene_queue_debug_enabled:
+				print("[GameState CutsceneQueue] Not queueing already-played cutscene:", cutscene_id)
+			return
+
+	pending_cutscene_id = cutscene_id
+	pending_cutscene_one_shot = one_shot
+
+	if cutscene_queue_debug_enabled:
+		print("[GameState CutsceneQueue] Queued:", pending_cutscene_id, " one_shot=", pending_cutscene_one_shot)
+
+	call_deferred("_try_play_pending_cutscene_deferred")
+
+
+func _try_play_pending_cutscene_deferred() -> void:
+	if _pending_cutscene_retry_active:
+		return
+
+	_pending_cutscene_retry_active = true
+
+	for i in range(max(1, pending_cutscene_retry_frames)):
+		await get_tree().process_frame
+
+	_pending_cutscene_retry_active = false
+
+	var played := try_play_pending_cutscene()
+
+	# If it could not play because gameplay was still locked or a cutscene was active,
+	# try again shortly. This prevents silent "queued forever" cutscenes.
+	if not played and pending_cutscene_id.strip_edges() != "":
+		call_deferred("_try_play_pending_cutscene_deferred")
+
+
+func try_play_pending_cutscene() -> bool:
+	var cutscene_id := pending_cutscene_id.strip_edges()
+	if cutscene_id == "":
+		return false
+
+	if CutsceneDirector == null:
+		if cutscene_queue_debug_enabled:
+			print("[GameState CutsceneQueue] Cannot play; CutsceneDirector is null.")
+		return false
+
+	if CutsceneDirector.has_method("is_playing_cutscene"):
+		if CutsceneDirector.is_playing_cutscene():
+			if cutscene_queue_debug_enabled:
+				print("[GameState CutsceneQueue] Waiting; director is already playing.")
+			return false
+
+	if has_method("is_gameplay_locked"):
+		if is_gameplay_locked():
+			if cutscene_queue_debug_enabled:
+				print("[GameState CutsceneQueue] Waiting; gameplay is locked. lock_count=", lock_count)
+			return false
+
+	if not CutsceneDirector.has_method("play_cutscene"):
+		push_warning("[GameState CutsceneQueue] CutsceneDirector.play_cutscene() missing.")
+		return false
+
+	if cutscene_queue_debug_enabled:
+		print("[GameState CutsceneQueue] Playing queued cutscene:", cutscene_id)
+
+	# Clear before play to avoid loops if the cutscene itself triggers state updates.
+	pending_cutscene_id = ""
+	pending_cutscene_one_shot = true
+
+	CutsceneDirector.play_cutscene(cutscene_id)
+
+	return true
+
+@export var cutscene_queue_debug_enabled: bool = true
+@export var pending_cutscene_retry_frames: int = 6
+
+var _pending_cutscene_retry_active: bool = false
+
+func _can_merge_pending_cutscene_into_travel() -> bool:
+	var cutscene_id := pending_cutscene_id.strip_edges()
+	if cutscene_id == "":
+		return false
+
+	if CutsceneDirector == null:
+		return false
+
+	# Important safety:
+	# Only merge if this cutscene belongs in the scene we just loaded.
+	# Otherwise we could keep the screen black for a cutscene that cannot play here.
+	if CutsceneDirector.has_method("can_play_cutscene_in_current_scene"):
+		return bool(CutsceneDirector.call("can_play_cutscene_in_current_scene", cutscene_id))
+
+	return true
+
+
+func _play_pending_cutscene_from_travel_black() -> bool:
+	var cutscene_id := pending_cutscene_id.strip_edges()
+	if cutscene_id == "":
+		return false
+
+	if CutsceneDirector == null:
+		return false
+
+	if CutsceneDirector.has_method("is_playing_cutscene"):
+		if CutsceneDirector.is_playing_cutscene():
+			return false
+
+	# Clear before playing so retry loops do not double-start it.
+	pending_cutscene_id = ""
+	pending_cutscene_one_shot = true
+
+	if cutscene_queue_debug_enabled:
+		print("[GameState CutsceneQueue] Merging travel fade into cutscene:", cutscene_id)
+
+	if CutsceneDirector.has_method("play_cutscene_from_black"):
+		CutsceneDirector.call("play_cutscene_from_black", cutscene_id)
+	else:
+		CutsceneDirector.call("play_cutscene", cutscene_id)
+
+	return true

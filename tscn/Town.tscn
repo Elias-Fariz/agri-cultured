@@ -1,4 +1,4 @@
-[gd_scene load_steps=58 format=3 uid="uid://b7y4cme4an3kb"]
+[gd_scene load_steps=62 format=3 uid="uid://b7y4cme4an3kb"]
 
 [ext_resource type="PackedScene" uid="uid://dv7wem6ftpvdd" path="res://tscn/Player.tscn" id="1_2feps"]
 [ext_resource type="Script" uid="uid://0ofb5xeer5m6" path="res://scripts/Town.gd" id="1_o31te"]
@@ -15,10 +15,14 @@
 [ext_resource type="PackedScene" uid="uid://dk1aaefcs7nwf" path="res://ui/QuestBoardUI.tscn" id="12_15yes"]
 [ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="12_fgqwr"]
 [ext_resource type="PackedScene" uid="uid://dexrjrr1c8jfb" path="res://ui/ShopUI.tscn" id="12_j34sm"]
+[ext_resource type="Texture2D" uid="uid://ylpu3ria5fxy" path="res://art/cow.PNG" id="12_qqxe7"]
+[ext_resource type="Texture2D" uid="uid://nan0sddf00hl" path="res://art/chest.png" id="13_0m8ol"]
 [ext_resource type="Resource" uid="uid://daedf3dq8citt" path="res://data/quests/ship_watermelon.tres" id="13_seor3"]
 [ext_resource type="Resource" uid="uid://djdebqx5ukejx" path="res://data/quests/chop_3_trees.tres" id="14_4f1xo"]
+[ext_resource type="Texture2D" uid="uid://1d6ygtxnkroh" path="res://art/rock.PNG" id="14_eipp1"]
 [ext_resource type="PackedScene" uid="uid://ixx7e0mb3ds4" path="res://ui/GiftUI.tscn" id="14_ff2fo"]
 [ext_resource type="PackedScene" uid="uid://b0fhots3ucty8" path="res://tscn/TownBoard.tscn" id="14_j34sm"]
+[ext_resource type="Texture2D" uid="uid://v26j5rtyi62e" path="res://art/rug.PNG" id="15_2qqyd"]
 [ext_resource type="Resource" uid="uid://cpqt3h0esaby7" path="res://data/quests/talk_to_lia.tres" id="15_ewvrf"]
 [ext_resource type="PackedScene" uid="uid://db3fa8eurisd7" path="res://tscn/FireflyLayer.tscn" id="15_j34sm"]
 [ext_resource type="Resource" uid="uid://b57jpls82qfiu" path="res://data/quests/go_to_farm.tres" id="16_caym6"]
@@ -130,6 +134,7 @@ texture = ExtResource("2_mua0x")
 position = Vector2(40, 638)
 script = ExtResource("36_caym6")
 tag = "from_connector"
+facing_direction = "right"
 
 [node name="ToGeneralStore" type="Area2D" parent="TravelPoints"]
 position = Vector2(883, 241)
@@ -173,6 +178,24 @@ shape = SubResource("RectangleShape2D_gmfaa")
 position = Vector2(885, 1660)
 script = ExtResource("36_caym6")
 tag = "from_beach"
+
+[node name="BlockerVisuals" type="Node2D" parent="TravelPoints"]
+
+[node name="RanchBlock" type="Sprite2D" parent="TravelPoints/BlockerVisuals"]
+position = Vector2(-94, 1456)
+texture = ExtResource("12_qqxe7")
+
+[node name="BeachBlock" type="Sprite2D" parent="TravelPoints/BlockerVisuals"]
+position = Vector2(898, 1767)
+texture = ExtResource("13_0m8ol")
+
+[node name="MinesBlock" type="Sprite2D" parent="TravelPoints/BlockerVisuals"]
+position = Vector2(1497, -82)
+texture = ExtResource("14_eipp1")
+
+[node name="DistrictBlock" type="Sprite2D" parent="TravelPoints/BlockerVisuals"]
+position = Vector2(1798, 615)
+texture = ExtResource("15_2qqyd")
 
 [node name="DayNightOverlay" parent="." instance=ExtResource("6_6scx0")]
 

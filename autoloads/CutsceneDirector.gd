@@ -13,6 +13,12 @@ var _camera_lock_active: bool = false
 var _camera_lock_point: Vector2 = Vector2.ZERO
 var _camera_lock_player: Node = null
 
+signal cutscene_finished(cutscene_id: String)
+
+var _current_cutscene_id: String = ""
+
+var _skip_initial_fade_out_once: bool = false
+
 # Cutscene registry: id -> .tres path
 var _cutscene_paths := {
 	"heart_intro": "res://data/cutscenes/heart_intro.tres",
@@ -48,6 +54,9 @@ func queue_cutscene(id: String) -> void:
 	if id == "":
 		return
 	_queued_id = id
+
+func is_playing_cutscene() -> bool:
+	return _is_playing
 
 func try_play_queued() -> void:
 	if _is_playing:
@@ -95,6 +104,7 @@ func play_cutscene(id: String) -> void:
 		return
 
 	_is_playing = true
+	_current_cutscene_id = id
 	_run_cutscene_async(data)
 
 # ------------------------------------------------------------
@@ -137,8 +147,11 @@ func _run_cutscene_impl(data: CutsceneData) -> void:
 		_finish_cutscene()
 		return
 
-	# 1) Fade OUT immediately (hide spawning/teleporting)
-	if has_node("/root/FadeOverlay"):
+	# 1) Fade OUT immediately unless travel already left us on a black screen.
+	var skip_initial_fade := _skip_initial_fade_out_once
+	_skip_initial_fade_out_once = false
+
+	if has_node("/root/FadeOverlay") and not skip_initial_fade:
 		await FadeOverlay.fade_out(0.15)
 		
 	_store_cutscene_original_zoom(player)
@@ -223,6 +236,13 @@ func _run_cutscene_impl(data: CutsceneData) -> void:
 	if has_node("/root/FadeOverlay"):
 		await FadeOverlay.fade_in(0.20)
 
+	var finished_id := String(data.id).strip_edges()
+	if finished_id != "":
+		if GameState != null and GameState.has_method("mark_cutscene_played"):
+			GameState.mark_cutscene_played(finished_id)
+
+		cutscene_finished.emit(finished_id)
+
 	_finish_cutscene()
 
 	await get_tree().process_frame
@@ -232,15 +252,11 @@ func _finish_cutscene() -> void:
 	GameState.unlock_gameplay()
 	_set_time_paused(false)
 	_is_playing = false
+	_current_cutscene_id = ""
 
-	# Safety: prevent instant UI opening during the tiny cleanup window
-	# after cutscene/dialogue/fade systems release control.
 	if GameState != null and GameState.has_method("block_modal_overlays_for"):
 		GameState.block_modal_overlays_for(0.45)
 
-	# Extra safety: item consumption can trigger inventory changes, food buffs,
-	# quest refreshes, toasts, and HUD updates. Give those systems a little
-	# more time after a cutscene before allowing item use.
 	if GameState != null and GameState.has_method("block_item_use_for"):
 		GameState.block_item_use_for(0.90)
 
@@ -1118,3 +1134,34 @@ func _show_fallback_overhead_text(actor: Node, text: String, duration: float, of
 
 	if label != null and is_instance_valid(label):
 		label.queue_free()
+
+func can_play_cutscene_in_current_scene(id: String) -> bool:
+	id = id.strip_edges()
+	if id == "":
+		return false
+
+	var path := _get_cutscene_path(id)
+	if path == "":
+		return false
+
+	var data := load(path) as CutsceneData
+	if data == null:
+		return false
+
+	var desired_scene := String(data.scene_name).strip_edges()
+	if desired_scene == "":
+		return true
+
+	var scene := get_tree().current_scene
+	if scene == null:
+		return false
+
+	return scene.name == desired_scene
+
+
+func play_cutscene_from_black(id: String) -> void:
+	# Used when travel already faded to black.
+	# This avoids the extra visible fade cycle:
+	# travel fade-in -> cutscene fade-out -> cutscene fade-in.
+	_skip_initial_fade_out_once = true
+	play_cutscene(id)

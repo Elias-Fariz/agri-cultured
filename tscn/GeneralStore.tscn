@@ -95,6 +95,7 @@ shape = SubResource("RectangleShape2D_mvgwc")
 position = Vector2(143, 144)
 script = ExtResource("15_l0ll2")
 tag = "from_town"
+facing_direction = "up"
 
 [node name="ShopMarkers" type="Node" parent="."]
 

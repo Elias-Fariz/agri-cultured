@@ -1,33 +1,81 @@
 extends BaseOverlay
 
-@onready var day_label: Label = $Panel/VBox/DayLabel
-@onready var money_label: Label = $Panel/VBox/MoneyLabel
-@onready var shipped_text: RichTextLabel = $Panel/VBox/ShippedRichText
-@onready var quest_text: RichTextLabel = $Panel/VBox/QuestsScroll/QuestRichText
-@onready var unlocked_text: RichTextLabel = $Panel/VBox/UnlockedRichText
-@onready var continue_button: Button = $Panel/VBox/ContinueButton
-@onready var completed_text: RichTextLabel = $Panel/VBox/CompletedScroll/CompletedRichText
+@onready var day_label: Label = $Root/Panel/VBox/DayLabel
+@onready var money_label: Label = $Root/Panel/VBox/MoneyLabel
+@onready var shipped_text: RichTextLabel = $Root/Panel/VBox/ShippedRichText
+@onready var quest_text: RichTextLabel = $Root/Panel/VBox/QuestsScroll/QuestRichText
+@onready var unlocked_text: RichTextLabel = $Root/Panel/VBox/UnlockedRichText
+@onready var continue_button: Button = $Root/Panel/VBox/ContinueButton
+@onready var completed_text: RichTextLabel = $Root/Panel/VBox/CompletedScroll/CompletedRichText
+
+@onready var background_texture: TextureRect = $Root/BackgroundTexture
+@onready var dimmer: ColorRect = $Root/Dimmer
+
+@export var summary_background: Texture2D
+@export_range(0.0, 1.0, 0.05) var dim_amount: float = 0.45
 
 @export var max_listed_items: int = 8
 @export var debug_enabled: bool = true
 
+@export var continue_fade_out_time: float = 0.18
+@export var morning_fade_in_time: float = 0.35
+
 var opened: bool = false
+var _closing: bool = false
+
 
 func _ready() -> void:
 	super._ready()
+	if background_texture != null:
+		background_texture.texture = summary_background
+
+	if dimmer != null:
+		dimmer.color = Color(0, 0, 0, dim_amount)
+	
 	if Engine.is_editor_hint():
 		return
+
 	continue_button.pressed.connect(_on_continue_pressed)
 
+
 func show_summary() -> void:
+	_closing = false
 	_refresh()
 	opened = true
 	super.show_overlay()
 
+	await get_tree().process_frame
+	if continue_button != null:
+		continue_button.grab_focus()
+
+
 func _on_continue_pressed() -> void:
+	if _closing:
+		return
+
+	_closing = true
+
+	if FadeOverlay != null:
+		await FadeOverlay.fade_out(continue_fade_out_time)
+
 	opened = false
 	super.hide_overlay()
+
+	await get_tree().process_frame
+
+	if FadeOverlay != null:
+		await FadeOverlay.fade_in(morning_fade_in_time)
+
+	if GameState != null and GameState.has_method("unlock_gameplay"):
+		GameState.unlock_gameplay()
+
+	if TimeManager != null:
+		TimeManager.resume_time()
+
 	call_deferred("_flush_day_start_toasts_deferred")
+
+	_closing = false
+
 
 func _flush_day_start_toasts_deferred() -> void:
 	await get_tree().process_frame
@@ -37,8 +85,10 @@ func _flush_day_start_toasts_deferred() -> void:
 	if GameState.has_method("try_play_pending_cutscene"):
 		GameState.try_play_pending_cutscene()
 
+
 func is_open() -> bool:
 	return opened
+
 
 func _refresh() -> void:
 	var s: Dictionary = {}
@@ -48,7 +98,6 @@ func _refresh() -> void:
 	if debug_enabled:
 		print("[EOD UI] yesterday_summary=", s)
 
-	# If it's truly empty, show the placeholder
 	if s == null or s.is_empty():
 		day_label.text = "Day ? Summary"
 		money_label.text = "Money earned: $0"
@@ -58,17 +107,12 @@ func _refresh() -> void:
 		completed_text.text = "Completed:\n• (none)"
 		return
 
-	# --- Day ---
 	var day_ended := int(s.get("day_ended", s.get("day", s.get("day_index", 0))))
 	day_label.text = "Day " + str(day_ended) + " Summary"
 
-	# --- Money ---
-	# Prefer money_earned, but fall back to payout if that’s what you stored.
 	var money_earned := int(s.get("money_earned", s.get("payout", s.get("money", 0))))
 	money_label.text = "Money earned: $" + str(money_earned)
 
-	# --- Shipped ---
-	# Try multiple likely key names
 	var shipped: Dictionary = s.get("shipped", s.get("shipped_items", s.get("shipping", {})))
 	if shipped == null:
 		shipped = {}
@@ -83,22 +127,17 @@ func _refresh() -> void:
 			var qty := int(shipped[k])
 			lines.append("• %s x%d" % [item_id, qty])
 
-		# --- Shipping blessing breakdown (optional) ---
-		# These are the keys we *want*, but we’ll be graceful if they’re missing.
 		var base_total := int(s.get("ship_base_total", -1))
 		var final_total := int(s.get("ship_final_total", -1))
 		var bonus := int(s.get("ship_heart_bonus", 0))
 		var mul := float(s.get("ship_heart_mul", 1.0))
 
-		# Common fallback: if you stored only payout, use that as final_total
 		if final_total < 0:
 			final_total = int(s.get("payout", -1))
 
-		# If you stored a multiplier but not bonus/base, we can compute a reasonable bonus display.
 		if bonus <= 0 and final_total >= 0 and mul > 1.0:
-			# Estimate base from final/mul (safe display only)
 			var est_base := int(round(float(final_total) / mul))
-			var est_bonus :Variant= max(0, final_total - est_base)
+			var est_bonus: Variant = max(0, final_total - est_base)
 			base_total = est_base if base_total < 0 else base_total
 			bonus = est_bonus
 
@@ -111,7 +150,6 @@ func _refresh() -> void:
 
 		shipped_text.text = "\n".join(lines)
 
-	# --- Unlocked ---
 	var unlocked: Array = s.get("areas_unlocked", s.get("unlocked", s.get("unlocks", [])))
 	if unlocked == null:
 		unlocked = []
@@ -121,12 +159,10 @@ func _refresh() -> void:
 	else:
 		unlocked_text.text = "Unlocked: " + ", ".join(_to_str_array(unlocked))
 
-	# --- Quests ---
 	var accepted: Array = s.get("quests_accepted", s.get("accepted", []))
 	var completed: Array = s.get("quests_completed", s.get("completed", []))
 	_set_quests_text(accepted, completed)
 
-	# Scroll reset
 	var sc := $Panel/VBox/QuestsScroll
 	if sc is ScrollContainer:
 		sc.scroll_vertical = 0
@@ -134,6 +170,7 @@ func _refresh() -> void:
 	var sc2 := $Panel/VBox/CompletedScroll
 	if sc2 is ScrollContainer:
 		sc2.scroll_vertical = 0
+
 
 func _set_quests_text(accepted: Array, completed: Array) -> void:
 	var accepted_clean: Array[String] = []
@@ -180,6 +217,7 @@ func _set_quests_text(accepted: Array, completed: Array) -> void:
 		if completed_clean.size() > max_listed_items:
 			c_lines.append("• …and %d more" % (completed_clean.size() - max_listed_items))
 	completed_text.text = "\n".join(c_lines)
+
 
 func _to_str_array(a: Array) -> Array[String]:
 	var out: Array[String] = []
