@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=3 uid="uid://bjx6v0gjfwt2h"]
+[gd_scene load_steps=27 format=3 uid="uid://bjx6v0gjfwt2h"]
 
 [ext_resource type="TileSet" uid="uid://chypvyk38hcyn" path="res://tiles/IndoorsTileset.tres" id="2_gef2e"]
 [ext_resource type="PackedScene" uid="uid://dv7wem6ftpvdd" path="res://tscn/Player.tscn" id="3_jpwvr"]
@@ -10,7 +10,6 @@
 [ext_resource type="PackedScene" uid="uid://68vtjhtvdbhw" path="res://ui/ShippingUI.tscn" id="9_y3bo4"]
 [ext_resource type="PackedScene" uid="uid://b6gc2u6w1dme1" path="res://tscn/HouseLamp.tscn" id="10_iuft3"]
 [ext_resource type="PackedScene" uid="uid://dk1aaefcs7nwf" path="res://ui/QuestBoardUI.tscn" id="11_obga2"]
-[ext_resource type="PackedScene" uid="uid://dythtjjsbyphx" path="res://tscn/CookingStation.tscn" id="12_g8yf3"]
 [ext_resource type="PackedScene" uid="uid://dexrjrr1c8jfb" path="res://ui/ShopUI.tscn" id="12_ur3p0"]
 [ext_resource type="PackedScene" uid="uid://qxjawwee60n1" path="res://ui/QuestMenuUI.tscn" id="13_cud0w"]
 [ext_resource type="PackedScene" uid="uid://cde8sgn45urws" path="res://ui/HelpOverlay.tscn" id="14_0ot87"]
@@ -23,7 +22,9 @@
 [ext_resource type="Resource" uid="uid://dkece5jomsis5" path="res://data/help/help_book.tres" id="20_gef2e"]
 [ext_resource type="Script" uid="uid://dvg0ynlpgst4t" path="res://scripts/WorldSpawn.gd" id="21_8dwd5"]
 [ext_resource type="Script" uid="uid://xl6estd3noyu" path="res://scripts/SceneTravelArea.gd" id="22_gk44a"]
+[ext_resource type="PackedScene" uid="uid://68eh64kra4rq" path="res://tscn/HelpBookNotebook.tscn" id="22_o06uo"]
 [ext_resource type="Script" uid="uid://dxx68q28fdnvv" path="res://scripts/SpawnPoint.gd" id="24_o06uo"]
+[ext_resource type="PackedScene" uid="uid://dhtymknlbx6nc" path="res://tscn/CookingTease.tscn" id="25_gk44a"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_r31n5"]
 
@@ -48,12 +49,10 @@ position = Vector2(255, 240)
 
 [node name="HouseLamp" parent="." instance=ExtResource("10_iuft3")]
 position = Vector2(221, 66)
+memory_scope = "house"
 
 [node name="Bed" parent="." instance=ExtResource("9_xjdd2")]
 position = Vector2(291, 67)
-
-[node name="CookingStation" parent="." instance=ExtResource("12_g8yf3")]
-position = Vector2(143, 250)
 
 [node name="QuestBoardUI" parent="." instance=ExtResource("11_obga2")]
 
@@ -78,6 +77,9 @@ help_book_data = ExtResource("20_gef2e")
 
 [node name="SpawnManager" type="Node" parent="."]
 script = ExtResource("21_8dwd5")
+
+[node name="HelpBookNotebook" parent="." instance=ExtResource("22_o06uo")]
+position = Vector2(370, 249)
 
 [node name="TravelPoints" type="Node2D" parent="."]
 
@@ -107,3 +109,6 @@ position = Vector2(-78, -92)
 
 [node name="BottomRight" type="Marker2D" parent="CameraBounds"]
 position = Vector2(597, 395)
+
+[node name="CookingTease" parent="." instance=ExtResource("25_gk44a")]
+position = Vector2(135, 248)

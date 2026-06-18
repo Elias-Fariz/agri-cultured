@@ -9,6 +9,9 @@ signal interacted(interactable_id: String)
 @export var interaction_enabled: bool = true
 @export var one_time_only: bool = false
 
+@export var memory_scope: String = ""
+@export var use_scene_path_in_memory_key: bool = true
+
 var _has_been_used: bool = false
 
 func get_interact_prompt(_context: Node = null) -> String:
@@ -54,3 +57,29 @@ func set_interaction_enabled(value: bool) -> void:
 
 func reset_interaction_state() -> void:
 	_has_been_used = false
+
+func get_memory_key() -> String:
+	var id := interactable_id.strip_edges()
+
+	if id == "":
+		id = String(name).strip_edges()
+
+	var scope := memory_scope.strip_edges()
+
+	if scope != "":
+		return scope + "::" + id
+
+	if use_scene_path_in_memory_key:
+		var scene := get_tree().current_scene
+		if scene != null:
+			var scene_path := String(scene.scene_file_path).strip_edges()
+			if scene_path != "":
+				return scene_path + "::" + id
+
+			return String(scene.name) + "::" + id
+
+	return id
+
+
+func get_world_memory() -> Node:
+	return get_node_or_null("/root/WorldMemory")

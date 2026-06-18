@@ -1,0 +1,20 @@
+[gd_scene load_steps=4 format=3 uid="uid://68eh64kra4rq"]
+
+[ext_resource type="Script" uid="uid://br6a667vgbfie" path="res://scripts/OpenOverlayInteractable.gd" id="1_g47ph"]
+[ext_resource type="Texture2D" uid="uid://2eju1f1rp7vs" path="res://art/tilled.png" id="1_gl3en"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_g47ph"]
+
+[node name="HelpBookNotebook" type="Area2D"]
+script = ExtResource("1_g47ph")
+overlay_group = "help_book_ui"
+missing_overlay_toast = "The notebook is missing its pages."
+interactable_id = "help_book_notebook"
+prompt_text = "E: Read"
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_gl3en")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+scale = Vector2(1.9246356, 1.9246356)
+shape = SubResource("RectangleShape2D_g47ph")

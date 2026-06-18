@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=3 uid="uid://5yq150fm6r0f"]
+[gd_scene load_steps=31 format=3 uid="uid://5yq150fm6r0f"]
 
 [ext_resource type="TileSet" uid="uid://bqs5ruk6pejpc" path="res://tiles/GroundTileset.tres" id="1_cqmf0"]
 [ext_resource type="TileSet" uid="uid://bjhy464dgbpg" path="res://tiles/ObjectsTileset.tres" id="2_frw7d"]
@@ -32,6 +32,8 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hd48n"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_p5ree"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_5h8gf"]
 
 [node name="Connector" type="Node2D"]
 position = Vector2(-4, 158)
@@ -116,7 +118,7 @@ target_scene_path = "res://tscn/ValleyHeart.tscn"
 target_spawn_tag = "from_connector"
 travel_id = "valley_heart"
 prompt_travel = "E: Follow the Roots"
-locked_text = "A soothing melody resonates from beyond... Maybe later."
+locked_text = "The roots are quiet here. For some reason, the air feels calm."
 locked_visual_path = NodePath("../../BlockerVisual")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="TravelPoints/ToHeart"]
@@ -172,7 +174,6 @@ script = ExtResource("23_v2rab")
 location_id = "connector"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="QuestLocation"]
-visible = false
 shape = SubResource("RectangleShape2D_p5ree")
 
 [node name="CutsceneMarkers" type="Node2D" parent="." groups=["cutscene_anchor"]]
@@ -186,6 +187,14 @@ position = Vector2(-251, 417)
 [node name="HeartIntro_Focus" type="Marker2D" parent="CutsceneMarkers"]
 position = Vector2(-295, 477)
 
-[node name="BlockerVisual" type="Sprite2D" parent="."]
-position = Vector2(-58, -180)
+[node name="BlockerVisual" type="Node2D" parent="."]
+position = Vector2(-124, -142)
+
+[node name="BlockerVisual" type="Sprite2D" parent="BlockerVisual"]
 texture = ExtResource("26_5h8gf")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="BlockerVisual"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BlockerVisual/StaticBody2D"]
+scale = Vector2(3.720002, 2.3200011)
+shape = SubResource("RectangleShape2D_5h8gf")

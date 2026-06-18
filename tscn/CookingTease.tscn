@@ -1,0 +1,20 @@
+[gd_scene load_steps=4 format=3 uid="uid://dhtymknlbx6nc"]
+
+[ext_resource type="Texture2D" uid="uid://dpix31klgunjt" path="res://art/shell.png" id="1_74gj7"]
+[ext_resource type="Script" uid="uid://br6a667vgbfie" path="res://scripts/OpenOverlayInteractable.gd" id="1_tgr87"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_tgr87"]
+
+[node name="CookingTease" type="Area2D"]
+script = ExtResource("1_tgr87")
+overlay_group = "cooking_ui"
+missing_overlay_toast = "Maybe later you can cook some warm recipes with this."
+interactable_id = "cooking_ui_open"
+prompt_text = "E: Cook?"
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_74gj7")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+scale = Vector2(1.9330292, 1.9330292)
+shape = SubResource("RectangleShape2D_tgr87")

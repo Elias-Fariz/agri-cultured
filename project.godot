@@ -34,6 +34,7 @@ ShopCatalogDb="*res://autoloads/ShopCatalogDb.tscn"
 FestivalManager="*res://autoloads/FestivalManager.tscn"
 QuestCatalogDb="*res://autoloads/QuestCatalogDb.tscn"
 CutsceneEventRouter="*res://autoloads/CutsceneEventRouter.tscn"
+WorldMemory="*res://autoloads/WorldMemory.gd"
 
 [input]
 

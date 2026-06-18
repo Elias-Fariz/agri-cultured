@@ -34,15 +34,28 @@ func _ready() -> void:
 	_is_on = starts_on
 
 	if persist_state and interactable_id.strip_edges() != "":
-		var flag_id := _state_flag_id()
-		if GameState != null and GameState.has_method("has_flag"):
-			if GameState.has_flag(flag_id + ":on"):
-				_is_on = true
-			elif GameState.has_flag(flag_id + ":off"):
-				_is_on = false
+		_load_state()
 
 	_refresh_state(false)
 
+func _load_state() -> void:
+	var memory := get_world_memory()
+
+	if memory != null and memory.has_method("has_state") and memory.has_method("get_value"):
+		var key := get_memory_key()
+
+		if bool(memory.call("has_state", key)):
+			_is_on = bool(memory.call("get_value", key, "is_on", starts_on))
+			return
+
+	# Backward-compatible fallback for your old GameState flag version.
+	if GameState != null and GameState.has_method("has_flag"):
+		var flag_id := _legacy_state_flag_id()
+
+		if GameState.has_flag(flag_id + ":on"):
+			_is_on = true
+		elif GameState.has_flag(flag_id + ":off"):
+			_is_on = false
 
 func _do_interact() -> void:
 	_is_on = not _is_on
@@ -97,16 +110,23 @@ func _show_toggle_toast() -> void:
 
 
 func _save_state() -> void:
+	var memory := get_world_memory()
+
+	if memory != null and memory.has_method("set_value"):
+		memory.call("set_value", get_memory_key(), "is_on", _is_on)
+		return
+
+	# Fallback if WorldMemory autoload is missing.
 	if GameState == null or not GameState.has_method("set_flag"):
 		return
 
-	var id := _state_flag_id()
+	var id := _legacy_state_flag_id()
 
 	GameState.set_flag(id + ":on", _is_on)
 	GameState.set_flag(id + ":off", not _is_on)
 
 
-func _state_flag_id() -> String:
+func _legacy_state_flag_id() -> String:
 	return "interactable_state:" + interactable_id.strip_edges()
 
 

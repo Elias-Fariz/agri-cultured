@@ -165,8 +165,29 @@ func _refresh_lock_visuals() -> void:
 	var locked_visual := get_node_or_null(locked_visual_path)
 	var unlocked_visual := get_node_or_null(unlocked_visual_path)
 
-	_set_canvas_visible(locked_visual, not unlocked)
-	_set_canvas_visible(unlocked_visual, unlocked)
+	_set_blocker_active(locked_visual, not unlocked)
+	_set_blocker_active(unlocked_visual, unlocked)
+	
+func _set_blocker_active(node: Node, active: bool) -> void:
+	if node == null:
+		return
+
+	_set_canvas_visible(node, active)
+	_set_collision_enabled_recursive(node, active)
+
+
+func _set_collision_enabled_recursive(node: Node, enabled: bool) -> void:
+	if node == null:
+		return
+
+	if node is CollisionShape2D:
+		(node as CollisionShape2D).disabled = not enabled
+
+	if node is CollisionPolygon2D:
+		(node as CollisionPolygon2D).disabled = not enabled
+
+	for child in node.get_children():
+		_set_collision_enabled_recursive(child, enabled)
 
 
 func _set_canvas_visible(node: Node, value: bool) -> void:

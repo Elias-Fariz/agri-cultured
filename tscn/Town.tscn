@@ -1,4 +1,4 @@
-[gd_scene load_steps=62 format=3 uid="uid://b7y4cme4an3kb"]
+[gd_scene load_steps=64 format=3 uid="uid://b7y4cme4an3kb"]
 
 [ext_resource type="PackedScene" uid="uid://dv7wem6ftpvdd" path="res://tscn/Player.tscn" id="1_2feps"]
 [ext_resource type="Script" uid="uid://0ofb5xeer5m6" path="res://scripts/Town.gd" id="1_o31te"]
@@ -63,6 +63,10 @@
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_gmfaa"]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_eipp1"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2qqyd"]
+
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_j34sm"]
 vertices = PackedVector2Array(27.78125, 234.96875, 24.21875, 72, 77.09375, 72, 78.09375, 179.15625, 397.07813, 234.02344, 225.27344, 176.84375, 223.27344, 101.89844, 336, 100.90625, 398.90625, 15.0234375, 336, 49.28125, 18.773438, 15.96875, 18.21875, 40.28125)
 polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3), PackedInt32Array(4, 0, 3, 5), PackedInt32Array(5, 6, 7, 4), PackedInt32Array(8, 4, 7, 9), PackedInt32Array(10, 8, 9, 11)])
@@ -109,7 +113,8 @@ script = ExtResource("34_ewvrf")
 target_scene_path = "res://tscn/AnimalKeeperArea.tscn"
 target_spawn_tag = "from_town"
 required_completed_quests = Array[String](["nothing"])
-locked_text = "A lot of haybales block your path. Maybe later."
+locked_text = "A sleepy critter has claimed this path for now."
+locked_visual_path = NodePath("../../BlockerVisuals/Ranch")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="TravelPoints/ToAnimalKeeperArea"]
 shape = SubResource("RectangleShape2D_caym6")
@@ -130,12 +135,6 @@ shape = SubResource("RectangleShape2D_ib40g")
 position = Vector2(-1, 0)
 texture = ExtResource("2_mua0x")
 
-[node name="SpawnFromFarm" type="Marker2D" parent="TravelPoints" groups=["spawn_points"]]
-position = Vector2(40, 638)
-script = ExtResource("36_caym6")
-tag = "from_connector"
-facing_direction = "right"
-
 [node name="ToGeneralStore" type="Area2D" parent="TravelPoints"]
 position = Vector2(883, 241)
 script = ExtResource("34_ewvrf")
@@ -149,6 +148,60 @@ shape = SubResource("RectangleShape2D_ib40g")
 position = Vector2(-1, 0)
 texture = ExtResource("2_mua0x")
 
+[node name="ToBeach" type="Area2D" parent="TravelPoints"]
+position = Vector2(892, 1701)
+collision_mask = 3
+script = ExtResource("34_ewvrf")
+target_scene_path = "res://tscn/Beach.tscn"
+target_spawn_tag = "from_town"
+required_completed_quests = Array[String](["nothing"])
+locked_text = "The shore path is buried under soft sand for now."
+locked_visual_path = NodePath("../../BlockerVisuals/Beach")
+
+[node name="Sprite2D" type="Sprite2D" parent="TravelPoints/ToBeach"]
+texture = ExtResource("2_mua0x")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TravelPoints/ToBeach"]
+shape = SubResource("RectangleShape2D_gmfaa")
+
+[node name="ToMines" type="Area2D" parent="TravelPoints"]
+position = Vector2(1487, 26)
+collision_mask = 3
+script = ExtResource("34_ewvrf")
+target_scene_path = "res://tscn/MineralChamber.tscn"
+target_spawn_tag = "from_town"
+required_completed_quests = Array[String](["nothing"])
+locked_text = "A warning sign asks travelers to stay clear for now."
+locked_visual_path = NodePath("../../BlockerVisuals/Mines")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TravelPoints/ToMines"]
+shape = SubResource("RectangleShape2D_eipp1")
+
+[node name="Sprite2D" type="Sprite2D" parent="TravelPoints/ToMines"]
+texture = ExtResource("2_mua0x")
+
+[node name="ToDistrict" type="Area2D" parent="TravelPoints"]
+position = Vector2(1729, 619)
+collision_mask = 3
+script = ExtResource("34_ewvrf")
+target_scene_path = "res://tscn/District.tscn"
+target_spawn_tag = "from_town"
+required_completed_quests = Array[String](["nothing"])
+locked_text = "The neighborhood gate is closed for now."
+locked_visual_path = NodePath("../../BlockerVisuals/District")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TravelPoints/ToDistrict"]
+shape = SubResource("RectangleShape2D_eipp1")
+
+[node name="Sprite2D" type="Sprite2D" parent="TravelPoints/ToDistrict"]
+texture = ExtResource("2_mua0x")
+
+[node name="SpawnFromFarm" type="Marker2D" parent="TravelPoints" groups=["spawn_points"]]
+position = Vector2(40, 638)
+script = ExtResource("36_caym6")
+tag = "from_connector"
+facing_direction = "right"
+
 [node name="SpawnFromGeneralStore" type="Marker2D" parent="TravelPoints" groups=["spawn_points"]]
 position = Vector2(827, 243)
 script = ExtResource("36_caym6")
@@ -159,43 +212,67 @@ position = Vector2(-58, 1483)
 script = ExtResource("36_caym6")
 tag = "from_keeper"
 
-[node name="ToBeach" type="Area2D" parent="TravelPoints"]
-position = Vector2(892, 1701)
-collision_mask = 3
-script = ExtResource("34_ewvrf")
-target_scene_path = "res://tscn/Beach.tscn"
-target_spawn_tag = "from_town"
-required_completed_quests = Array[String](["nothing"])
-locked_text = "The beach is quiet today. Maybe later."
-
-[node name="Sprite2D" type="Sprite2D" parent="TravelPoints/ToBeach"]
-texture = ExtResource("2_mua0x")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="TravelPoints/ToBeach"]
-shape = SubResource("RectangleShape2D_gmfaa")
-
 [node name="SpawnFromBeach" type="Marker2D" parent="TravelPoints" groups=["spawn_points"]]
 position = Vector2(885, 1660)
 script = ExtResource("36_caym6")
 tag = "from_beach"
 
-[node name="BlockerVisuals" type="Node2D" parent="TravelPoints"]
+[node name="SpawnFromMines" type="Marker2D" parent="TravelPoints" groups=["spawn_points"]]
+position = Vector2(1555, -166)
+script = ExtResource("36_caym6")
+tag = "from_connector"
+facing_direction = "right"
 
-[node name="RanchBlock" type="Sprite2D" parent="TravelPoints/BlockerVisuals"]
-position = Vector2(-94, 1456)
+[node name="BlockerVisuals" type="Node2D" parent="."]
+
+[node name="Ranch" type="Node2D" parent="BlockerVisuals"]
+position = Vector2(-125, 1470)
+
+[node name="RanchBlock" type="Sprite2D" parent="BlockerVisuals/Ranch"]
 texture = ExtResource("12_qqxe7")
 
-[node name="BeachBlock" type="Sprite2D" parent="TravelPoints/BlockerVisuals"]
-position = Vector2(898, 1767)
+[node name="StaticBody2D" type="StaticBody2D" parent="BlockerVisuals/Ranch"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BlockerVisuals/Ranch/StaticBody2D"]
+scale = Vector2(2.325, 2.325)
+shape = SubResource("RectangleShape2D_2qqyd")
+
+[node name="Beach" type="Node2D" parent="BlockerVisuals"]
+position = Vector2(898, 1792)
+
+[node name="BeachBlock" type="Sprite2D" parent="BlockerVisuals/Beach"]
 texture = ExtResource("13_0m8ol")
 
-[node name="MinesBlock" type="Sprite2D" parent="TravelPoints/BlockerVisuals"]
-position = Vector2(1497, -82)
+[node name="StaticBody2D" type="StaticBody2D" parent="BlockerVisuals/Beach"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BlockerVisuals/Beach/StaticBody2D"]
+scale = Vector2(2.325, 2.325)
+shape = SubResource("RectangleShape2D_2qqyd")
+
+[node name="Mines" type="Node2D" parent="BlockerVisuals"]
+position = Vector2(1526, -74)
+
+[node name="MinesBlock" type="Sprite2D" parent="BlockerVisuals/Mines"]
 texture = ExtResource("14_eipp1")
 
-[node name="DistrictBlock" type="Sprite2D" parent="TravelPoints/BlockerVisuals"]
-position = Vector2(1798, 615)
+[node name="StaticBody2D" type="StaticBody2D" parent="BlockerVisuals/Mines"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BlockerVisuals/Mines/StaticBody2D"]
+scale = Vector2(2.325, 2.325)
+shape = SubResource("RectangleShape2D_2qqyd")
+
+[node name="District" type="Node2D" parent="BlockerVisuals"]
+position = Vector2(1821, 618)
+
+[node name="DistrictBlock" type="Sprite2D" parent="BlockerVisuals/District"]
+position = Vector2(-4, 0)
 texture = ExtResource("15_2qqyd")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="BlockerVisuals/District"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BlockerVisuals/District/StaticBody2D"]
+scale = Vector2(2.325, 2.325)
+shape = SubResource("RectangleShape2D_2qqyd")
 
 [node name="DayNightOverlay" parent="." instance=ExtResource("6_6scx0")]
 

@@ -135,10 +135,15 @@ Phase ALRIGHT... more things
 * Bed confirmation popup *DONE*
 * Sleep fade transition *DONE*
 * End-of-day summary polish *DONE*
-* Help Book notebook interactable
+* Help Book notebook interactable *DONE*
 * Locked path blockers with E: Check *DONE*
-* Generic interactable state persistence
-* Small Joy Interactions / delight actions
+* Generic interactable state persistence *DONE*
+* Small Joy Interactions / delight actions *FOUNDATION MADE*
+
+Phase Make the World a Cozy Place
+* House Tidying
+* Interacting Reliability
+* UI Sound Passover
 
 Phase YouTube: the different videos I want
 * Devlog 1 *PRETTY MUCH DONE*

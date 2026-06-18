@@ -57,13 +57,13 @@
 [ext_resource type="PackedScene" uid="uid://1f33asibycm2" path="res://tscn/Sign.tscn" id="54_yp4mp"]
 [ext_resource type="PackedScene" uid="uid://eyoxn5bej1lm" path="res://tscn/Gate.tscn" id="56_wbmmh"]
 [ext_resource type="PackedScene" uid="uid://b2yas8ffxxcxr" path="res://tscn/FishingSpot.tscn" id="57_blq0h"]
-[ext_resource type="PackedScene" uid="uid://dythtjjsbyphx" path="res://tscn/CookingStation.tscn" id="57_nxb7m"]
 [ext_resource type="Script" uid="uid://dwgbix054vtfh" path="res://data/fishing/FishDefinition.gd" id="58_fe1ak"]
 [ext_resource type="Resource" uid="uid://c7fnqf4mgteax" path="res://data/fishing/fish_sardine.tres" id="59_tme2c"]
 [ext_resource type="Resource" uid="uid://bnla4wktaen61" path="res://data/fishing/fish_tuna.tres" id="60_qly5q"]
 [ext_resource type="Texture2D" uid="uid://wbaiq11iv7on" path="res://art/tavern.png" id="61_fe1ak"]
 [ext_resource type="Script" uid="uid://b6e88und28hko" path="res://scripts/SliceEndTrigger.gd" id="62_qly5q"]
 [ext_resource type="PackedScene" uid="uid://cfpgu03gpauoq" path="res://ui/SliceEndOverlay.tscn" id="63_svfjv"]
+[ext_resource type="PackedScene" uid="uid://eva0hmteelli" path="res://tscn/HouseChime.tscn" id="64_svfjv"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_k5exi"]
 
@@ -134,19 +134,6 @@ target_spawn_tag = "from_farm"
 shape = SubResource("RectangleShape2D_k5exi")
 
 [node name="Sprite2D" type="Sprite2D" parent="TravelPoints/ToAnimalKeeperArea"]
-texture = ExtResource("6_mre8b")
-
-[node name="ToMines" type="Area2D" parent="TravelPoints"]
-position = Vector2(-46, 79)
-collision_mask = 3
-script = ExtResource("29_f2th2")
-target_scene_path = "res://tscn/MineralChamber.tscn"
-target_spawn_tag = "from_farm"
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="TravelPoints/ToMines"]
-shape = SubResource("RectangleShape2D_k5exi")
-
-[node name="Sprite2D" type="Sprite2D" parent="TravelPoints/ToMines"]
 texture = ExtResource("6_mre8b")
 
 [node name="ToJade" type="Area2D" parent="TravelPoints"]
@@ -271,7 +258,7 @@ position = Vector2(266, 145)
 
 [node name="SeedPouchUI" parent="." instance=ExtResource("43_5v62u")]
 
-[node name="CookingUI" parent="." instance=ExtResource("45_uk2dd")]
+[node name="CookingUI" parent="." groups=["cooking_ui"] instance=ExtResource("45_uk2dd")]
 recipes = Array[ExtResource("46_fe1ak")]([ExtResource("47_tme2c"), ExtResource("48_qly5q"), ExtResource("49_svfjv")])
 
 [node name="HelpBookOverlay" parent="." instance=ExtResource("45_svfjv")]
@@ -391,10 +378,6 @@ position = Vector2(179, 340)
 visible = false
 position = Vector2(-52, 167)
 
-[node name="CookingStation" parent="." instance=ExtResource("57_nxb7m")]
-position = Vector2(-514, 86)
-cooking_ui_path = NodePath("../CookingUI")
-
 [node name="Tavern3" type="Sprite2D" parent="."]
 position = Vector2(-305, 21)
 scale = Vector2(2.216115, 2.216115)
@@ -412,3 +395,6 @@ script = ExtResource("62_qly5q")
 slice_end_overlay_path = NodePath("../SliceEndOverlay")
 
 [node name="SliceEndOverlay" parent="." instance=ExtResource("63_svfjv")]
+
+[node name="HouseChime" parent="." instance=ExtResource("64_svfjv")]
+position = Vector2(-366, 116)
