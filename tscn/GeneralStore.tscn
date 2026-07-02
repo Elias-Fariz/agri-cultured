@@ -84,6 +84,8 @@ collision_mask = 3
 script = ExtResource("13_e8p3a")
 target_scene_path = "res://tscn/Town.tscn"
 target_spawn_tag = "from_generalstore"
+prompt_travel = "E: Exit"
+prompt_priority = 70
 
 [node name="Sprite2D" type="Sprite2D" parent="ToTown"]
 texture = ExtResource("14_p04tt")
@@ -114,3 +116,4 @@ position = Vector2(149, -190)
 [node name="ShopCounter" parent="." instance=ExtResource("19_ibrsf")]
 position = Vector2(150, -89)
 shop_title = "General Store"
+prompt_priority = 50

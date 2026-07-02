@@ -1,0 +1,3 @@
+[gd_scene format=3 uid="uid://dsefxlv6x3h0c"]
+
+[node name="DayNightModulate" type="CanvasModulate" groups=["day_night_modulate"]]

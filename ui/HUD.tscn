@@ -5,11 +5,11 @@
 [ext_resource type="Script" uid="uid://du0y27a1sy66o" path="res://scripts/ToastManager.gd" id="3_jd13s"]
 [ext_resource type="Script" uid="uid://2r877fmmcyap" path="res://scripts/SeasonChangeAnnouncer.gd" id="4_wxbmk"]
 
-[node name="HUD" type="CanvasLayer"]
+[node name="HUD" type="CanvasLayer" groups=["devlog_hide_ui"]]
 script = ExtResource("1_1x8ju")
 visual_node_path = NodePath("TopRightPanel")
 
-[node name="TopRightPanel" type="PanelContainer" parent="."]
+[node name="TopRightPanel" type="PanelContainer" parent="." groups=["devlog_hide_ui"]]
 visible = false
 anchors_preset = 1
 anchor_left = 1.0

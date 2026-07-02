@@ -139,6 +139,8 @@ Phase ALRIGHT... more things
 * Locked path blockers with E: Check *DONE*
 * Generic interactable state persistence *DONE*
 * Small Joy Interactions / delight actions *FOUNDATION MADE*
+* Lighting *REMADE*
+* More Dev Things *SLOW WALKING AND UI HIDING*
 
 Phase Make the World a Cozy Place
 * House Tidying

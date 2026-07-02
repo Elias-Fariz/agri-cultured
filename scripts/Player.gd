@@ -51,6 +51,15 @@ var _cam_original_transform: Transform2D
 @export var dev_camera_tools_enabled: bool = true
 @export var dev_camera_lock_key: Key = KEY_Z
 
+# Developer-only cinematic walking tool.
+# Press Left Shift to toggle slow walking for prettier recordings.
+@export var dev_walk_tools_enabled: bool = true
+@export var dev_walk_toggle_key: Key = KEY_SHIFT
+@export_range(0.05, 1.0, 0.01)
+var dev_walk_speed_multiplier: float = 0.45
+
+var _dev_walk_enabled: bool = false
+
 var _dev_camera_locked: bool = false
 var _dev_camera_locked_global_transform: Transform2D
 
@@ -170,6 +179,11 @@ func _physics_process(delta: float) -> void:
 	if GameState.exhausted:
 		mult *= exhausted_speed_multiplier
 
+	# Dev/cinematic walk mode.
+	# This is mainly for recording soft devlog footage.
+	if _dev_walk_enabled:
+		mult *= dev_walk_speed_multiplier
+
 	velocity = input.normalized() * speed * mult
 	
 	var is_moving := velocity.length() > 5.0
@@ -187,6 +201,11 @@ func _physics_process(delta: float) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if _is_dev_camera_toggle_event(event):
 		_toggle_dev_camera_lock()
+		get_viewport().set_input_as_handled()
+		return
+
+	if _is_dev_walk_toggle_event(event):
+		_toggle_dev_walk()
 		get_viewport().set_input_as_handled()
 		return
 
@@ -816,3 +835,26 @@ func _apply_player_visual_for_facing() -> void:
 	var idle_anim := "idle_" + facing_direction
 	if sprite.sprite_frames != null and sprite.sprite_frames.has_animation(idle_anim):
 		sprite.play(idle_anim)
+
+func _is_dev_walk_toggle_event(event: InputEvent) -> bool:
+	if not dev_walk_tools_enabled:
+		return false
+
+	if event is InputEventKey:
+		var key_event := event as InputEventKey
+		return key_event.pressed and not key_event.echo and key_event.keycode == dev_walk_toggle_key
+
+	return false
+
+
+func _toggle_dev_walk() -> void:
+	_dev_walk_enabled = not _dev_walk_enabled
+	print("[DevWalk] Slow walk = ", _dev_walk_enabled)
+
+
+func set_dev_walk_enabled(value: bool) -> void:
+	_dev_walk_enabled = value
+
+
+func is_dev_walk_enabled() -> bool:
+	return _dev_walk_enabled

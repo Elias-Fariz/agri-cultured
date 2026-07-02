@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=3 uid="uid://5yq150fm6r0f"]
+[gd_scene load_steps=33 format=3 uid="uid://5yq150fm6r0f"]
 
 [ext_resource type="TileSet" uid="uid://bqs5ruk6pejpc" path="res://tiles/GroundTileset.tres" id="1_cqmf0"]
 [ext_resource type="TileSet" uid="uid://bjhy464dgbpg" path="res://tiles/ObjectsTileset.tres" id="2_frw7d"]
@@ -26,6 +26,8 @@
 [ext_resource type="PackedScene" uid="uid://cfyepca1wp5kc" path="res://tscn/Flower.tscn" id="22_f36mv"]
 [ext_resource type="Script" uid="uid://b7n4wv6k3k33k" path="res://scripts/QuestLocation.gd" id="23_v2rab"]
 [ext_resource type="Texture2D" uid="uid://bwudms0hgr4q7" path="res://art/grass.png" id="26_5h8gf"]
+[ext_resource type="PackedScene" uid="uid://cx73f4neh8tq" path="res://tscn/OutdoorLamp.tscn" id="27_ct6gm"]
+[ext_resource type="PackedScene" uid="uid://dsefxlv6x3h0c" path="res://ui/DayNightModulate.tscn" id="28_s17u3"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_y2j0d"]
 
@@ -103,6 +105,8 @@ collision_mask = 3
 script = ExtResource("19_hd48n")
 target_scene_path = "res://tscn/Town.tscn"
 target_spawn_tag = "from_connector"
+prompt_travel = "E: Go to Town"
+prompt_priority = 70
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="TravelPoints/ToTown"]
 shape = SubResource("RectangleShape2D_y2j0d")
@@ -118,6 +122,7 @@ target_scene_path = "res://tscn/ValleyHeart.tscn"
 target_spawn_tag = "from_connector"
 travel_id = "valley_heart"
 prompt_travel = "E: Follow the Roots"
+prompt_priority = 70
 locked_text = "The roots are quiet here. For some reason, the air feels calm."
 locked_visual_path = NodePath("../../BlockerVisual")
 
@@ -143,6 +148,8 @@ position = Vector2(-580, 249)
 script = ExtResource("19_hd48n")
 target_scene_path = "res://tscn/Farm.tscn"
 target_spawn_tag = "from_connector"
+prompt_travel = "E: Go to Farm"
+prompt_priority = 70
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="TravelPoints/ToFarm"]
 shape = SubResource("RectangleShape2D_hd48n")
@@ -174,6 +181,7 @@ script = ExtResource("23_v2rab")
 location_id = "connector"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="QuestLocation"]
+visible = false
 shape = SubResource("RectangleShape2D_p5ree")
 
 [node name="CutsceneMarkers" type="Node2D" parent="." groups=["cutscene_anchor"]]
@@ -198,3 +206,14 @@ texture = ExtResource("26_5h8gf")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="BlockerVisual/StaticBody2D"]
 scale = Vector2(3.720002, 2.3200011)
 shape = SubResource("RectangleShape2D_5h8gf")
+
+[node name="OutdoorLamp" parent="." instance=ExtResource("27_ct6gm")]
+position = Vector2(-73, 169)
+
+[node name="OutdoorLamp2" parent="." instance=ExtResource("27_ct6gm")]
+position = Vector2(-485, 175)
+
+[node name="OutdoorLamp3" parent="." instance=ExtResource("27_ct6gm")]
+position = Vector2(306, 171)
+
+[node name="DayNightModulate" parent="." instance=ExtResource("28_s17u3")]

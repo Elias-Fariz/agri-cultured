@@ -1,4 +1,4 @@
-[gd_scene load_steps=64 format=3 uid="uid://b7y4cme4an3kb"]
+[gd_scene load_steps=65 format=3 uid="uid://b7y4cme4an3kb"]
 
 [ext_resource type="PackedScene" uid="uid://dv7wem6ftpvdd" path="res://tscn/Player.tscn" id="1_2feps"]
 [ext_resource type="Script" uid="uid://0ofb5xeer5m6" path="res://scripts/Town.gd" id="1_o31te"]
@@ -55,7 +55,8 @@
 [ext_resource type="AudioStream" uid="uid://dmqutky1tc220" path="res://audio/sfx/sfx_hit_rock_01.WAV" id="51_ao30e"]
 [ext_resource type="Texture2D" uid="uid://cpkecnwhl7wbm" path="res://art/bed.PNG" id="51_gmfaa"]
 [ext_resource type="PackedScene" uid="uid://c5s0r8ajsjlar" path="res://tscn/buildings/Tavern.tscn" id="52_01b2m"]
-[ext_resource type="PackedScene" uid="uid://fw6jgfem1715" path="res://tscn/Bloom Lamppost.tscn" id="52_ao30e"]
+[ext_resource type="PackedScene" uid="uid://cx73f4neh8tq" path="res://tscn/OutdoorLamp.tscn" id="56_eipp1"]
+[ext_resource type="PackedScene" uid="uid://dsefxlv6x3h0c" path="res://ui/DayNightModulate.tscn" id="57_2qqyd"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_caym6"]
 
@@ -113,6 +114,7 @@ script = ExtResource("34_ewvrf")
 target_scene_path = "res://tscn/AnimalKeeperArea.tscn"
 target_spawn_tag = "from_town"
 required_completed_quests = Array[String](["nothing"])
+prompt_priority = 70
 locked_text = "A sleepy critter has claimed this path for now."
 locked_visual_path = NodePath("../../BlockerVisuals/Ranch")
 
@@ -127,6 +129,8 @@ position = Vector2(36, 586)
 script = ExtResource("34_ewvrf")
 target_scene_path = "res://tscn/Connector.tscn"
 target_spawn_tag = "from_town"
+prompt_travel = "E: Follow Path"
+prompt_priority = 70
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="TravelPoints/ToFarm"]
 shape = SubResource("RectangleShape2D_ib40g")
@@ -140,6 +144,8 @@ position = Vector2(883, 241)
 script = ExtResource("34_ewvrf")
 target_scene_path = "res://tscn/GeneralStore.tscn"
 target_spawn_tag = "from_town"
+prompt_travel = "E: Enter"
+prompt_priority = 70
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="TravelPoints/ToGeneralStore"]
 shape = SubResource("RectangleShape2D_ib40g")
@@ -171,6 +177,7 @@ script = ExtResource("34_ewvrf")
 target_scene_path = "res://tscn/MineralChamber.tscn"
 target_spawn_tag = "from_town"
 required_completed_quests = Array[String](["nothing"])
+prompt_priority = 70
 locked_text = "A warning sign asks travelers to stay clear for now."
 locked_visual_path = NodePath("../../BlockerVisuals/Mines")
 
@@ -187,6 +194,7 @@ script = ExtResource("34_ewvrf")
 target_scene_path = "res://tscn/District.tscn"
 target_spawn_tag = "from_town"
 required_completed_quests = Array[String](["nothing"])
+prompt_priority = 70
 locked_text = "The neighborhood gate is closed for now."
 locked_visual_path = NodePath("../../BlockerVisuals/District")
 
@@ -391,17 +399,6 @@ visible = false
 position = Vector2(355, 174)
 texture = ExtResource("51_gmfaa")
 
-[node name="Bloom Lamppost" parent="." instance=ExtResource("52_ao30e")]
-position = Vector2(1303, 518)
-
-[node name="Bloom Lamppost2" parent="." instance=ExtResource("52_ao30e")]
-position = Vector2(1310, 702)
-interactable_id = "bloom_lamppost_02"
-
-[node name="Bloom Lamppost3" parent="." instance=ExtResource("52_ao30e")]
-position = Vector2(485, 704)
-interactable_id = "bloom_lamppost_03"
-
 [node name="ShopMarkers" type="Node" parent="."]
 
 [node name="Bakery" parent="." instance=ExtResource("52_01b2m")]
@@ -419,3 +416,17 @@ scale = Vector2(1.8305613, 1.8305613)
 [node name="Store" parent="." instance=ExtResource("52_01b2m")]
 position = Vector2(880, 219)
 scale = Vector2(2.7925189, 2.7925189)
+
+[node name="OutdoorLamp" parent="." instance=ExtResource("56_eipp1")]
+position = Vector2(110, 517)
+
+[node name="OutdoorLamp2" parent="." instance=ExtResource("56_eipp1")]
+position = Vector2(948, 240)
+
+[node name="OutdoorLamp3" parent="." instance=ExtResource("56_eipp1")]
+position = Vector2(756, 1635)
+
+[node name="OutdoorLamp5" parent="." instance=ExtResource("56_eipp1")]
+position = Vector2(847, 719)
+
+[node name="DayNightModulate" parent="." instance=ExtResource("57_2qqyd")]

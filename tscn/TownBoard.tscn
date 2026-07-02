@@ -1,13 +1,18 @@
 [gd_scene load_steps=4 format=3 uid="uid://b0fhots3ucty8"]
 
-[ext_resource type="Script" uid="uid://bpo4hit7135jm" path="res://scripts/TownBoard.gd" id="1_imy6r"]
+[ext_resource type="Script" uid="uid://br6a667vgbfie" path="res://scripts/OpenOverlayInteractable.gd" id="1_imy6r"]
 [ext_resource type="Texture2D" uid="uid://nan0sddf00hl" path="res://art/chest.png" id="2_jdkqa"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_6qt7u"]
 size = Vector2(32, 32)
 
-[node name="TownBoard" type="Area2D" groups=["interactables"]]
+[node name="TownBoard" type="Area2D" groups=["interactables", "quest_board_ui"]]
 script = ExtResource("1_imy6r")
+overlay_group = "quest_board_ui"
+missing_overlay_toast = "The board's notices aren't available right now."
+interactable_id = "town_quest_board"
+prompt_text = "E: Read Board"
+prompt_priority = 50
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("2_jdkqa")

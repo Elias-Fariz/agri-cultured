@@ -1,4 +1,4 @@
-[gd_scene load_steps=74 format=3 uid="uid://cwspce5y4tb13"]
+[gd_scene load_steps=75 format=3 uid="uid://cwspce5y4tb13"]
 
 [ext_resource type="TileSet" uid="uid://bqs5ruk6pejpc" path="res://tiles/GroundTileset.tres" id="1_vkoen"]
 [ext_resource type="Script" uid="uid://bywlb7k2vtqr" path="res://scripts/ValleyHeart.gd" id="1_ye5kf"]
@@ -59,6 +59,7 @@
 [ext_resource type="Resource" uid="uid://dkece5jomsis5" path="res://data/help/help_book.tres" id="53_3frw5"]
 [ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="57_r5nbu"]
 [ext_resource type="Script" uid="uid://fp28wf3omrn8" path="res://data/quests/QuestSpawnRewardData.gd" id="58_3lvqc"]
+[ext_resource type="PackedScene" uid="uid://dsefxlv6x3h0c" path="res://ui/DayNightModulate.tscn" id="60_3lvqc"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_qprux"]
 texture = ExtResource("2_05sqv")
@@ -304,6 +305,8 @@ collision_mask = 3
 script = ExtResource("5_se66s")
 target_scene_path = "res://tscn/Connector.tscn"
 target_spawn_tag = "from_heart"
+prompt_travel = "E: Return Back"
+prompt_priority = 70
 
 [node name="Sprite2D" type="Sprite2D" parent="TravelPoints/ToFarm"]
 texture = ExtResource("6_qprux")
@@ -470,3 +473,5 @@ alder_walk_time = 1.5
 cinematic_ui_hider_path = NodePath("../UI/CinematicUIHider")
 
 [node name="CutsceneActors" type="Node" parent="."]
+
+[node name="DayNightModulate" parent="." instance=ExtResource("60_3lvqc")]

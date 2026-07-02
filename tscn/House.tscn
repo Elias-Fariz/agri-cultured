@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=3 uid="uid://bjx6v0gjfwt2h"]
+[gd_scene load_steps=29 format=3 uid="uid://bjx6v0gjfwt2h"]
 
 [ext_resource type="TileSet" uid="uid://chypvyk38hcyn" path="res://tiles/IndoorsTileset.tres" id="2_gef2e"]
 [ext_resource type="PackedScene" uid="uid://dv7wem6ftpvdd" path="res://tscn/Player.tscn" id="3_jpwvr"]
@@ -25,8 +25,12 @@
 [ext_resource type="PackedScene" uid="uid://68eh64kra4rq" path="res://tscn/HelpBookNotebook.tscn" id="22_o06uo"]
 [ext_resource type="Script" uid="uid://dxx68q28fdnvv" path="res://scripts/SpawnPoint.gd" id="24_o06uo"]
 [ext_resource type="PackedScene" uid="uid://dhtymknlbx6nc" path="res://tscn/CookingTease.tscn" id="25_gk44a"]
+[ext_resource type="PackedScene" uid="uid://dsefxlv6x3h0c" path="res://ui/DayNightModulate.tscn" id="26_o06uo"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_r31n5"]
+
+[sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_gk44a"]
+polygon = PackedVector2Array(5.6076856, 0, 34.650475, 0, 34.985264, -0.25398344, 7.9511957, -0.25398344, 8.034892, -2.285851, 34.734173, -2.285851, 34.901566, 0.007936982, 39.923374, 0, 40.00707, -2.5318975, 5.5239887, -2.5715823)
 
 [node name="House" type="Node2D" groups=["world"]]
 position = Vector2(2, 1)
@@ -35,6 +39,55 @@ position = Vector2(2, 1)
 tile_set = ExtResource("2_gef2e")
 format = 2
 layer_0/tile_data = PackedInt32Array(2, 1, 0, 65538, 1, 0, 131074, 1, 0, 196610, 1, 0, 262146, 1, 0, 327682, 1, 0, 393218, 1, 0, 458754, 1, 0, 524290, 1, 0, 3, 1, 0, 65539, 0, 0, 131075, 0, 0, 196611, 0, 0, 262147, 0, 0, 327683, 0, 0, 393219, 0, 0, 458755, 0, 0, 524291, 0, 0, 4, 1, 0, 65540, 0, 0, 131076, 0, 0, 196612, 0, 0, 262148, 0, 0, 327684, 0, 0, 393220, 0, 0, 458756, 0, 0, 524292, 0, 0, 5, 1, 0, 65541, 0, 0, 131077, 0, 0, 196613, 0, 0, 262149, 0, 0, 327685, 0, 0, 393221, 0, 0, 458757, 0, 0, 524293, 0, 0, 6, 1, 0, 65542, 0, 0, 131078, 0, 0, 196614, 0, 0, 262150, 0, 0, 327686, 0, 0, 393222, 0, 0, 458758, 3, 0, 524294, 3, 0, 7, 1, 0, 65543, 0, 0, 131079, 0, 0, 196615, 0, 0, 262151, 0, 0, 327687, 0, 0, 393223, 0, 0, 458759, 3, 0, 524295, 3, 0, 8, 1, 0, 65544, 0, 0, 131080, 0, 0, 196616, 0, 0, 262152, 0, 0, 327688, 0, 0, 393224, 0, 0, 458760, 3, 0, 524296, 3, 0, 9, 1, 0, 65545, 0, 0, 131081, 0, 0, 196617, 0, 0, 262153, 0, 0, 327689, 0, 0, 393225, 0, 0, 458761, 3, 0, 524297, 3, 0, 10, 1, 0, 65546, 0, 0, 131082, 0, 0, 196618, 0, 0, 262154, 0, 0, 327690, 0, 0, 393226, 0, 0, 458762, 0, 0, 524298, 0, 0, 11, 1, 0, 65547, 0, 0, 131083, 0, 0, 196619, 0, 0, 262155, 0, 0, 327691, 0, 0, 393227, 0, 0, 458763, 0, 0, 524299, 0, 0, 12, 1, 0, 65548, 0, 0, 131084, 0, 0, 196620, 0, 0, 262156, 0, 0, 327692, 0, 0, 393228, 0, 0, 458764, 0, 0, 524300, 0, 0, 13, 1, 0, 65549, 1, 0, 131085, 1, 0, 196621, 1, 0, 262157, 1, 0, 327693, 1, 0, 393229, 1, 0, 458765, 1, 0, 524301, 1, 0, 14, 1, 0, 65550, 1, 0, 131086, 1, 0, 196622, 1, 0, 262158, 1, 0, 327694, 1, 0, 393230, 1, 0, 458766, 1, 0, 524302, 1, 0, 589838, 1, 0, 589837, 1, 0, 589836, 1, 0, 589835, 1, 0, 589834, 1, 0, 589833, 1, 0, 589832, 1, 0, 589831, 1, 0, 589830, 1, 0, 589829, 1, 0, 589828, 1, 0, 589827, 1, 0, 589826, 1, 0)
+
+[node name="HouseLamp" parent="." instance=ExtResource("10_iuft3")]
+position = Vector2(221, 66)
+prompt_text = "E: Toggle"
+prompt_priority = 40
+memory_scope = "house"
+
+[node name="Bed" parent="." instance=ExtResource("9_xjdd2")]
+position = Vector2(291, 67)
+
+[node name="HelpBookNotebook" parent="." instance=ExtResource("22_o06uo")]
+position = Vector2(370, 249)
+prompt_text = "E: Open Help Book"
+prompt_priority = 40
+
+[node name="TravelPoints" type="Node2D" parent="."]
+
+[node name="ToFarm" type="Area2D" parent="TravelPoints"]
+position = Vector2(256, 268)
+script = ExtResource("22_gk44a")
+target_scene_path = "res://tscn/Farm.tscn"
+target_spawn_tag = "from_house"
+prompt_travel = "E: Exit"
+prompt_priority = 70
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TravelPoints/ToFarm"]
+shape = SubResource("RectangleShape2D_r31n5")
+
+[node name="Sprite2D" type="Sprite2D" parent="TravelPoints/ToFarm"]
+position = Vector2(-1, 0)
+texture = ExtResource("5_anwwx")
+
+[node name="SpawnFromFarm" type="Marker2D" parent="TravelPoints" groups=["spawn_points"]]
+position = Vector2(253, 237)
+script = ExtResource("24_o06uo")
+tag = "from_farm"
+facing_direction = "up"
+
+[node name="CameraBounds" type="Node2D" parent="."]
+
+[node name="TopLeft" type="Marker2D" parent="CameraBounds"]
+position = Vector2(-78, -92)
+
+[node name="BottomRight" type="Marker2D" parent="CameraBounds"]
+position = Vector2(597, 395)
+
+[node name="CookingTease" parent="." instance=ExtResource("25_gk44a")]
+position = Vector2(135, 248)
+prompt_priority = 40
 
 [node name="Player" parent="." instance=ExtResource("3_jpwvr")]
 position = Vector2(255, 240)
@@ -46,13 +99,6 @@ position = Vector2(255, 240)
 [node name="HUD" parent="." instance=ExtResource("8_harv6")]
 
 [node name="ShippingUI" parent="." instance=ExtResource("9_y3bo4")]
-
-[node name="HouseLamp" parent="." instance=ExtResource("10_iuft3")]
-position = Vector2(221, 66)
-memory_scope = "house"
-
-[node name="Bed" parent="." instance=ExtResource("9_xjdd2")]
-position = Vector2(291, 67)
 
 [node name="QuestBoardUI" parent="." instance=ExtResource("11_obga2")]
 
@@ -78,37 +124,8 @@ help_book_data = ExtResource("20_gef2e")
 [node name="SpawnManager" type="Node" parent="."]
 script = ExtResource("21_8dwd5")
 
-[node name="HelpBookNotebook" parent="." instance=ExtResource("22_o06uo")]
-position = Vector2(370, 249)
+[node name="LightOccluder2D" type="LightOccluder2D" parent="."]
+scale = Vector2(11.947888, -125.99247)
+occluder = SubResource("OccluderPolygon2D_gk44a")
 
-[node name="TravelPoints" type="Node2D" parent="."]
-
-[node name="ToFarm" type="Area2D" parent="TravelPoints"]
-position = Vector2(256, 268)
-script = ExtResource("22_gk44a")
-target_scene_path = "res://tscn/Farm.tscn"
-target_spawn_tag = "from_house"
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="TravelPoints/ToFarm"]
-shape = SubResource("RectangleShape2D_r31n5")
-
-[node name="Sprite2D" type="Sprite2D" parent="TravelPoints/ToFarm"]
-position = Vector2(-1, 0)
-texture = ExtResource("5_anwwx")
-
-[node name="SpawnFromFarm" type="Marker2D" parent="TravelPoints" groups=["spawn_points"]]
-position = Vector2(253, 237)
-script = ExtResource("24_o06uo")
-tag = "from_farm"
-facing_direction = "up"
-
-[node name="CameraBounds" type="Node2D" parent="."]
-
-[node name="TopLeft" type="Marker2D" parent="CameraBounds"]
-position = Vector2(-78, -92)
-
-[node name="BottomRight" type="Marker2D" parent="CameraBounds"]
-position = Vector2(597, 395)
-
-[node name="CookingTease" parent="." instance=ExtResource("25_gk44a")]
-position = Vector2(135, 248)
+[node name="DayNightModulate" parent="." instance=ExtResource("26_o06uo")]

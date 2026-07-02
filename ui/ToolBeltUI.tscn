@@ -2,12 +2,12 @@
 
 [ext_resource type="Script" uid="uid://dxxl004e3w51y" path="res://scripts/ToolBeltUI.gd" id="1_hk658"]
 
-[node name="ToolBeltUI" type="CanvasLayer"]
+[node name="ToolBeltUI" type="CanvasLayer" groups=["devlog_hide_ui"]]
 layer = 10
 script = ExtResource("1_hk658")
 visual_node_path = NodePath("Visuals")
 
-[node name="Visuals" type="Control" parent="."]
+[node name="Visuals" type="Control" parent="." groups=["devlog_hide_ui"]]
 visible = false
 layout_mode = 3
 anchors_preset = 15
