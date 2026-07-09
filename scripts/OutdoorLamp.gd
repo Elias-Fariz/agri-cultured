@@ -7,28 +7,41 @@ enum ScheduleMode {
 	ALWAYS_OFF
 }
 
+enum TransitionMode {
+	INSTANT,
+	FADE
+}
+
 @export_category("Schedule")
 
-## FOLLOW_TIME uses the on/off times below.
-## ALWAYS_ON and ALWAYS_OFF ignore the current time.
 @export var schedule_mode: ScheduleMode = ScheduleMode.FOLLOW_TIME
 
-@export_range(0, 23, 1) var turn_on_hour: int = 18
-@export_range(0, 59, 1) var turn_on_minute: int = 0
+@export_range(0, 23, 1)
+var turn_on_hour: int = 18
 
-@export_range(0, 23, 1) var turn_off_hour: int = 6
-@export_range(0, 59, 1) var turn_off_minute: int = 0
+@export_range(0, 59, 1)
+var turn_on_minute: int = 0
+
+@export_range(0, 23, 1)
+var turn_off_hour: int = 6
+
+@export_range(0, 59, 1)
+var turn_off_minute: int = 0
 
 
-@export_category("Lamp Nodes")
+@export_category("Transition")
 
-## Parent containing the glow sprite, PointLight2D, flame, etc.
+@export var transition_mode: TransitionMode = TransitionMode.FADE
+
+@export_range(0.0, 5.0, 0.05)
+var fade_duration: float = 1.0
+
+
+@export_category("Visual Nodes")
+
 @export var lit_visual_path: NodePath = ^"LitVisual"
-
-## Optional visual shown only while the lamp is off.
 @export var unlit_visual_path: NodePath = ^"UnlitVisual"
-
-## The actual PointLight2D.
+@export var glow_sprite_path: NodePath = ^"LitVisual/GlowSprite"
 @export var point_light_path: NodePath = ^"LitVisual/PointLight2D"
 
 
@@ -38,17 +51,23 @@ enum ScheduleMode {
 
 
 var _is_on: bool = false
+var _light_tween: Tween = null
+
+var _base_glow_modulate: Color = Color.WHITE
+var _base_light_energy: float = 1.0
 
 
 func _ready() -> void:
+	_cache_base_values()
+
 	if TimeManager != null:
 		if not TimeManager.time_changed.is_connected(_on_time_changed):
 			TimeManager.time_changed.connect(_on_time_changed)
 
-		_refresh_for_time(TimeManager.minutes)
+		_refresh_for_time(TimeManager.minutes, true)
 	else:
-		push_warning("OutdoorLamp: TimeManager was not available.")
-		_apply_lamp_state(schedule_mode == ScheduleMode.ALWAYS_ON)
+		push_warning("OutdoorLamp: TimeManager not found.")
+		_apply_lamp_state(schedule_mode == ScheduleMode.ALWAYS_ON, true)
 
 
 func _exit_tree() -> void:
@@ -56,14 +75,28 @@ func _exit_tree() -> void:
 		if TimeManager.time_changed.is_connected(_on_time_changed):
 			TimeManager.time_changed.disconnect(_on_time_changed)
 
+	if _light_tween != null:
+		_light_tween.kill()
+		_light_tween = null
+
+
+func _cache_base_values() -> void:
+	var glow_sprite := get_node_or_null(glow_sprite_path) as CanvasItem
+	if glow_sprite != null:
+		_base_glow_modulate = glow_sprite.modulate
+
+	var point_light := get_node_or_null(point_light_path) as PointLight2D
+	if point_light != null:
+		_base_light_energy = point_light.energy
+
 
 func _on_time_changed(current_minutes: int) -> void:
-	_refresh_for_time(current_minutes)
+	_refresh_for_time(current_minutes, false)
 
 
-func _refresh_for_time(current_minutes: int) -> void:
+func _refresh_for_time(current_minutes: int, instant: bool = false) -> void:
 	var should_be_on := _should_be_on(current_minutes)
-	_apply_lamp_state(should_be_on)
+	_apply_lamp_state(should_be_on, instant)
 
 
 func _should_be_on(current_minutes: int) -> bool:
@@ -75,97 +108,137 @@ func _should_be_on(current_minutes: int) -> bool:
 			return false
 
 		ScheduleMode.FOLLOW_TIME:
-			var on_minutes := _get_turn_on_minutes()
-			var off_minutes := _get_turn_off_minutes()
-
 			return _is_time_between(
 				current_minutes,
-				on_minutes,
-				off_minutes
+				_get_turn_on_minutes(),
+				_get_turn_off_minutes()
 			)
 
 	return false
 
 
-## Supports schedules that pass through midnight.
-##
-## Example:
-## Start = 18:00
-## End   = 06:00
-##
-## This correctly treats 22:00, 01:00, and 05:30 as active.
 func _is_time_between(
-	current_minutes: int,
-	start_minutes: int,
-	end_minutes: int
+	current: int,
+	start: int,
+	end: int
 ) -> bool:
-	current_minutes = wrapi(current_minutes, 0, 24 * 60)
-	start_minutes = wrapi(start_minutes, 0, 24 * 60)
-	end_minutes = wrapi(end_minutes, 0, 24 * 60)
+	current = wrapi(current, 0, 24 * 60)
+	start = wrapi(start, 0, 24 * 60)
+	end = wrapi(end, 0, 24 * 60)
 
-	# Equal times are treated as an always-on schedule.
-	# Use ALWAYS_OFF when a lamp should remain disabled.
-	if start_minutes == end_minutes:
+	# Same start/end means always on.
+	if start == end:
 		return true
 
-	# Normal same-day range, such as 08:00 to 17:00.
-	if start_minutes < end_minutes:
-		return (
-			current_minutes >= start_minutes
-			and current_minutes < end_minutes
-		)
+	# Same-day range.
+	if start < end:
+		return current >= start and current < end
 
-	# Overnight range, such as 18:00 to 06:00.
-	return (
-		current_minutes >= start_minutes
-		or current_minutes < end_minutes
-	)
+	# Overnight range.
+	return current >= start or current < end
 
 
-func _apply_lamp_state(value: bool) -> void:
-	if _is_on == value:
-		# Still refresh once in case this was called during _ready().
-		_refresh_visual_nodes()
+func _apply_lamp_state(value: bool, instant: bool = false) -> void:
+	if _is_on == value and not instant:
 		return
 
 	_is_on = value
-	_refresh_visual_nodes()
 
 	if debug_enabled:
-		print(
-			"[OutdoorLamp] ",
-			name,
-			" is now ",
-			"ON" if _is_on else "OFF",
-			" at ",
-			TimeManager.get_time_string()
-			if TimeManager != null
-			else "unknown time"
-		)
+		print("[OutdoorLamp] ", name, " on = ", _is_on)
+
+	if transition_mode == TransitionMode.INSTANT or instant or fade_duration <= 0.01:
+		_apply_instant_state()
+	else:
+		_apply_faded_state()
 
 
-func _refresh_visual_nodes() -> void:
+func _apply_instant_state() -> void:
+	if _light_tween != null:
+		_light_tween.kill()
+		_light_tween = null
+
+	var alpha := 1.0 if _is_on else 0.0
+
+	_set_lit_amount(alpha)
+
 	var lit_visual := get_node_or_null(lit_visual_path)
-	var unlit_visual := get_node_or_null(unlit_visual_path)
-	var point_light := get_node_or_null(point_light_path) as PointLight2D
-
 	if lit_visual is CanvasItem:
 		(lit_visual as CanvasItem).visible = _is_on
 
+	var unlit_visual := get_node_or_null(unlit_visual_path)
 	if unlit_visual is CanvasItem:
 		(unlit_visual as CanvasItem).visible = not _is_on
 
+
+func _apply_faded_state() -> void:
+	if _light_tween != null:
+		_light_tween.kill()
+		_light_tween = null
+
+	var lit_visual := get_node_or_null(lit_visual_path)
+	if lit_visual is CanvasItem:
+		(lit_visual as CanvasItem).visible = true
+
+	var unlit_visual := get_node_or_null(unlit_visual_path)
+	if unlit_visual is CanvasItem:
+		(unlit_visual as CanvasItem).visible = not _is_on
+
+	var target_amount := 1.0 if _is_on else 0.0
+	var current_amount := _get_current_lit_amount()
+
+	_light_tween = create_tween()
+	_light_tween.tween_method(
+		_set_lit_amount,
+		current_amount,
+		target_amount,
+		fade_duration
+	)
+
+	await _light_tween.finished
+
+	_light_tween = null
+
+	if not _is_on:
+		if lit_visual is CanvasItem:
+			(lit_visual as CanvasItem).visible = false
+
+
+func _set_lit_amount(amount: float) -> void:
+	amount = clamp(amount, 0.0, 1.0)
+
+	var glow_sprite := get_node_or_null(glow_sprite_path) as CanvasItem
+	if glow_sprite != null:
+		var c := _base_glow_modulate
+		c.a *= amount
+		glow_sprite.modulate = c
+
+	var point_light := get_node_or_null(point_light_path) as PointLight2D
 	if point_light != null:
-		point_light.enabled = _is_on
+		point_light.enabled = amount > 0.01
+		point_light.energy = _base_light_energy * amount
 
 
-func set_lamp_on(value: bool) -> void:
-	_apply_lamp_state(value)
+func _get_current_lit_amount() -> float:
+	var point_light := get_node_or_null(point_light_path) as PointLight2D
+	if point_light != null and _base_light_energy > 0.001:
+		return clamp(point_light.energy / _base_light_energy, 0.0, 1.0)
+
+	var glow_sprite := get_node_or_null(glow_sprite_path) as CanvasItem
+	if glow_sprite != null and _base_glow_modulate.a > 0.001:
+		return clamp(glow_sprite.modulate.a / _base_glow_modulate.a, 0.0, 1.0)
+
+	return 1.0 if _is_on else 0.0
 
 
 func refresh_from_current_time() -> void:
 	if TimeManager != null:
-		_refresh_for_time(TimeManager.minutes)
+		_refresh_for_time(TimeManager.minutes, true)
+
+
+func set_lamp_on(value: bool) -> void:
+	schedule_mode = ScheduleMode.ALWAYS_ON if value else ScheduleMode.ALWAYS_OFF
+	_apply_lamp_state(value, false)
 
 
 func is_lamp_on() -> bool:
@@ -173,8 +246,8 @@ func is_lamp_on() -> bool:
 
 
 func _get_turn_on_minutes() -> int:
-	return (turn_on_hour * 60) + turn_on_minute
+	return turn_on_hour * 60 + turn_on_minute
 
 
 func _get_turn_off_minutes() -> int:
-	return (turn_off_hour * 60) + turn_off_minute
+	return turn_off_hour * 60 + turn_off_minute

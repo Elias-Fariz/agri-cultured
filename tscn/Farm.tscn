@@ -1,4 +1,4 @@
-[gd_scene load_steps=68 format=3 uid="uid://6ni01dvcs2m2"]
+[gd_scene load_steps=70 format=3 uid="uid://6ni01dvcs2m2"]
 
 [ext_resource type="Script" uid="uid://cevvm7fnmvrhe" path="res://scripts/Farm.gd" id="1_vobxb"]
 [ext_resource type="PackedScene" uid="uid://b0c10lgb0ivgd" path="res://tscn/WaterSplash.tscn" id="2_66215"]
@@ -29,6 +29,7 @@
 [ext_resource type="PackedScene" uid="uid://dexrjrr1c8jfb" path="res://ui/ShopUI.tscn" id="19_4nmas"]
 [ext_resource type="PackedScene" uid="uid://db3fa8eurisd7" path="res://tscn/FireflyLayer.tscn" id="20_8lty6"]
 [ext_resource type="PackedScene" uid="uid://c3ksajlr1bllx" path="res://tscn/Chicken.tscn" id="21_65lcs"]
+[ext_resource type="PackedScene" uid="uid://bjbcuf555hh3l" path="res://tscn/NaturalGlow.tscn" id="22_j8ikv"]
 [ext_resource type="PackedScene" uid="uid://b0rdgln1dko2v" path="res://tscn/Cow.tscn" id="22_u3713"]
 [ext_resource type="PackedScene" uid="uid://c5tput53xrui" path="res://ui/RainOverlay.tscn" id="23_f2050"]
 [ext_resource type="Script" uid="uid://xl6estd3noyu" path="res://scripts/SceneTravelArea.gd" id="29_f2th2"]
@@ -47,20 +48,21 @@
 [ext_resource type="Script" uid="uid://c0wb6p01vhywa" path="res://scripts/RewardSpawnPoint.gd" id="44_6jl04"]
 [ext_resource type="PackedScene" uid="uid://todaqmfqrphb" path="res://ui/HelpBookOverlay.tscn" id="45_svfjv"]
 [ext_resource type="PackedScene" uid="uid://gndbb0osuq8k" path="res://ui/CookingUI.tscn" id="45_uk2dd"]
+[ext_resource type="PackedScene" uid="uid://dmwh8devorqla" path="res://ui/NarrationOverlay.tscn" id="45_uvnem"]
 [ext_resource type="Script" uid="uid://vit47hwmsw5h" path="res://data/cooking/CookingRecipeData.gd" id="46_fe1ak"]
 [ext_resource type="Resource" uid="uid://dkece5jomsis5" path="res://data/help/help_book.tres" id="46_uvnem"]
 [ext_resource type="Resource" uid="uid://bnfeh06kp730i" path="res://data/cooking/berry_bowl.tres" id="47_tme2c"]
 [ext_resource type="Resource" uid="uid://co0hk0jfn7v4i" path="res://data/cooking/grilled_sardine.tres" id="48_qly5q"]
 [ext_resource type="Resource" uid="uid://cwuvj1en2uvt8" path="res://data/cooking/warm_milk.tres" id="49_svfjv"]
 [ext_resource type="PackedScene" uid="uid://1f33asibycm2" path="res://tscn/Sign.tscn" id="54_yp4mp"]
+[ext_resource type="Texture2D" uid="uid://demlk6y7ovrny" path="res://art/player_house.png" id="56_j8ikv"]
 [ext_resource type="PackedScene" uid="uid://eyoxn5bej1lm" path="res://tscn/Gate.tscn" id="56_wbmmh"]
 [ext_resource type="PackedScene" uid="uid://b2yas8ffxxcxr" path="res://tscn/FishingSpot.tscn" id="57_blq0h"]
 [ext_resource type="Script" uid="uid://dwgbix054vtfh" path="res://data/fishing/FishDefinition.gd" id="58_fe1ak"]
 [ext_resource type="Resource" uid="uid://c7fnqf4mgteax" path="res://data/fishing/fish_sardine.tres" id="59_tme2c"]
 [ext_resource type="Resource" uid="uid://bnla4wktaen61" path="res://data/fishing/fish_tuna.tres" id="60_qly5q"]
-[ext_resource type="Texture2D" uid="uid://wbaiq11iv7on" path="res://art/tavern.png" id="61_fe1ak"]
 [ext_resource type="Script" uid="uid://b6e88und28hko" path="res://scripts/SliceEndTrigger.gd" id="62_qly5q"]
-[ext_resource type="PackedScene" uid="uid://cx73f4neh8tq" path="res://tscn/OutdoorLamp.tscn" id="63_qly5q"]
+[ext_resource type="PackedScene" uid="uid://cx73f4neh8tq" path="res://tscn/StreetLamp.tscn" id="63_qly5q"]
 [ext_resource type="PackedScene" uid="uid://cfpgu03gpauoq" path="res://ui/SliceEndOverlay.tscn" id="63_svfjv"]
 [ext_resource type="PackedScene" uid="uid://eva0hmteelli" path="res://tscn/HouseChime.tscn" id="64_svfjv"]
 [ext_resource type="PackedScene" uid="uid://dsefxlv6x3h0c" path="res://ui/DayNightModulate.tscn" id="64_uvnem"]
@@ -229,8 +231,11 @@ interactable_id = "farm_sell_box"
 prompt_text = "E: Open Shipping Box"
 prompt_priority = 50
 
+[node name="NaturalGlow" parent="." instance=ExtResource("22_j8ikv")]
+position = Vector2(-60, 804)
+
 [node name="Player" parent="." instance=ExtResource("3_vobxb")]
-position = Vector2(272, -79)
+position = Vector2(-26, 182)
 
 [node name="DayNightOverlay" parent="." instance=ExtResource("8_2ywwf")]
 
@@ -267,6 +272,8 @@ recipes = Array[ExtResource("46_fe1ak")]([ExtResource("47_tme2c"), ExtResource("
 
 [node name="HelpBookOverlay" parent="." instance=ExtResource("45_svfjv")]
 help_book_data = ExtResource("46_uvnem")
+
+[node name="NarrationOverlay" parent="." instance=ExtResource("45_uvnem")]
 
 [node name="FireflyLayer" parent="." groups=["firefly_layer"] instance=ExtResource("20_8lty6")]
 visible = false
@@ -381,8 +388,8 @@ position = Vector2(-52, 167)
 
 [node name="Tavern3" type="Sprite2D" parent="."]
 position = Vector2(-305, 21)
-scale = Vector2(2.216115, 2.216115)
-texture = ExtResource("61_fe1ak")
+scale = Vector2(0.9970319, 0.9970319)
+texture = ExtResource("56_j8ikv")
 
 [node name="Gate" parent="." instance=ExtResource("56_wbmmh")]
 position = Vector2(-656, 367)

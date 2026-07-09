@@ -1,4 +1,4 @@
-[gd_scene load_steps=33 format=3 uid="uid://5yq150fm6r0f"]
+[gd_scene load_steps=35 format=3 uid="uid://5yq150fm6r0f"]
 
 [ext_resource type="TileSet" uid="uid://bqs5ruk6pejpc" path="res://tiles/GroundTileset.tres" id="1_cqmf0"]
 [ext_resource type="TileSet" uid="uid://bjhy464dgbpg" path="res://tiles/ObjectsTileset.tres" id="2_frw7d"]
@@ -22,12 +22,14 @@
 [ext_resource type="Script" uid="uid://xl6estd3noyu" path="res://scripts/SceneTravelArea.gd" id="19_hd48n"]
 [ext_resource type="Resource" uid="uid://dkece5jomsis5" path="res://data/help/help_book.tres" id="19_p5ree"]
 [ext_resource type="Texture2D" uid="uid://bq8o1e8mbe7qm" path="res://art/door.PNG" id="20_f36mv"]
+[ext_resource type="PackedScene" uid="uid://dmwh8devorqla" path="res://ui/NarrationOverlay.tscn" id="20_yj4w2"]
 [ext_resource type="Script" uid="uid://dxx68q28fdnvv" path="res://scripts/SpawnPoint.gd" id="21_v2rab"]
 [ext_resource type="PackedScene" uid="uid://cfyepca1wp5kc" path="res://tscn/Flower.tscn" id="22_f36mv"]
 [ext_resource type="Script" uid="uid://b7n4wv6k3k33k" path="res://scripts/QuestLocation.gd" id="23_v2rab"]
 [ext_resource type="Texture2D" uid="uid://bwudms0hgr4q7" path="res://art/grass.png" id="26_5h8gf"]
-[ext_resource type="PackedScene" uid="uid://cx73f4neh8tq" path="res://tscn/OutdoorLamp.tscn" id="27_ct6gm"]
+[ext_resource type="PackedScene" uid="uid://cx73f4neh8tq" path="res://tscn/StreetLamp.tscn" id="27_ct6gm"]
 [ext_resource type="PackedScene" uid="uid://dsefxlv6x3h0c" path="res://ui/DayNightModulate.tscn" id="28_s17u3"]
+[ext_resource type="PackedScene" uid="uid://dxoihtjkpdrg2" path="res://tscn/SignPost.tscn" id="30_5m5vv"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_y2j0d"]
 
@@ -85,6 +87,8 @@ position = Vector2(320, -77)
 
 [node name="HelpBookOverlay" parent="." instance=ExtResource("18_y2j0d")]
 help_book_data = ExtResource("19_p5ree")
+
+[node name="NarrationOverlay" parent="." instance=ExtResource("20_yj4w2")]
 
 [node name="CameraBounds" type="Node2D" parent="."]
 
@@ -215,5 +219,8 @@ position = Vector2(-485, 175)
 
 [node name="OutdoorLamp3" parent="." instance=ExtResource("27_ct6gm")]
 position = Vector2(306, 171)
+
+[node name="SignPost" parent="." instance=ExtResource("30_5m5vv")]
+position = Vector2(-223, 158)
 
 [node name="DayNightModulate" parent="." instance=ExtResource("28_s17u3")]

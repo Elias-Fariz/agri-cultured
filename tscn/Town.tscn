@@ -1,4 +1,4 @@
-[gd_scene load_steps=65 format=3 uid="uid://b7y4cme4an3kb"]
+[gd_scene load_steps=69 format=3 uid="uid://b7y4cme4an3kb"]
 
 [ext_resource type="PackedScene" uid="uid://dv7wem6ftpvdd" path="res://tscn/Player.tscn" id="1_2feps"]
 [ext_resource type="Script" uid="uid://0ofb5xeer5m6" path="res://scripts/Town.gd" id="1_o31te"]
@@ -28,6 +28,9 @@
 [ext_resource type="Resource" uid="uid://b57jpls82qfiu" path="res://data/quests/go_to_farm.tres" id="16_caym6"]
 [ext_resource type="PackedScene" uid="uid://c5tput53xrui" path="res://ui/RainOverlay.tscn" id="16_vlptm"]
 [ext_resource type="AudioStream" uid="uid://d28bo8p77va8y" path="res://audio/ambience/amb_farm_wind.WAV" id="17_wi8o3"]
+[ext_resource type="PackedScene" uid="uid://cjommjh2l83yv" path="res://tscn/FlowerPatchObservation.tscn" id="18_3mxf2"]
+[ext_resource type="PackedScene" uid="uid://dxoihtjkpdrg2" path="res://tscn/SignPost.tscn" id="18_d1uqp"]
+[ext_resource type="PackedScene" uid="uid://bvd7uibe5rwui" path="res://tscn/PorchLantern.tscn" id="18_ihr3n"]
 [ext_resource type="AudioStream" uid="uid://c0vxwp7d85xq8" path="res://audio/ambience/life/sfx_bird_01.WAV" id="18_jlwy3"]
 [ext_resource type="AudioStream" uid="uid://dby2jcrvk4ssy" path="res://audio/ambience/life/sfx_bird_02.WAV" id="19_m0mrq"]
 [ext_resource type="AudioStream" uid="uid://b4kphj6d0xlxg" path="res://audio/ambience/life/sfx_bird_03.WAV" id="20_fgqwr"]
@@ -47,6 +50,7 @@
 [ext_resource type="PackedScene" uid="uid://cde8sgn45urws" path="res://ui/HelpOverlay.tscn" id="34_4f1xo"]
 [ext_resource type="Script" uid="uid://xl6estd3noyu" path="res://scripts/SceneTravelArea.gd" id="34_ewvrf"]
 [ext_resource type="Script" uid="uid://dxx68q28fdnvv" path="res://scripts/SpawnPoint.gd" id="36_caym6"]
+[ext_resource type="PackedScene" uid="uid://dmwh8devorqla" path="res://ui/NarrationOverlay.tscn" id="37_ep6ep"]
 [ext_resource type="Script" uid="uid://dvg0ynlpgst4t" path="res://scripts/WorldSpawn.gd" id="37_xdkop"]
 [ext_resource type="PackedScene" uid="uid://cbaw8nhel818e" path="res://tscn/Bench.tscn" id="39_ehdlx"]
 [ext_resource type="PackedScene" uid="uid://c2t6sq4qrohbv" path="res://tscn/ToolWorld.tscn" id="49_i157f"]
@@ -55,7 +59,7 @@
 [ext_resource type="AudioStream" uid="uid://dmqutky1tc220" path="res://audio/sfx/sfx_hit_rock_01.WAV" id="51_ao30e"]
 [ext_resource type="Texture2D" uid="uid://cpkecnwhl7wbm" path="res://art/bed.PNG" id="51_gmfaa"]
 [ext_resource type="PackedScene" uid="uid://c5s0r8ajsjlar" path="res://tscn/buildings/Tavern.tscn" id="52_01b2m"]
-[ext_resource type="PackedScene" uid="uid://cx73f4neh8tq" path="res://tscn/OutdoorLamp.tscn" id="56_eipp1"]
+[ext_resource type="PackedScene" uid="uid://cx73f4neh8tq" path="res://tscn/StreetLamp.tscn" id="56_eipp1"]
 [ext_resource type="PackedScene" uid="uid://dsefxlv6x3h0c" path="res://ui/DayNightModulate.tscn" id="57_2qqyd"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_caym6"]
@@ -96,11 +100,11 @@ layer_0/tile_data = PackedInt32Array(327680, 0, 0, 1441845, 65541, 1, 1441844, 1
 y_sort_enabled = true
 
 [node name="Mayor" parent="NPCs" instance=ExtResource("10_ml18c")]
-position = Vector2(375, 527)
+position = Vector2(408, 559)
 quest_offers = Array[ExtResource("12_fgqwr")]([ExtResource("6_gmfaa")])
 
 [node name="Maren" parent="NPCs" instance=ExtResource("51_01b2m")]
-position = Vector2(319, 1418)
+position = Vector2(673, 1447)
 
 [node name="Player" parent="." instance=ExtResource("1_2feps")]
 position = Vector2(-144, 81)
@@ -282,6 +286,48 @@ texture = ExtResource("15_2qqyd")
 scale = Vector2(2.325, 2.325)
 shape = SubResource("RectangleShape2D_2qqyd")
 
+[node name="OutdoorLamp" parent="." instance=ExtResource("56_eipp1")]
+position = Vector2(110, 517)
+
+[node name="OutdoorLamp2" parent="." instance=ExtResource("56_eipp1")]
+position = Vector2(1328, 496)
+
+[node name="OutdoorLamp3" parent="." instance=ExtResource("56_eipp1")]
+position = Vector2(756, 1635)
+
+[node name="OutdoorLamp5" parent="." instance=ExtResource("56_eipp1")]
+position = Vector2(847, 719)
+
+[node name="Bakery" parent="." instance=ExtResource("52_01b2m")]
+position = Vector2(545, 1394)
+scale = Vector2(2.8500535, 2.8500535)
+
+[node name="Tavern" parent="." instance=ExtResource("52_01b2m")]
+position = Vector2(1222, 1380)
+scale = Vector2(2.8500535, 2.8500535)
+
+[node name="MayorHouse" parent="." instance=ExtResource("52_01b2m")]
+position = Vector2(331, 501)
+scale = Vector2(1.8305613, 1.8305613)
+
+[node name="Store" parent="." instance=ExtResource("52_01b2m")]
+position = Vector2(880, 219)
+scale = Vector2(2.7925189, 2.7925189)
+
+[node name="SignPost" parent="Store/Visuals/FrontDetails/SignSocket" index="0" instance=ExtResource("18_d1uqp")]
+position = Vector2(-33.945175, -13.249686)
+scale = Vector2(0.5161974, 0.5161974)
+observation_text = "General Store
+Open Every Day from 8am - 6pm"
+
+[node name="PorchLantern" parent="Store/Visuals/FrontDetails/PorchLanternSocket" index="0" instance=ExtResource("18_ihr3n")]
+z_index = 1
+position = Vector2(18.337372, -22.560276)
+scale = Vector2(0.35809964, 0.35809964)
+
+[node name="FlowerPatchObservation" parent="." instance=ExtResource("18_3mxf2")]
+position = Vector2(897, 592)
+
 [node name="DayNightOverlay" parent="." instance=ExtResource("6_6scx0")]
 
 [node name="HUD" parent="." instance=ExtResource("7_xf6b5")]
@@ -320,6 +366,8 @@ navigation_polygon = SubResource("NavigationPolygon_j34sm")
 
 [node name="HelpBookOverlay" parent="." instance=ExtResource("28_gmfaa")]
 help_book_data = ExtResource("29_ao30e")
+
+[node name="NarrationOverlay" parent="." instance=ExtResource("37_ep6ep")]
 
 [node name="CameraBounds" type="Node2D" parent="."]
 position = Vector2(175, 32)
@@ -401,32 +449,6 @@ texture = ExtResource("51_gmfaa")
 
 [node name="ShopMarkers" type="Node" parent="."]
 
-[node name="Bakery" parent="." instance=ExtResource("52_01b2m")]
-position = Vector2(545, 1394)
-scale = Vector2(2.8500535, 2.8500535)
-
-[node name="Tavern" parent="." instance=ExtResource("52_01b2m")]
-position = Vector2(1222, 1380)
-scale = Vector2(2.8500535, 2.8500535)
-
-[node name="MayorHouse" parent="." instance=ExtResource("52_01b2m")]
-position = Vector2(331, 501)
-scale = Vector2(1.8305613, 1.8305613)
-
-[node name="Store" parent="." instance=ExtResource("52_01b2m")]
-position = Vector2(880, 219)
-scale = Vector2(2.7925189, 2.7925189)
-
-[node name="OutdoorLamp" parent="." instance=ExtResource("56_eipp1")]
-position = Vector2(110, 517)
-
-[node name="OutdoorLamp2" parent="." instance=ExtResource("56_eipp1")]
-position = Vector2(948, 240)
-
-[node name="OutdoorLamp3" parent="." instance=ExtResource("56_eipp1")]
-position = Vector2(756, 1635)
-
-[node name="OutdoorLamp5" parent="." instance=ExtResource("56_eipp1")]
-position = Vector2(847, 719)
-
 [node name="DayNightModulate" parent="." instance=ExtResource("57_2qqyd")]
+
+[editable path="Store"]

@@ -141,6 +141,12 @@ Phase ALRIGHT... more things
 * Small Joy Interactions / delight actions *FOUNDATION MADE*
 * Lighting *REMADE*
 * More Dev Things *SLOW WALKING AND UI HIDING*
+* Lamps *MULTIPLE VARIETIES*
+* Observations *MADE TEMPLATE*
+
+VERY IMPORTANT
+* Spigot Quest
+* Ash Passout Cutscene
 
 Phase Make the World a Cozy Place
 * House Tidying

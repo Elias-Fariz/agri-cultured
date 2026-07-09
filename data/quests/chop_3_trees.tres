@@ -1,17 +1,19 @@
-[gd_resource type="Resource" script_class="QuestData" load_steps=3 format=3 uid="uid://djdebqx5ukejx"]
+[gd_resource type="Resource" script_class="QuestData" load_steps=5 format=3 uid="uid://djdebqx5ukejx"]
 
+[ext_resource type="Script" uid="uid://dqvgpvdaiv010" path="res://data/quests/QuestNpcOverrideData.gd" id="1_q7i4q"]
 [ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="1_u4vrt"]
+[ext_resource type="Script" uid="uid://fp28wf3omrn8" path="res://data/quests/QuestSpawnRewardData.gd" id="2_7ye13"]
 [ext_resource type="Script" uid="uid://bolxtchvrfo0y" path="res://data/quests/QuestStepData.gd" id="2_c5o38"]
 
 [resource]
 script = ExtResource("1_u4vrt")
 id = "chop_3_trees"
 title = "Lumber Request"
-description = "Chop down 3 trees"
+description = "Chop down 1 tree"
 oneshot_action = "chop_tree"
-oneshot_amount = 3
-oneshot_text = "Chop down 3 trees."
+oneshot_text = "Chop down 1 tree."
 turn_in_id = "townboard"
 turn_in_text = "Return to the townboard."
 reward_money = 120
+participant_ids = null
 metadata/_custom_type_script = "uid://cg0ailnic1w71"

@@ -1,0 +1,22 @@
+[gd_scene load_steps=4 format=3 uid="uid://cjommjh2l83yv"]
+
+[ext_resource type="Script" uid="uid://g4qumls336jr" path="res://scripts/ObservationInteractable.gd" id="1_6nqdo"]
+[ext_resource type="Texture2D" uid="uid://b6kat5jrgygx6" path="res://art/flowers.PNG" id="1_x0w66"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_6nqdo"]
+
+[node name="FlowerPatchObservation" type="Area2D"]
+script = ExtResource("1_6nqdo")
+observation_text = "The flowers lean gently toward the evening light."
+interactable_id = "town_flower_patch_01"
+prompt_text = "E: Look"
+prompt_priority = 20
+memory_scope = "town"
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_x0w66")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+rotation = -0.005690303
+scale = Vector2(1.6528611, 1.6616639)
+shape = SubResource("RectangleShape2D_6nqdo")

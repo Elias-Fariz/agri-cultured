@@ -2,7 +2,6 @@
 
 [ext_resource type="Script" uid="uid://lxxgykutkbm4" path="res://scripts/Player.gd" id="1_vvow5"]
 [ext_resource type="AudioStream" uid="uid://e7naj8iuf7u5" path="res://audio/sfx/sfx_talk_01.WAV" id="2_hdrus"]
-[ext_resource type="Texture2D" uid="uid://c0nmap1a7vh5i" path="res://art/player.PNG" id="2_kghmo"]
 [ext_resource type="AudioStream" uid="uid://btc7ht2yfjp03" path="res://audio/sfx/sfx_talk_02.WAV" id="3_7twa1"]
 [ext_resource type="Script" uid="uid://cr1r8q5m1ytb4" path="res://scripts/FacingIndicator.gd" id="3_gqu4d"]
 [ext_resource type="Texture2D" uid="uid://nan0sddf00hl" path="res://art/chest.png" id="4_kghmo"]
@@ -13,6 +12,7 @@
 [ext_resource type="AudioStream" uid="uid://bdmecs377p8gx" path="res://audio/footsteps/stone_steps_01.WAV" id="8_7fkfc"]
 [ext_resource type="AudioStream" uid="uid://byfycenow50f8" path="res://audio/footsteps/stone_steps_02.WAV" id="9_5jfsi"]
 [ext_resource type="AudioStream" uid="uid://bxsrixmfhey82" path="res://audio/footsteps/stone_steps_03.WAV" id="10_r3dvn"]
+[ext_resource type="Texture2D" uid="uid://tocbbdq2y2hr" path="res://art/characters/player_cat_female-removebg-preview.png" id="11_5jfsi"]
 [ext_resource type="Script" uid="uid://br7sbrrhxpw40" path="res://scripts/PlayerInteractPrompt.gd" id="14_56q24"]
 [ext_resource type="Script" uid="uid://bsf5y2byqsrtb" path="res://scripts/RestorationCombatController.gd" id="15_exuc5"]
 [ext_resource type="PackedScene" uid="uid://dd8fc48ylbhrl" path="res://tscn/HeartbladeSlashVisual.tscn" id="16_7fkfc"]
@@ -35,7 +35,9 @@ grass_steps = Array[AudioStream]([ExtResource("5_34em8"), ExtResource("6_56q24")
 stone_steps = Array[AudioStream]([ExtResource("8_7fkfc"), ExtResource("9_5jfsi"), ExtResource("10_r3dvn")])
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-texture = ExtResource("2_kghmo")
+position = Vector2(0, -59.000004)
+scale = Vector2(0.24677435, 0.24677435)
+texture = ExtResource("11_5jfsi")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_xfidv")

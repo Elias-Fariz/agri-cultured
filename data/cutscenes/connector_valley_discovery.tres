@@ -70,4 +70,5 @@ markers = SubResource("Resource_7rqi0")
 dialogue = SubResource("Resource_xae77")
 effects = Array[ExtResource("3_o6bst")]([SubResource("Resource_gusfa"), SubResource("Resource_a7apk")])
 steps = Array[ExtResource("8_o7kuy")]([SubResource("Resource_tqc3f"), SubResource("Resource_dmbhf")])
+reward_flags = Array[String](["valley_heart_opened"])
 metadata/_custom_type_script = "uid://camo0lur1qm85"

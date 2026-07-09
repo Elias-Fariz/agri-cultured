@@ -8,7 +8,7 @@ size = Vector2(134, 33)
 
 [node name="BuildingBase" instance=ExtResource("1_hj1b6")]
 
-[node name="Sprite2D" parent="." index="0"]
+[node name="BuildingSprite" parent="Visuals" index="0"]
 position = Vector2(0, -48)
 texture = ExtResource("2_fsnsm")
 

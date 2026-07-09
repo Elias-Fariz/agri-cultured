@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=3 uid="uid://cb0bna0ly4x7p"]
+[gd_scene load_steps=26 format=3 uid="uid://cb0bna0ly4x7p"]
 
 [ext_resource type="TileSet" uid="uid://chypvyk38hcyn" path="res://tiles/IndoorsTileset.tres" id="1_m8nne"]
 [ext_resource type="PackedScene" uid="uid://dv7wem6ftpvdd" path="res://tscn/Player.tscn" id="2_l0ll2"]
@@ -17,6 +17,7 @@
 [ext_resource type="Texture2D" uid="uid://bq8o1e8mbe7qm" path="res://art/door.PNG" id="14_p04tt"]
 [ext_resource type="Script" uid="uid://dxx68q28fdnvv" path="res://scripts/SpawnPoint.gd" id="15_l0ll2"]
 [ext_resource type="PackedScene" uid="uid://dexrjrr1c8jfb" path="res://ui/ShopUI.tscn" id="16_f5jur"]
+[ext_resource type="PackedScene" uid="uid://dmwh8devorqla" path="res://ui/NarrationOverlay.tscn" id="16_nj4qo"]
 [ext_resource type="Script" uid="uid://b7n4wv6k3k33k" path="res://scripts/QuestLocation.gd" id="16_p04tt"]
 [ext_resource type="PackedScene" uid="uid://todaqmfqrphb" path="res://ui/HelpBookOverlay.tscn" id="17_nj4qo"]
 [ext_resource type="Resource" uid="uid://dkece5jomsis5" path="res://data/help/help_book.tres" id="18_le5ev"]
@@ -34,37 +35,6 @@ tile_set = ExtResource("1_m8nne")
 rendering_quadrant_size = 32
 format = 2
 layer_0/tile_data = PackedInt32Array(-65536, 2, 0, 0, 2, 0, 65536, 2, 0, 131072, 2, 0, 196608, 0, 0, 262144, 0, 0, 327680, 0, 0, -65535, 2, 0, 1, 2, 0, 65537, 2, 0, 131073, 2, 0, 196609, 0, 0, 262145, 0, 0, 327681, 0, 0, 262146, 0, 0, 327682, 3, 0, 262147, 0, 0, 327683, 3, 0, 327684, 3, 0, 327685, 3, 0, -65530, 0, 0, 6, 0, 0, 65542, 0, 0, 131078, 0, 0, 196614, 0, 0, 262150, 0, 0, 327686, 3, 0, 262151, 0, 0, 327687, 0, 0, 262152, 0, 0, 327688, 0, 0, -65527, 0, 0, 9, 0, 0, 65545, 0, 0, 131081, 0, 0, 196617, 0, 0, 262153, 0, 0, 327689, 0, 0, -65526, 0, 0, 10, 0, 0, 65546, 0, 0, 131082, 0, 0, 196618, 0, 0, 262154, 0, 0, 327690, 0, 0, -458752, 0, 0, -393216, 0, 0, -327680, 0, 0, -262144, 0, 0, -196608, 2, 0, -131072, 2, 0, -458751, 0, 0, -393215, 0, 0, -327679, 0, 0, -262143, 0, 0, -196607, 2, 0, -131071, 2, 0, -458750, 0, 0, -393214, 0, 0, -327678, 1, 0, -262142, 0, 0, -196606, 0, 0, -458749, 0, 0, -393213, 0, 0, -327677, 1, 0, -262141, 0, 0, -196605, 0, 0, -458748, 0, 0, -393212, 0, 0, -327676, 1, 0, -262140, 0, 0, -196604, 0, 0, -131068, 0, 0, -458747, 0, 0, -393211, 0, 0, -327675, 1, 0, -262139, 0, 0, -196603, 0, 0, -131067, 0, 0, -458746, 0, 0, -393210, 0, 0, -327674, 1, 0, -262138, 0, 0, -196602, 0, 0, -131066, 0, 0, -458745, 0, 0, -393209, 0, 0, -327673, 1, 0, -262137, 0, 0, -196601, 2, 0, -458744, 0, 0, -393208, 0, 0, -327672, 0, 0, -262136, 0, 0, -196600, 2, 0, -458743, 0, 0, -393207, 0, 0, -327671, 0, 0, -262135, 0, 0, -196599, 0, 0, -131063, 0, 0, -458742, 0, 0, -393206, 0, 0, -327670, 0, 0, -262134, 0, 0, -196598, 0, 0, -131062, 0, 0, -393220, 0, 0, -327684, 0, 0, -262148, 0, 0, -196612, 0, 0, -131076, 0, 0, -65540, 0, 0, -4, 0, 0, 65532, 0, 0, 131068, 0, 0, 196604, 0, 0, 262140, 0, 0, 327676, 0, 0, 393212, 0, 0, -393219, 0, 0, -327683, 0, 0, -262147, 0, 0, -196611, 0, 0, -131075, 0, 0, -65539, 0, 0, -3, 0, 0, 65533, 0, 0, 131069, 0, 0, 196605, 0, 0, 262141, 0, 0, 327677, 0, 0, 393213, 0, 0, -393218, 0, 0, -327682, 0, 0, -262146, 0, 0, -196610, 0, 0, -131074, 0, 0, -65538, 0, 0, -2, 0, 0, 65534, 0, 0, 131070, 0, 0, 196606, 0, 0, 262142, 0, 0, 327678, 0, 0, 393214, 0, 0, -393217, 0, 0, -327681, 0, 0, -262145, 0, 0, -196609, 0, 0, -131073, 0, 0, -65537, 0, 0, -1, 0, 0, 65535, 0, 0, 131071, 0, 0, 196607, 0, 0, 262143, 0, 0, 327679, 0, 0, 393215, 0, 0, 458748, 0, 0, 458749, 0, 0, 458750, 0, 0, 458751, 0, 0, 393216, 0, 0, 393217, 0, 0, 393218, 3, 0, 393219, 3, 0, 393220, 3, 0, 393221, 3, 0, 393222, 3, 0, 393223, 0, 0, 393224, 0, 0, 393225, 0, 0, 393226, 0, 0, -458741, 0, 0, -393205, 0, 0, -327669, 0, 0, -262133, 0, 0, -196597, 0, 0, -131061, 0, 0, -65525, 0, 0, 11, 0, 0, 65547, 0, 0, 131083, 0, 0, 196619, 0, 0, 262155, 0, 0, 327691, 0, 0, 393227, 0, 0, -458740, 0, 0, -393204, 0, 0, -327668, 0, 0, -262132, 0, 0, -196596, 0, 0, -131060, 0, 0, -65524, 0, 0, 12, 0, 0, 65548, 0, 0, 131084, 0, 0, 196620, 0, 0, 262156, 0, 0, 327692, 0, 0, 393228, 0, 0, 524283, 1, 0, 524284, 1, 0, 524285, 1, 0, 524286, 1, 0, 524287, 1, 0, 458752, 1, 0, 458753, 1, 0, 458754, 1, 0, 458755, 1, 0, 458756, 1, 0, 458757, 1, 0, 458758, 1, 0, 458759, 1, 0, 458760, 1, 0, 458761, 1, 0, 458762, 1, 0, 458763, 1, 0, 458764, 1, 0, 458765, 1, 0, -524275, 1, 0, -458739, 1, 0, -393203, 1, 0, -327667, 1, 0, -262131, 1, 0, -196595, 1, 0, -131059, 1, 0, -65523, 1, 0, 13, 1, 0, 65549, 1, 0, 131085, 1, 0, 196621, 1, 0, 262157, 1, 0, 327693, 1, 0, 393229, 1, 0, -458757, 1, 0, -458756, 1, 0, -458755, 1, 0, -458754, 1, 0, -458753, 1, 0, -524288, 1, 0, -524287, 1, 0, -524286, 1, 0, -524285, 1, 0, -524284, 1, 0, -524283, 1, 0, -524282, 1, 0, -524281, 1, 0, -524280, 1, 0, -524279, 1, 0, -524278, 1, 0, -524277, 1, 0, -524276, 1, 0, -393221, 1, 0, -327685, 1, 0, -262149, 1, 0, -196613, 1, 0, -131077, 1, 0, -65541, 1, 0, -5, 1, 0, 65531, 1, 0, 131067, 1, 0, 196603, 1, 0, 262139, 1, 0, 327675, 1, 0, 393211, 1, 0, 458747, 1, 0, -65532, 0, 0, 4, 0, 0, 65540, 0, 0, 131076, 0, 0, 196612, 0, 0, 262148, 0, 0, -65531, 0, 0, 5, 0, 0, 65541, 0, 0, 131077, 0, 0, 196613, 0, 0, 262149, 0, 0, -131070, 0, 0, -65534, 0, 0, 2, 0, 0, 65538, 0, 0, 131074, 0, 0, -131065, 2, 0, -65529, 2, 0, 7, 2, 0, 65543, 2, 0, 131079, 2, 0, -131064, 2, 0, -65528, 2, 0, 8, 2, 0, 65544, 2, 0, 131080, 2, 0, -131069, 0, 0, -65533, 0, 0, 3, 0, 0, 65539, 0, 0, 131075, 0, 0, 196611, 0, 0, 196610, 0, 0, 196615, 0, 0, 196616, 0, 0)
-
-[node name="Player" parent="." instance=ExtResource("2_l0ll2")]
-position = Vector2(-40, 306)
-
-[node name="DialogueUI" parent="." instance=ExtResource("2_vlfr5")]
-
-[node name="QuestMenuUI" parent="." instance=ExtResource("3_ynppt")]
-
-[node name="InventoryUI" parent="." instance=ExtResource("4_e5d4s")]
-
-[node name="HelpOverlay" parent="." instance=ExtResource("5_e8p3a")]
-
-[node name="HUD" parent="." instance=ExtResource("6_p04tt")]
-
-[node name="EndOfDaySummaryUI" parent="." instance=ExtResource("7_l0ll2")]
-
-[node name="CraftingUI" parent="." instance=ExtResource("8_mvgwc")]
-
-[node name="GiftUI" parent="." instance=ExtResource("9_ibrsf")]
-
-[node name="DayNightOverlay" parent="." instance=ExtResource("10_51n72")]
-
-[node name="ToolBeltUI" parent="." instance=ExtResource("11_cqdwf")]
-
-[node name="ShopUI" parent="." instance=ExtResource("16_f5jur")]
-
-[node name="HelpBookOverlay" parent="." instance=ExtResource("17_nj4qo")]
-help_book_data = ExtResource("18_le5ev")
-
-[node name="SpawnManager" type="Node" parent="."]
-script = ExtResource("12_m8nne")
 
 [node name="ShopQuestLocation" type="Area2D" parent="."]
 position = Vector2(413, 119.00003)
@@ -116,4 +86,38 @@ position = Vector2(149, -190)
 [node name="ShopCounter" parent="." instance=ExtResource("19_ibrsf")]
 position = Vector2(150, -89)
 shop_title = "General Store"
+shop_open_hour = 8
 prompt_priority = 50
+
+[node name="Player" parent="." instance=ExtResource("2_l0ll2")]
+position = Vector2(-40, 306)
+
+[node name="DialogueUI" parent="." instance=ExtResource("2_vlfr5")]
+
+[node name="QuestMenuUI" parent="." instance=ExtResource("3_ynppt")]
+
+[node name="InventoryUI" parent="." instance=ExtResource("4_e5d4s")]
+
+[node name="HelpOverlay" parent="." instance=ExtResource("5_e8p3a")]
+
+[node name="HUD" parent="." instance=ExtResource("6_p04tt")]
+
+[node name="EndOfDaySummaryUI" parent="." instance=ExtResource("7_l0ll2")]
+
+[node name="CraftingUI" parent="." instance=ExtResource("8_mvgwc")]
+
+[node name="GiftUI" parent="." instance=ExtResource("9_ibrsf")]
+
+[node name="DayNightOverlay" parent="." instance=ExtResource("10_51n72")]
+
+[node name="ToolBeltUI" parent="." instance=ExtResource("11_cqdwf")]
+
+[node name="ShopUI" parent="." instance=ExtResource("16_f5jur")]
+
+[node name="HelpBookOverlay" parent="." instance=ExtResource("17_nj4qo")]
+help_book_data = ExtResource("18_le5ev")
+
+[node name="NarrationOverlay" parent="." instance=ExtResource("16_nj4qo")]
+
+[node name="SpawnManager" type="Node" parent="."]
+script = ExtResource("12_m8nne")

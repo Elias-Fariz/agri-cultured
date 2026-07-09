@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=5 format=3 uid="uid://btotlnh8qbtfm"]
+
+[ext_resource type="Script" uid="uid://dqvgpvdaiv010" path="res://data/quests/QuestNpcOverrideData.gd" id="1_bq73e"]
+[ext_resource type="Script" uid="uid://fp28wf3omrn8" path="res://data/quests/QuestSpawnRewardData.gd" id="2_sns3j"]
+[ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="3_mlaos"]
+[ext_resource type="Script" uid="uid://bolxtchvrfo0y" path="res://data/quests/QuestStepData.gd" id="4_qqttf"]
+
+[resource]
+script = ExtResource("3_mlaos")
+id = "talk_to_maren"
+title = "Say Hello"
+description = "Talk to Maren in town."
+oneshot_action = "talk_to"
+oneshot_target = "npc_maren"
+oneshot_text = "Talk to Maren in town."
+turn_in_id = "townboard"
+turn_in_text = "Return to the townboard."
+reward_money = 40
+participant_ids = null
+metadata/_custom_type_script = "uid://cg0ailnic1w71"

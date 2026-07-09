@@ -1,0 +1,53 @@
+[gd_scene load_steps=2 format=3 uid="uid://dmwh8devorqla"]
+
+[ext_resource type="Script" uid="uid://bo340sdie0nmm" path="res://scripts/NarrationOverlay.gd" id="1_otcft"]
+
+[node name="NarrationOverlay" type="CanvasLayer" groups=["narration_ui"]]
+script = ExtResource("1_otcft")
+text_label_path = NodePath("VisualRoot/Panel/MarginContainer/VBoxContainer/TextLabel")
+continue_hint_path = NodePath("VisualRoot/Panel/MarginContainer/VBoxContainer/ContinueHint")
+visual_node_path = NodePath("VisualRoot")
+start_visible_in_game = false
+is_modal = true
+
+[node name="VisualRoot" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Dimmer" type="ColorRect" parent="VisualRoot"]
+visible = false
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Panel" type="PanelContainer" parent="VisualRoot"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.1
+anchor_top = 0.68
+anchor_right = 0.9
+anchor_bottom = 0.92
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="MarginContainer" type="MarginContainer" parent="VisualRoot/Panel"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VisualRoot/Panel/MarginContainer"]
+layout_mode = 2
+
+[node name="TextLabel" type="Label" parent="VisualRoot/Panel/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(500, 160)
+layout_mode = 2
+text = "TEST TEXT"
+autowrap_mode = 3
+
+[node name="ContinueHint" type="Label" parent="VisualRoot/Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Continue: E"
+horizontal_alignment = 2

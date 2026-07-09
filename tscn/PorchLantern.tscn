@@ -1,0 +1,36 @@
+[gd_scene load_steps=6 format=3 uid="uid://bvd7uibe5rwui"]
+
+[ext_resource type="Script" uid="uid://c8kf7heuja85i" path="res://scripts/OutdoorLamp.gd" id="1_m0iic"]
+[ext_resource type="Texture2D" uid="uid://b7q154wmqtntx" path="res://art/luxa.org-opacity-changed-light-yellow-circle-md.png" id="1_pnyd6"]
+[ext_resource type="Texture2D" uid="uid://bvwrrj2bcxwqh" path="res://art/wood.PNG" id="2_qrv24"]
+
+[sub_resource type="Gradient" id="Gradient_3wgib"]
+colors = PackedColorArray(1, 1, 1, 0.5019608, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_j2sna"]
+gradient = SubResource("Gradient_3wgib")
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.9444444, 0.52136755)
+
+[node name="PorchLantern" type="Node2D"]
+script = ExtResource("1_m0iic")
+fade_duration = 0.75
+
+[node name="LampSprite" type="Sprite2D" parent="."]
+scale = Vector2(0.44070303, 0.44070303)
+texture = ExtResource("2_qrv24")
+
+[node name="LitVisual" type="Node2D" parent="."]
+
+[node name="GlowSprite" type="Sprite2D" parent="LitVisual"]
+scale = Vector2(0.097, 0.097)
+texture = ExtResource("1_pnyd6")
+
+[node name="PointLight2D" type="PointLight2D" parent="LitVisual"]
+scale = Vector2(3.707, 3.707)
+color = Color(1, 0.9019608, 0.72156864, 1)
+energy = 0.75
+texture = SubResource("GradientTexture2D_j2sna")
+
+[node name="UnlitVisual" type="Node2D" parent="."]

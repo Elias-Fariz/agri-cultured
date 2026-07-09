@@ -1,0 +1,25 @@
+[gd_scene load_steps=4 format=3 uid="uid://dxoihtjkpdrg2"]
+
+[ext_resource type="Script" uid="uid://g4qumls336jr" path="res://scripts/ObservationInteractable.gd" id="1_lw7f8"]
+[ext_resource type="Texture2D" uid="uid://bnulkhi8iub1w" path="res://art/wood_walln.PNG" id="2_lfpj7"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_dh8e2"]
+
+[node name="SignPost" type="Area2D"]
+script = ExtResource("1_lw7f8")
+observation_text = "← Farmstead     Town Square →
+Something has grown over the middle plank."
+use_alternate_when_flag_set = true
+alternate_required_flag = "valley_heart_opened"
+alternate_observation_text = "← Farmstead     ↑ Valley Heart     Town Square →"
+interactable_id = "connector_direction_sign"
+prompt_text = "E: Read"
+prompt_priority = 30
+memory_scope = "connector"
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_lfpj7")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+scale = Vector2(1.5843143, 1.5843143)
+shape = SubResource("RectangleShape2D_dh8e2")

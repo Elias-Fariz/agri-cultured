@@ -2,7 +2,22 @@
 
 [node name="BuildingBase" type="Node2D"]
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="Visuals" type="Node2D" parent="."]
+
+[node name="BuildingSprite" type="Sprite2D" parent="Visuals"]
+
+[node name="BackDetails" type="Node2D" parent="Visuals"]
+position = Vector2(1, 0)
+
+[node name="FrontDetails" type="Node2D" parent="Visuals"]
+z_index = 5
+position = Vector2(1, 0)
+
+[node name="DoorSpriteSocket" type="Node2D" parent="Visuals/FrontDetails"]
+
+[node name="SignSocket" type="Node2D" parent="Visuals/FrontDetails"]
+
+[node name="PorchLanternSocket" type="Node2D" parent="Visuals/FrontDetails"]
 
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
 

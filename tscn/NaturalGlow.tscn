@@ -1,0 +1,49 @@
+[gd_scene load_steps=6 format=3 uid="uid://bjbcuf555hh3l"]
+
+[ext_resource type="Script" uid="uid://c8kf7heuja85i" path="res://scripts/OutdoorLamp.gd" id="1_383bp"]
+[ext_resource type="Texture2D" uid="uid://b7q154wmqtntx" path="res://art/luxa.org-opacity-changed-light-yellow-circle-md.png" id="1_ggy7k"]
+[ext_resource type="Texture2D" uid="uid://b6kat5jrgygx6" path="res://art/flowers.PNG" id="1_mhr2q"]
+
+[sub_resource type="Gradient" id="Gradient_48onl"]
+colors = PackedColorArray(1, 1, 1, 0.5019608, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_mhr2q"]
+gradient = SubResource("Gradient_48onl")
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.9444444, 0.52136755)
+
+[node name="NaturalGlow" type="Node2D"]
+script = ExtResource("1_383bp")
+schedule_mode = 1
+fade_duration = 2.0
+
+[node name="SourceVisual" type="Node2D" parent="."]
+
+[node name="RootSprite" type="Sprite2D" parent="SourceVisual"]
+scale = Vector2(2.485842, 2.485842)
+texture = ExtResource("1_mhr2q")
+
+[node name="FlowerSprite" type="Sprite2D" parent="SourceVisual"]
+visible = false
+
+[node name="LitVisual" type="Node2D" parent="."]
+
+[node name="GlowSprite" type="Sprite2D" parent="LitVisual"]
+modulate = Color(1, 1, 1, 0.5)
+scale = Vector2(0.7843375, 0.7843375)
+texture = ExtResource("1_ggy7k")
+
+[node name="InnerGlowSprite" type="Sprite2D" parent="LitVisual"]
+visible = false
+modulate = Color(1, 1, 1, 0.5)
+scale = Vector2(0.7843375, 0.7843375)
+texture = ExtResource("1_ggy7k")
+
+[node name="PointLight2D" type="PointLight2D" parent="LitVisual"]
+scale = Vector2(15.119899, 15.119899)
+color = Color(0.8745098, 0.9490196, 0.72156864, 1)
+energy = 0.6
+texture = SubResource("GradientTexture2D_mhr2q")
+
+[node name="UnlitVisual" type="Node2D" parent="."]

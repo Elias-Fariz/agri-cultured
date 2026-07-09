@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="NPCDialogueArtData" load_steps=6 format=3 uid="uid://biyy0m8h6in1s"]
+
+[ext_resource type="Script" uid="uid://ctb0g66p3247d" path="res://data/dialogue/DialogueArtEntry.gd" id="1_2d2ss"]
+[ext_resource type="Texture2D" uid="uid://c63dxvbydmyyn" path="res://art/characters/alder_portrait.png" id="1_r1tcc"]
+[ext_resource type="Texture2D" uid="uid://0c7l2pi58fde" path="res://art/characters/alder_full-removebg-preview.png" id="2_00qu8"]
+[ext_resource type="Script" uid="uid://dtmrx4fd7hq0k" path="res://data/dialogue/NPCDialogueArtData.gd" id="2_10hvq"]
+
+[sub_resource type="Resource" id="Resource_m8agb"]
+script = ExtResource("1_2d2ss")
+texture = ExtResource("2_00qu8")
+metadata/_custom_type_script = "uid://ctb0g66p3247d"
+
+[resource]
+script = ExtResource("2_10hvq")
+npc_id = "npc_mayor"
+default_portrait = ExtResource("1_r1tcc")
+default_stage_pose = ExtResource("2_00qu8")
+stage_poses = Array[ExtResource("1_2d2ss")]([SubResource("Resource_m8agb")])
+metadata/_custom_type_script = "uid://dtmrx4fd7hq0k"
