@@ -224,3 +224,26 @@ position = Vector2(306, 171)
 position = Vector2(-223, 158)
 
 [node name="DayNightModulate" parent="." instance=ExtResource("28_s17u3")]
+
+[node name="AshRescueCutscenePoints" type="Node2D" parent="."]
+
+[node name="Rescue_PlayerStart" type="Marker2D" parent="AshRescueCutscenePoints"]
+position = Vector2(224, 255)
+
+[node name="Rescue_PlayerMove" type="Marker2D" parent="AshRescueCutscenePoints"]
+position = Vector2(8, 254)
+
+[node name="Rescue_AshStart" type="Marker2D" parent="AshRescueCutscenePoints"]
+position = Vector2(-148, -139)
+
+[node name="Rescue_AshMove" type="Marker2D" parent="AshRescueCutscenePoints"]
+position = Vector2(-148, 253)
+
+[node name="Rescue_Focus" type="Marker2D" parent="AshRescueCutscenePoints"]
+position = Vector2(-69, 344)
+
+[node name="Rescue_AshFocus" type="Marker2D" parent="AshRescueCutscenePoints"]
+position = Vector2(-69, 168)
+
+[node name="Rescue_AshEnd" type="Marker2D" parent="AshRescueCutscenePoints"]
+position = Vector2(-276, 254)

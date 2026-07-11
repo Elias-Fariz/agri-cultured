@@ -1,0 +1,241 @@
+[gd_resource type="Resource" script_class="CutsceneData" load_steps=43 format=3 uid="uid://ci4auymnmsti5"]
+
+[ext_resource type="Script" uid="uid://b4pm6wxp5ivtk" path="res://data/cutscenes/CutsceneActorData.gd" id="1_k4irt"]
+[ext_resource type="Script" uid="uid://cp2gtb0hckrrj" path="res://data/cutscenes/CutsceneEffectData.gd" id="2_i8fex"]
+[ext_resource type="Script" uid="uid://bjwubxbrbyt2x" path="res://data/cutscenes/CutsceneMarkerSet.gd" id="3_i8fex"]
+[ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="3_ll7qm"]
+[ext_resource type="Script" uid="uid://fp28wf3omrn8" path="res://data/quests/QuestSpawnRewardData.gd" id="4_yj56w"]
+[ext_resource type="Script" uid="uid://camo0lur1qm85" path="res://data/cutscenes/CutsceneData.gd" id="5_gk7uj"]
+[ext_resource type="Script" uid="uid://0k0f68wqa7mm" path="res://data/cutscenes/CutsceneStepData.gd" id="6_aagwj"]
+[ext_resource type="Script" uid="uid://dt1fjl76x6n5o" path="res://data/dialogue/DialogueBeatData.gd" id="8_yj56w"]
+[ext_resource type="Script" uid="uid://clb3lhdggkt8d" path="res://data/dialogue/DialogueSequenceData.gd" id="9_gk7uj"]
+
+[sub_resource type="Resource" id="Resource_k4irt"]
+script = ExtResource("1_k4irt")
+key = "player"
+actor_type = "player"
+metadata/_custom_type_script = "uid://b4pm6wxp5ivtk"
+
+[sub_resource type="Resource" id="Resource_i8fex"]
+script = ExtResource("1_k4irt")
+key = "ash"
+npc_id = "npc_ash"
+display_name = "???"
+scene_path = "res://tscn/npcs/Ash.tscn"
+metadata/_custom_type_script = "uid://b4pm6wxp5ivtk"
+
+[sub_resource type="Resource" id="Resource_ll7qm"]
+script = ExtResource("3_i8fex")
+markers_by_id = {
+"ash_end": NodePath("AshRescueCutscenePoints/Rescue_AshEnd"),
+"ash_move": NodePath("AshRescueCutscenePoints/Rescue_AshMove"),
+"ash_start": NodePath("AshRescueCutscenePoints/Rescue_AshStart"),
+"focus_move": NodePath("AshRescueCutscenePoints/Rescue_AshFocus"),
+"focus_start": NodePath("AshRescueCutscenePoints/Rescue_Focus"),
+"player_move": NodePath("AshRescueCutscenePoints/Rescue_PlayerMove"),
+"player_start": NodePath("AshRescueCutscenePoints/Rescue_PlayerStart")
+}
+metadata/_custom_type_script = "uid://bjwubxbrbyt2x"
+
+[sub_resource type="Resource" id="Resource_gk7uj"]
+script = ExtResource("6_aagwj")
+step_type = 1
+marker_id = "focus_start"
+duration = 0.1
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_aagwj"]
+script = ExtResource("6_aagwj")
+step_type = 4
+marker_id = "player_move"
+duration = 2.0
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_ryhcw"]
+script = ExtResource("6_aagwj")
+step_type = 19
+overhead_text = ""
+narration_text = "Your steps grow heavier with every turn of the path."
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_24bqx"]
+script = ExtResource("6_aagwj")
+duration = 0.35
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_rno86"]
+script = ExtResource("6_aagwj")
+step_type = 18
+actor_key = "player"
+overhead_duration = 0.6
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_fn1ha"]
+script = ExtResource("6_aagwj")
+step_type = 20
+marker_id = "focus_move"
+duration = 1.5
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_435ii"]
+script = ExtResource("6_aagwj")
+step_type = 0
+actor_key = "ash"
+marker_id = "ash_move"
+duration = 1.8
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_lgnja"]
+script = ExtResource("8_yj56w")
+text = "What are you doing out here?"
+speaker_id = "npc_ash"
+speaker_name_override = "???"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_1tkmq"]
+script = ExtResource("8_yj56w")
+text = "You’re walking like you’re about to fall over."
+speaker_id = "npc_ash"
+speaker_name_override = "???"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_tdbxl"]
+script = ExtResource("9_gk7uj")
+sequence_id = "ash_rescue_seq"
+beats = Array[ExtResource("8_yj56w")]([SubResource("Resource_lgnja"), SubResource("Resource_1tkmq")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_tkn4u"]
+script = ExtResource("6_aagwj")
+step_type = 2
+speaker_actor_key = "ash"
+speaker_name = "???"
+dialogue_sequence = SubResource("Resource_tdbxl")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_6mxel"]
+script = ExtResource("6_aagwj")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_lrtxi"]
+script = ExtResource("6_aagwj")
+step_type = 19
+narration_text = "You try to answer, but the words come out smaller than you meant them to."
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_ywspp"]
+script = ExtResource("6_aagwj")
+step_type = 18
+actor_key = "ash"
+duration = 1.0
+overhead_text = "..."
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_t4cp8"]
+script = ExtResource("8_yj56w")
+text = "...You’re the new farmer."
+speaker_id = "npc_ash"
+speaker_name_override = "???"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_ppkgv"]
+script = ExtResource("8_yj56w")
+text = "Of course."
+speaker_id = "npc_ash"
+speaker_name_override = "???"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_qx1ki"]
+script = ExtResource("9_gk7uj")
+sequence_id = "ash_rescue_seq2"
+beats = Array[ExtResource("8_yj56w")]([SubResource("Resource_t4cp8"), SubResource("Resource_ppkgv")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_k4ucj"]
+script = ExtResource("6_aagwj")
+step_type = 2
+dialogue_sequence = SubResource("Resource_qx1ki")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_noo4t"]
+script = ExtResource("6_aagwj")
+duration = 1.3
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_wgy7o"]
+script = ExtResource("6_aagwj")
+step_type = 0
+actor_key = "ash"
+marker_id = "ash_end"
+duration = 1.0
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_w3tsk"]
+script = ExtResource("8_yj56w")
+text = "Come on. Your house is this way."
+speaker_id = "npc_ash"
+speaker_name_override = "???"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_pxsr6"]
+script = ExtResource("8_yj56w")
+text = "I’m not carrying you."
+speaker_id = "npc_ash"
+speaker_name_override = "???"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_2vc1f"]
+script = ExtResource("9_gk7uj")
+sequence_id = "sequence3"
+beats = Array[ExtResource("8_yj56w")]([SubResource("Resource_w3tsk"), SubResource("Resource_pxsr6")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_cdaxs"]
+script = ExtResource("6_aagwj")
+step_type = 2
+dialogue_sequence = SubResource("Resource_2vc1f")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_qfq8x"]
+script = ExtResource("6_aagwj")
+duration = 1.0
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_p4kxf"]
+script = ExtResource("8_yj56w")
+text = "Probably."
+speaker_id = "npc_ash"
+speaker_name_override = "???"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_6dixj"]
+script = ExtResource("9_gk7uj")
+sequence_id = "asdadwd"
+beats = Array[ExtResource("8_yj56w")]([SubResource("Resource_p4kxf")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_320pb"]
+script = ExtResource("6_aagwj")
+step_type = 2
+dialogue_sequence = SubResource("Resource_6dixj")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_kr2oo"]
+script = ExtResource("6_aagwj")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_yj56w"]
+script = ExtResource("6_aagwj")
+step_type = 19
+overhead_text = ""
+narration_text = "Someone walks beside you until the farm lights come into view."
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[resource]
+script = ExtResource("5_gk7uj")
+id = "ash_first_passout_rescue"
+scene_name = "Connector"
+actors = Array[ExtResource("1_k4irt")]([SubResource("Resource_k4irt"), SubResource("Resource_i8fex")])
+markers = SubResource("Resource_ll7qm")
+steps = Array[ExtResource("6_aagwj")]([SubResource("Resource_gk7uj"), SubResource("Resource_aagwj"), SubResource("Resource_ryhcw"), SubResource("Resource_24bqx"), SubResource("Resource_rno86"), SubResource("Resource_fn1ha"), SubResource("Resource_435ii"), SubResource("Resource_tkn4u"), SubResource("Resource_6mxel"), SubResource("Resource_lrtxi"), SubResource("Resource_ywspp"), SubResource("Resource_k4ucj"), SubResource("Resource_noo4t"), SubResource("Resource_wgy7o"), SubResource("Resource_cdaxs"), SubResource("Resource_qfq8x"), SubResource("Resource_320pb"), SubResource("Resource_kr2oo"), SubResource("Resource_yj56w")])
+metadata/_custom_type_script = "uid://camo0lur1qm85"

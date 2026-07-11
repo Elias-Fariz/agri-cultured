@@ -4,7 +4,7 @@ signal time_changed(minutes: int)
 signal day_changed(day: int)
 
 @export var minutes_per_day: int = 24 * 60
-@export var start_minutes: int = 6 * 60  # 6:00 AM
+@export var start_minutes: int = 22 * 60  # 6:00 AM
 @export var minutes_per_real_second: float = 10.0  # tune later, 10 originally
 
 @export var morning_start_minutes: int = 6 * 60
@@ -22,7 +22,7 @@ enum TimeBlock { MORNING, DAY, EVENING, NIGHT }
 @export var evening_start_hour: int = 18
 @export var night_start_hour: int = 22
 
-@export var passout_hour: int = 2                # 2 AM
+@export var passout_hour: int = 0                # 2 AM
 @export var enable_passout: bool = true
 
 var _did_passout_today: bool = false
@@ -30,6 +30,19 @@ var _did_passout_today: bool = false
 # NEW: Timeless zone support (pause time, keep gameplay)
 var _timeless_lock_count: int = 0
 var _time_was_running_before_timeless: bool = true
+
+@export_category("Passout Rescue")
+
+@export var ash_rescue_enabled: bool = true
+@export var ash_rescue_cutscene_id: String = "ash_first_passout_rescue"
+@export var ash_rescue_scene_path: String = "res://tscn/Connector.tscn"
+
+# For now, skip Ash rescue in these scenes.
+# You can remove "Farm" temporarily while testing if needed.
+@export var ash_rescue_skip_scene_names: Array[String] = [
+	"House",
+	"Farm"
+]
 
 
 func _ready() -> void:
@@ -171,7 +184,7 @@ func _trigger_passout() -> void:
 
 
 func _passout_sequence() -> void:
-	# Lock everything so the player can't move during the "oops" moment.
+	# Lock everything so the player can't move during the passout moment.
 	if GameState != null and GameState.has_method("lock_gameplay"):
 		GameState.lock_gameplay()
 
@@ -187,28 +200,57 @@ func _passout_sequence() -> void:
 	if FadeOverlay != null:
 		await FadeOverlay.fade_out(0.45)
 
+	var played_ash_rescue := false
+
+	if _should_play_ash_rescue_passout():
+		played_ash_rescue = true
+		await _play_ash_rescue_from_black()
+
+		# CutsceneDirector resumes time when it finishes,
+		# but passout flow should keep time paused until summary continue.
+		pause_time()
+
 	# Process the new day while the screen is black.
 	start_new_day()
 
 	if GameState != null:
-		if GameState.has_method("apply_passout_penalty"):
-			GameState.apply_passout_penalty()
+		# Cozy passout: no energy penalty.
+		# Do NOT call GameState.apply_passout_penalty().
+
+		GameState.today_tracking["pass_out"] = true
+		GameState.today_tracking["energy_penalty"] = 0
 
 		if GameState.has_method("queue_day_start_toast"):
-			GameState.queue_day_start_toast(
-				"You passed out last night… Energy reduced today. Try sleeping earlier.",
-				"warning",
-				3.5
-			)
+			if played_ash_rescue:
+				GameState.queue_day_start_toast(
+					"You made it home safely.",
+					"info",
+					3.0
+				)
+			else:
+				GameState.queue_day_start_toast(
+					"You made it home before morning.",
+					"info",
+					3.0
+				)
 
-		# This may move the player or change scene.
-		if GameState.has_method("warp_to_farm_after_passout"):
-			GameState.warp_to_farm_after_passout()
-
-	# Give any scene warp / spawn manager / camera reset time to settle.
-	for i in range(5):
-		await get_tree().process_frame
-
+		# If Ash rescue played, the cutscene already loaded Connector.
+		# We still want the next day to begin at the farm.
+	await _warp_to_farm_after_passout_and_wait()
+	
+	# Keep time paused until summary continue.
+	pause_time()
+	
+	# CutsceneDirector briefly blocks modal overlays after cutscenes.
+	# Wait until that safety window ends before opening the end-of-day summary.
+	if GameState != null and GameState.has_method("are_modal_overlays_temporarily_blocked"):
+		while GameState.are_modal_overlays_temporarily_blocked():
+			await get_tree().process_frame
+	
+	print("[Passout] modal blocked? ", GameState.are_modal_overlays_temporarily_blocked())
+	print("[Passout] active modal = ", GameState.get_active_modal_overlay_id())
+	print("[Passout] summary ui = ", get_tree().get_first_node_in_group("end_of_day_ui"))
+	
 	# Show the end-of-day summary.
 	if GameState != null and GameState.has_method("request_end_of_day_summary"):
 		GameState.request_end_of_day_summary()
@@ -216,6 +258,10 @@ func _passout_sequence() -> void:
 		var summary_ui := get_tree().get_first_node_in_group("end_of_day_ui")
 		if summary_ui != null and summary_ui.has_method("show_summary"):
 			summary_ui.show_summary()
+	
+	# Let the deferred summary actually open before revealing the screen.
+	for i in range(4):
+		await get_tree().process_frame
 
 	# Fade in to the summary screen.
 	if FadeOverlay != null:
@@ -230,3 +276,98 @@ func _flush_day_start_toasts_deferred() -> void:
 	await get_tree().process_frame
 	await get_tree().process_frame
 	GameState.flush_day_start_toasts()
+
+func _should_play_ash_rescue_passout() -> bool:
+	if not ash_rescue_enabled:
+		return false
+
+	if GameState == null:
+		return false
+
+	var cutscene_id := ash_rescue_cutscene_id.strip_edges()
+	if cutscene_id == "":
+		return false
+
+	# Only once.
+	if GameState.has_method("has_played_cutscene"):
+		if GameState.has_played_cutscene(cutscene_id):
+			return false
+
+	# Optional scene skip rules.
+	var scene := get_tree().current_scene
+	if scene != null:
+		var scene_name := String(scene.name)
+		if ash_rescue_skip_scene_names.has(scene_name):
+			return false
+
+	return true
+
+func _play_ash_rescue_from_black() -> void:
+	var cutscene_id := ash_rescue_cutscene_id.strip_edges()
+	var scene_path := ash_rescue_scene_path.strip_edges()
+
+	if cutscene_id == "" or scene_path == "":
+		return
+
+	var tree := get_tree()
+	if tree == null:
+		return
+
+	var err := tree.change_scene_to_file(scene_path)
+	if err != OK:
+		push_warning("TimeManager: failed to load Ash rescue scene: " + scene_path)
+		return
+
+	# Let the Connector scene, player, UI, and markers enter the tree.
+	for i in range(6):
+		await tree.process_frame
+
+	if CutsceneDirector == null:
+		push_warning("TimeManager: CutsceneDirector missing; cannot play Ash rescue.")
+		return
+
+	if CutsceneDirector.has_method("play_cutscene_from_black_keep_black"):
+		CutsceneDirector.play_cutscene_from_black_keep_black(cutscene_id, true)
+	elif CutsceneDirector.has_method("play_cutscene_from_black"):
+		CutsceneDirector.play_cutscene_from_black(cutscene_id)
+	else:
+		CutsceneDirector.play_cutscene(cutscene_id)
+
+	if CutsceneDirector.has_signal("cutscene_finished"):
+		await CutsceneDirector.cutscene_finished
+	else:
+		await tree.create_timer(3.0).timeout
+
+	# Passout flow owns the next reveal.
+	# Stay black until the farm + summary are ready.
+	if FadeOverlay != null:
+		FadeOverlay.set_black()
+
+	pause_time()
+
+func _warp_to_farm_after_passout_and_wait() -> void:
+	if GameState == null:
+		return
+
+	var scene_path := ""
+	var spawn_tag := ""
+
+	if "farm_scene_path" in GameState:
+		scene_path = String(GameState.farm_scene_path).strip_edges()
+
+	if "passout_spawn_tag" in GameState:
+		spawn_tag = String(GameState.passout_spawn_tag).strip_edges()
+
+	if scene_path == "":
+		return
+
+	GameState.pending_spawn_tag = spawn_tag
+
+	var err := get_tree().change_scene_to_file(scene_path)
+	if err != OK:
+		push_warning("TimeManager: failed to warp to farm after passout: " + scene_path)
+		return
+
+	# Let the new Farm scene, spawn marker, HUD, and summary UI settle.
+	for i in range(10):
+		await get_tree().process_frame

@@ -163,11 +163,11 @@ func _refresh() -> void:
 	var completed: Array = s.get("quests_completed", s.get("completed", []))
 	_set_quests_text(accepted, completed)
 
-	var sc := $Panel/VBox/QuestsScroll
+	var sc := $Root/Panel/VBox/QuestsScroll
 	if sc is ScrollContainer:
 		sc.scroll_vertical = 0
 
-	var sc2 := $Panel/VBox/CompletedScroll
+	var sc2 := $Root/Panel/VBox/CompletedScroll
 	if sc2 is ScrollContainer:
 		sc2.scroll_vertical = 0
 

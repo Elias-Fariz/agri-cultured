@@ -25,6 +25,8 @@ var _is_typing: bool = false
 var _full_text: String = ""
 var _typing_tween: Tween = null
 
+signal narration_closed
+
 
 func _ready() -> void:
 	super._ready()
@@ -156,13 +158,9 @@ func close_narration() -> void:
 	_is_typing = false
 
 	_play_sfx(close_sfx_path)
-
-	# Let BaseOverlay handle:
-	# - hiding the visual_node_path
-	# - releasing modal ownership
-	# - gameplay unlock
-	# - time resume
 	hide_overlay()
+
+	narration_closed.emit()
 
 
 func _play_sfx(path: NodePath) -> void:
@@ -179,3 +177,20 @@ func _play_sfx(path: NodePath) -> void:
 	elif player is AudioStreamPlayer2D:
 		(player as AudioStreamPlayer2D).stop()
 		(player as AudioStreamPlayer2D).play()
+
+func show_text_and_wait(text: String) -> void:
+	show_text(text)
+	await narration_closed
+
+
+func show_text_for_cutscene_and_wait(text: String) -> void:
+	var old_is_modal := is_modal
+
+	# CutsceneDirector already owns gameplay lock and time pause.
+	# This prevents narration from unlocking/resuming things mid-cutscene.
+	is_modal = false
+
+	show_text(text)
+	await narration_closed
+
+	is_modal = old_is_modal

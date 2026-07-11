@@ -30,6 +30,12 @@ enum StepType {
 
 	# Cute overhead emotes / thought bubbles
 	SHOW_OVERHEAD_TEXT,
+	
+	# World / speakerless narration box
+	NARRATION,
+	
+	# Smooth camera movement
+	PAN_CAMERA_TO_MARKER,
 }
 
 @export var step_type: StepType = StepType.WAIT
@@ -75,3 +81,7 @@ enum StepType {
 @export_multiline var overhead_text: String = "?"
 @export var overhead_duration: float = 1.0
 @export var overhead_offset: Vector2 = Vector2(0, -34)
+
+@export_group("Narration")
+
+@export_multiline var narration_text: String = ""

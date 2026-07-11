@@ -19,6 +19,12 @@ var _current_cutscene_id: String = ""
 
 var _skip_initial_fade_out_once: bool = false
 
+@export var hide_ui_during_cutscenes: bool = true
+
+@export var cutscene_camera_process_priority: int = 1000
+
+var _cutscene_hid_ui: bool = false
+
 # Cutscene registry: id -> .tres path
 var _cutscene_paths := {
 	"heart_intro": "res://data/cutscenes/heart_intro.tres",
@@ -26,6 +32,7 @@ var _cutscene_paths := {
 	"shop_intro": "res://data/cutscenes/shop_intro.tres",
 	"fearroot_intro": "res://data/cutscenes/fearroot_intro.tres",
 	"connector_valley_discovery": "res://data/cutscenes/connector_valley_discovery.tres",
+	"ash_first_passout_rescue": "res://data/cutscenes/ash_first_passout_rescue.tres",
 }
 
 var _pending_restoration_encounter_path: NodePath = NodePath("")
@@ -36,12 +43,28 @@ var _pending_player_end_marker_id: String = ""
 var _cutscene_original_zoom: float = 1.0
 var _has_cutscene_original_zoom: bool = false
 
+var _keep_screen_black_after_cutscene_once: bool = false
+var _suppress_time_resume_once: bool = false
+
+func _ready() -> void:
+	process_priority = cutscene_camera_process_priority
+#	physics_process_priority = cutscene_camera_process_priority
+
 func _process(_delta: float) -> void:
-	# Keep camera steady while a cutscene is playing.
+	_enforce_camera_lock()
+
+
+func _physics_process(_delta: float) -> void:
+	_enforce_camera_lock()
+
+
+func _enforce_camera_lock() -> void:
 	if not _camera_lock_active:
 		return
+
 	if _camera_lock_player == null or not is_instance_valid(_camera_lock_player):
 		return
+
 	if _camera_lock_player.has_method("camera_focus_on_world_point"):
 		_camera_lock_player.camera_focus_on_world_point(_camera_lock_point)
 
@@ -117,6 +140,8 @@ func _run_cutscene_async(data: CutsceneData) -> void:
 func _run_cutscene_impl(data: CutsceneData) -> void:
 	GameState.lock_gameplay()
 	_set_time_paused(true)
+	
+	_set_cutscene_ui_hidden(true)
 
 	# Make sure current_scene is stable
 	await get_tree().process_frame
@@ -233,8 +258,14 @@ func _run_cutscene_impl(data: CutsceneData) -> void:
 	call_deferred("_cleanup_temp_actors")
 	await get_tree().process_frame
 
+	var keep_black := _keep_screen_black_after_cutscene_once
+	_keep_screen_black_after_cutscene_once = false
+
 	if has_node("/root/FadeOverlay"):
-		await FadeOverlay.fade_in(0.20)
+		if keep_black:
+			FadeOverlay.set_black()
+		else:
+			await FadeOverlay.fade_in(0.20)
 
 	var finished_id := String(data.id).strip_edges()
 	if finished_id != "":
@@ -246,11 +277,20 @@ func _run_cutscene_impl(data: CutsceneData) -> void:
 	_finish_cutscene()
 
 	await get_tree().process_frame
-	_start_pending_restoration_encounter(scene)
+
+	if _pending_restoration_encounter_path != NodePath("") or _pending_restoration_encounter_id.strip_edges() != "":
+		var current_scene := get_tree().current_scene
+		if current_scene != null and is_instance_valid(current_scene):
+			_start_pending_restoration_encounter(current_scene)
 
 func _finish_cutscene() -> void:
+	_set_cutscene_ui_hidden(false)
+	
 	GameState.unlock_gameplay()
-	_set_time_paused(false)
+	if not _suppress_time_resume_once:
+		_set_time_paused(false)
+
+	_suppress_time_resume_once = false
 	_is_playing = false
 	_current_cutscene_id = ""
 
@@ -261,11 +301,18 @@ func _finish_cutscene() -> void:
 		GameState.block_item_use_for(0.90)
 
 func _start_pending_restoration_encounter(scene: Node) -> void:
+	if scene == null or not is_instance_valid(scene):
+		_pending_restoration_encounter_path = NodePath("")
+		_pending_restoration_encounter_id = ""
+		return
+
 	var path := _pending_restoration_encounter_path
 	var encounter_id := _pending_restoration_encounter_id.strip_edges()
 
 	_pending_restoration_encounter_path = NodePath("")
 	_pending_restoration_encounter_id = ""
+
+	# rest of function...
 
 	if scene == null:
 		return
@@ -610,14 +657,20 @@ func _run_step(step: CutsceneStepData, scene: Node, player: Node, _dialogue_ui: 
 			var to_player_pos := marker_player.global_position
 
 			# If duration is tiny, teleport instantly.
-			# If duration is larger, tween visibly.
 			if step.duration <= 0.01:
 				player.global_position = to_player_pos
+				_enforce_camera_lock()
 				await get_tree().process_frame
+				_enforce_camera_lock()
 				return
 
 			var tp := scene.create_tween()
-			tp.tween_property(player, "global_position", to_player_pos, max(step.duration, 0.01))
+			tp.tween_property(
+				player,
+				"global_position",
+				to_player_pos,
+				max(step.duration, 0.01)
+			)
 
 			if step.ease_run:
 				tp.set_trans(Tween.TRANS_QUAD)
@@ -626,7 +679,11 @@ func _run_step(step: CutsceneStepData, scene: Node, player: Node, _dialogue_ui: 
 				tp.set_trans(Tween.TRANS_SINE)
 				tp.set_ease(Tween.EASE_IN_OUT)
 
-			await tp.finished
+			while tp != null and tp.is_running():
+				_enforce_camera_lock()
+				await get_tree().process_frame
+
+			_enforce_camera_lock()
 
 		CutsceneStepData.StepType.START_RESTORATION_ENCOUNTER:
 			# Do not start it immediately while the cutscene is still locked/fading.
@@ -742,6 +799,12 @@ func _run_step(step: CutsceneStepData, scene: Node, player: Node, _dialogue_ui: 
 				_show_fallback_overhead_text(actor_overhead, text, hold_time, offset)
 
 			await get_tree().create_timer(hold_time).timeout
+		
+		CutsceneStepData.StepType.NARRATION:
+			await _run_narration_step(step)
+		
+		CutsceneStepData.StepType.PAN_CAMERA_TO_MARKER:
+			await _pan_camera_to_marker(scene, data, step)
 
 
 func _resolve_marker(scene: Node, data: CutsceneData, step: CutsceneStepData) -> Marker2D:
@@ -1164,4 +1227,163 @@ func play_cutscene_from_black(id: String) -> void:
 	# This avoids the extra visible fade cycle:
 	# travel fade-in -> cutscene fade-out -> cutscene fade-in.
 	_skip_initial_fade_out_once = true
+	play_cutscene(id)
+
+func _get_narration_ui() -> Node:
+	return get_tree().get_first_node_in_group("narration_ui")
+
+func _run_narration_step(step: CutsceneStepData) -> void:
+	
+	if step == null:
+		return
+
+	var text := String(step.narration_text).strip_edges()
+
+	if text == "" and step.lines.size() > 0:
+		text = String(step.lines[0]).strip_edges()
+
+	if text == "":
+		text = "..."
+
+	var narration_ui := _get_narration_ui()
+
+	if narration_ui == null:
+		push_warning("CutsceneDirector: no narration_ui found for narration step.")
+		await get_tree().create_timer(max(step.duration, 0.25)).timeout
+		return
+	
+	_enforce_camera_lock()
+	await get_tree().process_frame
+	_enforce_camera_lock()
+
+	# IMPORTANT: use the cutscene-safe method first.
+	if narration_ui.has_method("show_text_for_cutscene_and_wait"):
+		await narration_ui.call("show_text_for_cutscene_and_wait", text)
+	
+		await get_tree().process_frame
+		_enforce_camera_lock()
+		return
+
+	if narration_ui.has_method("show_text_and_wait"):
+		await narration_ui.call("show_text_and_wait", text)
+		return
+
+	if narration_ui.has_method("show_text"):
+		narration_ui.call("show_text", text)
+
+		if narration_ui.has_signal("narration_closed"):
+			await narration_ui.narration_closed
+		else:
+			await get_tree().create_timer(max(step.duration, 1.0)).timeout
+
+		return
+
+	push_warning("CutsceneDirector: narration_ui has no show_text method.")
+	await get_tree().create_timer(max(step.duration, 0.25)).timeout
+
+func _set_cutscene_ui_hidden(hidden: bool) -> void:
+	if not hide_ui_during_cutscenes:
+		return
+
+	if DevlogCaptureMode == null:
+		return
+
+	if not DevlogCaptureMode.has_method("set_capture_ui_hidden"):
+		return
+
+	if hidden:
+		# Only restore later if the cutscene was the thing that hid it.
+		# If you had manually hidden UI already with F10, don't undo that.
+		if not bool(DevlogCaptureMode.ui_hidden):
+			_cutscene_hid_ui = true
+			DevlogCaptureMode.set_capture_ui_hidden(true)
+		return
+
+	if _cutscene_hid_ui:
+		DevlogCaptureMode.set_capture_ui_hidden(false)
+
+	_cutscene_hid_ui = false
+
+func _pan_camera_to_marker(
+	scene: Node,
+	data: CutsceneData,
+	step: CutsceneStepData
+) -> void:
+	var marker := _resolve_marker(scene, data, step)
+
+	if marker == null:
+		push_warning(
+			"CutsceneDirector: PAN_CAMERA_TO_MARKER missing marker: "
+			+ step.marker_id
+		)
+		return
+
+	var player := get_tree().get_first_node_in_group("player")
+	if player == null:
+		return
+
+	var start_point := _get_current_cutscene_camera_point(player)
+	var end_point := marker.global_position
+
+	_camera_lock_active = true
+	_camera_lock_player = player
+	_camera_lock_point = start_point
+
+	if player.has_method("camera_focus_on_world_point"):
+		player.camera_focus_on_world_point(start_point)
+
+	var pan_duration :Variant= max(step.duration, 0.01)
+
+	var tween := create_tween()
+	tween.tween_method(
+		_set_cutscene_camera_point,
+		start_point,
+		end_point,
+		pan_duration
+	)
+
+	if step.ease_run:
+		tween.set_trans(Tween.TRANS_QUAD)
+		tween.set_ease(Tween.EASE_OUT)
+	else:
+		tween.set_trans(Tween.TRANS_SINE)
+		tween.set_ease(Tween.EASE_IN_OUT)
+
+	while tween != null and tween.is_running():
+		_enforce_camera_lock()
+		await get_tree().process_frame
+
+	_camera_lock_point = end_point
+	_enforce_camera_lock()
+	
+func _set_cutscene_camera_point(point: Vector2) -> void:
+	_camera_lock_point = point
+	_enforce_camera_lock()
+
+
+func _get_current_cutscene_camera_point(player: Node) -> Vector2:
+	# If the cutscene camera is already locked, continue from there.
+	if _camera_lock_active:
+		return _camera_lock_point
+
+	# Try the actual active Camera2D first.
+	var camera := get_viewport().get_camera_2d()
+	if camera != null:
+		return camera.global_position
+
+	# Fallback to player position.
+	if player is Node2D:
+		return (player as Node2D).global_position
+
+	return Vector2.ZERO
+
+func play_cutscene_from_black_keep_black(id: String, suppress_time_resume: bool = true) -> void:
+	# Used by passout / sleep-like flows.
+	# The screen is already black, so skip the initial fade-out.
+	# When the cutscene ends, do NOT reveal the current scene.
+	# Let the caller decide what scene/summary appears next.
+	_skip_initial_fade_out_once = true
+	_keep_screen_black_after_cutscene_once = true
+	_suppress_time_resume_once = suppress_time_resume
+
 	play_cutscene(id)
