@@ -453,12 +453,10 @@ func _try_till_ground(cell: Vector2i) -> void:
 	var atlas := ground.get_cell_atlas_coords(0, cell)
 
 	if src == ground_source_id and atlas == grass_coords:
-		ground.set_cell(0, cell, ground_source_id, tilled_coords)
+		var new_atlas := wet_tilled_coords if _is_raining_today() else tilled_coords
+		ground.set_cell(0, cell, ground_source_id, new_atlas)
 
 		# NEW: quest progress for tilling.
-		# target "soil" lets you make either:
-		# - type="till", target=""       -> any tilling counts
-		# - type="till", target="soil"   -> soil tilling counts
 		if QuestEvents != null and QuestEvents.has_signal("soil_tilled"):
 			QuestEvents.soil_tilled.emit("soil", 1)
 
@@ -646,14 +644,14 @@ func _clear_watered_visuals_and_state() -> void:
 	watered_today.clear()
 
 func _apply_rain_wet_visuals_today() -> void:
-	# print("Applying rain wet visuals. crops=", crop_state.size())
-
-	for cell in crop_state.keys():
+	for cell in ground.get_used_cells(0):
 		var src := ground.get_cell_source_id(0, cell)
 		var atlas := ground.get_cell_atlas_coords(0, cell)
 
 		if src == ground_source_id and atlas == tilled_coords:
 			ground.set_cell(0, cell, ground_source_id, wet_tilled_coords)
+
+	_save_farm_state()
 
 func _is_raining_today() -> bool:
 	var wc := get_node_or_null("/root/WeatherChange")
@@ -950,3 +948,28 @@ func _refresh_large_tree_visuals() -> void:
 		sprite.global_position = _cell_to_world_center(cell) + large_tree_offset
 
 		_large_tree_visuals[_cell_key(cell)] = sprite
+
+func water_all_tilled_soil_from_spigot() -> int:
+	if _is_raining_today():
+		return 0
+
+	var watered_count := 0
+
+	for cell in ground.get_used_cells(0):
+		var src := ground.get_cell_source_id(0, cell)
+		var atlas := ground.get_cell_atlas_coords(0, cell)
+
+		var is_dry_tilled := (
+			src == ground_source_id
+			and atlas == tilled_coords
+		)
+
+		if not is_dry_tilled:
+			continue
+
+		water_cell(cell)
+		watered_count += 1
+
+	_save_farm_state()
+
+	return watered_count

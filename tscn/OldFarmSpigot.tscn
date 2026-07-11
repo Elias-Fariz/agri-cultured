@@ -1,0 +1,33 @@
+[gd_scene load_steps=7 format=3 uid="uid://dkq33eagm0g51"]
+
+[ext_resource type="Texture2D" uid="uid://b4cowvy1fjl83" path="res://art/gate-opened.png" id="1_6dnh5"]
+[ext_resource type="Script" uid="uid://bw34xwpfnu7eg" path="res://scripts/OldFarmSpigot.gd" id="1_26658"]
+[ext_resource type="Texture2D" uid="uid://bowco0r0qw2be" path="res://art/gate-closed.png" id="2_6f50h"]
+[ext_resource type="Texture2D" uid="uid://cb4ahea1tc0rn" path="res://art/sparkle.png" id="3_26658"]
+[ext_resource type="Script" uid="uid://bb61eeltwti6u" path="res://scripts/AppearOnDay.gd" id="4_6f50h"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_26658"]
+
+[node name="OldFarmSpigot" type="Area2D"]
+script = ExtResource("1_26658")
+interactable_id = "old_farm_spigot"
+prompt_text = "E: Check"
+memory_scope = "farm"
+
+[node name="BrokenVisual" type="Sprite2D" parent="."]
+texture = ExtResource("1_6dnh5")
+
+[node name="RepairedVisual" type="Sprite2D" parent="."]
+texture = ExtResource("2_6f50h")
+
+[node name="SparkleHint" type="Sprite2D" parent="."]
+position = Vector2(10, -10)
+texture = ExtResource("3_26658")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+scale = Vector2(1.5945415, 1.5945415)
+shape = SubResource("RectangleShape2D_26658")
+
+[node name="AppearOnDay" type="Node2D" parent="."]
+script = ExtResource("4_6f50h")
+hint_node_path = NodePath("../SparkleHint")

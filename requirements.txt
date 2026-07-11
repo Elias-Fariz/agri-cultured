@@ -145,8 +145,9 @@ Phase ALRIGHT... more things
 * Observations *MADE TEMPLATE*
 
 VERY IMPORTANT
-* Spigot Quest
+* Spigot Quest *DONE!!!*
 * Ash Passout Cutscene *BASIS CREATED!!!*
+* Day 2 Observations *ADDED!!!*
 
 Phase Make the World a Cozy Place
 * House Tidying

@@ -1,8 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://eva0hmteelli"]
+[gd_scene load_steps=7 format=3 uid="uid://eva0hmteelli"]
 
 [ext_resource type="Script" uid="uid://c6d31s7lh68wx" path="res://scripts/SmallJoyInteractable.gd" id="1_ghvph"]
 [ext_resource type="AudioStream" uid="uid://b3hqj80ovverl" path="res://audio/sfx/sfx_harvest_chime_01.WAV" id="2_ntcgj"]
 [ext_resource type="Texture2D" uid="uid://nan0sddf00hl" path="res://art/chest.png" id="3_ntcgj"]
+[ext_resource type="Texture2D" uid="uid://cb4ahea1tc0rn" path="res://art/sparkle.png" id="4_o3exm"]
+[ext_resource type="Script" uid="uid://bb61eeltwti6u" path="res://scripts/AppearOnDay.gd" id="5_l2arm"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_bgye8"]
 
@@ -26,3 +28,11 @@ shape = SubResource("RectangleShape2D_bgye8")
 [node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+
+[node name="Sprite2D2" type="Sprite2D" parent="."]
+position = Vector2(14, -13)
+texture = ExtResource("4_o3exm")
+
+[node name="AppearOnDay" type="Node2D" parent="."]
+script = ExtResource("5_l2arm")
+hint_node_path = NodePath("../Sprite2D2")

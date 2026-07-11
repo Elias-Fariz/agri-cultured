@@ -1,7 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://cjommjh2l83yv"]
+[gd_scene load_steps=6 format=3 uid="uid://cjommjh2l83yv"]
 
 [ext_resource type="Script" uid="uid://g4qumls336jr" path="res://scripts/ObservationInteractable.gd" id="1_6nqdo"]
 [ext_resource type="Texture2D" uid="uid://b6kat5jrgygx6" path="res://art/flowers.PNG" id="1_x0w66"]
+[ext_resource type="Script" uid="uid://bb61eeltwti6u" path="res://scripts/AppearOnDay.gd" id="3_jlurb"]
+[ext_resource type="Texture2D" uid="uid://cb4ahea1tc0rn" path="res://art/sparkle.png" id="4_xdphc"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_6nqdo"]
 
@@ -20,3 +22,11 @@ texture = ExtResource("1_x0w66")
 rotation = -0.005690303
 scale = Vector2(1.6528611, 1.6616639)
 shape = SubResource("RectangleShape2D_6nqdo")
+
+[node name="AppearOnDay" type="Node2D" parent="."]
+script = ExtResource("3_jlurb")
+hint_node_path = NodePath("../Sprite2D2")
+
+[node name="Sprite2D2" type="Sprite2D" parent="."]
+position = Vector2(10, -9)
+texture = ExtResource("4_xdphc")

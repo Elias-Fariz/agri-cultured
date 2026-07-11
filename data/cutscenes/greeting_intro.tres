@@ -140,5 +140,8 @@ actors = Array[ExtResource("1_ma2w5")]([SubResource("Resource_ma2w5"), SubResour
 markers = SubResource("Resource_2pgpd")
 effects = Array[ExtResource("2_r1wa0")]([SubResource("Resource_df6ec")])
 steps = Array[ExtResource("4_2pgpd")]([SubResource("Resource_cag78"), SubResource("Resource_r4rt6"), SubResource("Resource_f74h5"), SubResource("Resource_vp7ds"), SubResource("Resource_a08rt"), SubResource("Resource_fomr5"), SubResource("Resource_yopxa"), SubResource("Resource_4m285")])
+reward_items = Dictionary[String, int]({
+"Watermelon Seeds": 1
+})
 reward_flags = Array[String](["slice_01_complete"])
 metadata/_custom_type_script = "uid://camo0lur1qm85"

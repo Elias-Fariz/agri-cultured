@@ -610,10 +610,10 @@ func shipping_calculate_payout_breakdown() -> Dictionary:
 # ----------------------------
 # Energy / Stamina (NEW)
 # ----------------------------
-@export var max_energy: int = 5
+@export var max_energy: int = 10
 @export var tool_action_cost: int = 1
 
-var energy: int = 5  # will be set on _ready
+var energy: int = 10  # will be set on _ready
 var exhausted: bool = false
 
 # ----------------------------
@@ -1217,9 +1217,18 @@ func _process_farm_crops_new_day() -> void:
 
 	var crops: Dictionary = Dictionary(map.get("crops", {}))
 	if crops.is_empty():
-		# Still clear old watering if needed.
+		# Clear old watering and dry any wet tilled soil,
+		# even if there are no crops planted.
 		map["watered_today"] = {}
-		map["rained_today"] = _is_raining_today_global()
+		_dry_farm_ground_tiles(map)
+
+		var raining_now := _is_raining_today_global()
+		map["rained_today"] = raining_now
+
+		# If it is raining today, re-wet saved farm visuals.
+		if raining_now:
+			_apply_farm_rain_wet_visuals_to_saved_map(map)
+
 		world_state[FARM_WORLD_ID] = map
 		return
 
@@ -1338,21 +1347,16 @@ func _dry_farm_ground_tiles(map: Dictionary) -> void:
 
 func _apply_farm_rain_wet_visuals_to_saved_map(map: Dictionary) -> void:
 	var ground: Dictionary = Dictionary(map.get("ground", {}))
-	var crops: Dictionary = Dictionary(map.get("crops", {}))
 
-	for cell_key_any in crops.keys():
-		var cell_key := String(cell_key_any)
+	for cell_key_any in ground.keys():
+		var entry: Dictionary = Dictionary(ground[cell_key_any])
 
-		if not ground.has(cell_key):
-			continue
-
-		var entry: Dictionary = Dictionary(ground[cell_key])
 		var src := int(entry.get("src", -1))
 		var atlas := Vector2i(entry.get("atlas", Vector2i.ZERO))
 
 		if src == farm_ground_source_id and atlas == farm_tilled_coords:
 			entry["atlas"] = farm_wet_tilled_coords
-			ground[cell_key] = entry
+			ground[cell_key_any] = entry
 
 	map["ground"] = ground
 

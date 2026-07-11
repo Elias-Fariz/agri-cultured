@@ -9,8 +9,7 @@ start_visible_in_game = false
 is_modal = true
 
 [node name="Panel" type="Panel" parent="."]
-visible = false
-custom_minimum_size = Vector2(300, 200)
+custom_minimum_size = Vector2(400, 200)
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -39,6 +38,8 @@ layout_mode = 2
 
 [node name="MessageLabel" type="Label" parent="Panel/Margin/VBox"]
 layout_mode = 2
+size_flags_vertical = 1
+autowrap_mode = 3
 
 [node name="ButtonRow" type="HBoxContainer" parent="Panel/Margin/VBox"]
 layout_mode = 2
