@@ -1,4 +1,4 @@
-[gd_scene load_steps=69 format=3 uid="uid://b7y4cme4an3kb"]
+[gd_scene load_steps=71 format=3 uid="uid://b7y4cme4an3kb"]
 
 [ext_resource type="PackedScene" uid="uid://dv7wem6ftpvdd" path="res://tscn/Player.tscn" id="1_2feps"]
 [ext_resource type="Script" uid="uid://0ofb5xeer5m6" path="res://scripts/Town.gd" id="1_o31te"]
@@ -53,6 +53,8 @@
 [ext_resource type="PackedScene" uid="uid://dmwh8devorqla" path="res://ui/NarrationOverlay.tscn" id="37_ep6ep"]
 [ext_resource type="Script" uid="uid://dvg0ynlpgst4t" path="res://scripts/WorldSpawn.gd" id="37_xdkop"]
 [ext_resource type="PackedScene" uid="uid://cbaw8nhel818e" path="res://tscn/Bench.tscn" id="39_ehdlx"]
+[ext_resource type="PackedScene" uid="uid://bq2yrkhda06er" path="res://ui/ConfirmOverlay.tscn" id="43_5phik"]
+[ext_resource type="PackedScene" uid="uid://dypln0eb14t2g" path="res://ui/WhisperOverlay.tscn" id="44_c3e4w"]
 [ext_resource type="PackedScene" uid="uid://c2t6sq4qrohbv" path="res://tscn/ToolWorld.tscn" id="49_i157f"]
 [ext_resource type="AudioStream" uid="uid://w8xlw7qbvgtu" path="res://audio/sfx/sfx_hit_tree_01.WAV" id="50_gmfaa"]
 [ext_resource type="PackedScene" uid="uid://celccxg6n2ye7" path="res://tscn/npcs/Maren.tscn" id="51_01b2m"]
@@ -368,6 +370,10 @@ navigation_polygon = SubResource("NavigationPolygon_j34sm")
 help_book_data = ExtResource("29_ao30e")
 
 [node name="NarrationOverlay" parent="." instance=ExtResource("37_ep6ep")]
+
+[node name="ConfirmOverlay" parent="." instance=ExtResource("43_5phik")]
+
+[node name="WhisperOverlay" parent="." instance=ExtResource("44_c3e4w")]
 
 [node name="CameraBounds" type="Node2D" parent="."]
 position = Vector2(175, 32)

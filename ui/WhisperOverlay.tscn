@@ -1,0 +1,54 @@
+[gd_scene load_steps=2 format=3 uid="uid://dypln0eb14t2g"]
+
+[ext_resource type="Script" uid="uid://n7215m4tlpan" path="res://scripts/WhisperOverlay.gd" id="1_4o4f0"]
+
+[node name="WhisperOverlay" type="CanvasLayer" groups=["whisper_ui"]]
+layer = 220
+script = ExtResource("1_4o4f0")
+whisper_label_path = NodePath("Center/LayoutHolder/BobHolder/WhisperLabel")
+whisper_audio_path = NodePath("WhisperAudio")
+bob_holder_path = NodePath("Center/LayoutHolder/BobHolder")
+debug_enabled = true
+visual_node_path = NodePath("Center")
+start_visible_in_game = false
+is_modal = true
+modal_overlay_id = "whisper"
+
+[node name="Center" type="CenterContainer" parent="."]
+custom_minimum_size = Vector2(500, 80)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -80.0
+offset_bottom = -80.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="LayoutHolder" type="Control" parent="Center"]
+custom_minimum_size = Vector2(500, 80)
+layout_mode = 2
+
+[node name="BobHolder" type="Control" parent="Center/LayoutHolder"]
+custom_minimum_size = Vector2(500, 80)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="WhisperLabel" type="Label" parent="Center/LayoutHolder/BobHolder"]
+custom_minimum_size = Vector2(500, 80)
+layout_mode = 0
+offset_right = 500.0
+offset_bottom = 80.0
+theme_override_colors/font_color = Color(0.9098039, 0.8509804, 0.6509804, 1)
+theme_override_colors/font_outline_color = Color(0.73337764, 0.46963003, 0, 0.492)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 30
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="WhisperAudio" type="AudioStreamPlayer" parent="."]

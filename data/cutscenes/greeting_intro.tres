@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="CutsceneData" load_steps=27 format=3 uid="uid://c8bi3kh8p7lxt"]
+[gd_resource type="Resource" script_class="CutsceneData" load_steps=62 format=3 uid="uid://c8bi3kh8p7lxt"]
 
 [ext_resource type="Script" uid="uid://b4pm6wxp5ivtk" path="res://data/cutscenes/CutsceneActorData.gd" id="1_ma2w5"]
 [ext_resource type="Script" uid="uid://cp2gtb0hckrrj" path="res://data/cutscenes/CutsceneEffectData.gd" id="2_r1wa0"]
@@ -24,14 +24,6 @@ display_name = "Mayor"
 scene_path = "res://tscn/npcs/Mayor.tscn"
 metadata/_custom_type_script = "uid://b4pm6wxp5ivtk"
 
-[sub_resource type="Resource" id="Resource_qnkhb"]
-script = ExtResource("1_ma2w5")
-key = "lia"
-npc_id = "npc_poppy"
-display_name = "Poppy"
-scene_path = "res://tscn/npcs/Poppy.tscn"
-metadata/_custom_type_script = "uid://b4pm6wxp5ivtk"
-
 [sub_resource type="Resource" id="Resource_df6ec"]
 script = ExtResource("2_r1wa0")
 effect_type = "toast"
@@ -41,94 +33,310 @@ metadata/_custom_type_script = "uid://cp2gtb0hckrrj"
 [sub_resource type="Resource" id="Resource_2pgpd"]
 script = ExtResource("3_r1wa0")
 markers_by_id = {
-"focus_start": NodePath("CutsceneMarkers/GreetingIntro_Focus"),
-"lia_greet": NodePath("CutsceneMarkers/GreetingIntro_LiaGreetSpot"),
-"lia_start": NodePath("CutsceneMarkers/GreetingIntro_LiaStart"),
+"focus_greet": NodePath("CutsceneMarkers/GreetingIntro_Focus"),
+"focus_start": NodePath("CutsceneMarkers/GreetingIntro_FocusStart"),
+"mayor_end": NodePath("CutsceneMarkers/GreetingIntro_MayorEnd"),
 "mayor_greet": NodePath("CutsceneMarkers/GreetingIntro_MayorGreetSpot"),
 "mayor_start": NodePath("CutsceneMarkers/GreetingIntro_MayorStart"),
 "player_start": NodePath("CutsceneMarkers/GreetingIntro_PlayerStart")
 }
 metadata/_custom_type_script = "uid://bjwubxbrbyt2x"
 
+[sub_resource type="Resource" id="Resource_vwya2"]
+script = ExtResource("4_2pgpd")
+step_type = 20
+marker_id = "focus_start"
+duration = 0.1
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
 [sub_resource type="Resource" id="Resource_cag78"]
 script = ExtResource("4_2pgpd")
-step_type = 1
-marker_id = "focus"
+duration = 0.35
 metadata/_custom_type_script = "uid://0k0f68wqa7mm"
 
 [sub_resource type="Resource" id="Resource_r4rt6"]
 script = ExtResource("4_2pgpd")
 step_type = 0
-actor_key = "lia"
-marker_id = "lia_greet"
-duration = 0.8
-ease_run = true
+actor_key = "mayor"
+marker_id = "mayor_greet"
+duration = 3.0
 metadata/_custom_type_script = "uid://0k0f68wqa7mm"
 
 [sub_resource type="Resource" id="Resource_f74h5"]
 script = ExtResource("4_2pgpd")
-step_type = 0
-actor_key = "mayor"
-marker_id = "mayor_greet"
-duration = 1.4
-metadata/_custom_type_script = "uid://0k0f68wqa7mm"
-
-[sub_resource type="Resource" id="Resource_vp7ds"]
-script = ExtResource("4_2pgpd")
-step_type = 19
-overhead_text = ""
-narration_text = "The night feels quieter here."
-metadata/_custom_type_script = "uid://0k0f68wqa7mm"
-
-[sub_resource type="Resource" id="Resource_a08rt"]
-script = ExtResource("4_2pgpd")
-step_type = 18
-actor_key = "player"
-overhead_text = "*hungry*"
-metadata/_custom_type_script = "uid://0k0f68wqa7mm"
-
-[sub_resource type="Resource" id="Resource_fomr5"]
-script = ExtResource("4_2pgpd")
-step_type = 18
-actor_key = "mayor"
-overhead_text = "Welcome!"
+step_type = 20
+marker_id = "focus_greet"
+duration = 0.8
 metadata/_custom_type_script = "uid://0k0f68wqa7mm"
 
 [sub_resource type="Resource" id="Resource_kir2k"]
-script = ExtResource("6_2pgpd")
-text = "Hi, new farmer!"
-speaker_id = "npc_poppy"
-stage_slot = "left"
-emotion = "happy"
-metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+script = ExtResource("4_2pgpd")
+duration = 0.25
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
 
 [sub_resource type="Resource" id="Resource_xo77u"]
 script = ExtResource("6_2pgpd")
-text = "Welcome to our little village."
+text = "Ah. There you are."
 speaker_id = "npc_mayor"
-stage_slot = "right"
+speaker_name_override = "???"
 metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
 
 [sub_resource type="Resource" id="Resource_occxa"]
 script = ExtResource("6_2pgpd")
-text = "I hope you enjoy your stay!"
-speaker_id = "npc_poppy"
-stage_slot = "left"
+text = "How did you sleep? You came by rather late last night. I hope the old house kept you warm enough."
+speaker_id = "npc_mayor"
+speaker_name_override = "???"
 metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
 
 [sub_resource type="Resource" id="Resource_27yug"]
-script = ExtResource("7_cag78")
-sequence_id = "poppy_mayor_greet_seq"
-beats = Array[ExtResource("6_2pgpd")]([SubResource("Resource_kir2k"), SubResource("Resource_xo77u"), SubResource("Resource_occxa")])
-metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+script = ExtResource("6_2pgpd")
+text = "I was beginning to wonder whether you'd be awake before I finished my morning walk."
+speaker_id = "npc_mayor"
+speaker_name_override = "???"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
 
 [sub_resource type="Resource" id="Resource_yopxa"]
+script = ExtResource("7_cag78")
+beats = Array[ExtResource("6_2pgpd")]([SubResource("Resource_xo77u"), SubResource("Resource_occxa"), SubResource("Resource_27yug")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_a08rt"]
 script = ExtResource("4_2pgpd")
 step_type = 2
-dialogue_sequence = SubResource("Resource_27yug")
+dialogue_sequence = SubResource("Resource_yopxa")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_fomr5"]
+script = ExtResource("4_2pgpd")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_vp7ds"]
+script = ExtResource("4_2pgpd")
+step_type = 2
+speaker_actor_key = "mayor"
+speaker_name = "???"
+lines = Array[String](["Well... I imagine you'll be wanting the road again before long.", "If you're moving on this morning, I hope the weather treats you kindly."])
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_fbapq"]
+script = ExtResource("4_2pgpd")
+step_type = 19
+narration_text = "You tell Mayor Alder that you aren't quite ready to leave."
 metadata/_custom_type_script = "uid://0k0f68wqa7mm"
 
 [sub_resource type="Resource" id="Resource_4m285"]
+script = ExtResource("4_2pgpd")
+step_type = 19
+narration_text = "You mention the strange voice you heard during the night."
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_law8i"]
+script = ExtResource("4_2pgpd")
+step_type = 2
+speaker_actor_key = "mayor"
+speaker_name = "???"
+lines = Array[String](["A voice?"])
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_sqiqa"]
+script = ExtResource("4_2pgpd")
+step_type = 18
+actor_key = "mayor"
+duration = 0.8
+overhead_text = "..."
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_mk68a"]
+script = ExtResource("4_2pgpd")
+step_type = 2
+speaker_actor_key = "mayor"
+speaker_name = "???"
+lines = Array[String](["Hmm...", "I may have an idea of what you've heard."])
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_ybhbr"]
+script = ExtResource("4_2pgpd")
+step_type = 2
+speaker_actor_key = "mayor"
+speaker_name = "???"
+lines = Array[String](["There are old stories about this valley. Older than most of the houses still standing.", "But I would rather not turn an old story into an answer before we know what we're looking for."])
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_ylt7b"]
+script = ExtResource("4_2pgpd")
+step_type = 19
+narration_text = "You tell him you'd like to stay for a little while and find out for yourself."
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_js58o"]
+script = ExtResource("4_2pgpd")
+step_type = 2
+speaker_actor_key = "mayor"
+speaker_name = "???"
+lines = Array[String](["Then stay.", "There's no harm in giving yourself a little time.", "If the valley has something to say, perhaps you'll hear it more clearly once you've had a chance to settle in."])
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_nvnr7"]
+script = ExtResource("6_2pgpd")
+text = "Ah... and if we're to be neighbors, I suppose I ought to introduce myself properly."
+speaker_id = "npc_mayor"
+speaker_name_override = "???"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_qslkh"]
+script = ExtResource("6_2pgpd")
+text = "Alder. Mayor Alder, if we're being official about it."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_et8yo"]
+script = ExtResource("6_2pgpd")
+text = "We rarely are."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_m7dle"]
+script = ExtResource("7_cag78")
+beats = Array[ExtResource("6_2pgpd")]([SubResource("Resource_nvnr7"), SubResource("Resource_qslkh"), SubResource("Resource_et8yo")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_28f6d"]
+script = ExtResource("4_2pgpd")
+step_type = 2
+dialogue_sequence = SubResource("Resource_m7dle")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_rgkrw"]
+script = ExtResource("6_2pgpd")
+text = "No one's lived in the old mansion for some time, but we keep it mended as best we can."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_rjh87"]
+script = ExtResource("6_2pgpd")
+text = "If you're comfortable there, you're welcome to use it for as long as you'd like."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_15wmu"]
+script = ExtResource("6_2pgpd")
+text = "There's an old growing plot beside the house, too."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_qvj8p"]
+script = ExtResource("6_2pgpd")
+text = "It hasn't seen much work lately... but the soil still looks willing."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_shiby"]
+script = ExtResource("6_2pgpd")
+text = "If you're staying awhile, growing something might be a pleasant way to settle in."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_es66d"]
+script = ExtResource("7_cag78")
+beats = Array[ExtResource("6_2pgpd")]([SubResource("Resource_rgkrw"), SubResource("Resource_rjh87"), SubResource("Resource_15wmu"), SubResource("Resource_qvj8p"), SubResource("Resource_shiby")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_84ict"]
+script = ExtResource("4_2pgpd")
+step_type = 2
+dialogue_sequence = SubResource("Resource_es66d")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_168ns"]
+script = ExtResource("6_2pgpd")
+text = "You'll find Tansy's general store east of here."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_svute"]
+script = ExtResource("6_2pgpd")
+text = "They should have seeds for sale."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_6er40"]
+script = ExtResource("6_2pgpd")
+text = "And unless my memory has finally betrayed me, there's a box of old tools somewhere in that shop that could use a new home."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_dx3ul"]
+script = ExtResource("7_cag78")
+beats = Array[ExtResource("6_2pgpd")]([SubResource("Resource_168ns"), SubResource("Resource_svute"), SubResource("Resource_6er40")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_ngyyp"]
+script = ExtResource("4_2pgpd")
+step_type = 2
+dialogue_sequence = SubResource("Resource_dx3ul")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_3r3to"]
+script = ExtResource("4_2pgpd")
+step_type = 19
+narration_text = "Mayor Alder reaches into his pocket and presses a small coin pouch into your hands."
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_1f7un"]
+script = ExtResource("6_2pgpd")
+text = "Here. It isn't much, but it should help you get started."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_4h0gq"]
+script = ExtResource("6_2pgpd")
+text = "The town is just east along the path."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_mk0f3"]
+script = ExtResource("6_2pgpd")
+text = "Take your time. Tansy's not going anywhere."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_dpki2"]
+script = ExtResource("7_cag78")
+beats = Array[ExtResource("6_2pgpd")]([SubResource("Resource_1f7un"), SubResource("Resource_4h0gq"), SubResource("Resource_mk0f3")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_qniw4"]
+script = ExtResource("4_2pgpd")
+step_type = 2
+dialogue_sequence = SubResource("Resource_dpki2")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_0o4my"]
+script = ExtResource("6_2pgpd")
+text = "We're a small bunch... but I think you'll find there's room here for one more."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_enhtm"]
+script = ExtResource("7_cag78")
+beats = Array[ExtResource("6_2pgpd")]([SubResource("Resource_0o4my")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_6id15"]
+script = ExtResource("4_2pgpd")
+step_type = 2
+dialogue_sequence = SubResource("Resource_enhtm")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_tq3f1"]
+script = ExtResource("4_2pgpd")
+step_type = 0
+actor_key = "mayor"
+marker_id = "mayor_end"
+duration = 4.0
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_baylr"]
 script = ExtResource("4_2pgpd")
 metadata/_custom_type_script = "uid://0k0f68wqa7mm"
 
@@ -136,12 +344,9 @@ metadata/_custom_type_script = "uid://0k0f68wqa7mm"
 script = ExtResource("3_qnkhb")
 id = "greeting_intro"
 scene_name = "Farm"
-actors = Array[ExtResource("1_ma2w5")]([SubResource("Resource_ma2w5"), SubResource("Resource_r1wa0"), SubResource("Resource_qnkhb")])
+actors = Array[ExtResource("1_ma2w5")]([SubResource("Resource_ma2w5"), SubResource("Resource_r1wa0")])
 markers = SubResource("Resource_2pgpd")
 effects = Array[ExtResource("2_r1wa0")]([SubResource("Resource_df6ec")])
-steps = Array[ExtResource("4_2pgpd")]([SubResource("Resource_cag78"), SubResource("Resource_r4rt6"), SubResource("Resource_f74h5"), SubResource("Resource_vp7ds"), SubResource("Resource_a08rt"), SubResource("Resource_fomr5"), SubResource("Resource_yopxa"), SubResource("Resource_4m285")])
-reward_items = Dictionary[String, int]({
-"Watermelon Seeds": 1
-})
-reward_flags = Array[String](["slice_01_complete"])
+steps = Array[ExtResource("4_2pgpd")]([SubResource("Resource_vwya2"), SubResource("Resource_cag78"), SubResource("Resource_r4rt6"), SubResource("Resource_f74h5"), SubResource("Resource_kir2k"), SubResource("Resource_a08rt"), SubResource("Resource_fomr5"), SubResource("Resource_vp7ds"), SubResource("Resource_fbapq"), SubResource("Resource_4m285"), SubResource("Resource_law8i"), SubResource("Resource_sqiqa"), SubResource("Resource_mk68a"), SubResource("Resource_ybhbr"), SubResource("Resource_ylt7b"), SubResource("Resource_js58o"), SubResource("Resource_28f6d"), SubResource("Resource_84ict"), SubResource("Resource_ngyyp"), SubResource("Resource_3r3to"), SubResource("Resource_qniw4"), SubResource("Resource_6id15"), SubResource("Resource_tq3f1"), SubResource("Resource_baylr")])
+reward_money = 50
 metadata/_custom_type_script = "uid://camo0lur1qm85"

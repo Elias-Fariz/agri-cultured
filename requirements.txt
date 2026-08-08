@@ -148,6 +148,8 @@ VERY IMPORTANT
 * Spigot Quest *DONE!!!*
 * Ash Passout Cutscene *BASIS CREATED!!!*
 * Day 2 Observations *ADDED!!!*
+* Cutscenes! *Wakeup and Greeting!*
+* Gave the land a voice *Whispers!*
 
 Phase Make the World a Cozy Place
 * House Tidying

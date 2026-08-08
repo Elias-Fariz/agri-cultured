@@ -1,29 +1,15 @@
-[gd_scene load_steps=8 format=3 uid="uid://br3h0dcobhq4e"]
+[gd_scene load_steps=5 format=3 uid="uid://br3h0dcobhq4e"]
 
 [ext_resource type="PackedScene" uid="uid://bfaurdf2mucr2" path="res://tscn/npcs/NPC.tscn" id="1_f7d0r"]
 [ext_resource type="Texture2D" uid="uid://ylpu3ria5fxy" path="res://art/cow.PNG" id="2_xwfys"]
-[ext_resource type="Script" uid="uid://ctb0g66p3247d" path="res://data/dialogue/DialogueArtEntry.gd" id="3_f7d0r"]
+[ext_resource type="Resource" uid="uid://c6cprv4krk67i" path="res://art/characters/dialogue_art/ash_dialogue_art.tres" id="3_n8q3c"]
 [ext_resource type="Resource" uid="uid://cqycfsbef0r44" path="res://data/gifts/gifts_ash.tres" id="3_xwfys"]
-[ext_resource type="Script" uid="uid://dtmrx4fd7hq0k" path="res://data/dialogue/NPCDialogueArtData.gd" id="4_j7ocb"]
-
-[sub_resource type="Resource" id="Resource_h4udy"]
-script = ExtResource("3_f7d0r")
-texture = ExtResource("2_xwfys")
-metadata/_custom_type_script = "uid://ctb0g66p3247d"
-
-[sub_resource type="Resource" id="Resource_masu0"]
-script = ExtResource("4_j7ocb")
-npc_id = "npc_ash"
-default_portrait = ExtResource("2_xwfys")
-default_stage_pose = ExtResource("2_xwfys")
-stage_poses = Array[ExtResource("3_f7d0r")]([SubResource("Resource_h4udy")])
-metadata/_custom_type_script = "uid://dtmrx4fd7hq0k"
 
 [node name="NPC" instance=ExtResource("1_f7d0r")]
 npc_id = "npc_ash"
 display_name = "Ash"
 portrait = ExtResource("2_xwfys")
-dialogue_art = SubResource("Resource_masu0")
+dialogue_art = ExtResource("3_n8q3c")
 dialogue_lines = Array[String](["What?"])
 morning_dialogue_lines = Array[String](["Leave me alone."])
 evening_dialogue_lines = Array[String](["Go away..."])

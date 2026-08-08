@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=3 uid="uid://bjx6v0gjfwt2h"]
+[gd_scene load_steps=34 format=3 uid="uid://bjx6v0gjfwt2h"]
 
 [ext_resource type="TileSet" uid="uid://chypvyk38hcyn" path="res://tiles/IndoorsTileset.tres" id="2_gef2e"]
 [ext_resource type="PackedScene" uid="uid://dv7wem6ftpvdd" path="res://tscn/Player.tscn" id="3_jpwvr"]
@@ -15,6 +15,7 @@
 [ext_resource type="PackedScene" uid="uid://cde8sgn45urws" path="res://ui/HelpOverlay.tscn" id="14_0ot87"]
 [ext_resource type="PackedScene" uid="uid://dfcn8oje3hko1" path="res://ui/EndOfDaySummaryUI.tscn" id="15_xgfmo"]
 [ext_resource type="PackedScene" uid="uid://c48msaiodeqan" path="res://ui/CraftingUI.tscn" id="16_1v6cy"]
+[ext_resource type="PackedScene" uid="uid://ded2abuo15uwh" path="res://ui/DialogueUI.tscn" id="16_pqht4"]
 [ext_resource type="PackedScene" uid="uid://ixx7e0mb3ds4" path="res://ui/GiftUI.tscn" id="17_nhqqd"]
 [ext_resource type="PackedScene" uid="uid://bq2yrkhda06er" path="res://ui/ConfirmOverlay.tscn" id="18_8dwd5"]
 [ext_resource type="PackedScene" uid="uid://tiu8n2by1gky" path="res://ui/ToolBeltUI.tscn" id="18_te355"]
@@ -26,12 +27,16 @@
 [ext_resource type="Script" uid="uid://dxx68q28fdnvv" path="res://scripts/SpawnPoint.gd" id="24_o06uo"]
 [ext_resource type="PackedScene" uid="uid://dhtymknlbx6nc" path="res://tscn/CookingTease.tscn" id="25_gk44a"]
 [ext_resource type="PackedScene" uid="uid://dmwh8devorqla" path="res://ui/NarrationOverlay.tscn" id="25_r31n5"]
+[ext_resource type="PackedScene" uid="uid://dypln0eb14t2g" path="res://ui/WhisperOverlay.tscn" id="26_fidvi"]
 [ext_resource type="PackedScene" uid="uid://dsefxlv6x3h0c" path="res://ui/DayNightModulate.tscn" id="26_o06uo"]
+[ext_resource type="Script" uid="uid://b7n4wv6k3k33k" path="res://scripts/QuestLocation.gd" id="29_1kkpn"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_r31n5"]
 
 [sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_gk44a"]
 polygon = PackedVector2Array(5.6076856, 0, 34.650475, 0, 34.985264, -0.25398344, 7.9511957, -0.25398344, 8.034892, -2.285851, 34.734173, -2.285851, 34.901566, 0.007936982, 39.923374, 0, 40.00707, -2.5318975, 5.5239887, -2.5715823)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_pqht4"]
 
 [node name="House" type="Node2D" groups=["world"]]
 position = Vector2(2, 1)
@@ -105,6 +110,8 @@ position = Vector2(255, 240)
 
 [node name="ShopUI" parent="." instance=ExtResource("12_ur3p0")]
 
+[node name="DialogueUI" parent="." instance=ExtResource("16_pqht4")]
+
 [node name="QuestMenuUI" parent="." instance=ExtResource("13_cud0w")]
 
 [node name="HelpOverlay" parent="." instance=ExtResource("14_0ot87")]
@@ -124,6 +131,8 @@ help_book_data = ExtResource("20_gef2e")
 
 [node name="NarrationOverlay" parent="." instance=ExtResource("25_r31n5")]
 
+[node name="WhisperOverlay" parent="." instance=ExtResource("26_fidvi")]
+
 [node name="SpawnManager" type="Node" parent="."]
 script = ExtResource("21_8dwd5")
 
@@ -132,3 +141,22 @@ scale = Vector2(11.947888, -125.99247)
 occluder = SubResource("OccluderPolygon2D_gk44a")
 
 [node name="DayNightModulate" parent="." instance=ExtResource("26_o06uo")]
+
+[node name="CutsceneMarkers" type="Node" parent="."]
+
+[node name="Wakeup_Player" type="Marker2D" parent="CutsceneMarkers"]
+position = Vector2(292, 111)
+
+[node name="Wakeup_Focus" type="Marker2D" parent="CutsceneMarkers"]
+position = Vector2(259, 202)
+
+[node name="QuestLocation" type="Area2D" parent="."]
+position = Vector2(-159.00003, 1163)
+scale = Vector2(67.59766, 67.59766)
+collision_mask = 3
+script = ExtResource("29_1kkpn")
+location_id = "house"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="QuestLocation"]
+position = Vector2(7.100837, -8.210343)
+shape = SubResource("RectangleShape2D_pqht4")

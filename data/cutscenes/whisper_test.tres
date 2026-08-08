@@ -1,0 +1,57 @@
+[gd_resource type="Resource" script_class="CutsceneData" load_steps=14 format=3 uid="uid://brg4ni12sfq3x"]
+
+[ext_resource type="Script" uid="uid://b4pm6wxp5ivtk" path="res://data/cutscenes/CutsceneActorData.gd" id="1_4g36g"]
+[ext_resource type="Script" uid="uid://cp2gtb0hckrrj" path="res://data/cutscenes/CutsceneEffectData.gd" id="2_a834a"]
+[ext_resource type="Script" uid="uid://bjwubxbrbyt2x" path="res://data/cutscenes/CutsceneMarkerSet.gd" id="3_a834a"]
+[ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="3_qtnw1"]
+[ext_resource type="Script" uid="uid://fp28wf3omrn8" path="res://data/quests/QuestSpawnRewardData.gd" id="4_vya3n"]
+[ext_resource type="Script" uid="uid://camo0lur1qm85" path="res://data/cutscenes/CutsceneData.gd" id="5_m6fwo"]
+[ext_resource type="Script" uid="uid://0k0f68wqa7mm" path="res://data/cutscenes/CutsceneStepData.gd" id="6_l2p1j"]
+
+[sub_resource type="Resource" id="Resource_vya3n"]
+script = ExtResource("1_4g36g")
+key = "player"
+actor_type = "player"
+metadata/_custom_type_script = "uid://b4pm6wxp5ivtk"
+
+[sub_resource type="Resource" id="Resource_m6fwo"]
+script = ExtResource("3_a834a")
+markers_by_id = {
+"focus_start": NodePath("CutsceneMarkers/Whisper_Focus"),
+"player_start": NodePath("CutsceneMarkers/Whisper_Player")
+}
+metadata/_custom_type_script = "uid://bjwubxbrbyt2x"
+
+[sub_resource type="Resource" id="Resource_4g36g"]
+script = ExtResource("6_l2p1j")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_a834a"]
+script = ExtResource("6_l2p1j")
+step_type = 21
+whisper_phrases = Array[String](["Wake..."])
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_l2p1j"]
+script = ExtResource("6_l2p1j")
+step_type = 21
+whisper_phrases = Array[String](["Warmth remains...", "Please stay..."])
+whisper_fade_from_black_during = true
+whisper_world_fade_delay = 0.5
+whisper_world_fade_duration = 2.5
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_qtnw1"]
+script = ExtResource("6_l2p1j")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[resource]
+script = ExtResource("5_m6fwo")
+id = "whisper_test"
+scene_name = "Farm"
+defer_initial_fade_in = true
+skip_final_fade_cycle = true
+actors = Array[ExtResource("1_4g36g")]([SubResource("Resource_vya3n")])
+markers = SubResource("Resource_m6fwo")
+steps = Array[ExtResource("6_l2p1j")]([SubResource("Resource_4g36g"), SubResource("Resource_a834a"), SubResource("Resource_l2p1j"), SubResource("Resource_qtnw1")])
+metadata/_custom_type_script = "uid://camo0lur1qm85"

@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="NPCDialogueArtData" load_steps=6 format=3 uid="uid://c6cprv4krk67i"]
+
+[ext_resource type="Script" uid="uid://ctb0g66p3247d" path="res://data/dialogue/DialogueArtEntry.gd" id="1_pd5yd"]
+[ext_resource type="Texture2D" uid="uid://dbdsgcvbyinop" path="res://art/characters/ASHWOO-portrait.png" id="1_tjy63"]
+[ext_resource type="Texture2D" uid="uid://c87byv40cuev8" path="res://art/characters/ASHWOO-removebg-preview.png" id="2_e7nhp"]
+[ext_resource type="Script" uid="uid://dtmrx4fd7hq0k" path="res://data/dialogue/NPCDialogueArtData.gd" id="2_h1kgb"]
+
+[sub_resource type="Resource" id="Resource_tjy63"]
+script = ExtResource("1_pd5yd")
+texture = ExtResource("2_e7nhp")
+metadata/_custom_type_script = "uid://ctb0g66p3247d"
+
+[resource]
+script = ExtResource("2_h1kgb")
+npc_id = "npc_ash"
+default_portrait = ExtResource("1_tjy63")
+default_stage_pose = ExtResource("2_e7nhp")
+stage_poses = Array[ExtResource("1_pd5yd")]([SubResource("Resource_tjy63")])
+metadata/_custom_type_script = "uid://dtmrx4fd7hq0k"

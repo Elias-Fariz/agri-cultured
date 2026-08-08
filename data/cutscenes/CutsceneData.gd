@@ -4,6 +4,19 @@ class_name CutsceneData
 @export var id: String = ""
 @export var scene_name: String = ""
 
+@export_group("Presentation")
+
+@export var defer_initial_fade_in: bool = false
+
+# If true, the cutscene hands control directly back to gameplay
+# without doing the normal final fade-to-black / fade-from-black cycle.
+#
+# Cleanup, camera restoration, actor restoration, rewards,
+# HUD restoration, and gameplay unlock still happen normally.
+@export var skip_final_fade_cycle: bool = false
+
+@export_group("")
+
 @export var actors: Array[CutsceneActorData] = []
 @export var markers: CutsceneMarkerSet
 @export var dialogue: CutsceneDialogueData

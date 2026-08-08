@@ -36,6 +36,12 @@ enum StepType {
 	
 	# Smooth camera movement
 	PAN_CAMERA_TO_MARKER,
+
+	# Valley Heart / land whisper
+	WHISPER,
+	
+	FADE_TO_BLACK,
+	FADE_FROM_BLACK,
 }
 
 @export var step_type: StepType = StepType.WAIT
@@ -85,3 +91,22 @@ enum StepType {
 @export_group("Narration")
 
 @export_multiline var narration_text: String = ""
+
+@export_group("Whisper")
+
+@export var whisper_phrases: Array[String] = []
+
+@export var whisper_fade_in_duration: float = 0.9
+@export var whisper_hold_duration: float = 1.6
+@export var whisper_fade_out_duration: float = 1.0
+@export var whisper_gap_duration: float = 0.35
+
+# Optional cinematic overlap.
+# If enabled, the world begins fading in while this whisper is playing.
+@export var whisper_fade_from_black_during: bool = false
+
+# Delay before the world starts appearing.
+@export var whisper_world_fade_delay: float = 0.0
+
+# How long the world takes to fade fully into view.
+@export var whisper_world_fade_duration: float = 2.0

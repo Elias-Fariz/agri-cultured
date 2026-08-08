@@ -1,4 +1,4 @@
-[gd_scene load_steps=72 format=3 uid="uid://6ni01dvcs2m2"]
+[gd_scene load_steps=73 format=3 uid="uid://6ni01dvcs2m2"]
 
 [ext_resource type="Script" uid="uid://cevvm7fnmvrhe" path="res://scripts/Farm.gd" id="1_vobxb"]
 [ext_resource type="PackedScene" uid="uid://b0c10lgb0ivgd" path="res://tscn/WaterSplash.tscn" id="2_66215"]
@@ -54,6 +54,7 @@
 [ext_resource type="Resource" uid="uid://dkece5jomsis5" path="res://data/help/help_book.tres" id="46_uvnem"]
 [ext_resource type="PackedScene" uid="uid://bq2yrkhda06er" path="res://ui/ConfirmOverlay.tscn" id="47_laotp"]
 [ext_resource type="Resource" uid="uid://bnfeh06kp730i" path="res://data/cooking/berry_bowl.tres" id="47_tme2c"]
+[ext_resource type="PackedScene" uid="uid://dypln0eb14t2g" path="res://ui/WhisperOverlay.tscn" id="48_8vcoj"]
 [ext_resource type="Resource" uid="uid://co0hk0jfn7v4i" path="res://data/cooking/grilled_sardine.tres" id="48_qly5q"]
 [ext_resource type="Resource" uid="uid://cwuvj1en2uvt8" path="res://data/cooking/warm_milk.tres" id="49_svfjv"]
 [ext_resource type="PackedScene" uid="uid://1f33asibycm2" path="res://tscn/Sign.tscn" id="54_yp4mp"]
@@ -286,6 +287,8 @@ help_book_data = ExtResource("46_uvnem")
 
 [node name="ConfirmOverlay" parent="." instance=ExtResource("47_laotp")]
 
+[node name="WhisperOverlay" parent="." instance=ExtResource("48_8vcoj")]
+
 [node name="FireflyLayer" parent="." groups=["firefly_layer"] instance=ExtResource("20_8lty6")]
 visible = false
 
@@ -338,13 +341,12 @@ one_shot = true
 autostart = true
 
 [node name="QuestLocation" type="Area2D" parent="."]
-position = Vector2(-185.99998, 490)
+position = Vector2(-189, 1100)
 scale = Vector2(67.59766, 67.59766)
 collision_mask = 3
 script = ExtResource("38_wdtkt")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="QuestLocation"]
-visible = false
 shape = SubResource("RectangleShape2D_7ea1u")
 
 [node name="SpawnManager" type="Node" parent="."]
@@ -364,7 +366,6 @@ script = ExtResource("42_hm1ss")
 tag = "passout_spawn"
 
 [node name="CutsceneMarkers" type="Node2D" parent="." groups=["cutscene_anchor"]]
-visible = false
 
 [node name="HeartIntro_Player" type="Marker2D" parent="CutsceneMarkers"]
 position = Vector2(-333, 414)
@@ -376,22 +377,28 @@ position = Vector2(-251, 417)
 position = Vector2(-295, 477)
 
 [node name="GreetingIntro_PlayerStart" type="Marker2D" parent="CutsceneMarkers"]
-position = Vector2(55, 253)
-
-[node name="GreetingIntro_LiaStart" type="Marker2D" parent="CutsceneMarkers"]
-position = Vector2(375, 306)
+position = Vector2(-311, 227)
 
 [node name="GreetingIntro_MayorStart" type="Marker2D" parent="CutsceneMarkers"]
-position = Vector2(377, 210)
+position = Vector2(377, 226)
 
-[node name="GreetingIntro_LiaGreetSpot" type="Marker2D" parent="CutsceneMarkers"]
-position = Vector2(176, 304)
+[node name="GreetingIntro_MayorEnd" type="Marker2D" parent="CutsceneMarkers"]
+position = Vector2(600, 226)
 
 [node name="GreetingIntro_MayorGreetSpot" type="Marker2D" parent="CutsceneMarkers"]
-position = Vector2(175, 214)
+position = Vector2(-103, 230)
 
 [node name="GreetingIntro_Focus" type="Marker2D" parent="CutsceneMarkers"]
-position = Vector2(179, 340)
+position = Vector2(-213, 340)
+
+[node name="GreetingIntro_FocusStart" type="Marker2D" parent="CutsceneMarkers"]
+position = Vector2(12, 340)
+
+[node name="Whisper_Player" type="Marker2D" parent="CutsceneMarkers"]
+position = Vector2(214, 728)
+
+[node name="Whisper_Focus" type="Marker2D" parent="CutsceneMarkers"]
+position = Vector2(216, 817)
 
 [node name="Area2D" parent="." instance=ExtResource("54_yp4mp")]
 visible = false

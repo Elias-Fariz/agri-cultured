@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=3 uid="uid://cb0bna0ly4x7p"]
+[gd_scene load_steps=28 format=3 uid="uid://cb0bna0ly4x7p"]
 
 [ext_resource type="TileSet" uid="uid://chypvyk38hcyn" path="res://tiles/IndoorsTileset.tres" id="1_m8nne"]
 [ext_resource type="PackedScene" uid="uid://dv7wem6ftpvdd" path="res://tscn/Player.tscn" id="2_l0ll2"]
@@ -23,6 +23,8 @@
 [ext_resource type="Resource" uid="uid://dkece5jomsis5" path="res://data/help/help_book.tres" id="18_le5ev"]
 [ext_resource type="PackedScene" uid="uid://bapcqqp4p17bj" path="res://tscn/npcs/Tansy.tscn" id="18_mvgwc"]
 [ext_resource type="PackedScene" uid="uid://ifwtc0xfdr1d" path="res://tscn/ShopCounter.tscn" id="19_ibrsf"]
+[ext_resource type="PackedScene" uid="uid://bq2yrkhda06er" path="res://ui/ConfirmOverlay.tscn" id="23_le5ev"]
+[ext_resource type="PackedScene" uid="uid://dypln0eb14t2g" path="res://ui/WhisperOverlay.tscn" id="24_1x806"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_l0ll2"]
 
@@ -118,6 +120,10 @@ position = Vector2(-40, 306)
 help_book_data = ExtResource("18_le5ev")
 
 [node name="NarrationOverlay" parent="." instance=ExtResource("16_nj4qo")]
+
+[node name="ConfirmOverlay" parent="." instance=ExtResource("23_le5ev")]
+
+[node name="WhisperOverlay" parent="." instance=ExtResource("24_1x806")]
 
 [node name="SpawnManager" type="Node" parent="."]
 script = ExtResource("12_m8nne")

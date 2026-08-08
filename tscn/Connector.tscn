@@ -1,4 +1,4 @@
-[gd_scene load_steps=35 format=3 uid="uid://5yq150fm6r0f"]
+[gd_scene load_steps=37 format=3 uid="uid://5yq150fm6r0f"]
 
 [ext_resource type="TileSet" uid="uid://bqs5ruk6pejpc" path="res://tiles/GroundTileset.tres" id="1_cqmf0"]
 [ext_resource type="TileSet" uid="uid://bjhy464dgbpg" path="res://tiles/ObjectsTileset.tres" id="2_frw7d"]
@@ -23,7 +23,9 @@
 [ext_resource type="Resource" uid="uid://dkece5jomsis5" path="res://data/help/help_book.tres" id="19_p5ree"]
 [ext_resource type="Texture2D" uid="uid://bq8o1e8mbe7qm" path="res://art/door.PNG" id="20_f36mv"]
 [ext_resource type="PackedScene" uid="uid://dmwh8devorqla" path="res://ui/NarrationOverlay.tscn" id="20_yj4w2"]
+[ext_resource type="PackedScene" uid="uid://bq2yrkhda06er" path="res://ui/ConfirmOverlay.tscn" id="21_5svhv"]
 [ext_resource type="Script" uid="uid://dxx68q28fdnvv" path="res://scripts/SpawnPoint.gd" id="21_v2rab"]
+[ext_resource type="PackedScene" uid="uid://dypln0eb14t2g" path="res://ui/WhisperOverlay.tscn" id="22_a4fbk"]
 [ext_resource type="PackedScene" uid="uid://cfyepca1wp5kc" path="res://tscn/Flower.tscn" id="22_f36mv"]
 [ext_resource type="Script" uid="uid://b7n4wv6k3k33k" path="res://scripts/QuestLocation.gd" id="23_v2rab"]
 [ext_resource type="Texture2D" uid="uid://bwudms0hgr4q7" path="res://art/grass.png" id="26_5h8gf"]
@@ -89,6 +91,10 @@ position = Vector2(320, -77)
 help_book_data = ExtResource("19_p5ree")
 
 [node name="NarrationOverlay" parent="." instance=ExtResource("20_yj4w2")]
+
+[node name="ConfirmOverlay" parent="." instance=ExtResource("21_5svhv")]
+
+[node name="WhisperOverlay" parent="." instance=ExtResource("22_a4fbk")]
 
 [node name="CameraBounds" type="Node2D" parent="."]
 

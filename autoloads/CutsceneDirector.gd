@@ -33,6 +33,8 @@ var _cutscene_paths := {
 	"fearroot_intro": "res://data/cutscenes/fearroot_intro.tres",
 	"connector_valley_discovery": "res://data/cutscenes/connector_valley_discovery.tres",
 	"ash_first_passout_rescue": "res://data/cutscenes/ash_first_passout_rescue.tres",
+	"whisper_test": "res://data/cutscenes/whisper_test.tres",
+	"day1_wakeup_whisper": "res://data/cutscenes/day1_wakeup_whisper.tres",
 }
 
 var _pending_restoration_encounter_path: NodePath = NodePath("")
@@ -219,9 +221,11 @@ func _run_cutscene_impl(data: CutsceneData) -> void:
 
 	_set_camera_lock(player, focus_point)
 
-	# 5) Fade IN to reveal the staged scene
+	# 5) Fade IN to reveal the staged scene,
+	# unless this cutscene wants to control its own reveal.
 	if has_node("/root/FadeOverlay"):
-		await FadeOverlay.fade_in(0.25)
+		if not data.defer_initial_fade_in:
+			await FadeOverlay.fade_in(0.25)
 
 	await get_tree().create_timer(0.1).timeout
 
@@ -238,33 +242,78 @@ func _run_cutscene_impl(data: CutsceneData) -> void:
 	# before cleanup and unlock.
 	_apply_cutscene_completion_rewards(data)
 
-	# 8) Fade OUT, cleanup temp actors, fade IN, unlock
-	if has_node("/root/FadeOverlay"):
+	# ------------------------------------------------------------
+	# 8) Final presentation + cleanup
+	# ------------------------------------------------------------
+
+	# Special flows such as passout may explicitly require the screen
+	# to remain black after the cutscene. That behavior takes priority
+	# over skip_final_fade_cycle.
+	var keep_black_requested := _keep_screen_black_after_cutscene_once
+
+	var skip_final_fade_cycle := (
+		data.skip_final_fade_cycle
+		and not keep_black_requested
+	)
+
+	# Normal behavior:
+	# hide cleanup behind a short fade to black.
+	#
+	# If skip_final_fade_cycle is enabled, cleanup happens visibly,
+	# so the cutscene author is responsible for making sure nothing
+	# visibly jumps or disappears in an awkward way.
+	if has_node("/root/FadeOverlay") and not skip_final_fade_cycle:
 		await FadeOverlay.fade_out(0.20)
 
-	# Stop enforcing camera before clearing focus
+
+	# Stop enforcing the cinematic camera before clearing focus.
 	_clear_camera_lock()
 
 	if player != null and player.has_method("camera_clear_focus"):
 		player.camera_clear_focus()
 
+
+	# Reused scene NPCs return to where they were before the cutscene.
 	_restore_original_actor_positions()
 
-	# Optional final player placement while screen is faded out.
-	_apply_final_player_placement(scene, data, actors_by_key)
-	
-	await _restore_player_cutscene_zoom(player, 0.0)
 
+	# Optional final player placement.
+	# NOTE:
+	# With skip_final_fade_cycle enabled, this placement can be visible.
+	# Only use player_end / stored end markers when that visual jump
+	# is intentional or imperceptible.
+	_apply_final_player_placement(
+		scene,
+		data,
+		actors_by_key
+	)
+
+
+	# Restore whatever zoom the player had before the cutscene.
+	await _restore_player_cutscene_zoom(
+		player,
+		0.0
+	)
+
+
+	# Temporary actors still disappear exactly as before.
+	# With no ending fade, make sure they are already off-screen
+	# or otherwise safe to remove.
 	call_deferred("_cleanup_temp_actors")
 	await get_tree().process_frame
 
+
+	# Consume the one-shot keep-black request.
 	var keep_black := _keep_screen_black_after_cutscene_once
 	_keep_screen_black_after_cutscene_once = false
 
+
+	# Reveal the world again only when appropriate.
 	if has_node("/root/FadeOverlay"):
 		if keep_black:
 			FadeOverlay.set_black()
-		else:
+
+		elif not skip_final_fade_cycle:
 			await FadeOverlay.fade_in(0.20)
 
 	var finished_id := String(data.id).strip_edges()
@@ -802,10 +851,18 @@ func _run_step(step: CutsceneStepData, scene: Node, player: Node, _dialogue_ui: 
 		
 		CutsceneStepData.StepType.NARRATION:
 			await _run_narration_step(step)
-		
+
 		CutsceneStepData.StepType.PAN_CAMERA_TO_MARKER:
 			await _pan_camera_to_marker(scene, data, step)
 
+		CutsceneStepData.StepType.WHISPER:
+			await _run_whisper_step(step)
+
+		CutsceneStepData.StepType.FADE_TO_BLACK:
+			await _run_fade_to_black_step(step)
+
+		CutsceneStepData.StepType.FADE_FROM_BLACK:
+			await _run_fade_from_black_step(step)
 
 func _resolve_marker(scene: Node, data: CutsceneData, step: CutsceneStepData) -> Marker2D:
 	# New way: marker_id -> markers_by_id
@@ -1232,6 +1289,9 @@ func play_cutscene_from_black(id: String) -> void:
 func _get_narration_ui() -> Node:
 	return get_tree().get_first_node_in_group("narration_ui")
 
+func _get_whisper_ui() -> Node:
+	return get_tree().get_first_node_in_group("whisper_ui")
+
 func _run_narration_step(step: CutsceneStepData) -> void:
 	
 	if step == null:
@@ -1387,3 +1447,130 @@ func play_cutscene_from_black_keep_black(id: String, suppress_time_resume: bool 
 	_suppress_time_resume_once = suppress_time_resume
 
 	play_cutscene(id)
+
+func _run_whisper_step(step: CutsceneStepData) -> void:
+	if step == null:
+		return
+
+	var phrases: Array[String] = []
+
+	for phrase in step.whisper_phrases:
+		var cleaned := String(phrase).strip_edges()
+
+		if cleaned != "":
+			phrases.append(cleaned)
+
+	if phrases.is_empty():
+		push_warning(
+			"CutsceneDirector: WHISPER step has no phrases."
+		)
+		return
+
+	var whisper_ui := _get_whisper_ui()
+
+	if whisper_ui == null:
+		push_warning(
+			"CutsceneDirector: no whisper_ui found for WHISPER step."
+		)
+
+		# Do not completely destroy the cutscene timing if the UI
+		# was accidentally forgotten from a scene.
+		var phrase_duration :Variant= (
+			max(step.whisper_fade_in_duration, 0.0)
+			+ max(step.whisper_hold_duration, 0.0)
+			+ max(step.whisper_fade_out_duration, 0.0)
+			+ max(step.whisper_gap_duration, 0.0)
+		)
+
+		var fallback_duration :Variant= (
+			phrase_duration * phrases.size()
+		)
+
+		await get_tree().create_timer(
+			max(fallback_duration, 0.25)
+		).timeout
+
+		return
+
+	# Keep your existing cinematic camera locked firmly
+	# while UI is appearing.
+	_enforce_camera_lock()
+	await get_tree().process_frame
+	_enforce_camera_lock()
+	
+	# Optional: allow the world to reveal itself while
+	# the whisper continues independently above it.
+	if step.whisper_fade_from_black_during:
+		_start_whisper_world_fade_async(
+			step.whisper_world_fade_delay,
+			step.whisper_world_fade_duration
+		)
+
+	if whisper_ui.has_method(
+		"show_sequence_for_cutscene_and_wait"
+	):
+		await whisper_ui.call(
+			"show_sequence_for_cutscene_and_wait",
+			phrases,
+			step.whisper_fade_in_duration,
+			step.whisper_hold_duration,
+			step.whisper_fade_out_duration,
+			step.whisper_gap_duration
+		)
+
+		await get_tree().process_frame
+
+		_enforce_camera_lock()
+
+		return
+
+	push_warning(
+		"CutsceneDirector: WhisperOverlay is missing "
+		+ "show_sequence_for_cutscene_and_wait()."
+	)
+
+func _run_fade_to_black_step(step: CutsceneStepData) -> void:
+	if step == null:
+		return
+
+	if not has_node("/root/FadeOverlay"):
+		push_warning(
+			"CutsceneDirector: FadeOverlay missing for FADE_TO_BLACK step."
+		)
+		return
+
+	var fade_duration :Variant= max(step.duration, 0.01)
+
+	await FadeOverlay.fade_out(fade_duration)
+
+
+func _run_fade_from_black_step(step: CutsceneStepData) -> void:
+	if step == null:
+		return
+
+	if not has_node("/root/FadeOverlay"):
+		push_warning(
+			"CutsceneDirector: FadeOverlay missing for FADE_FROM_BLACK step."
+		)
+		return
+
+	var fade_duration :Variant= max(step.duration, 0.01)
+
+	await FadeOverlay.fade_in(fade_duration)
+
+func _start_whisper_world_fade_async(
+	delay: float,
+	duration: float
+) -> void:
+	if delay > 0.0:
+		await get_tree().create_timer(delay).timeout
+
+	if not has_node("/root/FadeOverlay"):
+		push_warning(
+			"CutsceneDirector: FadeOverlay missing for whisper world fade."
+		)
+		return
+
+	await FadeOverlay.fade_in(
+		max(duration, 0.01)
+	)

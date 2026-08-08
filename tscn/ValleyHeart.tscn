@@ -1,4 +1,4 @@
-[gd_scene load_steps=76 format=3 uid="uid://cwspce5y4tb13"]
+[gd_scene load_steps=78 format=3 uid="uid://cwspce5y4tb13"]
 
 [ext_resource type="TileSet" uid="uid://bqs5ruk6pejpc" path="res://tiles/GroundTileset.tres" id="1_vkoen"]
 [ext_resource type="Script" uid="uid://bywlb7k2vtqr" path="res://scripts/ValleyHeart.gd" id="1_ye5kf"]
@@ -58,6 +58,8 @@
 [ext_resource type="PackedScene" uid="uid://todaqmfqrphb" path="res://ui/HelpBookOverlay.tscn" id="52_i2ocl"]
 [ext_resource type="Resource" uid="uid://dkece5jomsis5" path="res://data/help/help_book.tres" id="53_3frw5"]
 [ext_resource type="PackedScene" uid="uid://dmwh8devorqla" path="res://ui/NarrationOverlay.tscn" id="54_qne0u"]
+[ext_resource type="PackedScene" uid="uid://bq2yrkhda06er" path="res://ui/ConfirmOverlay.tscn" id="55_bv5ei"]
+[ext_resource type="PackedScene" uid="uid://dypln0eb14t2g" path="res://ui/WhisperOverlay.tscn" id="56_orr64"]
 [ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="57_r5nbu"]
 [ext_resource type="Script" uid="uid://fp28wf3omrn8" path="res://data/quests/QuestSpawnRewardData.gd" id="58_3lvqc"]
 [ext_resource type="PackedScene" uid="uid://dsefxlv6x3h0c" path="res://ui/DayNightModulate.tscn" id="60_3lvqc"]
@@ -449,6 +451,10 @@ enabled = false
 help_book_data = ExtResource("53_3frw5")
 
 [node name="NarrationOverlay" parent="." instance=ExtResource("54_qne0u")]
+
+[node name="ConfirmOverlay" parent="." instance=ExtResource("55_bv5ei")]
+
+[node name="WhisperOverlay" parent="." instance=ExtResource("56_orr64")]
 
 [node name="ValleyHeartCinematicOrchestrator" type="Node2D" parent="."]
 script = ExtResource("50_2tbjq")
