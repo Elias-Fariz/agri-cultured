@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="CutsceneData" load_steps=16 format=3 uid="uid://70m1glua8ohh"]
+[gd_resource type="Resource" script_class="CutsceneData" load_steps=130 format=3 uid="uid://70m1glua8ohh"]
 
 [ext_resource type="Script" uid="uid://b4pm6wxp5ivtk" path="res://data/cutscenes/CutsceneActorData.gd" id="1_juoyx"]
 [ext_resource type="Script" uid="uid://cp2gtb0hckrrj" path="res://data/cutscenes/CutsceneEffectData.gd" id="2_6su7l"]
@@ -27,23 +27,48 @@ metadata/_custom_type_script = "uid://b4pm6wxp5ivtk"
 [sub_resource type="Resource" id="Resource_8ijr0"]
 script = ExtResource("3_3pc4l")
 markers_by_id = {
+"focus_counter": NodePath("ShopMarkers/focus_counter"),
 "focus_start": NodePath("ShopMarkers/Focus"),
+"focus_tools": NodePath("ShopMarkers/focus_tools"),
 "player_start": NodePath("ShopMarkers/Player Start"),
-"tansy_start": NodePath("ShopMarkers/Shop Start")
+"player_tool_box": NodePath("ShopMarkers/player_tool_box"),
+"tansy_actual_counter": NodePath("ShopMarkers/tansy_actual_counter"),
+"tansy_counter": NodePath("ShopMarkers/tansy_counter"),
+"tansy_moving": NodePath("ShopMarkers/tansy_moving"),
+"tansy_start": NodePath("ShopMarkers/Shop Start"),
+"tansy_trip": NodePath("ShopMarkers/tansy_trip"),
+"tool_box": NodePath("ShopMarkers/tool_box")
 }
 metadata/_custom_type_script = "uid://bjwubxbrbyt2x"
 
+[sub_resource type="Resource" id="Resource_t4s2k"]
+script = ExtResource("4_3pc4l")
+step_type = 14
+zoom_value = 1.2
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_bmkam"]
+script = ExtResource("4_3pc4l")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
 [sub_resource type="Resource" id="Resource_jf6ns"]
 script = ExtResource("6_n142m")
-text = "Oh, h-hi!"
+text = "Just a moment!"
 speaker_id = "npc_tansy"
-emotion = "nervous"
+speaker_name_override = "???"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_6mlq1"]
+script = ExtResource("6_n142m")
+text = "I’m finishing the morning count—thirty-eight, thirty-nine…"
+speaker_id = "npc_tansy"
+speaker_name_override = "???"
 metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
 
 [sub_resource type="Resource" id="Resource_n3oql"]
 script = ExtResource("7_bmkam")
 sequence_id = "tansy_intro_seq"
-beats = Array[ExtResource("6_n142m")]([SubResource("Resource_jf6ns")])
+beats = Array[ExtResource("6_n142m")]([SubResource("Resource_jf6ns"), SubResource("Resource_6mlq1")])
 metadata/_custom_type_script = "uid://clb3lhdggkt8d"
 
 [sub_resource type="Resource" id="Resource_n5ri3"]
@@ -52,11 +77,684 @@ step_type = 2
 dialogue_sequence = SubResource("Resource_n3oql")
 metadata/_custom_type_script = "uid://0k0f68wqa7mm"
 
+[sub_resource type="Resource" id="Resource_co6yx"]
+script = ExtResource("4_3pc4l")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_8s2cu"]
+script = ExtResource("6_n142m")
+text = "...forty."
+speaker_id = "npc_tansy"
+speaker_name_override = "???"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_6wgq5"]
+script = ExtResource("6_n142m")
+text = "There."
+speaker_id = "npc_tansy"
+speaker_name_override = "???"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_krb0p"]
+script = ExtResource("7_bmkam")
+beats = Array[ExtResource("6_n142m")]([SubResource("Resource_8s2cu"), SubResource("Resource_6wgq5")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_8iqkl"]
+script = ExtResource("4_3pc4l")
+step_type = 2
+dialogue_sequence = SubResource("Resource_krb0p")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_sjn2o"]
+script = ExtResource("4_3pc4l")
+step_type = 0
+actor_key = "tansy"
+marker_id = "tansy_trip"
+duration = 0.9
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_0u6dt"]
+script = ExtResource("4_3pc4l")
+step_type = 18
+actor_key = "tansy"
+overhead_text = "-!"
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_tqr1f"]
+script = ExtResource("4_3pc4l")
+step_type = 20
+marker_id = "focus_counter"
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_8jv4h"]
+script = ExtResource("6_n142m")
+text = "Oh!"
+speaker_id = "npc_tansy"
+speaker_name_override = "???"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_mpmp8"]
+script = ExtResource("7_bmkam")
+beats = Array[ExtResource("6_n142m")]([SubResource("Resource_8jv4h")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_5i753"]
+script = ExtResource("4_3pc4l")
+step_type = 2
+dialogue_sequence = SubResource("Resource_mpmp8")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_b752b"]
+script = ExtResource("4_3pc4l")
+step_type = 19
+narration_text = "Tansy turns too quickly, catches a foot against the edge of a crate, and tumbles forward."
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_2b4x2"]
+script = ExtResource("4_3pc4l")
+duration = 0.35
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_iey4h"]
+script = ExtResource("6_n142m")
+text = "I'm fine."
+speaker_id = "npc_tansy"
+speaker_name_override = "???"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_sb4i8"]
+script = ExtResource("6_n142m")
+text = "Completely fine."
+speaker_id = "npc_tansy"
+speaker_name_override = "???"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_wiwq4"]
+script = ExtResource("6_n142m")
+text = "...That crate has been there all morning."
+speaker_id = "npc_tansy"
+speaker_name_override = "???"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_o8vny"]
+script = ExtResource("7_bmkam")
+beats = Array[ExtResource("6_n142m")]([SubResource("Resource_iey4h"), SubResource("Resource_sb4i8"), SubResource("Resource_wiwq4")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_vpthf"]
+script = ExtResource("4_3pc4l")
+step_type = 2
+dialogue_sequence = SubResource("Resource_o8vny")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_i7nfq"]
+script = ExtResource("4_3pc4l")
+step_type = 0
+actor_key = "tansy"
+marker_id = "tansy_counter"
+duration = 0.8
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_t3wsm"]
+script = ExtResource("6_n142m")
+text = "Right. Hello."
+speaker_id = "npc_tansy"
+speaker_name_override = "???"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_breae"]
+script = ExtResource("6_n142m")
+text = "Welcome to the general store."
+speaker_id = "npc_tansy"
+speaker_name_override = "???"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_ui7ku"]
+script = ExtResource("6_n142m")
+text = "I'm Tansy."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_3po4l"]
+script = ExtResource("6_n142m")
+text = "Seeds, food, household goods, odds and ends… if it can be stacked, labeled, counted, or sold, I probably have some version of it."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_x4xq0"]
+script = ExtResource("7_bmkam")
+beats = Array[ExtResource("6_n142m")]([SubResource("Resource_t3wsm"), SubResource("Resource_breae"), SubResource("Resource_ui7ku"), SubResource("Resource_3po4l")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_bi33n"]
+script = ExtResource("4_3pc4l")
+step_type = 2
+dialogue_sequence = SubResource("Resource_x4xq0")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_ptv7w"]
+script = ExtResource("4_3pc4l")
+step_type = 18
+actor_key = "tansy"
+duration = 1.0
+overhead_text = "...?"
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_20e1k"]
+script = ExtResource("6_n142m")
+text = "Though..."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_a2tm0"]
+script = ExtResource("6_n142m")
+text = "I don’t think I’ve seen you before."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_d6nr8"]
+script = ExtResource("6_n142m")
+text = "And I generally remember customers."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_1u4pl"]
+script = ExtResource("7_bmkam")
+beats = Array[ExtResource("6_n142m")]([SubResource("Resource_20e1k"), SubResource("Resource_a2tm0"), SubResource("Resource_d6nr8")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_eq1uk"]
+script = ExtResource("4_3pc4l")
+step_type = 2
+dialogue_sequence = SubResource("Resource_1u4pl")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_x1pmn"]
+script = ExtResource("4_3pc4l")
+step_type = 19
+narration_text = "You tell Tansy that Mayor Alder suggested you stop by."
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_n4ot4"]
+script = ExtResource("6_n142m")
+text = "Mayor Alder?"
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_0g8so"]
+script = ExtResource("7_bmkam")
+beats = Array[ExtResource("6_n142m")]([SubResource("Resource_n4ot4")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_cnsvq"]
+script = ExtResource("4_3pc4l")
+step_type = 2
+dialogue_sequence = SubResource("Resource_0g8so")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_hth25"]
+script = ExtResource("4_3pc4l")
+step_type = 18
+actor_key = "tansy"
+overhead_text = "..."
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_pw8v2"]
+script = ExtResource("6_n142m")
+text = "Oh!"
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_2xy4m"]
+script = ExtResource("6_n142m")
+text = "You're the traveler staying at the old mansion!"
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_kymw0"]
+script = ExtResource("6_n142m")
+text = "Right. Yes. That makes considerably more sense."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_uck6j"]
+script = ExtResource("6_n142m")
+text = "Sorry. News travels quickly here, but apparently not quite quickly enough."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_66ppe"]
+script = ExtResource("7_bmkam")
+beats = Array[ExtResource("6_n142m")]([SubResource("Resource_pw8v2"), SubResource("Resource_2xy4m"), SubResource("Resource_kymw0"), SubResource("Resource_uck6j")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_5xqym"]
+script = ExtResource("4_3pc4l")
+step_type = 2
+dialogue_sequence = SubResource("Resource_66ppe")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_72507"]
+script = ExtResource("4_3pc4l")
+step_type = 19
+narration_text = "You explain that you’re hoping to work the old field beside the mansion."
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_c4613"]
+script = ExtResource("4_3pc4l")
+step_type = 19
+narration_text = "You ask whether Tansy has any tools you could use."
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_ru7ec"]
+script = ExtResource("6_n142m")
+text = "Tools?"
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_ncqvj"]
+script = ExtResource("7_bmkam")
+beats = Array[ExtResource("6_n142m")]([SubResource("Resource_ru7ec")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_f58k7"]
+script = ExtResource("4_3pc4l")
+step_type = 2
+dialogue_sequence = SubResource("Resource_ncqvj")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_s45o5"]
+script = ExtResource("4_3pc4l")
+step_type = 18
+actor_key = "tansy"
+overhead_text = "..."
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_0rhvh"]
+script = ExtResource("6_n142m")
+text = "Actually..."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_epy6l"]
+script = ExtResource("6_n142m")
+text = "I might."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_nxycu"]
+script = ExtResource("6_n142m")
+text = "There’s an old set by the side wall."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_b0dgr"]
+script = ExtResource("6_n142m")
+text = "Second crate down. Left side. Under the twine."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_dbg5k"]
+script = ExtResource("6_n142m")
+text = "I’ve been meaning to find somewhere useful for them."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_mfv7v"]
+script = ExtResource("7_bmkam")
+beats = Array[ExtResource("6_n142m")]([SubResource("Resource_0rhvh"), SubResource("Resource_epy6l"), SubResource("Resource_nxycu"), SubResource("Resource_b0dgr"), SubResource("Resource_dbg5k")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_71vc7"]
+script = ExtResource("4_3pc4l")
+step_type = 2
+dialogue_sequence = SubResource("Resource_mfv7v")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_3rfe7"]
+script = ExtResource("4_3pc4l")
+step_type = 20
+marker_id = "focus_tools"
+duration = 0.7
+camera_ignore_limits = true
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_q2yc7"]
+script = ExtResource("4_3pc4l")
+step_type = 0
+actor_key = "tansy"
+marker_id = "tool_box"
+duration = 1.2
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_why2t"]
+script = ExtResource("4_3pc4l")
+step_type = 4
+marker_id = "player_tool_box"
+duration = 1.2
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_oklk5"]
+script = ExtResource("4_3pc4l")
+duration = 0.25
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_nuksa"]
+script = ExtResource("6_n142m")
+text = "Here we are..."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_2b7sm"]
+script = ExtResource("7_bmkam")
+beats = Array[ExtResource("6_n142m")]([SubResource("Resource_nuksa")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_230cx"]
+script = ExtResource("4_3pc4l")
+step_type = 2
+dialogue_sequence = SubResource("Resource_2b7sm")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_xhjtr"]
+script = ExtResource("4_3pc4l")
+step_type = 19
+narration_text = "Tansy opens the old box and begins laying its contents out one by one."
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_etojf"]
+script = ExtResource("6_n142m")
+text = "Hoe."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_osiau"]
+script = ExtResource("6_n142m")
+text = "Watering can."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_r2m7m"]
+script = ExtResource("6_n142m")
+text = "Axe."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_4qvpy"]
+script = ExtResource("6_n142m")
+text = "Pickaxe."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_ud3n3"]
+script = ExtResource("6_n142m")
+text = "All old."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_aubu7"]
+script = ExtResource("6_n142m")
+text = "All perfectly usable."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_x1i37"]
+script = ExtResource("6_n142m")
+text = "And this."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_ulpvp"]
+script = ExtResource("7_bmkam")
+beats = Array[ExtResource("6_n142m")]([SubResource("Resource_etojf"), SubResource("Resource_osiau"), SubResource("Resource_r2m7m"), SubResource("Resource_4qvpy"), SubResource("Resource_ud3n3"), SubResource("Resource_aubu7"), SubResource("Resource_x1i37")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_w2bct"]
+script = ExtResource("4_3pc4l")
+step_type = 2
+dialogue_sequence = SubResource("Resource_ulpvp")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_jjd03"]
+script = ExtResource("4_3pc4l")
+step_type = 19
+narration_text = "Tansy pulls a small seed pouch from beneath the tools and hands it to you."
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_wirso"]
+script = ExtResource("6_n142m")
+text = "You’ll need somewhere to keep seeds."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_ixf5c"]
+script = ExtResource("6_n142m")
+text = "Preferably somewhere that isn’t your pockets."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_roa4c"]
+script = ExtResource("7_bmkam")
+beats = Array[ExtResource("6_n142m")]([SubResource("Resource_wirso"), SubResource("Resource_ixf5c")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_61l1i"]
+script = ExtResource("4_3pc4l")
+step_type = 2
+dialogue_sequence = SubResource("Resource_roa4c")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_irl0w"]
+script = ExtResource("4_3pc4l")
+step_type = 19
+narration_text = "You got a whole lot of tools!"
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_bhqkw"]
+script = ExtResource("4_3pc4l")
+step_type = 19
+narration_text = "But... for free?"
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_787nl"]
+script = ExtResource("6_n142m")
+text = "You can take them."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_chuka"]
+script = ExtResource("6_n142m")
+text = "They’ve been sitting there for years."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_fwp7j"]
+script = ExtResource("6_n142m")
+text = "Tools are meant to be used."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_segj5"]
+script = ExtResource("6_n142m")
+text = "You’ll still need seeds, of course."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_mrqb4"]
+script = ExtResource("6_n142m")
+text = "Those, unfortunately, I do have to charge for."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_y6u7e"]
+script = ExtResource("6_n142m")
+text = "A shop does have to remain a shop."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_n7naj"]
+script = ExtResource("7_bmkam")
+beats = Array[ExtResource("6_n142m")]([SubResource("Resource_787nl"), SubResource("Resource_chuka"), SubResource("Resource_fwp7j"), SubResource("Resource_segj5"), SubResource("Resource_mrqb4"), SubResource("Resource_y6u7e")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_k7xcq"]
+script = ExtResource("4_3pc4l")
+step_type = 2
+dialogue_sequence = SubResource("Resource_n7naj")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_b2r0l"]
+script = ExtResource("4_3pc4l")
+step_type = 18
+actor_key = "player"
+overhead_text = "*grumble*"
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_iilrk"]
+script = ExtResource("6_n142m")
+text = "I keep food as well."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_c17fv"]
+script = ExtResource("6_n142m")
+text = "If you wear yourself out working, eat something before you keep going."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_evisd"]
+script = ExtResource("6_n142m")
+text = "You can't do much work on an empty stomach."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_plmjb"]
+script = ExtResource("6_n142m")
+text = "Believe me. I know."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_xbq2m"]
+script = ExtResource("7_bmkam")
+beats = Array[ExtResource("6_n142m")]([SubResource("Resource_iilrk"), SubResource("Resource_c17fv"), SubResource("Resource_evisd"), SubResource("Resource_plmjb")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_tdhkf"]
+script = ExtResource("4_3pc4l")
+step_type = 2
+dialogue_sequence = SubResource("Resource_xbq2m")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_5yida"]
+script = ExtResource("6_n142m")
+text = "And if you grow more than you need, there’s a shipping bin just outside."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_wlkfy"]
+script = ExtResource("6_n142m")
+text = "Leave anything you want to sell there, and I’ll settle the account the next morning."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_8wse8"]
+script = ExtResource("7_bmkam")
+beats = Array[ExtResource("6_n142m")]([SubResource("Resource_5yida"), SubResource("Resource_wlkfy")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_b5m8d"]
+script = ExtResource("4_3pc4l")
+step_type = 2
+dialogue_sequence = SubResource("Resource_8wse8")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_b73a3"]
+script = ExtResource("4_3pc4l")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_fyysj"]
+script = ExtResource("4_3pc4l")
+step_type = 0
+actor_key = "tansy"
+marker_id = "tansy_moving"
+duration = 1.0
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_kkh3s"]
+script = ExtResource("4_3pc4l")
+step_type = 0
+actor_key = "tansy"
+marker_id = "tansy_actual_counter"
+duration = 0.8
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_b26we"]
+script = ExtResource("4_3pc4l")
+step_type = 20
+marker_id = "focus_counter"
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_kenrl"]
+script = ExtResource("4_3pc4l")
+step_type = 4
+marker_id = "player_start"
+duration = 1.0
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_v2kfg"]
+script = ExtResource("6_n142m")
+text = "Have a look around."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_gujn7"]
+script = ExtResource("6_n142m")
+text = "You’ll want something to put in that seed pouch."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_jk0c1"]
+script = ExtResource("6_n142m")
+text = "Take your time."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_t87eb"]
+script = ExtResource("6_n142m")
+text = "I’ll be here."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_v8gqw"]
+script = ExtResource("6_n142m")
+text = "…recounting those shelves."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_vvirx"]
+script = ExtResource("7_bmkam")
+beats = Array[ExtResource("6_n142m")]([SubResource("Resource_v2kfg"), SubResource("Resource_gujn7"), SubResource("Resource_jk0c1"), SubResource("Resource_t87eb"), SubResource("Resource_v8gqw")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_2pt4v"]
+script = ExtResource("4_3pc4l")
+step_type = 2
+dialogue_sequence = SubResource("Resource_vvirx")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_yy5ik"]
+script = ExtResource("4_3pc4l")
+step_type = 15
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
 [resource]
 script = ExtResource("3_aintb")
 id = "shop_intro"
 scene_name = "GeneralStore"
+skip_final_fade_cycle = true
 actors = Array[ExtResource("1_juoyx")]([SubResource("Resource_juoyx"), SubResource("Resource_6su7l")])
 markers = SubResource("Resource_8ijr0")
-steps = Array[ExtResource("4_3pc4l")]([SubResource("Resource_n5ri3")])
+steps = Array[ExtResource("4_3pc4l")]([SubResource("Resource_t4s2k"), SubResource("Resource_bmkam"), SubResource("Resource_n5ri3"), SubResource("Resource_co6yx"), SubResource("Resource_8iqkl"), SubResource("Resource_sjn2o"), SubResource("Resource_0u6dt"), SubResource("Resource_tqr1f"), SubResource("Resource_5i753"), SubResource("Resource_b752b"), SubResource("Resource_2b4x2"), SubResource("Resource_vpthf"), SubResource("Resource_i7nfq"), SubResource("Resource_bi33n"), SubResource("Resource_ptv7w"), SubResource("Resource_eq1uk"), SubResource("Resource_x1pmn"), SubResource("Resource_cnsvq"), SubResource("Resource_hth25"), SubResource("Resource_5xqym"), SubResource("Resource_72507"), SubResource("Resource_c4613"), SubResource("Resource_f58k7"), SubResource("Resource_s45o5"), SubResource("Resource_71vc7"), SubResource("Resource_3rfe7"), SubResource("Resource_q2yc7"), SubResource("Resource_why2t"), SubResource("Resource_oklk5"), SubResource("Resource_230cx"), SubResource("Resource_xhjtr"), SubResource("Resource_w2bct"), SubResource("Resource_jjd03"), SubResource("Resource_61l1i"), SubResource("Resource_irl0w"), SubResource("Resource_bhqkw"), SubResource("Resource_k7xcq"), SubResource("Resource_b2r0l"), SubResource("Resource_tdhkf"), SubResource("Resource_b5m8d"), SubResource("Resource_b73a3"), SubResource("Resource_fyysj"), SubResource("Resource_kkh3s"), SubResource("Resource_b26we"), SubResource("Resource_kenrl"), SubResource("Resource_2pt4v"), SubResource("Resource_yy5ik")])
+reward_tool_ids = Array[String](["Hoe", "Watering Can", "Axe", "Pickaxe", "Seed Pouch"])
 metadata/_custom_type_script = "uid://camo0lur1qm85"

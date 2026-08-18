@@ -110,6 +110,26 @@ var _overhead_text_timer: SceneTreeTimer = null
 
 @onready var overhead_bubble: Node = $OverheadBubbleController
 
+# ------------------------------------------------------------
+# Cutscene camera detachment
+# ------------------------------------------------------------
+
+var _cutscene_camera_detached: bool = false
+
+var _cutscene_camera_original_parent: Node = null
+var _cutscene_camera_original_index: int = -1
+
+var _cutscene_camera_ignore_limits: bool = false
+
+var _cutscene_saved_limit_left: int = 0
+var _cutscene_saved_limit_top: int = 0
+var _cutscene_saved_limit_right: int = 0
+var _cutscene_saved_limit_bottom: int = 0
+
+var _cutscene_saved_position_smoothing: bool = false
+
+const CUTSCENE_FREE_CAMERA_LIMIT: int = 10_000_000
+
 func _ready() -> void:
 	# Ensure the sensor and facing indicator start in the correct direction.
 	_set_facing_vector(facing, true)
@@ -143,7 +163,7 @@ func _physics_process(delta: float) -> void:
 		_update_camera_zoom(delta)
 	else:
 		if _camera_focus_active:
-			_update_camera_focus_offset(delta)
+			_keep_cutscene_camera_focused()
 		else:
 			_update_camera_lookahead(delta)
 			
@@ -375,25 +395,89 @@ func camera_set_zoom_for_cutscene(value: float, duration: float = 0.0) -> void:
 	_camera_zoom_cutscene_override = false
 
 func camera_focus_on_world_point(world_pos: Vector2) -> void:
+	if cam == null:
+		return
+
+	_begin_cutscene_camera_detach()
+
 	_camera_focus_active = true
 	_camera_focus_point = world_pos
-	_cam_focus_offset = cam.position
-	# Optional: stop Camera2D’s own smoothing from fighting us
-	if cam:
-		cam.position_smoothing_enabled = false
-		
-	## print("Limits L/T/R/B: ",
-	#cam.limit_left, ", ",
-	#cam.limit_top, ", ",
-	#cam.limit_right, ", ",
-	#cam.limit_bottom,
-	#"  Zoom:", cam.zoom)
+
+	# CutsceneDirector already handles tweening for PAN_CAMERA_TO_MARKER,
+	# so Player.gd should place the camera exactly at the requested point.
+	cam.global_position = world_pos
+	cam.enabled = true
 
 func camera_clear_focus() -> void:
 	_camera_focus_active = false
-	# Return control to your normal look-ahead system
-	if cam:
-		cam.position_smoothing_enabled = true
+
+	if cam == null:
+		return
+
+	if _cutscene_camera_detached:
+		_restore_camera_to_player()
+
+	if cam != null:
+		cam.position_smoothing_enabled = true 
+
+func _restore_camera_to_player() -> void:
+	if cam == null:
+		return
+
+	if not _cutscene_camera_detached:
+		return
+
+	# Restore normal camera limits.
+	cam.limit_left = _cutscene_saved_limit_left
+	cam.limit_top = _cutscene_saved_limit_top
+	cam.limit_right = _cutscene_saved_limit_right
+	cam.limit_bottom = _cutscene_saved_limit_bottom
+
+	_cutscene_camera_ignore_limits = false
+
+	if (
+		_cutscene_camera_original_parent != null
+		and is_instance_valid(_cutscene_camera_original_parent)
+	):
+		# Keep the current world position while returning under the player.
+		cam.reparent(
+			_cutscene_camera_original_parent,
+			true
+		)
+
+		# Restore original child order when possible.
+		if _cutscene_camera_original_index >= 0:
+			var max_index := (
+				_cutscene_camera_original_parent.get_child_count()
+				- 1
+			)
+
+			_cutscene_camera_original_parent.move_child(
+				cam,
+				clampi(
+					_cutscene_camera_original_index,
+					0,
+					max_index
+				)
+			)
+
+		# The camera's new local position represents the distance
+		# between its cinematic position and the player.
+		#
+		# Start normal look-ahead from there so it can glide home
+		# instead of snapping.
+		_cam_offset = cam.position
+
+	cam.position_smoothing_enabled = (
+		_cutscene_saved_position_smoothing
+	)
+
+	cam.enabled = true
+	cam.make_current()
+
+	_cutscene_camera_detached = false
+	_cutscene_camera_original_parent = null
+	_cutscene_camera_original_index = -1
 
 func _update_camera_focus(delta: float) -> void:
 	if cam == null:
@@ -858,3 +942,78 @@ func set_dev_walk_enabled(value: bool) -> void:
 
 func is_dev_walk_enabled() -> bool:
 	return _dev_walk_enabled
+
+func _begin_cutscene_camera_detach() -> void:
+	if cam == null:
+		return
+
+	if _cutscene_camera_detached:
+		return
+
+	# If the developer recording camera is locked,
+	# release it before beginning a real cutscene camera.
+	if _dev_camera_locked:
+		_unlock_dev_camera()
+
+	var scene_root := get_tree().current_scene
+	if scene_root == null:
+		return
+
+	_cutscene_camera_original_parent = cam.get_parent()
+	_cutscene_camera_original_index = cam.get_index()
+
+	_cutscene_saved_limit_left = cam.limit_left
+	_cutscene_saved_limit_top = cam.limit_top
+	_cutscene_saved_limit_right = cam.limit_right
+	_cutscene_saved_limit_bottom = cam.limit_bottom
+
+	_cutscene_saved_position_smoothing = cam.position_smoothing_enabled
+
+	# Preserve the camera's current world-space transform.
+	var old_global_transform := cam.global_transform
+
+	cam.reparent(scene_root, true)
+	cam.global_transform = old_global_transform
+
+	cam.position_smoothing_enabled = false
+	cam.enabled = true
+	cam.make_current()
+
+	_cutscene_camera_detached = true
+
+func _keep_cutscene_camera_focused() -> void:
+	if cam == null:
+		return
+
+	if not _camera_focus_active:
+		return
+
+	if not _cutscene_camera_detached:
+		return
+
+	cam.global_position = _camera_focus_point
+	cam.enabled = true
+
+func camera_set_cutscene_ignore_limits(
+	ignore_limits: bool
+) -> void:
+	if cam == null:
+		return
+
+	_begin_cutscene_camera_detach()
+
+	if _cutscene_camera_ignore_limits == ignore_limits:
+		return
+
+	_cutscene_camera_ignore_limits = ignore_limits
+
+	if ignore_limits:
+		cam.limit_left = -CUTSCENE_FREE_CAMERA_LIMIT
+		cam.limit_top = -CUTSCENE_FREE_CAMERA_LIMIT
+		cam.limit_right = CUTSCENE_FREE_CAMERA_LIMIT
+		cam.limit_bottom = CUTSCENE_FREE_CAMERA_LIMIT
+	else:
+		cam.limit_left = _cutscene_saved_limit_left
+		cam.limit_top = _cutscene_saved_limit_top
+		cam.limit_right = _cutscene_saved_limit_right
+		cam.limit_bottom = _cutscene_saved_limit_bottom

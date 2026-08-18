@@ -44,6 +44,7 @@ scale = Vector2(15.905272, 15.905272)
 collision_mask = 3
 script = ExtResource("16_p04tt")
 location_id = "shop"
+trigger_once_per_scene_entry = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ShopQuestLocation"]
 visible = false
@@ -74,19 +75,43 @@ facing_direction = "up"
 [node name="ShopMarkers" type="Node" parent="."]
 
 [node name="Focus" type="Marker2D" parent="ShopMarkers"]
-position = Vector2(145, 83)
+position = Vector2(145, -102)
+
+[node name="focus_counter" type="Marker2D" parent="ShopMarkers"]
+position = Vector2(143, 9)
+
+[node name="focus_tools" type="Marker2D" parent="ShopMarkers"]
+position = Vector2(272, 9)
 
 [node name="Shop Start" type="Marker2D" parent="ShopMarkers"]
-position = Vector2(219, 144)
+position = Vector2(-25, -109)
+
+[node name="tansy_trip" type="Marker2D" parent="ShopMarkers"]
+position = Vector2(147, -104)
+
+[node name="tansy_counter" type="Marker2D" parent="ShopMarkers"]
+position = Vector2(149, 125)
 
 [node name="Player Start" type="Marker2D" parent="ShopMarkers"]
-position = Vector2(73, 143)
+position = Vector2(149, 193)
+
+[node name="tool_box" type="Marker2D" parent="ShopMarkers"]
+position = Vector2(402, 125)
+
+[node name="tansy_moving" type="Marker2D" parent="ShopMarkers"]
+position = Vector2(402, -187)
+
+[node name="player_tool_box" type="Marker2D" parent="ShopMarkers"]
+position = Vector2(353, 193)
+
+[node name="tansy_actual_counter" type="Marker2D" parent="ShopMarkers"]
+position = Vector2(149, -191)
 
 [node name="Tansy" parent="." instance=ExtResource("18_mvgwc")]
 position = Vector2(149, -190)
 
 [node name="ShopCounter" parent="." instance=ExtResource("19_ibrsf")]
-position = Vector2(150, -89)
+position = Vector2(150, -143)
 shop_title = "General Store"
 shop_open_hour = 8
 prompt_priority = 50
@@ -127,3 +152,11 @@ help_book_data = ExtResource("18_le5ev")
 
 [node name="SpawnManager" type="Node" parent="."]
 script = ExtResource("12_m8nne")
+
+[node name="CameraBounds" type="Node2D" parent="."]
+
+[node name="TopLeft" type="Marker2D" parent="CameraBounds"]
+position = Vector2(-344, -305)
+
+[node name="BottomRight" type="Marker2D" parent="CameraBounds"]
+position = Vector2(610, 310)

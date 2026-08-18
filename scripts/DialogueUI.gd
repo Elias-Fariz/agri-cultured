@@ -156,9 +156,29 @@ func hide_dialogue() -> void:
 
 	emit_signal("dialogue_closed")
 
-	var player := get_tree().get_first_node_in_group("player")
-	if player != null and player.has_method("camera_clear_focus"):
-		player.camera_clear_focus()
+	var cutscene_owns_camera := false
+
+	if CutsceneDirector != null:
+		if CutsceneDirector.has_method(
+			"is_playing_cutscene"
+		):
+			cutscene_owns_camera = bool(
+				CutsceneDirector.is_playing_cutscene()
+			)
+
+	if not cutscene_owns_camera:
+		var player := (
+			get_tree()
+			.get_first_node_in_group("player")
+		)
+
+		if (
+			player != null
+			and player.has_method(
+				"camera_clear_focus"
+			)
+		):
+			player.camera_clear_focus()
 
 	# Release the guard on the next frame so repeated close calls in the same frame are ignored.
 	await get_tree().process_frame

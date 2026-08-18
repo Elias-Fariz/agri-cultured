@@ -623,10 +623,25 @@ func _run_step(step: CutsceneStepData, scene: Node, player: Node, _dialogue_ui: 
 			await get_tree().create_timer(max(step.duration, 0.01)).timeout
 
 		CutsceneStepData.StepType.FOCUS_CAMERA_MARKER:
-			var marker := _resolve_marker(scene, data, step)
+			var marker := _resolve_marker(
+				scene,
+				data,
+				step
+			)
+
 			if marker != null:
-				# IMPORTANT: update the camera lock point so it stays there.
-				_set_camera_lock(player, marker.global_position)
+				if player.has_method(
+					"camera_set_cutscene_ignore_limits"
+				):
+					player.camera_set_cutscene_ignore_limits(
+						step.camera_ignore_limits
+					)
+
+				_set_camera_lock(
+					player,
+					marker.global_position
+				)
+
 			await get_tree().create_timer(0.05).timeout
 
 		CutsceneStepData.StepType.MOVE_ACTOR_TO_MARKER:
@@ -1381,6 +1396,13 @@ func _pan_camera_to_marker(
 	var player := get_tree().get_first_node_in_group("player")
 	if player == null:
 		return
+		
+	if player.has_method(
+		"camera_set_cutscene_ignore_limits"
+	):
+		player.camera_set_cutscene_ignore_limits(
+			step.camera_ignore_limits
+		)
 
 	var start_point := _get_current_cutscene_camera_point(player)
 	var end_point := marker.global_position
@@ -1573,4 +1595,15 @@ func _start_whisper_world_fade_async(
 
 	await FadeOverlay.fade_in(
 		max(duration, 0.01)
+	)
+
+func is_playing_cutscene_id(cutscene_id: String) -> bool:
+	cutscene_id = cutscene_id.strip_edges()
+
+	if cutscene_id == "":
+		return false
+
+	return (
+		_is_playing
+		and _current_cutscene_id == cutscene_id
 	)

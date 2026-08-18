@@ -84,6 +84,14 @@ class_name QuestData
 # Optional richer dialogue overrides for specific NPCs while this quest is active
 @export var npc_overrides: Array[QuestNpcOverrideData] = []
 
+@export_group("Completion")
+
+# If true, completing the final objective immediately grants
+# the quest reward. No NPC/board turn-in is required.
+@export var auto_claim_on_complete: bool = false
+
+
+
 func to_dict() -> Dictionary:
 	var reward: Dictionary = {}
 
@@ -153,6 +161,7 @@ func to_dict() -> Dictionary:
 			"accept_reward": accept_reward,
 			"completed": false,
 			"claimed": false,
+			"auto_claim_on_complete": auto_claim_on_complete,
 		}
 
 	# Oneshot quest
@@ -171,6 +180,7 @@ func to_dict() -> Dictionary:
 		"accept_reward": accept_reward,
 		"completed": false,
 		"claimed": false,
+		"auto_claim_on_complete": auto_claim_on_complete,
 	}
 
 func is_unlocked() -> bool:

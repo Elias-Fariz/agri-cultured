@@ -52,6 +52,8 @@ enum StepType {
 @export var duration: float = 0.5
 @export var ease_run: bool = false
 
+@export var camera_ignore_limits: bool = false
+
 # Targeting world objects.
 # Prefer target_path when the object is easy to reach.
 # Use target_id when the object has CutsceneTarget.gd attached.

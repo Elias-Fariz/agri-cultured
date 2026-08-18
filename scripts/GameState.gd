@@ -1447,25 +1447,65 @@ func add_quest(quest: Dictionary) -> void:
 	QuestEvents.quest_state_changed.emit()
 
 func complete_quest(quest_id: String) -> void:
+	quest_id = quest_id.strip_edges()
+
+	if quest_id == "":
+		return
+
 	if not active_quests.has(quest_id):
 		return
 
 	var quest: Dictionary = active_quests[quest_id]
+
 	quest["completed"] = true
 	quest["claimed"] = false
 
 	active_quests.erase(quest_id)
 	completed_quests[quest_id] = quest
+
 	clear_quest_ready_to_turn_in(quest_id)
 
-	# print("Quest completed: ", quest_id)
+	var title := String(
+		quest.get("title", "Quest")
+	)
 
-	var title := String(quest.get("title", "Quest"))
-	if not (today_tracking["quests_completed"] as Array).has(title):
-		(today_tracking["quests_completed"] as Array).append(title)
+	if not (
+		today_tracking["quests_completed"] as Array
+	).has(title):
+		(
+			today_tracking["quests_completed"] as Array
+		).append(title)
 
-	QuestEvents.toast_requested.emit("Quest Completed: " + title, "success", 3.0)
-	QuestEvents.quest_state_changed.emit()
+	# ------------------------------------------------
+	# Optional immediate reward
+	# ------------------------------------------------
+
+	var auto_claim := bool(
+		quest.get("auto_claim_on_complete", false)
+	)
+
+	if auto_claim:
+		claim_quest_reward(quest_id)
+
+		# An automatically completed quest should no longer
+		# remain selected in the HUD tracker.
+		if tracked_quest_id == quest_id:
+			tracked_quest_id = ""
+
+	# ------------------------------------------------
+	# Feedback
+	# ------------------------------------------------
+
+	if QuestEvents != null:
+		if QuestEvents.has_signal("toast_requested"):
+			QuestEvents.toast_requested.emit(
+				"Quest Completed: " + title,
+				"success",
+				3.0
+			)
+
+		if QuestEvents.has_signal("quest_state_changed"):
+			QuestEvents.quest_state_changed.emit()
 
 func is_quest_ready_to_turn_in(quest_id: String) -> bool:
 	if quest_id.strip_edges() == "":
@@ -1709,17 +1749,15 @@ func _try_advance_chain_quest(qid: String, event_type: String, target: String, d
 	var changed := true  # set this only when a match occurs
 
 	if step_index >= steps.size():
-		q["completed"] = true
-		active_quests.erase(qid)
-		completed_quests[qid] = q
+		# Save the final step state first.
+		active_quests[qid] = q
 
-		# ✅ Emit AFTER moving to completed
-		QuestEvents.quest_state_changed.emit()
+		# Then use the normal completion pipeline.
+		complete_quest(qid)
 		return
 	else:
 		active_quests[qid] = q
 
-		# ✅ Emit AFTER writing back
 		QuestEvents.quest_state_changed.emit()
 		return
 
@@ -2068,7 +2106,24 @@ func apply_quest_event(action: String, target: String = "", amount: int = 1, tar
 		active_quests[qid] = quest
 
 	for qid in to_complete:
-		mark_quest_ready_to_turn_in(qid)
+		if not active_quests.has(qid):
+			continue
+
+		var quest: Dictionary = active_quests[qid]
+		var auto_claim := bool(
+			quest.get("auto_claim_on_complete", false)
+		)
+
+		if auto_claim:
+			# This quest ends immediately:
+			# move it to completed, grant its reward,
+			# and remove it from the tracker.
+			complete_quest(qid)
+		else:
+			# Traditional quest:
+			# player must return to an NPC / board to claim it.
+			mark_quest_ready_to_turn_in(qid)
+
 		changed = true
 
 	if changed:
@@ -2102,9 +2157,8 @@ func can_talk_to_npc(npc_id: String) -> bool:
 func mark_talked_to_npc(npc_id: String) -> void:
 	_talked_block_by_npc[npc_id] = _current_talk_block_stamp()
 
-func _on_day_started(day: int) -> void:
-	if day == 1:
-		ensure_tutorial_day1_started()
+func _on_day_started(_day: int) -> void:
+	pass
 
 func ensure_tutorial_day1_started() -> void:
 	# If already active or completed, do nothing.
@@ -2136,20 +2190,6 @@ func _on_day_changed(new_day: int) -> void:
 	# print("Day changed:", new_day)
 	if new_day != 1:
 		return
-
-	# Only add once: if already active or completed, do nothing.
-	if active_quests.has(TUTORIAL_QUEST_ID) or completed_quests.has(TUTORIAL_QUEST_ID):
-		return
-
-	var qres := load(TUTORIAL_QUEST_RES_PATH)
-	if qres == null:
-		push_warning("Tutorial quest resource missing: " + TUTORIAL_QUEST_RES_PATH)
-		return
-
-	add_quest(qres.to_dict())
-	set_tracked_quest(TUTORIAL_QUEST_ID)
-
-	QuestEvents.quest_state_changed.emit()
 
 func is_travel_unlocked(travel_id: String) -> bool:
 	return bool(unlocked_travel.get(travel_id, false))
@@ -3297,6 +3337,26 @@ var pending_cutscene_one_shot: bool = true
 func queue_pending_cutscene(cutscene_id: String, one_shot: bool = true) -> void:
 	cutscene_id = cutscene_id.strip_edges()
 	if cutscene_id == "":
+		return
+		
+	# Do not queue another copy of the cutscene that is already running.
+	if CutsceneDirector != null:
+		if CutsceneDirector.has_method("is_playing_cutscene_id"):
+			if CutsceneDirector.is_playing_cutscene_id(cutscene_id):
+				if cutscene_queue_debug_enabled:
+					print(
+						"[GameState CutsceneQueue] Ignoring duplicate currently-playing cutscene:",
+						cutscene_id
+					)
+				return
+				
+	# Do not queue the exact same cutscene twice.
+	if pending_cutscene_id == cutscene_id:
+		if cutscene_queue_debug_enabled:
+			print(
+				"[GameState CutsceneQueue] Already pending:",
+				cutscene_id
+			)
 		return
 
 	if one_shot and has_method("has_played_cutscene"):

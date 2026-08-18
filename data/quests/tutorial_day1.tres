@@ -1,64 +1,29 @@
-[gd_resource type="Resource" script_class="QuestData" load_steps=16 format=3 uid="uid://dc5tn3osodxit"]
+[gd_resource type="Resource" script_class="QuestData" load_steps=11 format=3 uid="uid://dc5tn3osodxit"]
 
 [ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="1_fvlvt"]
 [ext_resource type="Script" uid="uid://dqvgpvdaiv010" path="res://data/quests/QuestNpcOverrideData.gd" id="1_gw17v"]
 [ext_resource type="Script" uid="uid://bolxtchvrfo0y" path="res://data/quests/QuestStepData.gd" id="2_gw17v"]
 [ext_resource type="Script" uid="uid://fp28wf3omrn8" path="res://data/quests/QuestSpawnRewardData.gd" id="2_ie44q"]
 
-[sub_resource type="Resource" id="Resource_fvlvt"]
-script = ExtResource("2_gw17v")
-type = "ui_open"
-target = "help"
-text = "Press H to open the Help menu"
-metadata/_custom_type_script = "uid://bolxtchvrfo0y"
-
-[sub_resource type="Resource" id="Resource_gw17v"]
-script = ExtResource("2_gw17v")
-type = "ui_open"
-target = "inventory"
-text = "Press T to open the Inventory"
-metadata/_custom_type_script = "uid://bolxtchvrfo0y"
-
-[sub_resource type="Resource" id="Resource_ie44q"]
-script = ExtResource("2_gw17v")
-type = "ui_open"
-target = "quest_menu"
-text = "Press V to open the Quest menu"
-metadata/_custom_type_script = "uid://bolxtchvrfo0y"
-
-[sub_resource type="Resource" id="Resource_15lpo"]
-script = ExtResource("2_gw17v")
-type = "go_to"
-target = "town_square"
-text = "Press E in front of the orange square to move to the Town"
-metadata/_custom_type_script = "uid://bolxtchvrfo0y"
-
-[sub_resource type="Resource" id="Resource_klcmf"]
-script = ExtResource("2_gw17v")
-type = "talk_to"
-target = "npc_mayor"
-text = "Talk with the Mayor, the purple box in the top-left"
-metadata/_custom_type_script = "uid://bolxtchvrfo0y"
-
 [sub_resource type="Resource" id="Resource_aqkft"]
 script = ExtResource("2_gw17v")
-type = "ui_open"
-target = "townboard"
-text = "Walk to the townboard (yellow square) and press E to open it"
+type = "go_to"
+target = "shop"
+text = "Head over to Tansy's General Store."
 metadata/_custom_type_script = "uid://bolxtchvrfo0y"
 
 [sub_resource type="Resource" id="Resource_1kbf8"]
 script = ExtResource("2_gw17v")
 type = "buy"
 target = "Watermelon Seeds"
-text = "Go to the General Store (upwards) and buy some watermelon seeds."
+text = "Buy some watermelon seeds at the counter."
 metadata/_custom_type_script = "uid://bolxtchvrfo0y"
 
 [sub_resource type="Resource" id="Resource_12pbc"]
 script = ExtResource("2_gw17v")
 type = "go_to"
 target = "farm"
-text = "Return to the Farm with the left travel pad."
+text = "Return to the old farm plot outside your Farm."
 metadata/_custom_type_script = "uid://bolxtchvrfo0y"
 
 [sub_resource type="Resource" id="Resource_6e1om"]
@@ -86,9 +51,8 @@ title = "Getting Started"
 description = "Learn the basics: help, inventory, quests, and talking to townsfolk."
 quest_type = "chain"
 oneshot_action = ""
-steps = Array[ExtResource("2_gw17v")]([SubResource("Resource_fvlvt"), SubResource("Resource_gw17v"), SubResource("Resource_ie44q"), SubResource("Resource_15lpo"), SubResource("Resource_klcmf"), SubResource("Resource_aqkft"), SubResource("Resource_1kbf8"), SubResource("Resource_12pbc"), SubResource("Resource_6e1om"), SubResource("Resource_sdq8m"), SubResource("Resource_dnr2a")])
-turn_in_id = "townboard"
-turn_in_text = "And now we wait! While you wait, go back to the townboard to claim your reward!"
-reward_money = 50
+steps = Array[ExtResource("2_gw17v")]([SubResource("Resource_aqkft"), SubResource("Resource_1kbf8"), SubResource("Resource_12pbc"), SubResource("Resource_6e1om"), SubResource("Resource_sdq8m"), SubResource("Resource_dnr2a")])
+reward_money = 25
 participant_ids = null
+auto_claim_on_complete = true
 metadata/_custom_type_script = "uid://cg0ailnic1w71"
