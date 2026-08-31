@@ -1,0 +1,235 @@
+[gd_resource type="Resource" script_class="CutsceneData" load_steps=43 format=3 uid="uid://cpted3mm6wjct"]
+
+[ext_resource type="Script" uid="uid://b4pm6wxp5ivtk" path="res://data/cutscenes/CutsceneActorData.gd" id="1_os4jm"]
+[ext_resource type="Script" uid="uid://cp2gtb0hckrrj" path="res://data/cutscenes/CutsceneEffectData.gd" id="2_fsprn"]
+[ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="3_0uirf"]
+[ext_resource type="Script" uid="uid://bjwubxbrbyt2x" path="res://data/cutscenes/CutsceneMarkerSet.gd" id="3_fsprn"]
+[ext_resource type="Script" uid="uid://fp28wf3omrn8" path="res://data/quests/QuestSpawnRewardData.gd" id="4_cmpra"]
+[ext_resource type="Script" uid="uid://camo0lur1qm85" path="res://data/cutscenes/CutsceneData.gd" id="5_i60no"]
+[ext_resource type="Script" uid="uid://0k0f68wqa7mm" path="res://data/cutscenes/CutsceneStepData.gd" id="6_qvxdt"]
+[ext_resource type="Script" uid="uid://dt1fjl76x6n5o" path="res://data/dialogue/DialogueBeatData.gd" id="8_cmpra"]
+[ext_resource type="Script" uid="uid://clb3lhdggkt8d" path="res://data/dialogue/DialogueSequenceData.gd" id="9_i60no"]
+
+[sub_resource type="Resource" id="Resource_os4jm"]
+script = ExtResource("1_os4jm")
+key = "player"
+actor_type = "player"
+metadata/_custom_type_script = "uid://b4pm6wxp5ivtk"
+
+[sub_resource type="Resource" id="Resource_fsprn"]
+script = ExtResource("1_os4jm")
+key = "maren"
+npc_id = "npc_maren"
+display_name = "Maren"
+scene_path = "res://tscn/npcs/Maren.tscn"
+metadata/_custom_type_script = "uid://b4pm6wxp5ivtk"
+
+[sub_resource type="Resource" id="Resource_0uirf"]
+script = ExtResource("3_fsprn")
+markers_by_id = {
+"focus_start": NodePath("Node/focus_start"),
+"maren_greeting": NodePath("Node/maren_greeting"),
+"maren_start": NodePath("Node/maren_start"),
+"player_end": NodePath("Node/player_end"),
+"player_start": NodePath("Node/player_start")
+}
+metadata/_custom_type_script = "uid://bjwubxbrbyt2x"
+
+[sub_resource type="Resource" id="Resource_cmpra"]
+script = ExtResource("6_qvxdt")
+step_type = 4
+marker_id = "player_end"
+duration = 1.2
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_qvxdt"]
+script = ExtResource("6_qvxdt")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_5s2q8"]
+script = ExtResource("6_qvxdt")
+step_type = 18
+actor_key = "maren"
+overhead_text = "!"
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_fbc1w"]
+script = ExtResource("6_qvxdt")
+step_type = 0
+actor_key = "maren"
+marker_id = "maren_greeting"
+duration = 1.2
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_l5eaj"]
+script = ExtResource("8_cmpra")
+text = "Oh."
+speaker_id = "npc_maren"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_28fei"]
+script = ExtResource("8_cmpra")
+text = "You must be the traveler staying at the old mansion."
+speaker_id = "npc_maren"
+emotion = "thinking"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_i60no"]
+script = ExtResource("8_cmpra")
+text = "I was wondering when I might meet you."
+speaker_id = "npc_maren"
+emotion = "happy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_tkupv"]
+script = ExtResource("8_cmpra")
+text = "I’m Maren."
+speaker_id = "npc_maren"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_jr2qd"]
+script = ExtResource("8_cmpra")
+text = "I keep the bakery here."
+speaker_id = "npc_maren"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_78ruq"]
+script = ExtResource("8_cmpra")
+text = "You’ve been settling in, then?"
+speaker_id = "npc_maren"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_4u3ih"]
+script = ExtResource("9_i60no")
+beats = Array[ExtResource("8_cmpra")]([SubResource("Resource_l5eaj"), SubResource("Resource_28fei"), SubResource("Resource_i60no"), SubResource("Resource_tkupv"), SubResource("Resource_jr2qd"), SubResource("Resource_78ruq")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_00jgw"]
+script = ExtResource("6_qvxdt")
+step_type = 2
+dialogue_sequence = SubResource("Resource_4u3ih")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_1as0k"]
+script = ExtResource("6_qvxdt")
+step_type = 19
+narration_text = "You tell her you’ve been working the old field beside the mansion."
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_gpqun"]
+script = ExtResource("8_cmpra")
+text = "So I’ve heard."
+speaker_id = "npc_maren"
+emotion = "thinking"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_8suya"]
+script = ExtResource("8_cmpra")
+text = "Alder said you’d decided to stay awhile."
+speaker_id = "npc_maren"
+emotion = "thinking"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_uwbw1"]
+script = ExtResource("8_cmpra")
+text = "And I imagine Tansy has already made certain you’re properly equipped."
+speaker_id = "npc_maren"
+emotion = "thinking"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_61faj"]
+script = ExtResource("8_cmpra")
+text = "That sounds like the two of them."
+speaker_id = "npc_maren"
+emotion = "happy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_bm252"]
+script = ExtResource("9_i60no")
+beats = Array[ExtResource("8_cmpra")]([SubResource("Resource_gpqun"), SubResource("Resource_8suya"), SubResource("Resource_uwbw1"), SubResource("Resource_61faj")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_72ft6"]
+script = ExtResource("6_qvxdt")
+step_type = 2
+dialogue_sequence = SubResource("Resource_bm252")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_jfi2j"]
+script = ExtResource("6_qvxdt")
+step_type = 18
+actor_key = "maren"
+overhead_text = "*happy*"
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_f320y"]
+script = ExtResource("8_cmpra")
+text = "You needn’t hurry to make yourself useful, though."
+speaker_id = "npc_maren"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_vh5vr"]
+script = ExtResource("8_cmpra")
+text = "A new place takes time to feel familiar."
+speaker_id = "npc_maren"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_4b8dk"]
+script = ExtResource("8_cmpra")
+text = "The bakery isn’t quite ready for visitors today."
+speaker_id = "npc_maren"
+emotion = "thinking"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_evc4v"]
+script = ExtResource("8_cmpra")
+text = "But give me a little time, and you’re welcome to stop in."
+speaker_id = "npc_maren"
+emotion = "happy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_ncgby"]
+script = ExtResource("8_cmpra")
+text = "If you ever decide you’d like to learn your way around a kitchen, I can help with that too."
+speaker_id = "npc_maren"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_n7knj"]
+script = ExtResource("8_cmpra")
+text = "A good meal can do more than fill you up."
+speaker_id = "npc_maren"
+emotion = "thinking"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_0olr6"]
+script = ExtResource("8_cmpra")
+text = "For now… enjoy the morning."
+speaker_id = "npc_maren"
+emotion = "happy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_fuhwf"]
+script = ExtResource("8_cmpra")
+text = "There are plenty of little things worth noticing around here."
+speaker_id = "npc_maren"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_pxhu7"]
+script = ExtResource("9_i60no")
+beats = Array[ExtResource("8_cmpra")]([SubResource("Resource_f320y"), SubResource("Resource_vh5vr"), SubResource("Resource_4b8dk"), SubResource("Resource_evc4v"), SubResource("Resource_ncgby"), SubResource("Resource_n7knj"), SubResource("Resource_0olr6"), SubResource("Resource_fuhwf")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_wn8wk"]
+script = ExtResource("6_qvxdt")
+step_type = 2
+dialogue_sequence = SubResource("Resource_pxhu7")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[resource]
+script = ExtResource("5_i60no")
+id = "maren_intro"
+scene_name = "Town"
+actors = Array[ExtResource("1_os4jm")]([SubResource("Resource_os4jm"), SubResource("Resource_fsprn")])
+markers = SubResource("Resource_0uirf")
+steps = Array[ExtResource("6_qvxdt")]([SubResource("Resource_cmpra"), SubResource("Resource_qvxdt"), SubResource("Resource_5s2q8"), SubResource("Resource_fbc1w"), SubResource("Resource_00jgw"), SubResource("Resource_1as0k"), SubResource("Resource_72ft6"), SubResource("Resource_jfi2j"), SubResource("Resource_wn8wk")])
+metadata/_custom_type_script = "uid://camo0lur1qm85"

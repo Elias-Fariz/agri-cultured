@@ -431,6 +431,16 @@ location_id = "town_square"
 visible = false
 shape = SubResource("RectangleShape2D_dvr77")
 
+[node name="TownQuestLocation2" type="Area2D" parent="."]
+position = Vector2(643, 1532)
+scale = Vector2(-35.93926, -35.93926)
+collision_mask = 3
+script = ExtResource("26_lyu0f")
+location_id = "bakery"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TownQuestLocation2"]
+shape = SubResource("RectangleShape2D_dvr77")
+
 [node name="QuestMenuUI" parent="." instance=ExtResource("27_dvr77")]
 
 [node name="HelpOverlay" parent="." instance=ExtResource("34_4f1xo")]
@@ -453,8 +463,23 @@ visible = false
 position = Vector2(355, 174)
 texture = ExtResource("51_gmfaa")
 
-[node name="ShopMarkers" type="Node" parent="."]
-
 [node name="DayNightModulate" parent="." instance=ExtResource("57_2qqyd")]
+
+[node name="Node" type="Node" parent="."]
+
+[node name="focus_start" type="Marker2D" parent="Node"]
+position = Vector2(672, 1421)
+
+[node name="player_start" type="Marker2D" parent="Node"]
+position = Vector2(899, 1267)
+
+[node name="player_end" type="Marker2D" parent="Node"]
+position = Vector2(899, 1457)
+
+[node name="maren_start" type="Marker2D" parent="Node"]
+position = Vector2(471, 1455)
+
+[node name="maren_greeting" type="Marker2D" parent="Node"]
+position = Vector2(704, 1456)
 
 [editable path="Store"]

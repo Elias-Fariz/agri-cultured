@@ -49,11 +49,6 @@ var cutscene_rule_ready_days: Dictionary = {}
 
 var default_owned_tools: Array[int] = [
 	ToolType.HAND,
-	ToolType.HOE,
-	ToolType.SEED_POUCH,
-	ToolType.WATERING_CAN,
-	ToolType.AXE,
-	ToolType.PICKAXE,
 ]
 
 # This is the preferred display order.

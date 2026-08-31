@@ -37,7 +37,7 @@ class_name DialogueBeatData
 # - "surprised"
 #
 # If you don't have a matching emotion visual later, just fall back to neutral.
-@export var emotion: String = "neutral" 
+@export var emotion: String = "default" 
 
 # Optional specific art keys.
 # Leave blank to use emotion.
@@ -123,7 +123,7 @@ func get_effective_stage_slot() -> String:
 func get_effective_emotion() -> String:
 	var e := emotion.strip_edges().to_lower()
 	if e == "":
-		return "neutral"
+		return "default"
 	return e
 
 func should_use_narration_mode() -> bool:

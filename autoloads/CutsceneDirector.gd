@@ -35,6 +35,7 @@ var _cutscene_paths := {
 	"ash_first_passout_rescue": "res://data/cutscenes/ash_first_passout_rescue.tres",
 	"whisper_test": "res://data/cutscenes/whisper_test.tres",
 	"day1_wakeup_whisper": "res://data/cutscenes/day1_wakeup_whisper.tres",
+	"maren_intro": "res://data/cutscenes/maren_intro.tres",
 }
 
 var _pending_restoration_encounter_path: NodePath = NodePath("")

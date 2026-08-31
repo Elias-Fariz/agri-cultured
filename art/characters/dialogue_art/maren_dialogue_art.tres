@@ -1,13 +1,46 @@
-[gd_resource type="Resource" script_class="NPCDialogueArtData" load_steps=6 format=3 uid="uid://biuogc0itp13r"]
+[gd_resource type="Resource" script_class="NPCDialogueArtData" load_steps=15 format=3 uid="uid://biuogc0itp13r"]
 
 [ext_resource type="Script" uid="uid://ctb0g66p3247d" path="res://data/dialogue/DialogueArtEntry.gd" id="1_bm1d5"]
 [ext_resource type="Texture2D" uid="uid://geug0cp1e1lv" path="res://art/characters/maren_portrait.png" id="1_xbgbx"]
 [ext_resource type="Script" uid="uid://dtmrx4fd7hq0k" path="res://data/dialogue/NPCDialogueArtData.gd" id="2_7e2wm"]
 [ext_resource type="Texture2D" uid="uid://bfwl1byywit1n" path="res://art/characters/maren_01-removebg-preview.png" id="2_w0tff"]
+[ext_resource type="Texture2D" uid="uid://111dsetlhuvb" path="res://art/characters/maren_02-portrait.png" id="4_xju2f"]
+[ext_resource type="Texture2D" uid="uid://bdm246h6mv5mf" path="res://art/characters/maren_03-portrait.png" id="5_fe6yv"]
+[ext_resource type="Texture2D" uid="uid://ddwqkceumrqbp" path="res://art/characters/maren_02-removebg-preview.png" id="7_0y5uf"]
+[ext_resource type="Texture2D" uid="uid://cb4thf6wask1x" path="res://art/characters/maren_03-removebg-preview.png" id="8_fowan"]
+
+[sub_resource type="Resource" id="Resource_5aqn1"]
+script = ExtResource("1_bm1d5")
+texture = ExtResource("1_xbgbx")
+metadata/_custom_type_script = "uid://ctb0g66p3247d"
+
+[sub_resource type="Resource" id="Resource_j6ati"]
+script = ExtResource("1_bm1d5")
+key = "thinking"
+texture = ExtResource("4_xju2f")
+metadata/_custom_type_script = "uid://ctb0g66p3247d"
+
+[sub_resource type="Resource" id="Resource_0sohu"]
+script = ExtResource("1_bm1d5")
+key = "happy"
+texture = ExtResource("5_fe6yv")
+metadata/_custom_type_script = "uid://ctb0g66p3247d"
 
 [sub_resource type="Resource" id="Resource_qv6fa"]
 script = ExtResource("1_bm1d5")
 texture = ExtResource("2_w0tff")
+metadata/_custom_type_script = "uid://ctb0g66p3247d"
+
+[sub_resource type="Resource" id="Resource_j22xt"]
+script = ExtResource("1_bm1d5")
+key = "thinking"
+texture = ExtResource("7_0y5uf")
+metadata/_custom_type_script = "uid://ctb0g66p3247d"
+
+[sub_resource type="Resource" id="Resource_dq7f1"]
+script = ExtResource("1_bm1d5")
+key = "happy"
+texture = ExtResource("8_fowan")
 metadata/_custom_type_script = "uid://ctb0g66p3247d"
 
 [resource]
@@ -15,5 +48,6 @@ script = ExtResource("2_7e2wm")
 npc_id = "npc_maren"
 default_portrait = ExtResource("1_xbgbx")
 default_stage_pose = ExtResource("2_w0tff")
-stage_poses = Array[ExtResource("1_bm1d5")]([SubResource("Resource_qv6fa")])
+portraits = Array[ExtResource("1_bm1d5")]([SubResource("Resource_5aqn1"), SubResource("Resource_j6ati"), SubResource("Resource_0sohu")])
+stage_poses = Array[ExtResource("1_bm1d5")]([SubResource("Resource_qv6fa"), SubResource("Resource_j22xt"), SubResource("Resource_dq7f1")])
 metadata/_custom_type_script = "uid://dtmrx4fd7hq0k"

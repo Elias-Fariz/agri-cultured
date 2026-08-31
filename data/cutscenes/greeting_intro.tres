@@ -7,7 +7,7 @@
 [ext_resource type="Script" uid="uid://0k0f68wqa7mm" path="res://data/cutscenes/CutsceneStepData.gd" id="4_2pgpd"]
 [ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="4_r4rt6"]
 [ext_resource type="Script" uid="uid://fp28wf3omrn8" path="res://data/quests/QuestSpawnRewardData.gd" id="5_f74h5"]
-[ext_resource type="Resource" uid="uid://dc5tn3osodxit" path="res://data/quests/tutorial_day1.tres" id="5_kir2k"]
+[ext_resource type="Resource" uid="uid://dc5tn3osodxit" path="res://data/quests/slice/tutorial_day1.tres" id="5_kir2k"]
 [ext_resource type="Script" uid="uid://dt1fjl76x6n5o" path="res://data/dialogue/DialogueBeatData.gd" id="6_2pgpd"]
 [ext_resource type="Script" uid="uid://clb3lhdggkt8d" path="res://data/dialogue/DialogueSequenceData.gd" id="7_cag78"]
 

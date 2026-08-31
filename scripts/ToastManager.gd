@@ -16,8 +16,9 @@ func _on_toast_requested(text: String, kind: String = "info", duration: float = 
 
 func _add_toast(text: String, kind: String, duration: float) -> void:
 	# Trim old toasts
-	while toast_vbox.get_child_count() >= max_toasts:
+	if toast_vbox.get_child_count() >= max_toasts:
 		var old := toast_vbox.get_child(0)
+		toast_vbox.remove_child(old)
 		old.queue_free()
 
 	# Build a toast panel

@@ -36,6 +36,7 @@ QuestCatalogDb="*res://autoloads/QuestCatalogDb.tscn"
 CutsceneEventRouter="*res://autoloads/CutsceneEventRouter.tscn"
 WorldMemory="*res://autoloads/WorldMemory.gd"
 DevlogCaptureMode="*res://autoloads/DevlogCaptureMode.gd"
+QuestRuleManager="*res://autoloads/QuestRuleManager.gd"
 
 [input]
 

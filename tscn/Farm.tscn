@@ -242,10 +242,6 @@ position = Vector2(-26, 182)
 
 [node name="OldFarmSpigot" parent="." instance=ExtResource("24_5n53h")]
 position = Vector2(-158, 77)
-required_items = {
-"Stone": 1,
-"Wood": 1
-}
 
 [node name="DayNightOverlay" parent="." instance=ExtResource("8_2ywwf")]
 

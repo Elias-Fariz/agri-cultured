@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=6 format=3 uid="uid://b814n02dhghoa"]
+
+[ext_resource type="Script" uid="uid://dqvgpvdaiv010" path="res://data/quests/QuestNpcOverrideData.gd" id="1_t1khs"]
+[ext_resource type="Script" uid="uid://fp28wf3omrn8" path="res://data/quests/QuestSpawnRewardData.gd" id="2_d1flq"]
+[ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="3_klsva"]
+[ext_resource type="Script" uid="uid://bolxtchvrfo0y" path="res://data/quests/QuestStepData.gd" id="4_f6k5b"]
+
+[sub_resource type="Resource" id="Resource_t1khs"]
+script = ExtResource("4_f6k5b")
+type = "water"
+text = "Check on what you planted yesterday."
+metadata/_custom_type_script = "uid://bolxtchvrfo0y"
+
+[resource]
+script = ExtResource("3_klsva")
+id = "tutorial_day2"
+title = "A Little Further"
+description = "Something is growing beside the old house."
+quest_type = "chain"
+oneshot_action = ""
+steps = Array[ExtResource("4_f6k5b")]([SubResource("Resource_t1khs")])
+requires_completed = Array[String](["tutorial_day1"])
+requires_day = 2
+participant_ids = null
+auto_claim_on_complete = true
+metadata/_custom_type_script = "uid://cg0ailnic1w71"

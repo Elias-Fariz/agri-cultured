@@ -4,8 +4,8 @@ class_name OldFarmSpigot
 @export_category("Required Items")
 
 @export var required_items: Dictionary = {
-	"Wood": 3,
-	"Stone": 2,
+	"Wood": 1,
+	"Stone": 1,
 }
 
 @export_category("Visuals")
@@ -163,9 +163,28 @@ func _use_spigot_today() -> void:
 	_mark_used_today()
 
 	if watered_count > 0:
-		_show_toast(watered_toast_text, "success", 2.0)
+		# Treat the spigot as a legitimate watering action
+		# for quests such as the Day 2 tutorial.
+		if (
+			QuestEvents != null
+			and QuestEvents.has_signal("crop_watered")
+		):
+			QuestEvents.crop_watered.emit(
+				"farm_field",
+				watered_count
+			)
+
+		_show_toast(
+			watered_toast_text,
+			"success",
+			2.0
+		)
 	else:
-		_show_toast(no_dry_soil_toast_text, "info", 2.0)
+		_show_toast(
+			no_dry_soil_toast_text,
+			"info",
+			2.0
+		)
 
 
 func _water_farm_field() -> int:

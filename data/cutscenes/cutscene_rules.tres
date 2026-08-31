@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="CutsceneRuleDB" load_steps=6 format=3 uid="uid://b2ogg43mhd4v8"]
+[gd_resource type="Resource" script_class="CutsceneRuleDB" load_steps=7 format=3 uid="uid://b2ogg43mhd4v8"]
 
 [ext_resource type="Script" uid="uid://brhohb215g868" path="res://data/cutscenes/CutsceneRuleData.gd" id="1_68sen"]
 [ext_resource type="Script" uid="uid://b5amndu2fk41s" path="res://data/cutscenes/CutsceneRuleDB.gd" id="2_5rwhc"]
@@ -26,7 +26,14 @@ location_id = "house"
 cutscene_id = "day1_wakeup_whisper"
 metadata/_custom_type_script = "uid://brhohb215g868"
 
+[sub_resource type="Resource" id="Resource_5rwhc"]
+script = ExtResource("1_68sen")
+rule_id = "day2_bakery_intro"
+location_id = "bakery"
+cutscene_id = "maren_intro"
+metadata/_custom_type_script = "uid://brhohb215g868"
+
 [resource]
 script = ExtResource("2_5rwhc")
-rules = Array[ExtResource("1_68sen")]([SubResource("Resource_68sen"), SubResource("Resource_ufhh6"), SubResource("Resource_ud4gu")])
+rules = Array[ExtResource("1_68sen")]([SubResource("Resource_68sen"), SubResource("Resource_ufhh6"), SubResource("Resource_ud4gu"), SubResource("Resource_5rwhc")])
 metadata/_custom_type_script = "uid://b5amndu2fk41s"
