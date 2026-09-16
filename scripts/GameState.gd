@@ -908,10 +908,23 @@ func get_unlocked_cooking_recipe_ids() -> Dictionary:
 	return unlocked_cooking_recipe_ids.duplicate(true)
 
 func unlock_recipe(recipe_id: String) -> void:
-	if recipe_id.strip_edges() == "":
+	recipe_id = recipe_id.strip_edges()
+
+	if recipe_id == "":
 		return
+
+	if unlocked_recipes.has(recipe_id):
+		return
+
 	unlocked_recipes[recipe_id] = true
-	# print("Unlocked: " + recipe_id)
+
+	if QuestEvents != null \
+	and QuestEvents.has_signal("toast_requested"):
+		QuestEvents.toast_requested.emit(
+			"Recipe learned: " + recipe_id,
+			"success",
+			2.5
+		)
 
 func get_unlocked_recipe_ids() -> Dictionary:
 	# Return dictionary so we can do unlocked.has(id)
@@ -969,6 +982,13 @@ func _ready() -> void:
 	if not has_played_greeting_intro:
 		pending_cutscene_id = "greeting_intro"
 		has_played_greeting_intro = true
+	
+	if not inventory_changed.is_connected(
+		_evaluate_inventory_quest_steps
+	):
+		inventory_changed.connect(
+			_evaluate_inventory_quest_steps
+		)
 
 var _last_buff_tick_minute: int = -1
 
@@ -1440,6 +1460,8 @@ func add_quest(quest: Dictionary) -> void:
 		(today_tracking["quests_accepted"] as Array).append(title)
 
 	QuestEvents.quest_state_changed.emit()
+	
+	_evaluate_inventory_quest_steps()
 
 func complete_quest(quest_id: String) -> void:
 	quest_id = quest_id.strip_edges()
@@ -1481,9 +1503,8 @@ func complete_quest(quest_id: String) -> void:
 
 	if auto_claim:
 		claim_quest_reward(quest_id)
+		mark_quest_claimed_today(quest_id)
 
-		# An automatically completed quest should no longer
-		# remain selected in the HUD tracker.
 		if tracked_quest_id == quest_id:
 			tracked_quest_id = ""
 
@@ -1928,6 +1949,12 @@ func _format_objective_fallback(t: String, target: String, amount: int, progress
 			if target.strip_edges() != "":
 				return "Water: " + target
 			return "Water a crop"
+		"have_item":
+			return "Have: %s (%d/%d)" % [
+				target,
+				progress,
+				amount
+			]
 		"action":
 			return "Do: " + target
 		_:
@@ -2124,6 +2151,12 @@ func apply_quest_event(action: String, target: String = "", amount: int = 1, tar
 	if changed:
 		QuestEvents.quest_state_changed.emit()
 		
+		# A completed event-driven step may have exposed a
+		# state-driven objective such as "have_item".
+		call_deferred(
+			"_evaluate_inventory_quest_steps"
+		)
+		
 	GameState.debug_print_quest_state("tutorial_day1")
 
 func get_first_turn_in_ready_id_for(npc_id: String) -> String:
@@ -2231,6 +2264,10 @@ func _format_step_fallback(step: Dictionary) -> String:
 			if target.strip_edges() != "":
 				return "Water: " + target
 			return "Water a crop"
+		"have_item":
+			if target.strip_edges() != "":
+				return "Have: " + target
+			return "Gather the needed items"
 		_:
 			return "Objective"
 
@@ -3472,3 +3509,110 @@ func _play_pending_cutscene_from_travel_black() -> bool:
 		CutsceneDirector.call("play_cutscene", cutscene_id)
 
 	return true
+
+func _evaluate_inventory_quest_steps() -> void:
+	var changed := false
+	var to_complete: Array[String] = []
+
+	for qid_any in active_quests.keys():
+		var qid := String(qid_any)
+		var quest: Dictionary = active_quests[qid]
+
+		if String(quest.get("type", "")) != "chain":
+			continue
+
+		var steps: Array = quest.get("steps", [])
+		var step_index := int(
+			quest.get("step_index", 0)
+		)
+
+		if step_index < 0 \
+		or step_index >= steps.size():
+			continue
+
+		var step: Dictionary = steps[step_index]
+
+		if String(step.get("type", "")) != "have_item":
+			continue
+
+		var item_id := String(
+			step.get("target", "")
+		).strip_edges()
+
+		var amount_needed :Variant= max(
+			1,
+			int(step.get("amount", 1))
+		)
+
+		if item_id == "":
+			continue
+
+		var amount_owned := int(
+			inventory.get(item_id, 0)
+		)
+
+		var old_progress := int(
+			step.get("progress", 0)
+		)
+
+		var new_progress :Variant= min(
+			amount_owned,
+			amount_needed
+		)
+
+		step["progress"] = new_progress
+
+		steps[step_index] = step
+		quest["steps"] = steps
+
+		# The inventory objective changed even if it has
+		# not completed yet, so refresh the quest UI.
+		if new_progress != old_progress:
+			changed = true
+
+		if amount_owned < amount_needed:
+			active_quests[qid] = quest
+			continue
+
+		# Step complete.
+		step = _apply_step_reward_once(
+			qid,
+			step_index,
+			step
+		)
+
+		steps[step_index] = step
+		quest["steps"] = steps
+
+		step_index += 1
+		quest["step_index"] = step_index
+
+		active_quests[qid] = quest
+		changed = true
+
+		if step_index >= steps.size():
+			to_complete.append(qid)
+
+	for qid in to_complete:
+		if not active_quests.has(qid):
+			continue
+
+		var quest: Dictionary = active_quests[qid]
+		var auto_claim := bool(
+			quest.get(
+				"auto_claim_on_complete",
+				false
+			)
+		)
+
+		if auto_claim:
+			complete_quest(qid)
+		else:
+			mark_quest_ready_to_turn_in(qid)
+
+	if changed \
+	and QuestEvents != null \
+	and QuestEvents.has_signal(
+		"quest_state_changed"
+	):
+		QuestEvents.quest_state_changed.emit()

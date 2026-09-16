@@ -157,13 +157,16 @@ func start_dialogue() -> void:
 	var f := GameState.get_friendship(npc_id)
 
 	# --- TALK COOLDOWN: once per time block ---
-	if not GameState.can_talk_to_npc(npc_id):
-		# Make them feel "uninteractable" during this block.
-		# You can optionally show overhead chatter instead, but no UI pop.
-		return
-
-	# Mark talked NOW so spam clicking doesn't reopen.
-	GameState.mark_talked_to_npc(npc_id)
+	#var quest_critical_talk := _has_quest_critical_talk()
+#
+	#if (
+		#not quest_critical_talk
+		#and not GameState.can_talk_to_npc(npc_id)
+	#):
+		#return
+#
+	## Mark talked NOW so spam clicking doesn't reopen.
+	#GameState.mark_talked_to_npc(npc_id)
 	
 	var player := get_tree().get_first_node_in_group("player")
 	if player and player.has_method("play_talk_sfx"):
@@ -846,15 +849,12 @@ func _get_best_active_participant_override_lines() -> Array[String]:
 	return best_lines
 
 func can_player_interact(player: Node) -> bool:
-	# If you already have a cooldown / time-block lock, use that.
-	# Examples: _can_talk_now, interactable, is_interactable, locked_until_timeblock, etc.
-	# Replace the condition below with your real one.
-	if not GameState.can_talk_to_npc(npc_id):
-		# Make them feel "uninteractable" during this block.
-		# You can optionally show overhead chatter instead, but no UI pop.
-		return false
+	#if _has_quest_critical_talk():
+		#return true
+#
+	#if not GameState.can_talk_to_npc(npc_id):
+		#return false
 
-	# Default: allow
 	return true
 
 
@@ -918,11 +918,43 @@ func receive_gift(item_id: String, qty: int = 1) -> void:
 		QuestEvents.toast_requested.emit(display_name + " accepted your gift.")
 
 	# Dialogue response (keep it short and sweet)
-	var ui := get_tree().get_first_node_in_group("dialogue_ui")
-	if ui and ui.has_method("show_dialogue"):
+	var ui := get_tree().get_first_node_in_group(
+		"dialogue_ui"
+	)
+
+	if ui:
 		var f := GameState.get_friendship(npc_id)
-		var lines: Array[String] = _gift_reaction_lines(tier)
-		ui.show_dialogue(display_name, lines, f, npc_id)
+
+		# Quest-specific same-day reaction gets priority.
+		var recent_qd := (
+			_get_best_recently_claimed_override_quest()
+		)
+
+		if recent_qd != null:
+			var used_special := _show_override_dialogue(
+				ui,
+				recent_qd,
+				"completed_claimed",
+				-1,
+				[],
+				f
+			)
+
+			if used_special:
+				return
+
+		# Otherwise use the normal gift reaction.
+		if ui.has_method("show_dialogue"):
+			var lines: Array[String] = (
+				_gift_reaction_lines(tier)
+			)
+
+			ui.show_dialogue(
+				display_name,
+				lines,
+				f,
+				npc_id
+			)
 
 func _gift_reaction_tier(item_id: String) -> String:
 	if gift_prefs == null:
@@ -1150,3 +1182,31 @@ func show_overhead_text(text: String, duration: float = 1.0, offset: Vector2 = V
 func clear_overhead_text() -> void:
 	if overhead_bubble != null and overhead_bubble.has_method("hide_bubble"):
 		overhead_bubble.call("hide_bubble")
+
+func _has_quest_critical_talk() -> bool:
+	# A ready quest turn-in should always be interactable.
+	if GameState.has_turn_in_ready(npc_id):
+		return true
+
+	# A currently available quest offer should be interactable.
+	if _get_offerable_questdata() != null:
+		return true
+
+	# A chain step specifically asking the player to talk
+	# to this NPC should bypass the normal social cooldown.
+	for qid_any in GameState.active_quests.keys():
+		var qid := String(qid_any)
+		var qd := _find_questdata_by_id(qid)
+
+		if qd == null:
+			continue
+
+		var quest_state: Dictionary = GameState.active_quests[qid]
+
+		if _does_current_step_target_this_npc(
+			qd,
+			quest_state
+		):
+			return true
+
+	return false

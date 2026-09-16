@@ -1,0 +1,184 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=31 format=3 uid="uid://bc3nd0owsto20"]
+
+[ext_resource type="Script" uid="uid://dqvgpvdaiv010" path="res://data/quests/QuestNpcOverrideData.gd" id="1_24r5o"]
+[ext_resource type="Script" uid="uid://fp28wf3omrn8" path="res://data/quests/QuestSpawnRewardData.gd" id="2_6jalg"]
+[ext_resource type="Script" uid="uid://dt1fjl76x6n5o" path="res://data/dialogue/DialogueBeatData.gd" id="2_cegjg"]
+[ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="3_cegjg"]
+[ext_resource type="Script" uid="uid://bolxtchvrfo0y" path="res://data/quests/QuestStepData.gd" id="4_uanie"]
+[ext_resource type="Script" uid="uid://clb3lhdggkt8d" path="res://data/dialogue/DialogueSequenceData.gd" id="5_uanie"]
+
+[sub_resource type="Resource" id="Resource_mq13v"]
+script = ExtResource("2_cegjg")
+text = "No hurry."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_dsjmg"]
+script = ExtResource("2_cegjg")
+text = "The flowers along the connector path should work nicely."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_u23um"]
+script = ExtResource("2_cegjg")
+text = "Bring a few by when you happen across them."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_0d2dp"]
+script = ExtResource("5_uanie")
+beats = Array[ExtResource("2_cegjg")]([SubResource("Resource_mq13v"), SubResource("Resource_dsjmg"), SubResource("Resource_u23um")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_i8bib"]
+script = ExtResource("1_24r5o")
+npc_id = "npc_mayor"
+phase = "active_step"
+step_index = 0
+sequence = SubResource("Resource_0d2dp")
+metadata/_custom_type_script = "uid://dqvgpvdaiv010"
+
+[sub_resource type="Resource" id="Resource_dmc4a"]
+script = ExtResource("2_cegjg")
+text = "Ah. Those will do nicely."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_wg3ko"]
+script = ExtResource("2_cegjg")
+text = "There used to be a simple way of braiding the stems together."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_r03oy"]
+script = ExtResource("2_cegjg")
+text = "Nothing elaborate. Just enough to make a little crown of color."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_q6oya"]
+script = ExtResource("2_cegjg")
+text = "Here. Let me show you."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_x1buf"]
+script = ExtResource("2_cegjg")
+text = "Once you've made one, perhaps Maren might enjoy it."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_2qs0u"]
+script = ExtResource("2_cegjg")
+text = "Things made by hand have a way of carrying a little more than what they're made from."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_dik3x"]
+script = ExtResource("5_uanie")
+beats = Array[ExtResource("2_cegjg")]([SubResource("Resource_dmc4a"), SubResource("Resource_wg3ko"), SubResource("Resource_r03oy"), SubResource("Resource_q6oya"), SubResource("Resource_x1buf"), SubResource("Resource_2qs0u")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_nldhq"]
+script = ExtResource("1_24r5o")
+npc_id = "npc_mayor"
+phase = "active_step"
+step_index = 2
+sequence = SubResource("Resource_dik3x")
+metadata/_custom_type_script = "uid://dqvgpvdaiv010"
+
+[sub_resource type="Resource" id="Resource_mkqhh"]
+script = ExtResource("2_cegjg")
+text = "For me?"
+speaker_id = "npc_maren"
+emotion = "thinking"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_cegjg"]
+script = ExtResource("2_cegjg")
+text = "Oh..."
+speaker_id = "npc_maren"
+emotion = "happy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_uanie"]
+script = ExtResource("2_cegjg")
+text = "You made this yourself, didn't you?"
+speaker_id = "npc_maren"
+emotion = "happy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_rkn30"]
+script = ExtResource("2_cegjg")
+text = "That makes it even lovelier!"
+speaker_id = "npc_maren"
+emotion = "happy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_qkklf"]
+script = ExtResource("2_cegjg")
+text = "Thank you. I'll take good care of it."
+speaker_id = "npc_maren"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_5dohn"]
+script = ExtResource("5_uanie")
+beats = Array[ExtResource("2_cegjg")]([SubResource("Resource_mkqhh"), SubResource("Resource_cegjg"), SubResource("Resource_uanie"), SubResource("Resource_rkn30"), SubResource("Resource_qkklf")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_wro7j"]
+script = ExtResource("1_24r5o")
+npc_id = "npc_maren"
+phase = "completed_claimed"
+sequence = SubResource("Resource_5dohn")
+metadata/_custom_type_script = "uid://dqvgpvdaiv010"
+
+[sub_resource type="Resource" id="Resource_f8u51"]
+script = ExtResource("4_uanie")
+type = "have_item"
+target = "Flower"
+amount = 3
+text = "Gather a few flowers for Alder."
+metadata/_custom_type_script = "uid://bolxtchvrfo0y"
+
+[sub_resource type="Resource" id="Resource_24r5o"]
+script = ExtResource("4_uanie")
+type = "talk_to"
+target = "npc_mayor"
+text = "Show the flowers to Alder."
+reward_flags = Array[String](["crafting_cooking"])
+reward_crafting_recipe_ids = Array[String](["flower_headband"])
+metadata/_custom_type_script = "uid://bolxtchvrfo0y"
+
+[sub_resource type="Resource" id="Resource_o1cdf"]
+script = ExtResource("4_uanie")
+type = "craft"
+target = "Flower Headband"
+text = "Craft a Flower Headband."
+reward_flags = Array[String](["help_page:friendship"])
+metadata/_custom_type_script = "uid://bolxtchvrfo0y"
+
+[sub_resource type="Resource" id="Resource_5tpxk"]
+script = ExtResource("4_uanie")
+type = "gift"
+target = "Flower Headband"
+target2 = "npc_maren"
+text = "Give the Flower Headband to Maren."
+metadata/_custom_type_script = "uid://bolxtchvrfo0y"
+
+[resource]
+script = ExtResource("3_cegjg")
+id = "alder_flower_headband"
+title = "A Little Something Bright"
+description = "Alder mentioned a simple way to turn the valley's flowers into something cheerful."
+quest_type = "chain"
+oneshot_action = ""
+steps = Array[ExtResource("4_uanie")]([SubResource("Resource_f8u51"), SubResource("Resource_24r5o"), SubResource("Resource_o1cdf"), SubResource("Resource_5tpxk")])
+turn_in_text = "Go show the Mayor your beautiful creation!"
+reward_money = 100
+giver_id = "npc_mayor"
+offer_lines = Array[String](["Have you noticed those lovely flowers between your farm and the town?", "They could make a lovely headband.", "Would you like to try making one? I have the recipe right here."])
+participant_ids = PackedStringArray("npc_mayor", "npc_maren")
+npc_overrides = Array[ExtResource("1_24r5o")]([SubResource("Resource_i8bib"), SubResource("Resource_nldhq"), SubResource("Resource_wro7j")])
+auto_claim_on_complete = true
+metadata/_custom_type_script = "uid://cg0ailnic1w71"

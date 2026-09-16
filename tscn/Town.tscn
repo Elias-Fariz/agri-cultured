@@ -1,4 +1,4 @@
-[gd_scene load_steps=71 format=3 uid="uid://b7y4cme4an3kb"]
+[gd_scene load_steps=70 format=3 uid="uid://b7y4cme4an3kb"]
 
 [ext_resource type="PackedScene" uid="uid://dv7wem6ftpvdd" path="res://tscn/Player.tscn" id="1_2feps"]
 [ext_resource type="Script" uid="uid://0ofb5xeer5m6" path="res://scripts/Town.gd" id="1_o31te"]
@@ -6,7 +6,6 @@
 [ext_resource type="Texture2D" uid="uid://bq8o1e8mbe7qm" path="res://art/door.PNG" id="2_mua0x"]
 [ext_resource type="TileSet" uid="uid://bjhy464dgbpg" path="res://tiles/ObjectsTileset.tres" id="3_gmfaa"]
 [ext_resource type="PackedScene" uid="uid://ci8kga43aovsx" path="res://ui/DayNightOverlay.tscn" id="6_6scx0"]
-[ext_resource type="Resource" uid="uid://cmcxb6x850iru" path="res://data/quests/slice/mayor_craft_quest.tres" id="6_gmfaa"]
 [ext_resource type="PackedScene" uid="uid://d1qqa5bygrbsp" path="res://ui/HUD.tscn" id="7_xf6b5"]
 [ext_resource type="PackedScene" uid="uid://dtrn2d385g5ul" path="res://ui/InventoryUI.tscn" id="8_va2fq"]
 [ext_resource type="PackedScene" uid="uid://68vtjhtvdbhw" path="res://ui/ShippingUI.tscn" id="8_vr3p6"]
@@ -103,7 +102,6 @@ y_sort_enabled = true
 
 [node name="Mayor" parent="NPCs" instance=ExtResource("10_ml18c")]
 position = Vector2(408, 559)
-quest_offers = Array[ExtResource("12_fgqwr")]([ExtResource("6_gmfaa")])
 
 [node name="Maren" parent="NPCs" instance=ExtResource("51_01b2m")]
 position = Vector2(673, 1447)

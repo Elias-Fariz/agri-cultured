@@ -153,7 +153,22 @@ func _on_give_pressed() -> void:
 	if _npc == null:
 		return
 
-	if _npc.has_method("receive_gift"):
-		_npc.call("receive_gift", item_id, 1)
+	var gift_npc := _npc
 
+	# Close GiftUI first so it releases the modal overlay.
 	hide_overlay()
+
+	# Give BaseOverlay one frame to finish releasing
+	# gameplay/UI ownership.
+	await get_tree().process_frame
+
+	if (
+		gift_npc != null
+		and is_instance_valid(gift_npc)
+		and gift_npc.has_method("receive_gift")
+	):
+		gift_npc.call(
+			"receive_gift",
+			item_id,
+			1
+		)

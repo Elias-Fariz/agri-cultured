@@ -4,4 +4,5 @@
 
 [resource]
 script = ExtResource("1_68v0w")
+loves = Array[String](["Flower Headband"])
 metadata/_custom_type_script = "uid://byel3dorq73on"
