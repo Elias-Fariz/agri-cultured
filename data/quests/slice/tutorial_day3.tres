@@ -1,0 +1,48 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=9 format=3 uid="uid://y8bgqo7tvtur"]
+
+[ext_resource type="Script" uid="uid://dqvgpvdaiv010" path="res://data/quests/QuestNpcOverrideData.gd" id="1_tfvw5"]
+[ext_resource type="Script" uid="uid://fp28wf3omrn8" path="res://data/quests/QuestSpawnRewardData.gd" id="2_8xj66"]
+[ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="3_11004"]
+[ext_resource type="Script" uid="uid://bolxtchvrfo0y" path="res://data/quests/QuestStepData.gd" id="4_hext8"]
+
+[sub_resource type="Resource" id="Resource_tfvw5"]
+script = ExtResource("4_hext8")
+type = "harvest"
+target = "Watermelon"
+text = "See what has grown in the old field."
+metadata/_custom_type_script = "uid://bolxtchvrfo0y"
+
+[sub_resource type="Resource" id="Resource_8xj66"]
+script = ExtResource("4_hext8")
+type = "go_to"
+target = "connector"
+text = "Bring your harvest to Tansy’s shipping bin."
+metadata/_custom_type_script = "uid://bolxtchvrfo0y"
+
+[sub_resource type="Resource" id="Resource_11004"]
+script = ExtResource("4_hext8")
+type = "go_to"
+target = "valley_heart"
+text = "That voice again… Where did it come from?"
+metadata/_custom_type_script = "uid://bolxtchvrfo0y"
+
+[sub_resource type="Resource" id="Resource_hext8"]
+script = ExtResource("4_hext8")
+type = "ship_bin"
+target = "Watermelon"
+text = "The morning is still waiting. Bring your harvest to Tansy’s shipping bin."
+metadata/_custom_type_script = "uid://bolxtchvrfo0y"
+
+[resource]
+script = ExtResource("3_11004")
+id = "tutorial_day3"
+title = "What You’ve Grown"
+description = "Something in the old field looks ready."
+quest_type = "chain"
+oneshot_action = ""
+steps = Array[ExtResource("4_hext8")]([SubResource("Resource_tfvw5"), SubResource("Resource_8xj66"), SubResource("Resource_11004"), SubResource("Resource_hext8")])
+requires_completed = Array[String](["tutorial_day2"])
+requires_day = 3
+participant_ids = null
+auto_claim_on_complete = true
+metadata/_custom_type_script = "uid://cg0ailnic1w71"

@@ -1,0 +1,372 @@
+[gd_resource type="Resource" script_class="CutsceneData" load_steps=71 format=3 uid="uid://b5ctg5wf5edmj"]
+
+[ext_resource type="Script" uid="uid://b4pm6wxp5ivtk" path="res://data/cutscenes/CutsceneActorData.gd" id="1_tinq5"]
+[ext_resource type="Script" uid="uid://cp2gtb0hckrrj" path="res://data/cutscenes/CutsceneEffectData.gd" id="2_yjlc8"]
+[ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="3_rt6j7"]
+[ext_resource type="Script" uid="uid://bjwubxbrbyt2x" path="res://data/cutscenes/CutsceneMarkerSet.gd" id="3_yjlc8"]
+[ext_resource type="Script" uid="uid://fp28wf3omrn8" path="res://data/quests/QuestSpawnRewardData.gd" id="4_fkqmf"]
+[ext_resource type="Script" uid="uid://camo0lur1qm85" path="res://data/cutscenes/CutsceneData.gd" id="5_1v5xo"]
+[ext_resource type="Script" uid="uid://0k0f68wqa7mm" path="res://data/cutscenes/CutsceneStepData.gd" id="6_ssfod"]
+[ext_resource type="Script" uid="uid://dt1fjl76x6n5o" path="res://data/dialogue/DialogueBeatData.gd" id="8_fkqmf"]
+[ext_resource type="Script" uid="uid://clb3lhdggkt8d" path="res://data/dialogue/DialogueSequenceData.gd" id="9_1v5xo"]
+
+[sub_resource type="Resource" id="Resource_tinq5"]
+script = ExtResource("1_tinq5")
+key = "player"
+actor_type = "player"
+metadata/_custom_type_script = "uid://b4pm6wxp5ivtk"
+
+[sub_resource type="Resource" id="Resource_yjlc8"]
+script = ExtResource("1_tinq5")
+key = "mayor"
+npc_id = "npc_mayor"
+display_name = "Mayor"
+scene_path = "res://tscn/npcs/Mayor.tscn"
+metadata/_custom_type_script = "uid://b4pm6wxp5ivtk"
+
+[sub_resource type="Resource" id="Resource_rt6j7"]
+script = ExtResource("3_yjlc8")
+markers_by_id = {
+"focus_start": NodePath("Sections/HeartTreeIntro/SeedFocusMarker"),
+"mayor_end": NodePath("Sections/HeartTreeIntro/AlderEndMarker"),
+"mayor_start": NodePath("Sections/HeartTreeIntro/AlderStartMarker"),
+"player_start": NodePath("Sections/HeartTreeIntro/PlayerApproachMarker")
+}
+metadata/_custom_type_script = "uid://bjwubxbrbyt2x"
+
+[sub_resource type="Resource" id="Resource_fkqmf"]
+script = ExtResource("6_ssfod")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_1v5xo"]
+script = ExtResource("6_ssfod")
+step_type = 0
+actor_key = "mayor"
+marker_id = "mayor_end"
+duration = 2.0
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_bp0mw"]
+script = ExtResource("6_ssfod")
+duration = 1.0
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_ssfod"]
+script = ExtResource("6_ssfod")
+step_type = 18
+actor_key = "mayor"
+overhead_text = "..."
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_l6d4p"]
+script = ExtResource("8_fkqmf")
+text = "So it was true."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_pntm4"]
+script = ExtResource("9_1v5xo")
+beats = Array[ExtResource("8_fkqmf")]([SubResource("Resource_l6d4p")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_atf1n"]
+script = ExtResource("6_ssfod")
+step_type = 2
+dialogue_sequence = SubResource("Resource_pntm4")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_aiq0p"]
+script = ExtResource("6_ssfod")
+duration = 1.0
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_62wbp"]
+script = ExtResource("8_fkqmf")
+text = "All this time..."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_yn6rl"]
+script = ExtResource("8_fkqmf")
+text = "The old stories say this valley was once far more generous than the place you found."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_hrpyx"]
+script = ExtResource("9_1v5xo")
+beats = Array[ExtResource("8_fkqmf")]([SubResource("Resource_62wbp"), SubResource("Resource_yn6rl")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_v2gqw"]
+script = ExtResource("6_ssfod")
+step_type = 2
+dialogue_sequence = SubResource("Resource_hrpyx")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_88xqv"]
+script = ExtResource("6_ssfod")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_pppd8"]
+script = ExtResource("8_fkqmf")
+text = "Water ran freely. Trees bent under the weight of their fruit."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_bsgy4"]
+script = ExtResource("8_fkqmf")
+text = "Even the smallest patches of earth seemed eager to grow."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_nwcug"]
+script = ExtResource("9_1v5xo")
+beats = Array[ExtResource("8_fkqmf")]([SubResource("Resource_pppd8"), SubResource("Resource_bsgy4")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_sgt1d"]
+script = ExtResource("6_ssfod")
+step_type = 2
+dialogue_sequence = SubResource("Resource_nwcug")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_4j5sh"]
+script = ExtResource("6_ssfod")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_v86cb"]
+script = ExtResource("8_fkqmf")
+text = "Critters gathered here first, they say."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_ovh0h"]
+script = ExtResource("8_fkqmf")
+text = "And where life gathered… folk eventually followed."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_t6v0e"]
+script = ExtResource("8_fkqmf")
+text = "Homes became paths."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_fu77t"]
+script = ExtResource("8_fkqmf")
+text = "Paths became a village."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_884di"]
+script = ExtResource("9_1v5xo")
+beats = Array[ExtResource("8_fkqmf")]([SubResource("Resource_v86cb"), SubResource("Resource_ovh0h"), SubResource("Resource_t6v0e"), SubResource("Resource_fu77t")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_3mdw7"]
+script = ExtResource("6_ssfod")
+step_type = 2
+dialogue_sequence = SubResource("Resource_884di")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_16rx0"]
+script = ExtResource("6_ssfod")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_x7v51"]
+script = ExtResource("8_fkqmf")
+text = "But somewhere along the way… we became accustomed to what the valley gave."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_4mjqb"]
+script = ExtResource("9_1v5xo")
+beats = Array[ExtResource("8_fkqmf")]([SubResource("Resource_x7v51")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_bedyi"]
+script = ExtResource("6_ssfod")
+step_type = 2
+dialogue_sequence = SubResource("Resource_4mjqb")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_5f68b"]
+script = ExtResource("6_ssfod")
+step_type = 18
+actor_key = "mayor"
+overhead_text = "..."
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_ev78m"]
+script = ExtResource("8_fkqmf")
+text = "We took its plenty for granted."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_kkw1m"]
+script = ExtResource("8_fkqmf")
+text = "And little by little, there was less to give."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_ty7tv"]
+script = ExtResource("9_1v5xo")
+beats = Array[ExtResource("8_fkqmf")]([SubResource("Resource_ev78m"), SubResource("Resource_kkw1m")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_1uc73"]
+script = ExtResource("6_ssfod")
+step_type = 2
+dialogue_sequence = SubResource("Resource_ty7tv")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_pcm6k"]
+script = ExtResource("6_ssfod")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_8b5ni"]
+script = ExtResource("8_fkqmf")
+text = "My family kept stories of this place."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_g3ldk"]
+script = ExtResource("8_fkqmf")
+text = "They said the Heart answered care with care."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_y3yip"]
+script = ExtResource("8_fkqmf")
+text = "Hmm..."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_yy68n"]
+script = ExtResource("8_fkqmf")
+text = "I always thought that was only a way of speaking."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_v8rwk"]
+script = ExtResource("8_fkqmf")
+text = "Perhaps I was wrong."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_uc5ea"]
+script = ExtResource("9_1v5xo")
+beats = Array[ExtResource("8_fkqmf")]([SubResource("Resource_8b5ni"), SubResource("Resource_g3ldk"), SubResource("Resource_y3yip"), SubResource("Resource_yy68n"), SubResource("Resource_v8rwk")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_ykv33"]
+script = ExtResource("6_ssfod")
+step_type = 2
+dialogue_sequence = SubResource("Resource_uc5ea")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_l8byq"]
+script = ExtResource("6_ssfod")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_grwl6"]
+script = ExtResource("8_fkqmf")
+text = "Whatever you did out there…"
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_md7no"]
+script = ExtResource("8_fkqmf")
+text = "Something here felt it."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_f34ab"]
+script = ExtResource("9_1v5xo")
+beats = Array[ExtResource("8_fkqmf")]([SubResource("Resource_grwl6"), SubResource("Resource_md7no")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_r54s0"]
+script = ExtResource("6_ssfod")
+step_type = 2
+dialogue_sequence = SubResource("Resource_f34ab")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_yvbgk"]
+script = ExtResource("6_ssfod")
+step_type = 21
+whisper_phrases = Array[String](["Felt..."])
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_vqou4"]
+script = ExtResource("6_ssfod")
+step_type = 18
+actor_key = "mayor"
+overhead_text = "..."
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_4hw54"]
+script = ExtResource("8_fkqmf")
+text = "Well…"
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_ioer2"]
+script = ExtResource("8_fkqmf")
+text = "I suppose the stories left a few things out."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_6pxiq"]
+script = ExtResource("8_fkqmf")
+text = "We should give it some time."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_pj45t"]
+script = ExtResource("8_fkqmf")
+text = "Come. The rest of the morning is still waiting for us."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_cibhm"]
+script = ExtResource("9_1v5xo")
+beats = Array[ExtResource("8_fkqmf")]([SubResource("Resource_4hw54"), SubResource("Resource_ioer2"), SubResource("Resource_6pxiq"), SubResource("Resource_pj45t")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_cphc3"]
+script = ExtResource("6_ssfod")
+step_type = 2
+dialogue_sequence = SubResource("Resource_cibhm")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_1sdeh"]
+script = ExtResource("6_ssfod")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_7de4u"]
+script = ExtResource("6_ssfod")
+step_type = 0
+actor_key = "mayor"
+marker_id = "mayor_start"
+duration = 2.0
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_n4axl"]
+script = ExtResource("6_ssfod")
+step_type = 21
+whisper_phrases = Array[String](["Thank you..."])
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_wy7ld"]
+script = ExtResource("6_ssfod")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[resource]
+script = ExtResource("5_1v5xo")
+id = "valley_heart_alder_intro"
+scene_name = "ValleyHeart"
+actors = Array[ExtResource("1_tinq5")]([SubResource("Resource_tinq5"), SubResource("Resource_yjlc8")])
+markers = SubResource("Resource_rt6j7")
+steps = Array[ExtResource("6_ssfod")]([SubResource("Resource_fkqmf"), SubResource("Resource_1v5xo"), SubResource("Resource_bp0mw"), SubResource("Resource_ssfod"), SubResource("Resource_atf1n"), SubResource("Resource_aiq0p"), SubResource("Resource_v2gqw"), SubResource("Resource_88xqv"), SubResource("Resource_sgt1d"), SubResource("Resource_4j5sh"), SubResource("Resource_3mdw7"), SubResource("Resource_16rx0"), SubResource("Resource_bedyi"), SubResource("Resource_5f68b"), SubResource("Resource_1uc73"), SubResource("Resource_pcm6k"), SubResource("Resource_ykv33"), SubResource("Resource_l8byq"), SubResource("Resource_r54s0"), SubResource("Resource_yvbgk"), SubResource("Resource_vqou4"), SubResource("Resource_cphc3"), SubResource("Resource_1sdeh"), SubResource("Resource_7de4u"), SubResource("Resource_n4axl"), SubResource("Resource_wy7ld")])
+metadata/_custom_type_script = "uid://camo0lur1qm85"

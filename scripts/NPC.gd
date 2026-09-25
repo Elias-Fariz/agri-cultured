@@ -116,6 +116,11 @@ var _talked_block_by_npc: Dictionary = {}  # npc_id -> String "day:morning" etc.
 
 @export var gift_prefs: NPCGiftPreferences
 
+@export_category("Availability")
+
+@export var available_from_day: int = 1
+@export var available_through_day: int = 0
+
 func _ready() -> void:
 	if not is_in_group("npc"):
 		add_to_group("npc")
@@ -139,8 +144,21 @@ func _ready() -> void:
 		
 	_wander_timer.timeout.connect(_on_wander_timer_timeout)
 	_schedule_next_wander()
+	
+	if TimeManager != null:
+		if not TimeManager.day_changed.is_connected(
+			_on_availability_day_changed
+		):
+			TimeManager.day_changed.connect(
+				_on_availability_day_changed
+			)
+
+	_refresh_day_availability()
 
 func start_dialogue() -> void:
+	if not _is_available_today():
+		return
+	
 	_update_quest_icon()
 	
 	var ui := get_tree().get_first_node_in_group("dialogue_ui")
@@ -848,26 +866,27 @@ func _get_best_active_participant_override_lines() -> Array[String]:
 
 	return best_lines
 
-func can_player_interact(player: Node) -> bool:
-	#if _has_quest_critical_talk():
-		#return true
-#
-	#if not GameState.can_talk_to_npc(npc_id):
-		#return false
-
-	return true
+func can_player_interact(
+	_player: Node
+) -> bool:
+	return _is_available_today()
 
 
-func get_interact_prompt(player: Node) -> String:
-	# Only show talk if they can actually talk right now
+func get_interact_prompt(
+	player: Node
+) -> String:
 	if not can_player_interact(player):
 		return ""
+
 	return "E: Talk"
 
 func get_npc_id() -> String:
 	return npc_id
 
 func receive_gift(item_id: String, qty: int = 1) -> void:
+	if not _is_available_today():
+		return
+	
 	# Basic safety
 	item_id = item_id.strip_edges()
 	if item_id == "" or qty <= 0:
@@ -1210,3 +1229,61 @@ func _has_quest_critical_talk() -> bool:
 			return true
 
 	return false
+
+func _is_available_today() -> bool:
+	if TimeManager == null:
+		return true
+
+	var current_day := int(TimeManager.day)
+
+	if (
+		available_from_day > 0
+		and current_day < available_from_day
+	):
+		return false
+
+	if (
+		available_through_day > 0
+		and current_day > available_through_day
+	):
+		return false
+
+	return true
+
+func _refresh_day_availability() -> void:
+	var available := _is_available_today()
+
+	visible = available
+
+	if proximity_area != null:
+		proximity_area.monitoring = available
+		proximity_area.monitorable = available
+
+	set_physics_process(available)
+
+	# Disable physical collision shapes while unavailable.
+	for node in find_children(
+		"*",
+		"CollisionShape2D",
+		true,
+		false
+	):
+		if node is CollisionShape2D:
+			(node as CollisionShape2D).set_deferred(
+				"disabled",
+				not available
+			)
+
+	if not available:
+		if chatter_label != null:
+			chatter_label.visible = false
+
+		if quest_icon != null:
+			quest_icon.visible = false
+	else:
+		_update_quest_icon()
+
+func _on_availability_day_changed(
+	_day: int
+) -> void:
+	_refresh_day_availability()

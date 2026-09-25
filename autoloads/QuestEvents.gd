@@ -33,6 +33,11 @@ signal fish_caught(fish_id: String, qty: int)
 
 signal object_interacted(interactable_id: String, quest_target_id: String, qty: int)
 
+signal added_to_shipping_bin(
+	item_id: String,
+	qty: int
+)
+
 
 func _ready() -> void:
 	talked_to.connect(func(npc_id: String):
@@ -105,4 +110,13 @@ func _ready() -> void:
 
 	crop_watered.connect(func(target_id: String, qty: int):
 		GameState.apply_quest_event("water", target_id, qty)
+	)
+	
+	added_to_shipping_bin.connect(
+		func(item_id: String, qty: int):
+			GameState.apply_quest_event(
+				"ship_bin",
+				item_id,
+				qty
+			)
 	)

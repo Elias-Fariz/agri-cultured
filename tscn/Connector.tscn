@@ -197,16 +197,25 @@ shape = SubResource("RectangleShape2D_p5ree")
 [node name="CutsceneMarkers" type="Node2D" parent="." groups=["cutscene_anchor"]]
 
 [node name="HeartIntro_Player" type="Marker2D" parent="CutsceneMarkers"]
-position = Vector2(-333, 414)
+position = Vector2(-318, 252)
+
+[node name="HeartIntro_PlayerEnd" type="Marker2D" parent="CutsceneMarkers"]
+position = Vector2(-133, 252)
 
 [node name="HeartIntro_Mayor" type="Marker2D" parent="CutsceneMarkers"]
-position = Vector2(-251, 417)
+position = Vector2(485, 254)
+
+[node name="HeartIntro_MayorEnd" type="Marker2D" parent="CutsceneMarkers"]
+position = Vector2(18, 254)
 
 [node name="HeartIntro_Focus" type="Marker2D" parent="CutsceneMarkers"]
-position = Vector2(-295, 477)
+position = Vector2(-62, 161)
+
+[node name="HeartIntro_Entrance" type="Marker2D" parent="CutsceneMarkers"]
+position = Vector2(-62, -23)
 
 [node name="BlockerVisual" type="Node2D" parent="."]
-position = Vector2(-124, -142)
+position = Vector2(-126, -142)
 
 [node name="BlockerVisual" type="Sprite2D" parent="BlockerVisual"]
 texture = ExtResource("26_5h8gf")

@@ -75,6 +75,7 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_u3713"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_7ea1u"]
+size = Vector2(29.21664, 31.613174)
 
 [node name="Farm" type="Node2D" groups=["tool_world", "world"]]
 script = ExtResource("1_vobxb")
@@ -343,6 +344,8 @@ collision_mask = 3
 script = ExtResource("38_wdtkt")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="QuestLocation"]
+position = Vector2(-4.6083193, -5.806588)
+scale = Vector2(0.9999999, 0.9999999)
 shape = SubResource("RectangleShape2D_7ea1u")
 
 [node name="SpawnManager" type="Node" parent="."]

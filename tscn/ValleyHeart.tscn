@@ -1,4 +1,4 @@
-[gd_scene load_steps=78 format=3 uid="uid://cwspce5y4tb13"]
+[gd_scene load_steps=80 format=3 uid="uid://cwspce5y4tb13"]
 
 [ext_resource type="TileSet" uid="uid://bqs5ruk6pejpc" path="res://tiles/GroundTileset.tres" id="1_vkoen"]
 [ext_resource type="Script" uid="uid://bywlb7k2vtqr" path="res://scripts/ValleyHeart.gd" id="1_ye5kf"]
@@ -63,6 +63,7 @@
 [ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="57_r5nbu"]
 [ext_resource type="Script" uid="uid://fp28wf3omrn8" path="res://data/quests/QuestSpawnRewardData.gd" id="58_3lvqc"]
 [ext_resource type="PackedScene" uid="uid://dsefxlv6x3h0c" path="res://ui/DayNightModulate.tscn" id="60_3lvqc"]
+[ext_resource type="Script" uid="uid://b7n4wv6k3k33k" path="res://scripts/QuestLocation.gd" id="64_orr64"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_qprux"]
 texture = ExtResource("2_05sqv")
@@ -157,6 +158,9 @@ default_speaker_id = "npc_mayor"
 beats = Array[ExtResource("51_or02y")]([SubResource("Resource_pmysg")])
 reward_flags = Array[String](["help_page:valley_heart"])
 metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_u5sov"]
+size = Vector2(106.63463, 77.21043)
 
 [node name="ValleyHeart" type="Node2D"]
 script = ExtResource("1_ye5kf")
@@ -484,3 +488,17 @@ cinematic_ui_hider_path = NodePath("../UI/CinematicUIHider")
 [node name="CutsceneActors" type="Node" parent="."]
 
 [node name="DayNightModulate" parent="." instance=ExtResource("60_3lvqc")]
+
+[node name="QuestLocation" type="Area2D" parent="."]
+position = Vector2(413, 119.00003)
+scale = Vector2(15.905272, 15.905272)
+collision_mask = 3
+script = ExtResource("64_orr64")
+location_id = "valley_heart"
+trigger_once_per_scene_entry = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="QuestLocation"]
+visible = false
+position = Vector2(-10.814025, 4.4010553)
+scale = Vector2(1.6908095, 1.7166522)
+shape = SubResource("RectangleShape2D_u5sov")

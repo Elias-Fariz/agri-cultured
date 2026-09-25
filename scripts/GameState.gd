@@ -527,12 +527,29 @@ func shipping_remove(item_name: String, qty: int = 1) -> bool:
 # -------------------------
 # MOVE BETWEEN INVENTORY <-> SHIPPING
 # -------------------------
-func ship_from_inventory(item_name: String, qty: int = 1) -> bool:
+func ship_from_inventory(
+	item_name: String,
+	qty: int = 1
+) -> bool:
 	if not is_shippable(item_name):
 		return false
+
 	if not inventory_remove(item_name, qty):
 		return false
+
 	shipping_add(item_name, qty)
+
+	if (
+		QuestEvents != null
+		and QuestEvents.has_signal(
+			"added_to_shipping_bin"
+		)
+	):
+		QuestEvents.added_to_shipping_bin.emit(
+			item_name,
+			qty
+		)
+
 	return true
 
 func unship_to_inventory(item_name: String, qty: int = 1) -> bool:
@@ -1668,8 +1685,8 @@ func _on_first_harvest_heart_intro_check(_item_id: String, _qty: int) -> void:
 
 	set_flag("first_crop_harvested", true)
 
-	if QuestEvents != null and QuestEvents.has_signal("toast_requested"):
-		QuestEvents.toast_requested.emit("Something stirs beyond the path...", "info", 2.5)
+	#if QuestEvents != null and QuestEvents.has_signal("toast_requested"):
+		#QuestEvents.toast_requested.emit("Something stirs beyond the path...", "info", 2.5)
 
 func _on_quest_ui_opened(ui_id: String) -> void:
 	GameState.apply_quest_event("ui_open", ui_id, 1)
@@ -1957,6 +1974,8 @@ func _format_objective_fallback(t: String, target: String, amount: int, progress
 			]
 		"action":
 			return "Do: " + target
+		"ship_bin":
+			return "Place in shipping bin: %s" % target
 		_:
 			return "Objective: "
 
@@ -2268,6 +2287,8 @@ func _format_step_fallback(step: Dictionary) -> String:
 			if target.strip_edges() != "":
 				return "Have: " + target
 			return "Gather the needed items"
+		"ship_bin":
+			return "Place in shipping bin: " + target
 		_:
 			return "Objective"
 

@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=3 uid="uid://2f1rrsgtj6hg"]
+
+[ext_resource type="Script" uid="uid://g4qumls336jr" path="res://scripts/ObservationInteractable.gd" id="1_hu2g7"]
+[ext_resource type="Texture2D" uid="uid://cpkecnwhl7wbm" path="res://art/bed.PNG" id="1_qmh2n"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hu2g7"]
+
+[node name="BakeryWindow" type="Area2D"]
+script = ExtResource("1_hu2g7")
+observation_text = "Warm, buttery air slips through the bakery door.
+
+Someone inside seems hard at work. Perhaps it’s best to come back another day."
+available_from_day = 1
+available_through_day = 1
+interactable_id = "bakery_day1_observation"
+prompt_text = "E: Observe"
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_qmh2n")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+scale = Vector2(1.6453755, 1.6453755)
+shape = SubResource("RectangleShape2D_hu2g7")

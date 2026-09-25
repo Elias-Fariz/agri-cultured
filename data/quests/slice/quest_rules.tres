@@ -1,8 +1,9 @@
-[gd_resource type="Resource" script_class="QuestRuleSetData" load_steps=5 format=3 uid="uid://cea7jbpsr2gou"]
+[gd_resource type="Resource" script_class="QuestRuleSetData" load_steps=7 format=3 uid="uid://cea7jbpsr2gou"]
 
 [ext_resource type="Script" uid="uid://c0mxdgnn7krsk" path="res://scripts/QuestRuleData.gd" id="1_4ytod"]
 [ext_resource type="Resource" uid="uid://b814n02dhghoa" path="res://data/quests/slice/tutorial_day2.tres" id="2_5ic1e"]
 [ext_resource type="Script" uid="uid://clwin40w202tu" path="res://scripts/QuestRuleSetData.gd" id="2_7r6qt"]
+[ext_resource type="Resource" uid="uid://y8bgqo7tvtur" path="res://data/quests/slice/tutorial_day3.tres" id="3_5ic1e"]
 
 [sub_resource type="Resource" id="Resource_ph0hc"]
 script = ExtResource("1_4ytod")
@@ -11,7 +12,14 @@ quest = ExtResource("2_5ic1e")
 grant_on_day = 2
 metadata/_custom_type_script = "uid://c0mxdgnn7krsk"
 
+[sub_resource type="Resource" id="Resource_0d7iy"]
+script = ExtResource("1_4ytod")
+rule_id = "tutorial_day3_morning"
+quest = ExtResource("3_5ic1e")
+grant_on_day = 3
+metadata/_custom_type_script = "uid://c0mxdgnn7krsk"
+
 [resource]
 script = ExtResource("2_7r6qt")
-rules = Array[ExtResource("1_4ytod")]([SubResource("Resource_ph0hc")])
+rules = Array[ExtResource("1_4ytod")]([SubResource("Resource_ph0hc"), SubResource("Resource_0d7iy")])
 metadata/_custom_type_script = "uid://clwin40w202tu"

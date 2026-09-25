@@ -1,4 +1,4 @@
-[gd_scene load_steps=70 format=3 uid="uid://b7y4cme4an3kb"]
+[gd_scene load_steps=72 format=3 uid="uid://b7y4cme4an3kb"]
 
 [ext_resource type="PackedScene" uid="uid://dv7wem6ftpvdd" path="res://tscn/Player.tscn" id="1_2feps"]
 [ext_resource type="Script" uid="uid://0ofb5xeer5m6" path="res://scripts/Town.gd" id="1_o31te"]
@@ -18,6 +18,7 @@
 [ext_resource type="Texture2D" uid="uid://nan0sddf00hl" path="res://art/chest.png" id="13_0m8ol"]
 [ext_resource type="Resource" uid="uid://daedf3dq8citt" path="res://data/quests/ship_watermelon.tres" id="13_seor3"]
 [ext_resource type="Resource" uid="uid://djdebqx5ukejx" path="res://data/quests/chop_3_trees.tres" id="14_4f1xo"]
+[ext_resource type="PackedScene" uid="uid://2f1rrsgtj6hg" path="res://tscn/BakeryWindow.tscn" id="14_5phik"]
 [ext_resource type="Texture2D" uid="uid://1d6ygtxnkroh" path="res://art/rock.PNG" id="14_eipp1"]
 [ext_resource type="PackedScene" uid="uid://ixx7e0mb3ds4" path="res://ui/GiftUI.tscn" id="14_ff2fo"]
 [ext_resource type="PackedScene" uid="uid://b0fhots3ucty8" path="res://tscn/TownBoard.tscn" id="14_j34sm"]
@@ -62,6 +63,7 @@
 [ext_resource type="PackedScene" uid="uid://c5s0r8ajsjlar" path="res://tscn/buildings/Tavern.tscn" id="52_01b2m"]
 [ext_resource type="PackedScene" uid="uid://cx73f4neh8tq" path="res://tscn/StreetLamp.tscn" id="56_eipp1"]
 [ext_resource type="PackedScene" uid="uid://dsefxlv6x3h0c" path="res://ui/DayNightModulate.tscn" id="57_2qqyd"]
+[ext_resource type="PackedScene" uid="uid://8h44y4lood6w" path="res://tscn/SellBox.tscn" id="64_c3e4w"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_caym6"]
 
@@ -286,6 +288,9 @@ texture = ExtResource("15_2qqyd")
 scale = Vector2(2.325, 2.325)
 shape = SubResource("RectangleShape2D_2qqyd")
 
+[node name="BakeryWindow" parent="." instance=ExtResource("14_5phik")]
+position = Vector2(752, 1345)
+
 [node name="OutdoorLamp" parent="." instance=ExtResource("56_eipp1")]
 position = Vector2(110, 517)
 
@@ -327,6 +332,7 @@ scale = Vector2(0.35809964, 0.35809964)
 
 [node name="FlowerPatchObservation" parent="." instance=ExtResource("18_3mxf2")]
 position = Vector2(897, 592)
+available_from_day = 2
 
 [node name="DayNightOverlay" parent="." instance=ExtResource("6_6scx0")]
 
@@ -479,5 +485,8 @@ position = Vector2(471, 1455)
 
 [node name="maren_greeting" type="Marker2D" parent="Node"]
 position = Vector2(704, 1456)
+
+[node name="SellBox" parent="." instance=ExtResource("64_c3e4w")]
+position = Vector2(1005, 248)
 
 [editable path="Store"]

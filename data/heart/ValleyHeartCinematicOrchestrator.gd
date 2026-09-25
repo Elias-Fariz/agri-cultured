@@ -49,6 +49,16 @@ signal cinematic_finished
 @export var remove_or_hide_alder_after_dialogue: bool = true
 
 # -------------------------------------------------------------------
+# Authored narrative follow-up
+# -------------------------------------------------------------------
+
+@export var first_awakening_cutscene_id: String = "valley_heart_alder_intro"
+
+# Keep the old manual Alder sequence available while migrating.
+# Once the CutsceneData version is proven stable, this can eventually go.
+@export var use_authored_followup_cutscene: bool = true
+
+# -------------------------------------------------------------------
 # Flags / behavior
 # -------------------------------------------------------------------
 
@@ -194,46 +204,101 @@ func run_if_needed() -> void:
 # Main sequence
 # -------------------------------------------------------------------
 
-func _run_sequence(should_play_tree: bool, should_play_reveals: bool) -> void:
+func _run_sequence(
+	should_play_tree: bool,
+	should_play_reveals: bool
+) -> void:
 	_running = true
 	_skip_requested = false
 	cinematic_started.emit()
 
 	if debug_enabled:
-		print("[ValleyHeartCinematic] Started. tree=", should_play_tree, " reveals=", should_play_reveals)
+		print(
+			"[ValleyHeartCinematic] Started. tree=",
+			should_play_tree,
+			" reveals=",
+			should_play_reveals
+		)
 
+	# The orchestrator owns one gameplay lock for the entire sequence.
 	_lock_gameplay()
-	
+
 	_hide_cinematic_ui()
 
 	await _take_over_heart_camera()
 
+	var authored_followup_played := false
+
+	# ---------------------------------------------------------------
+	# 1. FIRST TREE AWAKENING
+	# ---------------------------------------------------------------
 	if should_play_tree:
 		await _run_first_tree_awakening()
 
 		if not force_first_awakening_for_dev:
-			_set_flag(first_tree_flag, true)
+			_set_flag(
+				first_tree_flag,
+				true
+			)
 
+	# ---------------------------------------------------------------
+	# 2. NORMAL HEART MILESTONE REVEALS
+	# ---------------------------------------------------------------
 	if should_play_reveals:
 		await _run_existing_heart_reveals()
 
-		# HeartRevealDirector is self-contained and may restore/disable cameras.
-		# Reclaim HeartCamera2D immediately so the rest of this special sequence
-		# still feels continuous.
+		# HeartRevealDirector restores/disables cameras when it finishes.
+		# Reclaim HeartCamera so our sequence can continue smoothly.
 		await _reclaim_heart_camera_after_reveal()
 
-	if play_alder_after_reveals:
-		if pan_back_to_tree_for_alder and _seed_focus_marker != null:
-			await _tween_heart_camera_to(_seed_focus_marker.global_position, camera_zoom, pan_back_to_tree_time)
+	# ---------------------------------------------------------------
+	# 3. FIRST-AWAKENING AUTHORED FOLLOW-UP
+	# ---------------------------------------------------------------
+	if should_play_tree:
+		if (
+			pan_back_to_tree_for_alder
+			and _seed_focus_marker != null
+		):
+			await _tween_heart_camera_to(
+				_seed_focus_marker.global_position,
+				camera_zoom,
+				pan_back_to_tree_time
+			)
 
-		await _run_alder_followup()
+		if use_authored_followup_cutscene:
+			authored_followup_played = (
+				await _run_authored_followup_cutscene(
+					first_awakening_cutscene_id
+				)
+			)
 
-	await _return_to_previous_camera(final_camera_return_time)
+		# Safe fallback while we're migrating.
+		if (
+			not authored_followup_played
+			and play_alder_after_reveals
+		):
+			await _run_alder_followup()
 
-	_cleanup_alder_if_needed()
-	
+	# ---------------------------------------------------------------
+	# 4. CAMERA CLEANUP
+	# ---------------------------------------------------------------
+	# The authored CutsceneDirector path already restores the
+	# player camera during the handoff.
+	if not authored_followup_played:
+		await _return_to_previous_camera(
+			final_camera_return_time
+		)
+
+		_cleanup_alder_if_needed()
+
 	_show_cinematic_ui()
-	
+
+	# IMPORTANT:
+	# Always release the orchestrator's OWN gameplay lock.
+	#
+	# CutsceneDirector only releases the lock that IT acquired.
+	# HeartRevealDirector only releases the lock that IT acquired.
+	# This orchestrator must release its own as well.
 	_unlock_gameplay()
 
 	_running = false
@@ -241,8 +306,9 @@ func _run_sequence(should_play_tree: bool, should_play_reveals: bool) -> void:
 	cinematic_finished.emit()
 
 	if debug_enabled:
-		print("[ValleyHeartCinematic] Finished.")
-
+		print(
+			"[ValleyHeartCinematic] Finished."
+		)
 
 # -------------------------------------------------------------------
 # First tree awakening
@@ -824,3 +890,59 @@ func _hide_cinematic_ui() -> void:
 func _show_cinematic_ui() -> void:
 	if _cinematic_ui_hider != null and _cinematic_ui_hider.has_method("show_cinematic_ui"):
 		_cinematic_ui_hider.call("show_cinematic_ui")
+
+func _run_authored_followup_cutscene(cutscene_id: String) -> bool:
+	cutscene_id = cutscene_id.strip_edges()
+
+	if cutscene_id == "":
+		return false
+
+	var director := get_node_or_null("/root/CutsceneDirector")
+	if director == null:
+		push_warning(
+			"[ValleyHeartCinematic] CutsceneDirector autoload not found."
+		)
+		return false
+
+	if not director.has_method("play_cutscene_from_black"):
+		push_warning(
+			"[ValleyHeartCinematic] CutsceneDirector has no play_cutscene_from_black()."
+		)
+		return false
+
+	# ---------------------------------------------------------------
+	# 1. Hide the camera ownership swap.
+	# ---------------------------------------------------------------
+	if has_node("/root/FadeOverlay"):
+		await FadeOverlay.fade_out(0.15)
+
+	# ---------------------------------------------------------------
+	# 2. Give the viewport back to the normal/player camera.
+	#    The screen is black, so the player never sees the swap.
+	# ---------------------------------------------------------------
+	await _return_to_previous_camera(0.01)
+
+	# ---------------------------------------------------------------
+	# 3. Hand narrative control to the normal cutscene system.
+	# ---------------------------------------------------------------
+	director.call(
+		"play_cutscene_from_black",
+		cutscene_id
+	)
+
+	await get_tree().process_frame
+
+	# If the resource failed to load, don't pretend it succeeded.
+	if director.has_method("is_playing_cutscene"):
+		if not bool(director.call("is_playing_cutscene")):
+			push_warning(
+				"[ValleyHeartCinematic] Authored follow-up did not start: "
+				+ cutscene_id
+			)
+			return false
+
+		# Wait until CutsceneDirector returns control.
+		while bool(director.call("is_playing_cutscene")):
+			await get_tree().process_frame
+
+	return true

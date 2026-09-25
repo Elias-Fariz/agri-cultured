@@ -22,6 +22,7 @@ day_overhead_lines = Array[String](["Sunshine!"])
 evening_overhead_lines = Array[String](["Oof..."])
 night_overhead_lines = Array[String](["Zzz..."])
 gift_prefs = ExtResource("3_2etkw")
+available_from_day = 2
 
 [node name="Sprite2D" parent="." index="1"]
 position = Vector2(0, -61)

@@ -1,13 +1,14 @@
-[gd_resource type="Resource" script_class="CutsceneData" load_steps=17 format=3 uid="uid://fsqlwurwlwj1"]
+[gd_resource type="Resource" script_class="CutsceneData" load_steps=41 format=3 uid="uid://fsqlwurwlwj1"]
 
 [ext_resource type="Script" uid="uid://b4pm6wxp5ivtk" path="res://data/cutscenes/CutsceneActorData.gd" id="1_q241j"]
-[ext_resource type="Script" uid="uid://cbc4hknxa1gfx" path="res://data/cutscenes/CutsceneDialogueData.gd" id="2_pwaex"]
 [ext_resource type="Script" uid="uid://cp2gtb0hckrrj" path="res://data/cutscenes/CutsceneEffectData.gd" id="3_o6bst"]
 [ext_resource type="Script" uid="uid://bjwubxbrbyt2x" path="res://data/cutscenes/CutsceneMarkerSet.gd" id="4_ejxrg"]
 [ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="5_u13nn"]
 [ext_resource type="Script" uid="uid://fp28wf3omrn8" path="res://data/quests/QuestSpawnRewardData.gd" id="6_155iw"]
 [ext_resource type="Script" uid="uid://camo0lur1qm85" path="res://data/cutscenes/CutsceneData.gd" id="7_gpais"]
 [ext_resource type="Script" uid="uid://0k0f68wqa7mm" path="res://data/cutscenes/CutsceneStepData.gd" id="8_o7kuy"]
+[ext_resource type="Script" uid="uid://dt1fjl76x6n5o" path="res://data/dialogue/DialogueBeatData.gd" id="8_pwaex"]
+[ext_resource type="Script" uid="uid://clb3lhdggkt8d" path="res://data/dialogue/DialogueSequenceData.gd" id="9_o6bst"]
 
 [sub_resource type="Resource" id="Resource_4h6s1"]
 script = ExtResource("1_q241j")
@@ -23,27 +24,20 @@ display_name = "Mayor"
 scene_path = "res://tscn/npcs/Mayor.tscn"
 metadata/_custom_type_script = "uid://b4pm6wxp5ivtk"
 
-[sub_resource type="Resource" id="Resource_xae77"]
-script = ExtResource("2_pwaex")
-metadata/_custom_type_script = "uid://cbc4hknxa1gfx"
-
 [sub_resource type="Resource" id="Resource_gusfa"]
 script = ExtResource("3_o6bst")
 effect_type = "unlock_travel"
 id = "valley_heart"
 metadata/_custom_type_script = "uid://cp2gtb0hckrrj"
 
-[sub_resource type="Resource" id="Resource_a7apk"]
-script = ExtResource("3_o6bst")
-effect_type = "toast"
-msg = "A gentle pull draws you toward the valley..."
-metadata/_custom_type_script = "uid://cp2gtb0hckrrj"
-
 [sub_resource type="Resource" id="Resource_7rqi0"]
 script = ExtResource("4_ejxrg")
 markers_by_id = {
+"focus_entrance": NodePath("CutsceneMarkers/HeartIntro_Entrance"),
 "focus_start": NodePath("CutsceneMarkers/HeartIntro_Focus"),
+"mayor_end": NodePath("CutsceneMarkers/HeartIntro_MayorEnd"),
 "mayor_start": NodePath("CutsceneMarkers/HeartIntro_Mayor"),
+"player_end": NodePath("CutsceneMarkers/HeartIntro_PlayerEnd"),
 "player_start": NodePath("CutsceneMarkers/HeartIntro_Player")
 }
 metadata/_custom_type_script = "uid://bjwubxbrbyt2x"
@@ -51,24 +45,166 @@ metadata/_custom_type_script = "uid://bjwubxbrbyt2x"
 [sub_resource type="Resource" id="Resource_tqc3f"]
 script = ExtResource("8_o7kuy")
 step_type = 1
-marker_id = "focus"
+marker_id = "focus_start"
 metadata/_custom_type_script = "uid://0k0f68wqa7mm"
 
-[sub_resource type="Resource" id="Resource_dmbhf"]
+[sub_resource type="Resource" id="Resource_igwew"]
+script = ExtResource("8_o7kuy")
+step_type = 14
+zoom_value = 1.5
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_2a2yp"]
+script = ExtResource("8_o7kuy")
+step_type = 23
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_1jx03"]
+script = ExtResource("8_o7kuy")
+step_type = 4
+marker_id = "player_end"
+duration = 2.0
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_q241j"]
+script = ExtResource("8_o7kuy")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_pwaex"]
+script = ExtResource("8_o7kuy")
+step_type = 21
+whisper_phrases = Array[String](["You stayed..."])
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_o6bst"]
+script = ExtResource("8_o7kuy")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_ejxrg"]
+script = ExtResource("8_o7kuy")
+step_type = 20
+marker_id = "focus_entrance"
+duration = 1.0
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_u13nn"]
+script = ExtResource("8_o7kuy")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_155iw"]
+script = ExtResource("8_o7kuy")
+step_type = 7
+target_path = NodePath("BlockerVisual")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_gpais"]
+script = ExtResource("8_o7kuy")
+duration = 1.0
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_o7kuy"]
+script = ExtResource("8_o7kuy")
+step_type = 18
+actor_key = "player"
+overhead_text = "...?"
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_kaj1p"]
+script = ExtResource("8_o7kuy")
+step_type = 20
+marker_id = "focus_start"
+duration = 1.0
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_12bul"]
+script = ExtResource("8_o7kuy")
+step_type = 0
+actor_key = "mayor"
+marker_id = "mayor_end"
+duration = 2.0
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_i5w4g"]
+script = ExtResource("8_o7kuy")
+duration = 1.0
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_5cv0w"]
+script = ExtResource("8_pwaex")
+text = "..."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_jk7nl"]
+script = ExtResource("8_pwaex")
+text = "That..."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_5yxac"]
+script = ExtResource("9_o6bst")
+beats = Array[ExtResource("8_pwaex")]([SubResource("Resource_5cv0w"), SubResource("Resource_jk7nl")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_qacfl"]
 script = ExtResource("8_o7kuy")
 step_type = 2
-speaker_actor_key = "mayor"
-lines = Array[String](["Good morning…", "I need to show you something special.", "Meet me at the Heart of the Valley."])
+dialogue_sequence = SubResource("Resource_5yxac")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_1xamx"]
+script = ExtResource("8_o7kuy")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_xi6pe"]
+script = ExtResource("8_pwaex")
+text = "I've only ever seen this place in the old drawings."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_uvj0b"]
+script = ExtResource("8_pwaex")
+text = "The Valley Heart…"
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_ulvmd"]
+script = ExtResource("8_pwaex")
+text = "I never thought I would see the path open again."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_qtftf"]
+script = ExtResource("8_pwaex")
+text = "Come. I think we should see this together."
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_ggfj2"]
+script = ExtResource("9_o6bst")
+beats = Array[ExtResource("8_pwaex")]([SubResource("Resource_xi6pe"), SubResource("Resource_uvj0b"), SubResource("Resource_ulvmd"), SubResource("Resource_qtftf")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_1t6ix"]
+script = ExtResource("8_o7kuy")
+step_type = 2
+dialogue_sequence = SubResource("Resource_ggfj2")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_gfcmq"]
+script = ExtResource("8_o7kuy")
+step_type = 15
 metadata/_custom_type_script = "uid://0k0f68wqa7mm"
 
 [resource]
 script = ExtResource("7_gpais")
 id = "connector_valley_discovery"
 scene_name = "Connector"
+defer_initial_fade_in = true
+skip_final_fade_cycle = true
 actors = Array[ExtResource("1_q241j")]([SubResource("Resource_4h6s1"), SubResource("Resource_idqsu")])
 markers = SubResource("Resource_7rqi0")
-dialogue = SubResource("Resource_xae77")
-effects = Array[ExtResource("3_o6bst")]([SubResource("Resource_gusfa"), SubResource("Resource_a7apk")])
-steps = Array[ExtResource("8_o7kuy")]([SubResource("Resource_tqc3f"), SubResource("Resource_dmbhf")])
+effects = Array[ExtResource("3_o6bst")]([SubResource("Resource_gusfa")])
+steps = Array[ExtResource("8_o7kuy")]([SubResource("Resource_tqc3f"), SubResource("Resource_igwew"), SubResource("Resource_2a2yp"), SubResource("Resource_1jx03"), SubResource("Resource_q241j"), SubResource("Resource_pwaex"), SubResource("Resource_o6bst"), SubResource("Resource_ejxrg"), SubResource("Resource_u13nn"), SubResource("Resource_155iw"), SubResource("Resource_gpais"), SubResource("Resource_o7kuy"), SubResource("Resource_kaj1p"), SubResource("Resource_12bul"), SubResource("Resource_i5w4g"), SubResource("Resource_qacfl"), SubResource("Resource_1xamx"), SubResource("Resource_1t6ix"), SubResource("Resource_gfcmq")])
 reward_flags = Array[String](["valley_heart_opened"])
 metadata/_custom_type_script = "uid://camo0lur1qm85"

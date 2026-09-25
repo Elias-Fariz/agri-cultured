@@ -27,6 +27,14 @@ enum DisplayMode {
 @export var persist_observation_count: bool = true
 @export var memory_count_field: String = "observed_count"
 
+@export_category("Availability")
+
+# 0 means no minimum day.
+@export var available_from_day: int = 0
+
+# 0 means no maximum day.
+@export var available_through_day: int = 0
+
 
 func _do_interact() -> void:
 	var text := _get_current_text()
@@ -46,6 +54,26 @@ func _do_interact() -> void:
 		DisplayMode.TOAST:
 			_show_toast(text)
 
+func can_interact() -> bool:
+	if not super.can_interact():
+		return false
+
+	if TimeManager != null:
+		var current_day := int(TimeManager.day)
+
+		if (
+			available_from_day > 0
+			and current_day < available_from_day
+		):
+			return false
+
+		if (
+			available_through_day > 0
+			and current_day > available_through_day
+		):
+			return false
+
+	return true
 
 func _get_current_text() -> String:
 	if use_alternate_when_flag_set:

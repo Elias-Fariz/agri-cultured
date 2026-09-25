@@ -31,6 +31,7 @@ script = ExtResource("1_68sen")
 rule_id = "day2_bakery_intro"
 location_id = "bakery"
 cutscene_id = "maren_intro"
+required_day = 2
 metadata/_custom_type_script = "uid://brhohb215g868"
 
 [resource]
