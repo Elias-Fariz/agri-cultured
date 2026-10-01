@@ -1,0 +1,215 @@
+[gd_resource type="Resource" script_class="CutsceneData" load_steps=40 format=3 uid="uid://dang6ow5mdnr2"]
+
+[ext_resource type="Script" uid="uid://b4pm6wxp5ivtk" path="res://data/cutscenes/CutsceneActorData.gd" id="1_kgbwo"]
+[ext_resource type="Script" uid="uid://cp2gtb0hckrrj" path="res://data/cutscenes/CutsceneEffectData.gd" id="2_f12dt"]
+[ext_resource type="Script" uid="uid://bjwubxbrbyt2x" path="res://data/cutscenes/CutsceneMarkerSet.gd" id="3_f12dt"]
+[ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="3_ot31y"]
+[ext_resource type="Script" uid="uid://fp28wf3omrn8" path="res://data/quests/QuestSpawnRewardData.gd" id="4_i7l0m"]
+[ext_resource type="Script" uid="uid://camo0lur1qm85" path="res://data/cutscenes/CutsceneData.gd" id="5_2d5x7"]
+[ext_resource type="Script" uid="uid://0k0f68wqa7mm" path="res://data/cutscenes/CutsceneStepData.gd" id="6_5duo3"]
+[ext_resource type="Script" uid="uid://dt1fjl76x6n5o" path="res://data/dialogue/DialogueBeatData.gd" id="8_i7l0m"]
+[ext_resource type="Script" uid="uid://clb3lhdggkt8d" path="res://data/dialogue/DialogueSequenceData.gd" id="9_2d5x7"]
+[ext_resource type="Texture2D" uid="uid://b6q6p1rqkpdec" path="res://art/crops.png" id="10_2d5x7"]
+
+[sub_resource type="Resource" id="Resource_kgbwo"]
+script = ExtResource("1_kgbwo")
+key = "player"
+actor_type = "player"
+metadata/_custom_type_script = "uid://b4pm6wxp5ivtk"
+
+[sub_resource type="Resource" id="Resource_f12dt"]
+script = ExtResource("1_kgbwo")
+key = "mayor"
+npc_id = "npc_mayor"
+display_name = "Alder"
+scene_path = "res://tscn/npcs/Mayor.tscn"
+metadata/_custom_type_script = "uid://b4pm6wxp5ivtk"
+
+[sub_resource type="Resource" id="Resource_ot31y"]
+script = ExtResource("1_kgbwo")
+key = "maren"
+npc_id = "npc_maren"
+display_name = "Maren"
+scene_path = "res://tscn/npcs/Maren.tscn"
+metadata/_custom_type_script = "uid://b4pm6wxp5ivtk"
+
+[sub_resource type="Resource" id="Resource_i7l0m"]
+script = ExtResource("1_kgbwo")
+key = "tansy"
+npc_id = "npc_tansy"
+display_name = "Tansy"
+scene_path = "res://tscn/npcs/Tansy.tscn"
+metadata/_custom_type_script = "uid://b4pm6wxp5ivtk"
+
+[sub_resource type="Resource" id="Resource_2d5x7"]
+script = ExtResource("3_f12dt")
+markers_by_id = {
+"focus_start": NodePath("Demo_Complete_Markers/focus_start"),
+"maren_start": NodePath("Demo_Complete_Markers/maren_start"),
+"mayor_start": NodePath("Demo_Complete_Markers/mayor_start"),
+"player_end": NodePath("Demo_Complete_Markers/player_end"),
+"player_start": NodePath("Demo_Complete_Markers/player_start"),
+"tansy_end": NodePath("Demo_Complete_Markers/tansy_end"),
+"tansy_start": NodePath("Demo_Complete_Markers/tansy_start")
+}
+metadata/_custom_type_script = "uid://bjwubxbrbyt2x"
+
+[sub_resource type="Resource" id="Resource_5duo3"]
+script = ExtResource("6_5duo3")
+step_type = 14
+zoom_value = 1.2
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_mtpy1"]
+script = ExtResource("6_5duo3")
+step_type = 4
+marker_id = "player_end"
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_luml7"]
+script = ExtResource("6_5duo3")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_ehdb4"]
+script = ExtResource("8_i7l0m")
+text = "There you are."
+speaker_id = "npc_mayor"
+stage_slot = "left"
+emotion = "happy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_nato0"]
+script = ExtResource("8_i7l0m")
+text = "Maren insisted we wait."
+speaker_id = "npc_mayor"
+stage_slot = "left"
+emotion = "happy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_vigiw"]
+script = ExtResource("8_i7l0m")
+text = "Of course we waited."
+speaker_id = "npc_maren"
+stage_slot = "right"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_fwh0p"]
+script = ExtResource("8_i7l0m")
+text = "It wouldn’t be much of a meal if the person who carried it here missed it."
+speaker_id = "npc_maren"
+stage_slot = "right"
+emotion = "happy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_k04xo"]
+script = ExtResource("9_2d5x7")
+beats = Array[ExtResource("8_i7l0m")]([SubResource("Resource_ehdb4"), SubResource("Resource_nato0"), SubResource("Resource_vigiw"), SubResource("Resource_fwh0p")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_dsnoy"]
+script = ExtResource("6_5duo3")
+step_type = 2
+dialogue_sequence = SubResource("Resource_k04xo")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_668qq"]
+script = ExtResource("6_5duo3")
+step_type = 0
+actor_key = "tansy"
+marker_id = "tansy_end"
+duration = 1.0
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_tt8qf"]
+script = ExtResource("6_5duo3")
+step_type = 18
+actor_key = "tansy"
+overhead_text = "Careful…"
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_0tjpn"]
+script = ExtResource("6_5duo3")
+step_type = 18
+actor_key = "tansy"
+overhead_text = "…careful…"
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_as8il"]
+script = ExtResource("6_5duo3")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_gbvy7"]
+script = ExtResource("8_i7l0m")
+text = "I have the plates."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_q66ap"]
+script = ExtResource("8_i7l0m")
+text = "I absolutely have them."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_6y35s"]
+script = ExtResource("9_2d5x7")
+beats = Array[ExtResource("8_i7l0m")]([SubResource("Resource_gbvy7"), SubResource("Resource_q66ap")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_kefxd"]
+script = ExtResource("6_5duo3")
+step_type = 2
+dialogue_sequence = SubResource("Resource_6y35s")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_k0gpe"]
+script = ExtResource("6_5duo3")
+step_type = 18
+actor_key = "maren"
+overhead_text = "*giggle*"
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_bnxpw"]
+script = ExtResource("6_5duo3")
+step_type = 21
+whisper_phrases = Array[String](["Warm..."])
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_178y7"]
+script = ExtResource("6_5duo3")
+step_type = 16
+texture = ExtResource("10_2d5x7")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_tfubg"]
+script = ExtResource("6_5duo3")
+step_type = 19
+narration_text = "For a little while, no one asks anything of you."
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_7uo06"]
+script = ExtResource("6_5duo3")
+step_type = 19
+narration_text = "There is food. Warmth. Laughter."
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_blx4k"]
+script = ExtResource("6_5duo3")
+step_type = 19
+narration_text = "And somewhere beneath it all, something still growing."
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_qeunx"]
+script = ExtResource("6_5duo3")
+step_type = 22
+duration = 1.5
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[resource]
+script = ExtResource("5_2d5x7")
+id = "valley_heart_demo_finale"
+scene_name = "ValleyHeart"
+actors = Array[ExtResource("1_kgbwo")]([SubResource("Resource_kgbwo"), SubResource("Resource_f12dt"), SubResource("Resource_ot31y"), SubResource("Resource_i7l0m")])
+markers = SubResource("Resource_2d5x7")
+steps = Array[ExtResource("6_5duo3")]([SubResource("Resource_5duo3"), SubResource("Resource_mtpy1"), SubResource("Resource_luml7"), SubResource("Resource_dsnoy"), SubResource("Resource_668qq"), SubResource("Resource_tt8qf"), SubResource("Resource_0tjpn"), SubResource("Resource_as8il"), SubResource("Resource_kefxd"), SubResource("Resource_k0gpe"), SubResource("Resource_bnxpw"), SubResource("Resource_178y7"), SubResource("Resource_tfubg"), SubResource("Resource_7uo06"), SubResource("Resource_blx4k"), SubResource("Resource_qeunx")])
+reward_flags = Array[String](["slice_01_complete"])
+metadata/_custom_type_script = "uid://camo0lur1qm85"

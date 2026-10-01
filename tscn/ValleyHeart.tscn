@@ -1,4 +1,4 @@
-[gd_scene load_steps=80 format=3 uid="uid://cwspce5y4tb13"]
+[gd_scene load_steps=82 format=3 uid="uid://cwspce5y4tb13"]
 
 [ext_resource type="TileSet" uid="uid://bqs5ruk6pejpc" path="res://tiles/GroundTileset.tres" id="1_vkoen"]
 [ext_resource type="Script" uid="uid://bywlb7k2vtqr" path="res://scripts/ValleyHeart.gd" id="1_ye5kf"]
@@ -64,6 +64,8 @@
 [ext_resource type="Script" uid="uid://fp28wf3omrn8" path="res://data/quests/QuestSpawnRewardData.gd" id="58_3lvqc"]
 [ext_resource type="PackedScene" uid="uid://dsefxlv6x3h0c" path="res://ui/DayNightModulate.tscn" id="60_3lvqc"]
 [ext_resource type="Script" uid="uid://b7n4wv6k3k33k" path="res://scripts/QuestLocation.gd" id="64_orr64"]
+[ext_resource type="Script" uid="uid://b6e88und28hko" path="res://scripts/SliceEndTrigger.gd" id="65_5pdgc"]
+[ext_resource type="PackedScene" uid="uid://cfpgu03gpauoq" path="res://ui/SliceEndOverlay.tscn" id="66_xslpg"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_qprux"]
 texture = ExtResource("2_05sqv")
@@ -285,15 +287,19 @@ scale = Vector2(0.1864542, 0.1864542)
 texture = ExtResource("12_or02y")
 
 [node name="SeedFocusMarker" type="Marker2D" parent="Sections/HeartTreeIntro"]
+visible = false
 position = Vector2(216, 268)
 
 [node name="PlayerApproachMarker" type="Marker2D" parent="Sections/HeartTreeIntro"]
+visible = false
 position = Vector2(215, 289)
 
 [node name="AlderStartMarker" type="Marker2D" parent="Sections/HeartTreeIntro"]
+visible = false
 position = Vector2(129, 698)
 
 [node name="AlderEndMarker" type="Marker2D" parent="Sections/HeartTreeIntro"]
+visible = false
 position = Vector2(129, 290)
 
 [node name="CameraBounds" type="Node2D" parent="."]
@@ -502,3 +508,32 @@ visible = false
 position = Vector2(-10.814025, 4.4010553)
 scale = Vector2(1.6908095, 1.7166522)
 shape = SubResource("RectangleShape2D_u5sov")
+
+[node name="Demo_Complete_Markers" type="Node2D" parent="."]
+
+[node name="mayor_start" type="Marker2D" parent="Demo_Complete_Markers"]
+position = Vector2(105, 198)
+
+[node name="maren_start" type="Marker2D" parent="Demo_Complete_Markers"]
+position = Vector2(319, 194)
+
+[node name="tansy_end" type="Marker2D" parent="Demo_Complete_Markers"]
+position = Vector2(287, 327)
+
+[node name="tansy_start" type="Marker2D" parent="Demo_Complete_Markers"]
+position = Vector2(287, 657)
+
+[node name="player_start" type="Marker2D" parent="Demo_Complete_Markers"]
+position = Vector2(154, 465)
+
+[node name="player_end" type="Marker2D" parent="Demo_Complete_Markers"]
+position = Vector2(152, 327)
+
+[node name="focus_start" type="Marker2D" parent="Demo_Complete_Markers"]
+position = Vector2(217, 253)
+
+[node name="SliceEndTrigger" type="Node" parent="."]
+script = ExtResource("65_5pdgc")
+slice_end_overlay_path = NodePath("../SliceEndOverlay")
+
+[node name="SliceEndOverlay" parent="." instance=ExtResource("66_xslpg")]

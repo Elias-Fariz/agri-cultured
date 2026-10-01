@@ -72,7 +72,8 @@ script = ExtResource("15_l0ll2")
 tag = "from_town"
 facing_direction = "up"
 
-[node name="ShopMarkers" type="Node" parent="."]
+[node name="ShopMarkers" type="Node2D" parent="."]
+visible = false
 
 [node name="Focus" type="Marker2D" parent="ShopMarkers"]
 position = Vector2(145, -102)
@@ -106,6 +107,23 @@ position = Vector2(353, 193)
 
 [node name="tansy_actual_counter" type="Marker2D" parent="ShopMarkers"]
 position = Vector2(149, -191)
+
+[node name="ShopMarkers_Surplus" type="Node2D" parent="."]
+
+[node name="focus_start" type="Marker2D" parent="ShopMarkers_Surplus"]
+position = Vector2(143, -83)
+
+[node name="focus_shuffle" type="Marker2D" parent="ShopMarkers_Surplus"]
+position = Vector2(143, 14)
+
+[node name="tansy_start" type="Marker2D" parent="ShopMarkers_Surplus"]
+position = Vector2(202, -82)
+
+[node name="tansy_shuffle" type="Marker2D" parent="ShopMarkers_Surplus"]
+position = Vector2(202, -24)
+
+[node name="player_start" type="Marker2D" parent="ShopMarkers_Surplus"]
+position = Vector2(149, 193)
 
 [node name="Tansy" parent="." instance=ExtResource("18_mvgwc")]
 position = Vector2(149, -190)

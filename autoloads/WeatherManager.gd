@@ -3,7 +3,7 @@ class_name WeatherManager
 
 enum WeatherType { CLEAR, RAIN }
 
-@export_range(0.0, 1.0, 0.01) var rain_chance: float = 0.25
+@export_range(0.0, 1.0, 0.01) var rain_chance: float = 0.0
 
 var yesterday_weather: int = WeatherType.CLEAR
 var today_weather: WeatherType = WeatherType.CLEAR

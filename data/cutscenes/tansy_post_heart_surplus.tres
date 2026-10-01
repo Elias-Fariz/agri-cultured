@@ -1,0 +1,253 @@
+[gd_resource type="Resource" script_class="CutsceneData" load_steps=47 format=3 uid="uid://dh6w7ckp4gfvu"]
+
+[ext_resource type="Script" uid="uid://b4pm6wxp5ivtk" path="res://data/cutscenes/CutsceneActorData.gd" id="1_1gb1h"]
+[ext_resource type="Script" uid="uid://cp2gtb0hckrrj" path="res://data/cutscenes/CutsceneEffectData.gd" id="2_lls3n"]
+[ext_resource type="Script" uid="uid://bjwubxbrbyt2x" path="res://data/cutscenes/CutsceneMarkerSet.gd" id="3_lls3n"]
+[ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="3_n4g1o"]
+[ext_resource type="Script" uid="uid://fp28wf3omrn8" path="res://data/quests/QuestSpawnRewardData.gd" id="4_ah8p1"]
+[ext_resource type="Script" uid="uid://camo0lur1qm85" path="res://data/cutscenes/CutsceneData.gd" id="5_vpxud"]
+[ext_resource type="Script" uid="uid://0k0f68wqa7mm" path="res://data/cutscenes/CutsceneStepData.gd" id="6_h2mju"]
+[ext_resource type="Script" uid="uid://dt1fjl76x6n5o" path="res://data/dialogue/DialogueBeatData.gd" id="8_ah8p1"]
+[ext_resource type="Script" uid="uid://clb3lhdggkt8d" path="res://data/dialogue/DialogueSequenceData.gd" id="9_vpxud"]
+
+[sub_resource type="Resource" id="Resource_1gb1h"]
+script = ExtResource("1_1gb1h")
+key = "player"
+actor_type = "player"
+metadata/_custom_type_script = "uid://b4pm6wxp5ivtk"
+
+[sub_resource type="Resource" id="Resource_lls3n"]
+script = ExtResource("1_1gb1h")
+key = "tansy"
+npc_id = "npc_tansy"
+display_name = "Tansy"
+scene_path = "res://tscn/npcs/Tansy.tscn"
+metadata/_custom_type_script = "uid://b4pm6wxp5ivtk"
+
+[sub_resource type="Resource" id="Resource_n4g1o"]
+script = ExtResource("3_lls3n")
+markers_by_id = {
+"focus_shuffle": NodePath("ShopMarkers_Surplus/focus_shuffle"),
+"focus_start": NodePath("ShopMarkers_Surplus/focus_start"),
+"player_start": NodePath("ShopMarkers_Surplus/player_start"),
+"tansy_shuffle": NodePath("ShopMarkers_Surplus/tansy_shuffle"),
+"tansy_start": NodePath("ShopMarkers_Surplus/tansy_start")
+}
+metadata/_custom_type_script = "uid://bjwubxbrbyt2x"
+
+[sub_resource type="Resource" id="Resource_ah8p1"]
+script = ExtResource("6_h2mju")
+step_type = 14
+zoom_value = 1.2
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_vpxud"]
+script = ExtResource("6_h2mju")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_h2mju"]
+script = ExtResource("6_h2mju")
+step_type = 18
+actor_key = "tansy"
+narration_text = "Twenty-one... twenty-two..."
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_qb1ry"]
+script = ExtResource("6_h2mju")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_e5gc5"]
+script = ExtResource("6_h2mju")
+step_type = 0
+actor_key = "tansy"
+marker_id = "tansy_shuffle"
+duration = 0.75
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_klusq"]
+script = ExtResource("6_h2mju")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_ndh8g"]
+script = ExtResource("8_ah8p1")
+text = "That can’t be right."
+speaker_id = "npc_tansy"
+emotion = "thinking"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_52hq7"]
+script = ExtResource("8_ah8p1")
+text = "Yesterday’s delivery was twenty-two."
+speaker_id = "npc_tansy"
+emotion = "thinking"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_p0x81"]
+script = ExtResource("8_ah8p1")
+text = "This is twenty-seven."
+speaker_id = "npc_tansy"
+emotion = "thinking"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_i0nlh"]
+script = ExtResource("9_vpxud")
+beats = Array[ExtResource("8_ah8p1")]([SubResource("Resource_ndh8g"), SubResource("Resource_52hq7"), SubResource("Resource_p0x81")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_xj7jm"]
+script = ExtResource("6_h2mju")
+step_type = 2
+dialogue_sequence = SubResource("Resource_i0nlh")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_6vv78"]
+script = ExtResource("6_h2mju")
+step_type = 18
+actor_key = "tansy"
+overhead_text = "..."
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_oo8yk"]
+script = ExtResource("8_ah8p1")
+text = "Apparently, it is right."
+speaker_id = "npc_tansy"
+emotion = "happy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_5suoj"]
+script = ExtResource("8_ah8p1")
+text = "There's more produce."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_e25gk"]
+script = ExtResource("8_ah8p1")
+text = "Better quality, too."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_456bd"]
+script = ExtResource("8_ah8p1")
+text = "The supplier notes are different."
+speaker_id = "npc_tansy"
+emotion = "thinking"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_hamya"]
+script = ExtResource("9_vpxud")
+beats = Array[ExtResource("8_ah8p1")]([SubResource("Resource_oo8yk"), SubResource("Resource_5suoj"), SubResource("Resource_e25gk"), SubResource("Resource_456bd")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_emmo0"]
+script = ExtResource("6_h2mju")
+step_type = 2
+dialogue_sequence = SubResource("Resource_hamya")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_f1vlg"]
+script = ExtResource("6_h2mju")
+step_type = 20
+marker_id = "focus_shuffle"
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_w0715"]
+script = ExtResource("8_ah8p1")
+text = "Oh. Hello."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_4yipc"]
+script = ExtResource("8_ah8p1")
+text = "You're here."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_c5gmw"]
+script = ExtResource("8_ah8p1")
+text = "Good."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_2agh1"]
+script = ExtResource("8_ah8p1")
+text = "Something changed with this morning’s stock."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_qy5tj"]
+script = ExtResource("8_ah8p1")
+text = "More produce…"
+speaker_id = "npc_tansy"
+emotion = "thinking"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_6jcif"]
+script = ExtResource("8_ah8p1")
+text = "Less spoilage…"
+speaker_id = "npc_tansy"
+emotion = "thinking"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_kisu8"]
+script = ExtResource("8_ah8p1")
+text = "Better margins…"
+speaker_id = "npc_tansy"
+emotion = "thinking"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_fb2uh"]
+script = ExtResource("9_vpxud")
+beats = Array[ExtResource("8_ah8p1")]([SubResource("Resource_w0715"), SubResource("Resource_4yipc"), SubResource("Resource_c5gmw"), SubResource("Resource_2agh1"), SubResource("Resource_qy5tj"), SubResource("Resource_6jcif"), SubResource("Resource_kisu8")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_elevh"]
+script = ExtResource("6_h2mju")
+step_type = 2
+dialogue_sequence = SubResource("Resource_fb2uh")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_lklp5"]
+script = ExtResource("6_h2mju")
+step_type = 18
+actor_key = "tansy"
+overhead_text = "hmm..."
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_ubetg"]
+script = ExtResource("8_ah8p1")
+text = "That means I can lower prices."
+speaker_id = "npc_tansy"
+emotion = "happy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_uebvy"]
+script = ExtResource("8_ah8p1")
+text = "A little."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_oiek7"]
+script = ExtResource("8_ah8p1")
+text = "I’m not reckless."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_o6x3u"]
+script = ExtResource("9_vpxud")
+beats = Array[ExtResource("8_ah8p1")]([SubResource("Resource_ubetg"), SubResource("Resource_uebvy"), SubResource("Resource_oiek7")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_ukcjp"]
+script = ExtResource("6_h2mju")
+step_type = 2
+dialogue_sequence = SubResource("Resource_o6x3u")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[resource]
+script = ExtResource("5_vpxud")
+id = "tansy_post_heart_surplus"
+scene_name = "GeneralStore"
+actors = Array[ExtResource("1_1gb1h")]([SubResource("Resource_1gb1h"), SubResource("Resource_lls3n")])
+markers = SubResource("Resource_n4g1o")
+steps = Array[ExtResource("6_h2mju")]([SubResource("Resource_ah8p1"), SubResource("Resource_vpxud"), SubResource("Resource_h2mju"), SubResource("Resource_qb1ry"), SubResource("Resource_e5gc5"), SubResource("Resource_klusq"), SubResource("Resource_xj7jm"), SubResource("Resource_6vv78"), SubResource("Resource_emmo0"), SubResource("Resource_f1vlg"), SubResource("Resource_elevh"), SubResource("Resource_lklp5"), SubResource("Resource_ukcjp")])
+metadata/_custom_type_script = "uid://camo0lur1qm85"

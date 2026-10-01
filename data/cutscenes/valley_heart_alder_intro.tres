@@ -369,4 +369,5 @@ scene_name = "ValleyHeart"
 actors = Array[ExtResource("1_tinq5")]([SubResource("Resource_tinq5"), SubResource("Resource_yjlc8")])
 markers = SubResource("Resource_rt6j7")
 steps = Array[ExtResource("6_ssfod")]([SubResource("Resource_fkqmf"), SubResource("Resource_1v5xo"), SubResource("Resource_bp0mw"), SubResource("Resource_ssfod"), SubResource("Resource_atf1n"), SubResource("Resource_aiq0p"), SubResource("Resource_v2gqw"), SubResource("Resource_88xqv"), SubResource("Resource_sgt1d"), SubResource("Resource_4j5sh"), SubResource("Resource_3mdw7"), SubResource("Resource_16rx0"), SubResource("Resource_bedyi"), SubResource("Resource_5f68b"), SubResource("Resource_1uc73"), SubResource("Resource_pcm6k"), SubResource("Resource_ykv33"), SubResource("Resource_l8byq"), SubResource("Resource_r54s0"), SubResource("Resource_yvbgk"), SubResource("Resource_vqou4"), SubResource("Resource_cphc3"), SubResource("Resource_1sdeh"), SubResource("Resource_7de4u"), SubResource("Resource_n4axl"), SubResource("Resource_wy7ld")])
+reward_flags = Array[String](["valley_heart_sprouted"])
 metadata/_custom_type_script = "uid://camo0lur1qm85"

@@ -48,6 +48,9 @@ func _unhandled_input(event: InputEvent) -> void:
 func _on_continue_pressed() -> void:
 	hide_overlay()
 
+	if FadeOverlay != null:
+		FadeOverlay.fade_in(0.6)
+
 
 func _on_feedback_pressed() -> void:
 	if feedback_url.strip_edges() == "":

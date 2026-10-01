@@ -27,6 +27,20 @@ class_name QuestStepData
 @export var reward_crafting_recipe_ids: Array[String] = []
 @export var reward_cooking_recipe_ids: Array[String] = []
 
+@export_group("Talk Delivery")
+
+# Optional item that must still be in the player's inventory
+# before this talk_to step can complete.
+#
+# Leave blank for normal talk steps.
+@export var required_item_id: String = ""
+
+@export var required_item_amount: int = 1
+
+# If true, the item is removed when the successful
+# conversation finishes.
+@export var consume_required_item: bool = false
+
 func to_dict() -> Dictionary:
 	var reward: Dictionary = {}
 
@@ -57,4 +71,8 @@ func to_dict() -> Dictionary:
 		"text": text,
 		"reward": reward,
 		"reward_claimed": false,
+
+		"required_item_id": required_item_id,
+		"required_item_amount": required_item_amount,
+		"consume_required_item": consume_required_item,
 	}

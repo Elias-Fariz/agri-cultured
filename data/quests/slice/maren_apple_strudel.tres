@@ -1,0 +1,277 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=44 format=3 uid="uid://dud3h3mqaf60e"]
+
+[ext_resource type="Script" uid="uid://dqvgpvdaiv010" path="res://data/quests/QuestNpcOverrideData.gd" id="1_1hjog"]
+[ext_resource type="Script" uid="uid://dt1fjl76x6n5o" path="res://data/dialogue/DialogueBeatData.gd" id="2_c4kuf"]
+[ext_resource type="Script" uid="uid://fp28wf3omrn8" path="res://data/quests/QuestSpawnRewardData.gd" id="2_mblw4"]
+[ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="3_c4kuf"]
+[ext_resource type="Script" uid="uid://bolxtchvrfo0y" path="res://data/quests/QuestStepData.gd" id="4_lpmcc"]
+[ext_resource type="Script" uid="uid://clb3lhdggkt8d" path="res://data/dialogue/DialogueSequenceData.gd" id="5_lpmcc"]
+
+[sub_resource type="Resource" id="Resource_txyet"]
+script = ExtResource("2_c4kuf")
+text = "Tansy should have an apple tucked away somewhere."
+speaker_id = "npc_maren"
+emotion = "thinking"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_e303v"]
+script = ExtResource("2_c4kuf")
+text = "Just one will do, dear. Pick whichever one looks happiest."
+speaker_id = "npc_maren"
+emotion = "happy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_0us48"]
+script = ExtResource("5_lpmcc")
+beats = Array[ExtResource("2_c4kuf")]([SubResource("Resource_txyet"), SubResource("Resource_e303v")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_k2fkq"]
+script = ExtResource("1_1hjog")
+npc_id = "npc_maren"
+phase = "active_step"
+step_index = 0
+sequence = SubResource("Resource_0us48")
+metadata/_custom_type_script = "uid://dqvgpvdaiv010"
+
+[sub_resource type="Resource" id="Resource_c4kuf"]
+script = ExtResource("2_c4kuf")
+text = "Ah. There it is."
+speaker_id = "npc_maren"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_lpmcc"]
+script = ExtResource("2_c4kuf")
+text = "That one's lovely."
+speaker_id = "npc_maren"
+emotion = "happy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_d2mr3"]
+script = ExtResource("2_c4kuf")
+text = "Give me just a moment."
+speaker_id = "npc_maren"
+emotion = "happy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_ocy77"]
+script = ExtResource("2_c4kuf")
+text = "Hmm, like this... and then..."
+speaker_id = "npc_maren"
+emotion = "thinking"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_lembl"]
+script = ExtResource("2_c4kuf")
+text = "Something warm, I think..."
+speaker_id = "npc_maren"
+emotion = "thinking"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_7udey"]
+script = ExtResource("2_c4kuf")
+text = "Done! Alder has always had a weakness for apple strudel."
+speaker_id = "npc_maren"
+emotion = "happy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_w15ei"]
+script = ExtResource("2_c4kuf")
+text = "Would you bring this to him for me?"
+speaker_id = "npc_maren"
+emotion = "happy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_rtaqw"]
+script = ExtResource("2_c4kuf")
+text = "Tell him it’s from all of us."
+speaker_id = "npc_maren"
+emotion = "happy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_0os5o"]
+script = ExtResource("5_lpmcc")
+beats = Array[ExtResource("2_c4kuf")]([SubResource("Resource_c4kuf"), SubResource("Resource_lpmcc"), SubResource("Resource_d2mr3"), SubResource("Resource_ocy77"), SubResource("Resource_lembl"), SubResource("Resource_7udey"), SubResource("Resource_w15ei"), SubResource("Resource_rtaqw")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_pj5vx"]
+script = ExtResource("1_1hjog")
+npc_id = "npc_maren"
+phase = "active_step"
+step_index = 1
+sequence = SubResource("Resource_0os5o")
+metadata/_custom_type_script = "uid://dqvgpvdaiv010"
+
+[sub_resource type="Resource" id="Resource_5qhpb"]
+script = ExtResource("2_c4kuf")
+text = "Hm?"
+speaker_id = "npc_maren"
+emotion = "thinking"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_n45o4"]
+script = ExtResource("2_c4kuf")
+text = "I could have sworn there was an apple with you a moment ago."
+speaker_id = "npc_maren"
+emotion = "thinking"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_1rk25"]
+script = ExtResource("2_c4kuf")
+text = "No harm done, dear."
+speaker_id = "npc_maren"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_01tna"]
+script = ExtResource("2_c4kuf")
+text = "Tansy should still have another."
+speaker_id = "npc_maren"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_23utf"]
+script = ExtResource("2_c4kuf")
+text = "I'll keep the oven warm."
+speaker_id = "npc_maren"
+emotion = "happy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_qafyt"]
+script = ExtResource("5_lpmcc")
+beats = Array[ExtResource("2_c4kuf")]([SubResource("Resource_5qhpb"), SubResource("Resource_n45o4"), SubResource("Resource_1rk25"), SubResource("Resource_01tna"), SubResource("Resource_23utf")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_c18g8"]
+script = ExtResource("1_1hjog")
+npc_id = "npc_maren"
+phase = "missing_required_item"
+sequence = SubResource("Resource_qafyt")
+metadata/_custom_type_script = "uid://dqvgpvdaiv010"
+
+[sub_resource type="Resource" id="Resource_jkju0"]
+script = ExtResource("2_c4kuf")
+text = "Hm?"
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_4reaj"]
+script = ExtResource("2_c4kuf")
+text = "For me?"
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_pls5r"]
+script = ExtResource("2_c4kuf")
+text = "Maren made this?"
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_r0r4d"]
+script = ExtResource("2_c4kuf")
+text = "And you carried it all the way over here…"
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_7g8hr"]
+script = ExtResource("2_c4kuf")
+text = "It seems I’ve been rather thoroughly looked after today."
+speaker_id = "npc_mayor"
+emotion = "happy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_golcn"]
+script = ExtResource("2_c4kuf")
+text = "Thank you."
+speaker_id = "npc_mayor"
+emotion = "happy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_thv8b"]
+script = ExtResource("2_c4kuf")
+text = "You know…"
+speaker_id = "npc_mayor"
+emotion = "thinking"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_usxja"]
+script = ExtResource("2_c4kuf")
+text = "Something like this deserves a better table than my desk."
+speaker_id = "npc_mayor"
+emotion = "thinking"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_klrhw"]
+script = ExtResource("2_c4kuf")
+text = "Would you meet us at the Heart?"
+speaker_id = "npc_mayor"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_44rq7"]
+script = ExtResource("5_lpmcc")
+beats = Array[ExtResource("2_c4kuf")]([SubResource("Resource_jkju0"), SubResource("Resource_4reaj"), SubResource("Resource_pls5r"), SubResource("Resource_r0r4d"), SubResource("Resource_7g8hr"), SubResource("Resource_golcn"), SubResource("Resource_thv8b"), SubResource("Resource_usxja"), SubResource("Resource_klrhw")])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_kqnme"]
+script = ExtResource("1_1hjog")
+npc_id = "npc_mayor"
+phase = "active_step"
+step_index = 3
+sequence = SubResource("Resource_44rq7")
+metadata/_custom_type_script = "uid://dqvgpvdaiv010"
+
+[sub_resource type="Resource" id="Resource_1hjog"]
+script = ExtResource("4_lpmcc")
+type = "have_item"
+target = "Apple"
+text = "Find an Apple for Maren's surprise."
+metadata/_custom_type_script = "uid://bolxtchvrfo0y"
+
+[sub_resource type="Resource" id="Resource_mblw4"]
+script = ExtResource("4_lpmcc")
+type = "talk_to"
+target = "npc_maren"
+text = "Bring the Apple back to Maren."
+reward_items = Dictionary[String, int]({
+"Apple Strudel": 1
+})
+required_item_id = "Apple"
+consume_required_item = true
+metadata/_custom_type_script = "uid://bolxtchvrfo0y"
+
+[sub_resource type="Resource" id="Resource_rrvja"]
+script = ExtResource("4_lpmcc")
+type = "have_item"
+target = "Apple Strudel"
+text = "Take Maren's Apple Strudel to Alder."
+metadata/_custom_type_script = "uid://bolxtchvrfo0y"
+
+[sub_resource type="Resource" id="Resource_bxpij"]
+script = ExtResource("4_lpmcc")
+type = "talk_to"
+target = "npc_mayor"
+text = "Bring the Apple Strudel to Alder."
+reward_flags = Array[String](["strudel_delivered"])
+required_item_id = "Apple Strudel"
+consume_required_item = true
+metadata/_custom_type_script = "uid://bolxtchvrfo0y"
+
+[sub_resource type="Resource" id="Resource_ynvn8"]
+script = ExtResource("4_lpmcc")
+type = "go_to"
+target = "valley_heart"
+text = "Join everyone at the Valley Heart."
+metadata/_custom_type_script = "uid://bolxtchvrfo0y"
+
+[resource]
+script = ExtResource("3_c4kuf")
+id = "maren_apple_strudel"
+title = "Something Warm"
+description = "Maren wants to make something special for Alder."
+quest_type = "chain"
+steps = Array[ExtResource("4_lpmcc")]([SubResource("Resource_1hjog"), SubResource("Resource_mblw4"), SubResource("Resource_rrvja"), SubResource("Resource_bxpij"), SubResource("Resource_ynvn8")])
+requires_flags = Array[String](["valley_heart_sprouted"])
+giver_id = "npc_maren"
+offer_lines = Array[String](["Oh, there you are, dear.", "I was thinking of making something for Alder.", "Tansy usually keeps a few apples tucked away. Would you mind bringing one to me?", "Just one. I'll take care of the rest."])
+participant_ids = PackedStringArray("npc_maren", "npc_mayor")
+npc_overrides = Array[ExtResource("1_1hjog")]([SubResource("Resource_k2fkq"), SubResource("Resource_pj5vx"), SubResource("Resource_c18g8"), SubResource("Resource_kqnme")])
+auto_claim_on_complete = true
+metadata/_custom_type_script = "uid://cg0ailnic1w71"

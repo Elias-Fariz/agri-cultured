@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=3 format=3 uid="uid://ckftydy60jrwd"]
+
+[ext_resource type="Script" uid="uid://cswkwxx0fqbww" path="res://data/food/FoodEffectData.gd" id="1_5dx0k"]
+[ext_resource type="Script" uid="uid://dfoyyckymw8co" path="res://data/items/ItemData.gd" id="2_2fkjh"]
+
+[resource]
+script = ExtResource("2_2fkjh")
+id = "Apple Strudel"
+display_name = "Apple Strudel"
+shippable = false
+description = "A warm apple wrapped with love..."
+metadata/_custom_type_script = "uid://dfoyyckymw8co"

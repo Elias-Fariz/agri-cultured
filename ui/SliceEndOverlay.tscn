@@ -47,7 +47,7 @@ alignment = 1
 [node name="ContinueButton" type="Button" parent="Panel/CenterContainer/Card/VBox/ButtonRow"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
-text = "Continue"
+text = "Keep Exploring"
 
 [node name="FeedbackButton" type="Button" parent="Panel/CenterContainer/Card/VBox/ButtonRow"]
 custom_minimum_size = Vector2(100, 0)

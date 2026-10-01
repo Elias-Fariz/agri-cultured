@@ -30,12 +30,13 @@ var _cutscene_paths := {
 	"heart_intro": "res://data/cutscenes/heart_intro.tres",
 	"greeting_intro": "res://data/cutscenes/greeting_intro.tres",
 	"shop_intro": "res://data/cutscenes/shop_intro.tres",
-	"fearroot_intro": "res://data/cutscenes/fearroot_intro.tres",
-	"connector_valley_discovery": "res://data/cutscenes/connector_valley_discovery.tres",
+	"fearroot_intro": "res://data/cutscenes/fearroot_intro.tres",	"connector_valley_discovery": "res://data/cutscenes/connector_valley_discovery.tres",
 	"ash_first_passout_rescue": "res://data/cutscenes/ash_first_passout_rescue.tres",
 	"whisper_test": "res://data/cutscenes/whisper_test.tres",
 	"day1_wakeup_whisper": "res://data/cutscenes/day1_wakeup_whisper.tres",
 	"maren_intro": "res://data/cutscenes/maren_intro.tres",
+	"tansy_post_heart_surplus": "res://data/cutscenes/tansy_post_heart_surplus.tres",
+	"valley_heart_demo_finale": "res://data/cutscenes/valley_heart_demo_finale.tres",
 }
 
 var _pending_restoration_encounter_path: NodePath = NodePath("")

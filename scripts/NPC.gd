@@ -210,9 +210,16 @@ func start_dialogue() -> void:
 		player.camera_focus_on_world_point(global_position + Vector2(0, -10))
 	else:
 		print("NPC Dialogue: Player has no camera_focus_on_world_point()")
-	
+
+	# Some quest conversations are actual item handoffs.
+	# Handle those BEFORE emitting the normal talked_to event,
+	# so the quest cannot advance if the required item disappeared.
+	if await _try_handle_required_item_talk_step(ui, f):
+		_update_quest_icon()
+		return
+
 	QuestEvents.talked_to.emit(npc_id)
-	
+
 	# --- QUESTDATA-BASED QUEST FLOW (GENERAL) ---
 	
 	# --- Legacy quest flow below (kept for compatibility) ---
@@ -1287,3 +1294,167 @@ func _on_availability_day_changed(
 	_day: int
 ) -> void:
 	_refresh_day_availability()
+
+func _try_handle_required_item_talk_step(
+	ui: Node,
+	friendship: int
+) -> bool:
+	if GameState == null:
+		return false
+
+	for qid_any in GameState.active_quests.keys():
+		var qid := String(qid_any)
+		var quest: Dictionary = GameState.active_quests[qid]
+
+		if String(quest.get("type", "")) != "chain":
+			continue
+
+		var steps: Array = quest.get("steps", [])
+		var step_index := int(
+			quest.get("step_index", 0)
+		)
+
+		if step_index < 0 or step_index >= steps.size():
+			continue
+
+		var step: Dictionary = steps[step_index]
+
+		# This helper only handles talk delivery steps.
+		if String(step.get("type", "")) != "talk_to":
+			continue
+
+		var target_npc := String(
+			step.get("target", "")
+		).strip_edges()
+
+		if target_npc != "" and target_npc != npc_id:
+			continue
+
+		var required_item_id := String(
+			step.get("required_item_id", "")
+		).strip_edges()
+
+		# No required item means this is a normal talk step.
+		if required_item_id == "":
+			continue
+
+		var required_amount :Variant= max(
+			1,
+			int(
+				step.get(
+					"required_item_amount",
+					1
+				)
+			)
+		)
+
+		var consume_item := bool(
+			step.get(
+				"consume_required_item",
+				false
+			)
+		)
+
+		var quest_data: QuestData = (
+			_find_questdata_by_id(qid)
+		)
+
+		# ---------------------------------------------------
+		# Player no longer has the requested item
+		# ---------------------------------------------------
+		if not GameState.inventory_has(
+			required_item_id,
+			required_amount
+		):
+			var used_missing_override := false
+
+			if quest_data != null:
+				used_missing_override = (
+					_show_override_dialogue(
+						ui,
+						quest_data,
+						"missing_required_item",
+						-1,
+						[],
+						friendship
+					)
+				)
+
+			if not used_missing_override:
+				_show_plain_dialogue(
+					ui,
+					display_name,
+					[
+						"It looks like you don't have "
+						+ required_item_id
+						+ " with you anymore."
+					],
+					friendship,
+					npc_id
+				)
+
+			# Important:
+			# DO NOT emit talked_to.
+			# The quest stays on this step.
+			return true
+
+		# ---------------------------------------------------
+		# Successful handoff
+		# ---------------------------------------------------
+		var used_handoff_override := false
+
+		if quest_data != null:
+			used_handoff_override = (
+				_show_override_dialogue(
+					ui,
+					quest_data,
+					"active_step",
+					step_index,
+					[],
+					friendship
+				)
+			)
+
+		if not used_handoff_override:
+			_show_plain_dialogue(
+				ui,
+				display_name,
+				[
+					"Thank you. This is just what I needed."
+				],
+				friendship,
+				npc_id
+			)
+
+		# Let the player actually see the handoff conversation
+		# before changing inventory / quest state.
+		await _await_dialogue_closed(ui)
+
+		if consume_item:
+			var removed := GameState.inventory_remove(
+				required_item_id,
+				required_amount
+			)
+
+			if not removed:
+				# Inventory changed unexpectedly while dialogue
+				# was open. Stay safe and do not advance.
+				return true
+
+		# NOW the ordinary quest event may happen.
+		#
+		# This advances the talk_to step and applies its
+		# step reward, such as giving Apple Strudel.
+		QuestEvents.talked_to.emit(npc_id)
+
+		if (
+			QuestEvents != null
+			and QuestEvents.has_signal(
+				"quest_state_changed"
+			)
+		):
+			QuestEvents.quest_state_changed.emit()
+
+		return true
+
+	return false

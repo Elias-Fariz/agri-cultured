@@ -18,7 +18,9 @@ func _ready() -> void:
 
 func _on_quest_state_changed() -> void:
 	_check_and_show_if_ready()
-
+ 
+func check_now() -> void:
+	_check_and_show_if_ready()
 
 func _check_and_show_if_ready() -> void:
 	if _shown_this_session:
