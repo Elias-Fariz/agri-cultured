@@ -238,4 +238,5 @@ scene_name = "Connector"
 actors = Array[ExtResource("1_k4irt")]([SubResource("Resource_k4irt"), SubResource("Resource_i8fex")])
 markers = SubResource("Resource_ll7qm")
 steps = Array[ExtResource("6_aagwj")]([SubResource("Resource_gk7uj"), SubResource("Resource_aagwj"), SubResource("Resource_ryhcw"), SubResource("Resource_24bqx"), SubResource("Resource_rno86"), SubResource("Resource_fn1ha"), SubResource("Resource_435ii"), SubResource("Resource_tkn4u"), SubResource("Resource_6mxel"), SubResource("Resource_lrtxi"), SubResource("Resource_ywspp"), SubResource("Resource_k4ucj"), SubResource("Resource_noo4t"), SubResource("Resource_wgy7o"), SubResource("Resource_cdaxs"), SubResource("Resource_qfq8x"), SubResource("Resource_320pb"), SubResource("Resource_kr2oo"), SubResource("Resource_yj56w")])
+reward_flags = Array[String](["scrapbook:met:ash"])
 metadata/_custom_type_script = "uid://camo0lur1qm85"

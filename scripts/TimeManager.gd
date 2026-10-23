@@ -31,6 +31,11 @@ var _did_passout_today: bool = false
 var _timeless_lock_count: int = 0
 var _time_was_running_before_timeless: bool = true
 
+# Modal/system pause locks.
+# These are separate from pause_time() so overlapping overlays/cutscenes
+# cannot accidentally resume time while another system still needs it paused.
+var _pause_lock_count: int = 0
+
 @export_category("Passout Rescue")
 
 @export var ash_rescue_enabled: bool = true
@@ -118,10 +123,16 @@ func pause_time() -> void:
 
 
 func resume_time() -> void:
-	# Respect timeless zones: if we are in timeless mode, keep time paused.
+	# A modal/system lock still owns the pause.
+	if _pause_lock_count > 0:
+		running = false
+		return
+
+	# Respect timeless zones too.
 	if _timeless_lock_count > 0:
 		running = false
 		return
+
 	running = true
 
 
@@ -371,3 +382,20 @@ func _warp_to_farm_after_passout_and_wait() -> void:
 	# Let the new Farm scene, spawn marker, HUD, and summary UI settle.
 	for i in range(10):
 		await get_tree().process_frame
+
+func acquire_pause_lock() -> void:
+	_pause_lock_count += 1
+	running = false
+	print("[TimePauseLock] ACQUIRE -> ", _pause_lock_count)
+
+
+func release_pause_lock() -> void:
+	_pause_lock_count = max(0, _pause_lock_count - 1)
+	print("[TimePauseLock] RELEASE -> ", _pause_lock_count)
+
+	if _pause_lock_count == 0:
+		resume_time()
+
+
+func has_pause_lock() -> bool:
+	return _pause_lock_count > 0

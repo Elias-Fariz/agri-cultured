@@ -163,7 +163,7 @@ script = ExtResource("4_uanie")
 type = "gift"
 target = "Flower Headband"
 target2 = "npc_maren"
-text = "Give the Flower Headband to Maren."
+text = "Give the Flower Headband to Maren. (G)"
 metadata/_custom_type_script = "uid://bolxtchvrfo0y"
 
 [resource]

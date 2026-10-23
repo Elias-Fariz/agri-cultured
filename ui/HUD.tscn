@@ -77,17 +77,12 @@ text = "Press H for Help"
 [node name="BuffsLabel" type="Label" parent="TopRightPanel/VBoxContainer"]
 layout_mode = 2
 
-[node name="ToastLayer" type="Control" parent="."]
-custom_minimum_size = Vector2(600, 200)
-layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+[node name="ToastLayer" type="CanvasLayer" parent="."]
+layer = 250
 script = ExtResource("3_jd13s")
 
 [node name="ToastVBox" type="VBoxContainer" parent="ToastLayer"]
 custom_minimum_size = Vector2(600, 200)
-layout_mode = 0
 offset_right = 40.0
 offset_bottom = 40.0
 

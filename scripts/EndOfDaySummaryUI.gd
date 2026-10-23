@@ -41,40 +41,23 @@ func _ready() -> void:
 func show_summary() -> void:
 	_closing = false
 	_refresh()
-	opened = true
+
 	super.show_overlay()
 
+	opened = super.is_open()
+
+	if not opened:
+		push_warning("[EOD UI] Summary could not acquire modal ownership.")
+		return
+
 	await get_tree().process_frame
+
 	if continue_button != null:
 		continue_button.grab_focus()
 
 
 func _on_continue_pressed() -> void:
-	if _closing:
-		return
-
-	_closing = true
-
-	if FadeOverlay != null:
-		await FadeOverlay.fade_out(continue_fade_out_time)
-
-	opened = false
-	super.hide_overlay()
-
-	await get_tree().process_frame
-
-	if FadeOverlay != null:
-		await FadeOverlay.fade_in(morning_fade_in_time)
-
-	if GameState != null and GameState.has_method("unlock_gameplay"):
-		GameState.unlock_gameplay()
-
-	if TimeManager != null:
-		TimeManager.resume_time()
-
-	call_deferred("_flush_day_start_toasts_deferred")
-
-	_closing = false
+	await _finish_summary()
 
 
 func _flush_day_start_toasts_deferred() -> void:
@@ -224,3 +207,39 @@ func _to_str_array(a: Array) -> Array[String]:
 	for v in a:
 		out.append(String(v))
 	return out
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not opened:
+		return
+
+	if event.is_action_pressed("ui_cancel"):
+		get_viewport().set_input_as_handled()
+		_finish_summary()
+
+func _finish_summary() -> void:
+	if _closing:
+		return
+
+	_closing = true
+
+	if FadeOverlay != null:
+		await FadeOverlay.fade_out(continue_fade_out_time)
+
+	opened = false
+	super.hide_overlay()
+
+	await get_tree().process_frame
+
+	if FadeOverlay != null:
+		await FadeOverlay.fade_in(morning_fade_in_time)
+
+	# Release the passout/sleep transition's own lock.
+	if GameState != null and GameState.has_method("unlock_gameplay"):
+		GameState.unlock_gameplay()
+
+	if TimeManager != null:
+		TimeManager.resume_time()
+
+	call_deferred("_flush_day_start_toasts_deferred")
+
+	_closing = false

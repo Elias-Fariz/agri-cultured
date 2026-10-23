@@ -1,10 +1,48 @@
-[gd_scene load_steps=6 format=3 uid="uid://celccxg6n2ye7"]
+[gd_scene load_steps=12 format=3 uid="uid://celccxg6n2ye7"]
 
 [ext_resource type="PackedScene" uid="uid://bfaurdf2mucr2" path="res://tscn/npcs/NPC.tscn" id="1_3dbaq"]
 [ext_resource type="Texture2D" uid="uid://geug0cp1e1lv" path="res://art/characters/maren_portrait.png" id="2_rp88f"]
 [ext_resource type="Resource" uid="uid://dolx8ta0de0u0" path="res://data/gifts/gifts_maren.tres" id="3_2etkw"]
 [ext_resource type="Resource" uid="uid://biuogc0itp13r" path="res://art/characters/dialogue_art/maren_dialogue_art.tres" id="3_dx25p"]
 [ext_resource type="Texture2D" uid="uid://bfwl1byywit1n" path="res://art/characters/maren_01-removebg-preview.png" id="4_rp88f"]
+[ext_resource type="Texture2D" uid="uid://bigdqlm2wti1m" path="res://art/characters/walk_art/maren/maren_idle_down.png" id="6_ju04j"]
+[ext_resource type="Texture2D" uid="uid://c348dbwe4dklu" path="res://art/characters/walk_art/maren/maren_walk_down_1.png" id="7_8kus5"]
+[ext_resource type="Texture2D" uid="uid://dum88j75fy2kc" path="res://art/characters/walk_art/maren/maren_walk_down_2.png" id="8_hu7ad"]
+[ext_resource type="Texture2D" uid="uid://dwrf4v3hcrfvt" path="res://art/characters/walk_art/maren/maren_walk_side_1.png" id="9_hu7ad"]
+[ext_resource type="Texture2D" uid="uid://c1gecke4dtrge" path="res://art/characters/walk_art/maren/maren_walk_side_2.png" id="10_knxus"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_hu7ad"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("6_ju04j")
+}],
+"loop": true,
+"name": &"idle_down",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("7_8kus5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_hu7ad")
+}],
+"loop": true,
+"name": &"walk_down",
+"speed": 4.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("9_hu7ad")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_knxus")
+}],
+"loop": true,
+"name": &"walk_side",
+"speed": 4.0
+}]
 
 [node name="NPC" instance=ExtResource("1_3dbaq")]
 npc_id = "npc_maren"
@@ -28,3 +66,9 @@ available_from_day = 2
 position = Vector2(0, -61)
 scale = Vector2(0.14305522, 0.14305522)
 texture = ExtResource("4_rp88f")
+
+[node name="WalkSprite" parent="." index="2"]
+scale = Vector2(0.35, 0.35)
+sprite_frames = SubResource("SpriteFrames_hu7ad")
+animation = &"walk_down"
+enabled_for_this_npc = true

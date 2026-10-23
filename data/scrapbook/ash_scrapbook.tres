@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="ScrapbookCharacterData" load_steps=9 format=3 uid="uid://bha642fs066k"]
+
+[ext_resource type="Script" uid="uid://bvw41krsm8ol8" path="res://scripts/ScrapbookCharacterData.gd" id="1_j63dv"]
+[ext_resource type="Texture2D" uid="uid://c87byv40cuev8" path="res://art/characters/ASHWOO-removebg-preview.png" id="1_kxy2x"]
+[ext_resource type="Texture2D" uid="uid://dbdsgcvbyinop" path="res://art/characters/ASHWOO-portrait.png" id="1_w2iwg"]
+[ext_resource type="Script" uid="uid://d1e200admuldm" path="res://scripts/ScrapbookSectionData.gd" id="2_kxy2x"]
+[ext_resource type="Texture2D" uid="uid://v26j5rtyi62e" path="res://art/rug.PNG" id="4_lwny4"]
+[ext_resource type="Script" uid="uid://c3sbfryce6tqg" path="res://scripts/ScrapbookEntryData.gd" id="5_cc80e"]
+
+[sub_resource type="Resource" id="Resource_utywh"]
+script = ExtResource("5_cc80e")
+entry_id = "ash;first_meeting"
+title = "The Guardian"
+body = "Ash helped me home when I stayed out too late."
+metadata/_custom_type_script = "uid://c3sbfryce6tqg"
+
+[sub_resource type="Resource" id="Resource_4237n"]
+script = ExtResource("2_kxy2x")
+display_name = "Who They Are"
+entries = Array[ExtResource("5_cc80e")]([SubResource("Resource_utywh")])
+metadata/_custom_type_script = "uid://d1e200admuldm"
+
+[resource]
+script = ExtResource("1_j63dv")
+character_id = "npc_ash"
+display_name = "Ash"
+index_portrait = ExtResource("1_w2iwg")
+portrait = ExtResource("1_kxy2x")
+silhouette = ExtResource("4_lwny4")
+met_flag = "scrapbook:met:ash"
+glimpsed_flag = "scrapbook:glimpsed:ash"
+summary = "Ash lurks on the outskirts of town.
+
+Brandishing a sword that gleams like the full moon, not much is known about them..."
+sections = Array[ExtResource("2_kxy2x")]([SubResource("Resource_4237n")])
+metadata/_custom_type_script = "uid://bvw41krsm8ol8"

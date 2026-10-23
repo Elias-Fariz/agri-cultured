@@ -1,4 +1,4 @@
-extends Control
+extends CanvasLayer
 
 @export var max_toasts: int = 4
 @export var default_duration: float = 2.5

@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://csew3yd4mkcia" path="res://scripts/SliceEndOverlay.gd" id="1_57ma5"]
 
 [node name="SliceEndOverlay" type="CanvasLayer"]
+layer = 240
 script = ExtResource("1_57ma5")
 visual_node_path = NodePath("Panel")
 start_visible_in_game = false

@@ -1,8 +1,9 @@
-[gd_scene load_steps=9 format=3 uid="uid://bfaurdf2mucr2"]
+[gd_scene load_steps=10 format=3 uid="uid://bfaurdf2mucr2"]
 
 [ext_resource type="Script" uid="uid://ourvqmsp1j3a" path="res://scripts/NPC.gd" id="1_8j625"]
 [ext_resource type="Texture2D" uid="uid://c7c8y2irbg56" path="res://art/npc.PNG" id="1_u040o"]
 [ext_resource type="Script" uid="uid://yfylv68o2tk6" path="res://scripts/NPCInteract.gd" id="3_7xv34"]
+[ext_resource type="Script" uid="uid://brf8065fx84s0" path="res://scripts/NPCWalkAnimator.gd" id="3_gf7xg"]
 [ext_resource type="Texture2D" uid="uid://7giptdna0h4q" path="res://art/exclamation_mark.png" id="4_h582y"]
 [ext_resource type="PackedScene" uid="uid://d2x1sdumae6pf" path="res://ui/OverheadBubbleController.tscn" id="5_7catb"]
 
@@ -21,6 +22,10 @@ script = ExtResource("1_8j625")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("1_u040o")
+
+[node name="WalkSprite" type="AnimatedSprite2D" parent="."]
+script = ExtResource("3_gf7xg")
+static_sprite_path = NodePath("../Sprite2D")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_8j625")

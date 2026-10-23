@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="ScrapbookCharacterData" load_steps=9 format=3 uid="uid://l35ih12duoyq"]
+
+[ext_resource type="Texture2D" uid="uid://c63dxvbydmyyn" path="res://art/characters/alder_portrait.png" id="1_4lajf"]
+[ext_resource type="Texture2D" uid="uid://0c7l2pi58fde" path="res://art/characters/alder_full-removebg-preview.png" id="1_fk04l"]
+[ext_resource type="Script" uid="uid://bvw41krsm8ol8" path="res://scripts/ScrapbookCharacterData.gd" id="1_pqldy"]
+[ext_resource type="Script" uid="uid://d1e200admuldm" path="res://scripts/ScrapbookSectionData.gd" id="2_fk04l"]
+[ext_resource type="Texture2D" uid="uid://bwudms0hgr4q7" path="res://art/grass.png" id="4_fdwmy"]
+[ext_resource type="Script" uid="uid://c3sbfryce6tqg" path="res://scripts/ScrapbookEntryData.gd" id="5_xnii8"]
+
+[sub_resource type="Resource" id="Resource_u12p1"]
+script = ExtResource("5_xnii8")
+entry_id = "mayor:first_greeting"
+title = "The Mayor"
+body = "Mayor Alder welcomed me to the valley."
+metadata/_custom_type_script = "uid://c3sbfryce6tqg"
+
+[sub_resource type="Resource" id="Resource_73bl1"]
+script = ExtResource("2_fk04l")
+display_name = "Who They Are"
+entries = Array[ExtResource("5_xnii8")]([SubResource("Resource_u12p1")])
+metadata/_custom_type_script = "uid://d1e200admuldm"
+
+[resource]
+script = ExtResource("1_pqldy")
+character_id = "npc_mayor"
+display_name = "Mayor Alder"
+index_portrait = ExtResource("1_4lajf")
+portrait = ExtResource("1_fk04l")
+silhouette = ExtResource("4_fdwmy")
+met_flag = "scrapbook:met:mayor"
+glimpsed_flag = "scrapbook:glimpsed:mayor"
+summary = "Mayor Alder is the supposed mayor of this town.
+
+He comes across much more friendly and instead invites you in like a long-lost friend."
+sections = Array[ExtResource("2_fk04l")]([SubResource("Resource_73bl1")])
+metadata/_custom_type_script = "uid://bvw41krsm8ol8"

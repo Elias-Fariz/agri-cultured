@@ -1,0 +1,186 @@
+[gd_scene load_steps=7 format=3 uid="uid://bvd5j6e6uh5s2"]
+
+[ext_resource type="Script" uid="uid://d03felsy8ryoe" path="res://scripts/ScrapbookOverlay.gd" id="1_egsh1"]
+[ext_resource type="Resource" uid="uid://er08n1epcbwo" path="res://data/scrapbook/maren_scrapbook.tres" id="2_cs6n4"]
+[ext_resource type="Script" uid="uid://bvw41krsm8ol8" path="res://scripts/ScrapbookCharacterData.gd" id="2_x1j7f"]
+[ext_resource type="Resource" uid="uid://l35ih12duoyq" path="res://data/scrapbook/alder_scrapbook.tres" id="3_f87fj"]
+[ext_resource type="Resource" uid="uid://c4e0syijkm87f" path="res://data/scrapbook/tansy_scrapbook.tres" id="4_13on6"]
+[ext_resource type="Resource" uid="uid://bha642fs066k" path="res://data/scrapbook/ash_scrapbook.tres" id="6_p2dya"]
+
+[node name="ScrapbookOverlay" type="CanvasLayer"]
+script = ExtResource("1_egsh1")
+characters = Array[ExtResource("2_x1j7f")]([ExtResource("3_f87fj"), ExtResource("4_13on6"), ExtResource("2_cs6n4"), ExtResource("6_p2dya")])
+visual_node_path = NodePath("Panel")
+start_visible_in_game = false
+is_modal = true
+modal_overlay_id = "scrapbook"
+
+[node name="Panel" type="Panel" parent="."]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 48
+theme_override_constants/margin_top = 32
+theme_override_constants/margin_right = 48
+theme_override_constants/margin_bottom = 32
+
+[node name="Root" type="VBoxContainer" parent="Panel/MarginContainer"]
+layout_mode = 2
+
+[node name="HeaderRow" type="HBoxContainer" parent="Panel/MarginContainer/Root"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="Panel/MarginContainer/Root/HeaderRow"]
+layout_mode = 2
+
+[node name="Spacer" type="Control" parent="Panel/MarginContainer/Root/HeaderRow"]
+layout_mode = 2
+
+[node name="CloseButton" type="Button" parent="Panel/MarginContainer/Root/HeaderRow"]
+layout_mode = 2
+
+[node name="Label2" type="Label" parent="Panel/MarginContainer/Root/HeaderRow"]
+layout_mode = 2
+
+[node name="Label3" type="Label" parent="Panel/MarginContainer/Root/HeaderRow"]
+layout_mode = 2
+
+[node name="Content" type="Control" parent="Panel/MarginContainer/Root"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="IndexView" type="Control" parent="Panel/MarginContainer/Root/Content"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CharacterGrid" type="GridContainer" parent="Panel/MarginContainer/Root/Content/IndexView"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/h_separation = 40
+theme_override_constants/v_separation = 20
+columns = 2
+
+[node name="CharacterView" type="Control" parent="Panel/MarginContainer/Root/Content"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TwoPageRow" type="HBoxContainer" parent="Panel/MarginContainer/Root/Content/CharacterView"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="LeftPage" type="VBoxContainer" parent="Panel/MarginContainer/Root/Content/CharacterView/TwoPageRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Portrait" type="TextureRect" parent="Panel/MarginContainer/Root/Content/CharacterView/TwoPageRow/LeftPage"]
+custom_minimum_size = Vector2(220, 260)
+layout_mode = 2
+expand_mode = 3
+stretch_mode = 5
+
+[node name="NameLabel" type="Label" parent="Panel/MarginContainer/Root/Content/CharacterView/TwoPageRow/LeftPage"]
+layout_mode = 2
+
+[node name="FriendshipLabel" type="Label" parent="Panel/MarginContainer/Root/Content/CharacterView/TwoPageRow/LeftPage"]
+layout_mode = 2
+
+[node name="SummaryLabel" type="RichTextLabel" parent="Panel/MarginContainer/Root/Content/CharacterView/TwoPageRow/LeftPage"]
+layout_mode = 2
+fit_content = true
+
+[node name="BackToIndexButton" type="Button" parent="Panel/MarginContainer/Root/Content/CharacterView/TwoPageRow/LeftPage"]
+layout_mode = 2
+
+[node name="RightPage" type="VBoxContainer" parent="Panel/MarginContainer/Root/Content/CharacterView/TwoPageRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="SectionPromptLabel" type="Label" parent="Panel/MarginContainer/Root/Content/CharacterView/TwoPageRow/RightPage"]
+layout_mode = 2
+
+[node name="SectionButtonContainer" type="VBoxContainer" parent="Panel/MarginContainer/Root/Content/CharacterView/TwoPageRow/RightPage"]
+layout_mode = 2
+
+[node name="SectionView" type="Control" parent="Panel/MarginContainer/Root/Content"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TwoPageRow" type="HBoxContainer" parent="Panel/MarginContainer/Root/Content/SectionView"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="LeftPage" type="VBoxContainer" parent="Panel/MarginContainer/Root/Content/SectionView/TwoPageRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MiniPortrait" type="TextureRect" parent="Panel/MarginContainer/Root/Content/SectionView/TwoPageRow/LeftPage"]
+custom_minimum_size = Vector2(100, 120)
+layout_mode = 2
+expand_mode = 3
+stretch_mode = 5
+
+[node name="SectionTitleLabel" type="Label" parent="Panel/MarginContainer/Root/Content/SectionView/TwoPageRow/LeftPage"]
+layout_mode = 2
+
+[node name="EntryScroll" type="ScrollContainer" parent="Panel/MarginContainer/Root/Content/SectionView/TwoPageRow/LeftPage"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="EntryButtonContainer" type="VBoxContainer" parent="Panel/MarginContainer/Root/Content/SectionView/TwoPageRow/LeftPage/EntryScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="BackToCharacterButton" type="Button" parent="Panel/MarginContainer/Root/Content/SectionView/TwoPageRow/LeftPage"]
+layout_mode = 2
+
+[node name="RightPage" type="VBoxContainer" parent="Panel/MarginContainer/Root/Content/SectionView/TwoPageRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="EntryTitleLabel" type="Label" parent="Panel/MarginContainer/Root/Content/SectionView/TwoPageRow/RightPage"]
+layout_mode = 2
+
+[node name="EntryBodyText" type="RichTextLabel" parent="Panel/MarginContainer/Root/Content/SectionView/TwoPageRow/RightPage"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="HintLabel" type="Label" parent="Panel/MarginContainer/Root"]
+layout_mode = 2

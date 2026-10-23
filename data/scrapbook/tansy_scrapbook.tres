@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="ScrapbookCharacterData" load_steps=9 format=3 uid="uid://c4e0syijkm87f"]
+
+[ext_resource type="Script" uid="uid://bvw41krsm8ol8" path="res://scripts/ScrapbookCharacterData.gd" id="1_eqfwm"]
+[ext_resource type="Texture2D" uid="uid://cd6ucy0jnypme" path="res://art/characters/kai_portrait.png" id="1_k6ixl"]
+[ext_resource type="Texture2D" uid="uid://crl4b3gi44djf" path="res://art/characters/kai_01-removebg-preview.png" id="1_r1px2"]
+[ext_resource type="Script" uid="uid://d1e200admuldm" path="res://scripts/ScrapbookSectionData.gd" id="2_kxp5h"]
+[ext_resource type="Texture2D" uid="uid://nan0sddf00hl" path="res://art/chest.png" id="4_k6ixl"]
+[ext_resource type="Script" uid="uid://c3sbfryce6tqg" path="res://scripts/ScrapbookEntryData.gd" id="5_dnv6v"]
+
+[sub_resource type="Resource" id="Resource_o83hd"]
+script = ExtResource("5_dnv6v")
+entry_id = "tansy:first_meeting"
+title = "The Shopkeeper"
+body = "Tansy runs the general store."
+metadata/_custom_type_script = "uid://c3sbfryce6tqg"
+
+[sub_resource type="Resource" id="Resource_2l0jg"]
+script = ExtResource("2_kxp5h")
+display_name = "Who They Are"
+entries = Array[ExtResource("5_dnv6v")]([SubResource("Resource_o83hd")])
+metadata/_custom_type_script = "uid://d1e200admuldm"
+
+[resource]
+script = ExtResource("1_eqfwm")
+character_id = "npc_tansy"
+display_name = "Tansy"
+index_portrait = ExtResource("1_k6ixl")
+portrait = ExtResource("1_r1px2")
+silhouette = ExtResource("4_k6ixl")
+met_flag = "scrapbook:met:tansy"
+glimpsed_flag = "scrapbook:glimpsed:tansy"
+summary = "Tansy keeps check of the general store in town.
+
+Their mind may run a million miles an hour, but they'll know immediately where you item is."
+sections = Array[ExtResource("2_kxp5h")]([SubResource("Resource_2l0jg")])
+metadata/_custom_type_script = "uid://bvw41krsm8ol8"

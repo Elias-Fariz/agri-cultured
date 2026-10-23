@@ -29,19 +29,19 @@ metadata/_custom_type_script = "uid://bolxtchvrfo0y"
 [sub_resource type="Resource" id="Resource_6e1om"]
 script = ExtResource("2_gw17v")
 type = "till"
-text = "Switch to your Hoe and till a grass tile for the seed."
+text = "Switch to your Hoe and till a grass tile for the seed. (Space)"
 metadata/_custom_type_script = "uid://bolxtchvrfo0y"
 
 [sub_resource type="Resource" id="Resource_sdq8m"]
 script = ExtResource("2_gw17v")
 type = "plant"
-text = "Switch to your Seed Pouch and plant the seed into the tilled tile."
+text = "Switch to your Seed Pouch and plant the seed into the tilled tile. (P)"
 metadata/_custom_type_script = "uid://bolxtchvrfo0y"
 
 [sub_resource type="Resource" id="Resource_dnr2a"]
 script = ExtResource("2_gw17v")
 type = "water"
-text = "Then finally, switch to your Watering Can to water the planted seed."
+text = "Then finally, switch to your Watering Can to water the planted seed. (Space)"
 metadata/_custom_type_script = "uid://bolxtchvrfo0y"
 
 [resource]

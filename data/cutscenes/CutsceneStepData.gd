@@ -42,6 +42,8 @@ enum StepType {
 	
 	FADE_TO_BLACK,
 	FADE_FROM_BLACK,
+
+	SET_FLAG,
 }
 
 @export var step_type: StepType = StepType.WAIT
@@ -89,6 +91,8 @@ enum StepType {
 @export_multiline var overhead_text: String = "?"
 @export var overhead_duration: float = 1.0
 @export var overhead_offset: Vector2 = Vector2(0, -34)
+
+@export var flag_id: String = ""
 
 @export_group("Narration")
 

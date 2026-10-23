@@ -65,6 +65,13 @@ var _char_accum: float = 0.0
 var _blip_accum: float = 0.0
 var _last_blip_char: String = ""
 
+@onready var voice_player: AudioStreamPlayer = $VoicePlayer
+
+# True for the entire current dialogue beat if that beat has recorded voice.
+# We keep this separate from voice_player.playing so that text blips do not
+# suddenly begin if the actor finishes speaking before the typewriter finishes.
+var _current_beat_has_voice: bool = false
+
 signal dialogue_closed
 
 func _ready() -> void:
@@ -141,6 +148,7 @@ func hide_dialogue() -> void:
 	_active = false
 	_typing = false
 	_talk_blip_stop()
+	_voice_stop()
 
 	_lines = []
 	_index = 0
@@ -278,8 +286,14 @@ func _show_current_beat() -> void:
 		hide_dialogue()
 		return
 
+	# Stop any recorded voice from the previous beat first.
+	_voice_stop()
+
 	_apply_beat_state(beat)
 	show_line(beat.text)
+
+	# Start this beat's recorded dialogue, if it has one.
+	_play_voice_for_beat(beat)
 
 func _apply_beat_state(beat: DialogueBeatData) -> void:
 	var speaker_id := String(beat.speaker_id).strip_edges()
@@ -297,7 +311,6 @@ func _apply_beat_state(beat: DialogueBeatData) -> void:
 			_show_stage_layer_for_beat()
 			_apply_stage_for_narration()
 
-		_set_voice_for_speaker("")
 		return
 
 	var npc := _find_npc_by_id(speaker_id)
@@ -319,8 +332,6 @@ func _apply_beat_state(beat: DialogueBeatData) -> void:
 	else:
 		_show_stage_layer_for_beat()
 		_apply_stage_for_beat(beat)
-
-	_set_voice_for_speaker(display_name)
 
 func _apply_speaker_state(speaker_name: String, friendship: int = -1, speaker_id: String = "", beat: DialogueBeatData = null) -> void:
 	# Friendship display
@@ -357,6 +368,10 @@ func _talk_blip_stop() -> void:
 		$TalkBlipPlayer.stop()
 
 func _talk_blip_play(next_char: String) -> void:
+	# Recorded dialogue replaces typewriter blips for this whole beat.
+	if _current_beat_has_voice:
+		return
+
 	if not has_node("TalkBlipPlayer"):
 		return
 
@@ -376,9 +391,10 @@ func _talk_blip_play(next_char: String) -> void:
 	p.stop()
 	p.play()
 
-func _set_voice_for_speaker(speaker_name: String) -> void:
-	# Later: swap streams based on speaker or beat voice clip
-	pass
+func _set_voice_for_speaker(_speaker_name: String) -> void:
+	# Legacy/simple dialogue currently has no recorded per-line voice.
+	# Ensure any previous sequence voice is cleared.
+	_voice_stop()
 
 # -------------------------------------------------------------------
 # Portrait plumbing
@@ -710,3 +726,31 @@ func _show_stage_layer_for_beat() -> void:
 		return
 
 	_stage_layer.visible = true
+
+func _play_voice_for_beat(beat: DialogueBeatData) -> void:
+	_current_beat_has_voice = false
+
+	if beat == null:
+		return
+
+	if beat.voice_clip == null:
+		return
+
+	if voice_player == null:
+		return
+
+	_current_beat_has_voice = true
+
+	voice_player.stop()
+	voice_player.stream = beat.voice_clip
+	voice_player.play()
+
+
+func _voice_stop() -> void:
+	_current_beat_has_voice = false
+
+	if voice_player == null:
+		return
+
+	voice_player.stop()
+	voice_player.stream = null

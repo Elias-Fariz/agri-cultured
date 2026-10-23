@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=3 uid="uid://bjx6v0gjfwt2h"]
+[gd_scene load_steps=37 format=3 uid="uid://bjx6v0gjfwt2h"]
 
 [ext_resource type="TileSet" uid="uid://chypvyk38hcyn" path="res://tiles/IndoorsTileset.tres" id="2_gef2e"]
 [ext_resource type="PackedScene" uid="uid://dv7wem6ftpvdd" path="res://tscn/Player.tscn" id="3_jpwvr"]
@@ -29,7 +29,10 @@
 [ext_resource type="PackedScene" uid="uid://dmwh8devorqla" path="res://ui/NarrationOverlay.tscn" id="25_r31n5"]
 [ext_resource type="PackedScene" uid="uid://dypln0eb14t2g" path="res://ui/WhisperOverlay.tscn" id="26_fidvi"]
 [ext_resource type="PackedScene" uid="uid://dsefxlv6x3h0c" path="res://ui/DayNightModulate.tscn" id="26_o06uo"]
+[ext_resource type="PackedScene" uid="uid://bvd5j6e6uh5s2" path="res://ui/ScrapbookOverlay.tscn" id="28_pga40"]
 [ext_resource type="Script" uid="uid://b7n4wv6k3k33k" path="res://scripts/QuestLocation.gd" id="29_1kkpn"]
+[ext_resource type="Script" uid="uid://b6e88und28hko" path="res://scripts/SliceEndTrigger.gd" id="31_76ndx"]
+[ext_resource type="PackedScene" uid="uid://cfpgu03gpauoq" path="res://ui/SliceEndOverlay.tscn" id="32_6tb54"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_r31n5"]
 
@@ -133,6 +136,8 @@ help_book_data = ExtResource("20_gef2e")
 
 [node name="WhisperOverlay" parent="." instance=ExtResource("26_fidvi")]
 
+[node name="ScrapbookOverlay" parent="." instance=ExtResource("28_pga40")]
+
 [node name="SpawnManager" type="Node" parent="."]
 script = ExtResource("21_8dwd5")
 
@@ -150,7 +155,23 @@ position = Vector2(292, 111)
 [node name="Wakeup_Focus" type="Marker2D" parent="CutsceneMarkers"]
 position = Vector2(259, 202)
 
+[node name="maren_start" type="Marker2D" parent="CutsceneMarkers"]
+position = Vector2(379, 145)
+
+[node name="maren_start2" type="Marker2D" parent="CutsceneMarkers"]
+position = Vector2(157, 143)
+
+[node name="maren_start3" type="Marker2D" parent="CutsceneMarkers"]
+position = Vector2(158, 261)
+
+[node name="SliceEndTrigger" type="Node" parent="."]
+script = ExtResource("31_76ndx")
+slice_end_overlay_path = NodePath("../SliceEndOverlay")
+
+[node name="SliceEndOverlay" parent="." instance=ExtResource("32_6tb54")]
+
 [node name="QuestLocation" type="Area2D" parent="."]
+visible = false
 position = Vector2(-159.00003, 1163)
 scale = Vector2(67.59766, 67.59766)
 collision_mask = 3

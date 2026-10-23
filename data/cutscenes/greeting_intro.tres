@@ -350,5 +350,6 @@ markers = SubResource("Resource_2pgpd")
 effects = Array[ExtResource("2_r1wa0")]([SubResource("Resource_df6ec")])
 steps = Array[ExtResource("4_2pgpd")]([SubResource("Resource_vwya2"), SubResource("Resource_cag78"), SubResource("Resource_r4rt6"), SubResource("Resource_f74h5"), SubResource("Resource_kir2k"), SubResource("Resource_a08rt"), SubResource("Resource_fomr5"), SubResource("Resource_vp7ds"), SubResource("Resource_fbapq"), SubResource("Resource_4m285"), SubResource("Resource_law8i"), SubResource("Resource_sqiqa"), SubResource("Resource_mk68a"), SubResource("Resource_ybhbr"), SubResource("Resource_ylt7b"), SubResource("Resource_js58o"), SubResource("Resource_28f6d"), SubResource("Resource_84ict"), SubResource("Resource_ngyyp"), SubResource("Resource_3r3to"), SubResource("Resource_qniw4"), SubResource("Resource_6id15"), SubResource("Resource_tq3f1"), SubResource("Resource_baylr")])
 reward_money = 50
+reward_flags = Array[String](["scrapbook:met:mayor", "scrapbook:glimpsed:tansy"])
 reward_quests = Array[ExtResource("4_r4rt6")]([ExtResource("5_kir2k")])
 metadata/_custom_type_script = "uid://camo0lur1qm85"

@@ -18,6 +18,9 @@ metadata/_custom_type_script = "uid://b4pm6wxp5ivtk"
 script = ExtResource("3_brfhi")
 markers_by_id = {
 "focus_start": NodePath("CutsceneMarkers/Wakeup_Focus"),
+"maren_end": NodePath("CutsceneMarkers/maren_start3"),
+"maren_start": NodePath("CutsceneMarkers/maren_start"),
+"maren_walk": NodePath("CutsceneMarkers/maren_start2"),
 "player_start": NodePath("CutsceneMarkers/Wakeup_Player")
 }
 metadata/_custom_type_script = "uid://bjwubxbrbyt2x"

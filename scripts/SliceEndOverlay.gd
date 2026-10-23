@@ -41,7 +41,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 
 	if event.is_action_pressed("ui_cancel") or event.is_action_pressed("interact"):
-		hide_overlay()
+		_on_continue_pressed()
 		get_viewport().set_input_as_handled()
 
 

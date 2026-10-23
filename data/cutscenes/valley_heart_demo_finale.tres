@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="CutsceneData" load_steps=40 format=3 uid="uid://dang6ow5mdnr2"]
+[gd_resource type="Resource" script_class="CutsceneData" load_steps=42 format=3 uid="uid://dang6ow5mdnr2"]
 
 [ext_resource type="Script" uid="uid://b4pm6wxp5ivtk" path="res://data/cutscenes/CutsceneActorData.gd" id="1_kgbwo"]
 [ext_resource type="Script" uid="uid://cp2gtb0hckrrj" path="res://data/cutscenes/CutsceneEffectData.gd" id="2_f12dt"]
@@ -204,12 +204,21 @@ step_type = 22
 duration = 1.5
 metadata/_custom_type_script = "uid://0k0f68wqa7mm"
 
+[sub_resource type="Resource" id="Resource_j6q3i"]
+script = ExtResource("6_5duo3")
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
+[sub_resource type="Resource" id="Resource_peyrv"]
+script = ExtResource("6_5duo3")
+step_type = 24
+flag_id = "slice_01_complete"
+metadata/_custom_type_script = "uid://0k0f68wqa7mm"
+
 [resource]
 script = ExtResource("5_2d5x7")
 id = "valley_heart_demo_finale"
 scene_name = "ValleyHeart"
 actors = Array[ExtResource("1_kgbwo")]([SubResource("Resource_kgbwo"), SubResource("Resource_f12dt"), SubResource("Resource_ot31y"), SubResource("Resource_i7l0m")])
 markers = SubResource("Resource_2d5x7")
-steps = Array[ExtResource("6_5duo3")]([SubResource("Resource_5duo3"), SubResource("Resource_mtpy1"), SubResource("Resource_luml7"), SubResource("Resource_dsnoy"), SubResource("Resource_668qq"), SubResource("Resource_tt8qf"), SubResource("Resource_0tjpn"), SubResource("Resource_as8il"), SubResource("Resource_kefxd"), SubResource("Resource_k0gpe"), SubResource("Resource_bnxpw"), SubResource("Resource_178y7"), SubResource("Resource_tfubg"), SubResource("Resource_7uo06"), SubResource("Resource_blx4k"), SubResource("Resource_qeunx")])
-reward_flags = Array[String](["slice_01_complete"])
+steps = Array[ExtResource("6_5duo3")]([SubResource("Resource_5duo3"), SubResource("Resource_mtpy1"), SubResource("Resource_luml7"), SubResource("Resource_dsnoy"), SubResource("Resource_668qq"), SubResource("Resource_tt8qf"), SubResource("Resource_0tjpn"), SubResource("Resource_as8il"), SubResource("Resource_kefxd"), SubResource("Resource_k0gpe"), SubResource("Resource_bnxpw"), SubResource("Resource_178y7"), SubResource("Resource_tfubg"), SubResource("Resource_7uo06"), SubResource("Resource_blx4k"), SubResource("Resource_qeunx"), SubResource("Resource_j6q3i"), SubResource("Resource_peyrv")])
 metadata/_custom_type_script = "uid://camo0lur1qm85"

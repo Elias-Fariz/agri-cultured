@@ -16,7 +16,12 @@ func _ready() -> void:
 
 
 func _do_interact() -> void:
-	var ui := get_tree().get_first_node_in_group(shipping_ui_group)
+	if TutorialHintManager != null:
+		TutorialHintManager.request_hint("shipping_bin")
+
+	var ui := get_tree().get_first_node_in_group(
+		shipping_ui_group
+	)
 
 	if ui == null:
 		push_warning(
@@ -30,6 +35,11 @@ func _do_interact() -> void:
 
 	if ui.has_method("show_overlay"):
 		ui.call("show_overlay")
+
+		if TutorialHintManager != null:
+			TutorialHintManager.request_hint(
+				"shipping_bin"
+			)
 	elif ui.has_method("show"):
 		ui.call("show")
 	else:

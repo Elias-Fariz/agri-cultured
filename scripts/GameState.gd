@@ -84,7 +84,13 @@ func inventory_add(item_name: String, qty: int = 1) -> void:
 	inventory_changed.emit()
 	_refresh_selected_seed_after_inventory_change()
 
-	# print("Added to inventory:", item_name, " Inventory now:", inventory)
+	# Contextual inventory tutorial.
+	# Seeds are taught by the Seed Pouch instead.
+	if not is_seed_item(item_name):
+		if TutorialHintManager != null:
+			TutorialHintManager.request_hint("inventory")
+
+	# print(...)
 
 func inventory_has(item_name: String, qty: int = 1) -> bool:
 	return int(inventory.get(item_name, 0)) >= qty
@@ -1421,9 +1427,11 @@ var lock_count: int = 0
 
 func lock_gameplay() -> void:
 	lock_count += 1
+	print("[GameplayLock] LOCK -> ", lock_count)
 
 func unlock_gameplay() -> void:
 	lock_count = max(0, lock_count - 1)
+	print("[GameplayLock] UNLOCK -> ", lock_count)
 
 func is_gameplay_locked() -> bool:
 	return lock_count > 0
@@ -2660,6 +2668,33 @@ func set_flag(flag_id: String, value: bool = true) -> void:
 	else:
 		if game_flag_set_days.has(flag_id):
 			game_flag_set_days.erase(flag_id)
+			
+	# -------------------------------------------------
+	# Scrapbook discovery feedback
+	# -------------------------------------------------
+
+	if value and not was_enabled:
+		if flag_id.begins_with("scrapbook:met:"):
+			var character_id := flag_id.trim_prefix(
+				"scrapbook:met:"
+			)
+
+			if TutorialHintManager != null:
+				TutorialHintManager.notify_scrapbook_discovery(
+					character_id,
+					true
+				)
+
+		elif flag_id.begins_with("scrapbook:glimpsed:"):
+			var character_id := flag_id.trim_prefix(
+				"scrapbook:glimpsed:"
+			)
+
+			if TutorialHintManager != null:
+				TutorialHintManager.notify_scrapbook_discovery(
+					character_id,
+					false
+				)
 
 	# Tiny cozy feedback for newly unlocked Help Book pages.
 	if value and not was_enabled and flag_id.begins_with("help_page:"):

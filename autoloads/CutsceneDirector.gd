@@ -880,6 +880,21 @@ func _run_step(step: CutsceneStepData, scene: Node, player: Node, _dialogue_ui: 
 
 		CutsceneStepData.StepType.FADE_FROM_BLACK:
 			await _run_fade_from_black_step(step)
+			
+		CutsceneStepData.StepType.SET_FLAG:
+			var flag := step.flag_id.strip_edges()
+
+			if flag != "" and GameState != null:
+				if GameState.has_method("set_flag"):
+					GameState.set_flag(flag, true)
+
+					# Wake systems such as SliceEndTrigger that are
+					# already listening for state changes.
+					if (
+						QuestEvents != null
+						and QuestEvents.has_signal("quest_state_changed")
+					):
+						QuestEvents.quest_state_changed.emit()
 
 func _resolve_marker(scene: Node, data: CutsceneData, step: CutsceneStepData) -> Marker2D:
 	# New way: marker_id -> markers_by_id

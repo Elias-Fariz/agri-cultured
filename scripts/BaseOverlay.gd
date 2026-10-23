@@ -36,12 +36,23 @@ func _ready() -> void:
 
 
 func _exit_tree() -> void:
-	# Safety: if a modal overlay is removed while open, release its modal ownership.
 	if Engine.is_editor_hint():
 		return
 
+	# Safety:
+	# If a modal overlay disappears because its scene is being changed,
+	# release EVERY lock that this overlay acquired when it opened.
 	if is_modal and _modal_registered:
 		_release_modal_ownership()
+
+		if GameState != null and GameState.has_method("unlock_gameplay"):
+			GameState.unlock_gameplay()
+
+		if TimeManager != null:
+			if TimeManager.has_method("release_pause_lock"):
+				TimeManager.release_pause_lock()
+			else:
+				TimeManager.resume_time()
 
 
 func _apply_visibility() -> void:
@@ -105,7 +116,11 @@ func _set_overlay_visible(visible: bool) -> void:
 
 		if is_modal:
 			GameState.lock_gameplay()
-			TimeManager.pause_time()
+
+			if TimeManager.has_method("acquire_pause_lock"):
+				TimeManager.acquire_pause_lock()
+			else:
+				TimeManager.pause_time()
 
 	else:
 		_is_open = false
@@ -114,7 +129,11 @@ func _set_overlay_visible(visible: bool) -> void:
 		if is_modal and _modal_registered:
 			_release_modal_ownership()
 			GameState.unlock_gameplay()
-			TimeManager.resume_time()
+
+			if TimeManager.has_method("release_pause_lock"):
+				TimeManager.release_pause_lock()
+			else:
+				TimeManager.resume_time()
 
 
 func _try_claim_modal_ownership() -> bool:

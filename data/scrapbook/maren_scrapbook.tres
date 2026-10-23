@@ -1,0 +1,38 @@
+[gd_resource type="Resource" script_class="ScrapbookCharacterData" load_steps=9 format=3 uid="uid://er08n1epcbwo"]
+
+[ext_resource type="Script" uid="uid://bvw41krsm8ol8" path="res://scripts/ScrapbookCharacterData.gd" id="1_3rxhh"]
+[ext_resource type="Texture2D" uid="uid://geug0cp1e1lv" path="res://art/characters/maren_portrait.png" id="1_wkceu"]
+[ext_resource type="Texture2D" uid="uid://bfwl1byywit1n" path="res://art/characters/maren_01-removebg-preview.png" id="1_wpli7"]
+[ext_resource type="Script" uid="uid://d1e200admuldm" path="res://scripts/ScrapbookSectionData.gd" id="2_wpli7"]
+[ext_resource type="Script" uid="uid://c3sbfryce6tqg" path="res://scripts/ScrapbookEntryData.gd" id="4_3mdfp"]
+[ext_resource type="Texture2D" uid="uid://bq8o1e8mbe7qm" path="res://art/door.PNG" id="5_6gvrd"]
+
+[sub_resource type="Resource" id="Resource_3mdfp"]
+script = ExtResource("4_3mdfp")
+entry_id = "maren:first_meeting"
+title = "The Baker"
+body = "Maren runs the bakery in town.
+
+She seems happiest when there is something warm nearby and someone to share it with."
+metadata/_custom_type_script = "uid://c3sbfryce6tqg"
+
+[sub_resource type="Resource" id="Resource_6gvrd"]
+script = ExtResource("2_wpli7")
+display_name = "Who They Are"
+entries = Array[ExtResource("4_3mdfp")]([SubResource("Resource_3mdfp")])
+metadata/_custom_type_script = "uid://d1e200admuldm"
+
+[resource]
+script = ExtResource("1_3rxhh")
+character_id = "npc_maren"
+display_name = "Maren"
+index_portrait = ExtResource("1_wkceu")
+portrait = ExtResource("1_wpli7")
+silhouette = ExtResource("5_6gvrd")
+met_flag = "scrapbook:met:maren"
+glimpsed_flag = "scrapbook:glimpsed:maren"
+summary = "Maren runs the bakery in town.
+
+She has a gentle way of noticing when someone could use something warm."
+sections = Array[ExtResource("2_wpli7")]([SubResource("Resource_6gvrd")])
+metadata/_custom_type_script = "uid://bvw41krsm8ol8"
