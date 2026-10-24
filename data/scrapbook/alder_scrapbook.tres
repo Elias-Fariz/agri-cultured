@@ -11,7 +11,7 @@
 script = ExtResource("5_xnii8")
 entry_id = "mayor:first_greeting"
 title = "The Mayor"
-body = "Mayor Alder welcomed me to the valley."
+body = "Alder has watched over the village for a long time. He speaks carefully, as though most things deserve a moment of thought first."
 metadata/_custom_type_script = "uid://c3sbfryce6tqg"
 
 [sub_resource type="Resource" id="Resource_73bl1"]

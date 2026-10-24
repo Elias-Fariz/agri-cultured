@@ -949,6 +949,14 @@ func unlock_recipe(recipe_id: String) -> void:
 			2.5
 		)
 
+	# First-ever crafting recipe tutorial.
+	# Delay it so the recipe-earned message gets to appear first.
+	if TutorialHintManager != null:
+		TutorialHintManager.request_hint_delayed(
+			"crafting",
+			1.25
+		)
+
 func get_unlocked_recipe_ids() -> Dictionary:
 	# Return dictionary so we can do unlocked.has(id)
 	return unlocked_recipes
@@ -1479,7 +1487,19 @@ func add_quest(quest: Dictionary) -> void:
 		unlock_travel("animal_keeper")
 
 	var title := String(q.get("title", "Quest"))
-	QuestEvents.toast_requested.emit("New Quest: " + title, "info", 2.5)
+	QuestEvents.toast_requested.emit(
+		"New Quest: " + title,
+		"info",
+		2.5
+	)
+
+	# First-ever quest tutorial.
+	# Delayed slightly so it does not fight the "New Quest" toast.
+	if TutorialHintManager != null:
+		TutorialHintManager.request_hint_delayed(
+			"quest_menu",
+			1.5
+		)
 
 	if qid != "":
 		(today_tracking["quests_accepted"] as Array).append(title)
@@ -2912,6 +2932,7 @@ func apply_reward_dict(reward: Dictionary, source_id: String = "") -> void:
 	# Tools
 	if reward.has("tools"):
 		var tools_reward: Array = Array(reward["tools"])
+
 		for tool_any in tools_reward:
 			var tool_id := String(tool_any)
 			var tool_type := get_tool_type_from_id(tool_id)
@@ -2919,7 +2940,18 @@ func apply_reward_dict(reward: Dictionary, source_id: String = "") -> void:
 			if tool_type >= 0:
 				unlock_tool(tool_type)
 			else:
-				push_warning("[Reward] Unknown tool id: " + tool_id)
+				push_warning(
+					"[Reward] Unknown tool id: " + tool_id
+				)
+
+		# Teach tool switching once the whole reward bundle
+		# has finished granting its tools.
+		if not tools_reward.is_empty():
+			if TutorialHintManager != null:
+				TutorialHintManager.request_hint_delayed(
+					"tool_switch",
+					1.0
+				)
 
 		# Crafting recipe unlocks
 	if reward.has("crafting_recipes"):

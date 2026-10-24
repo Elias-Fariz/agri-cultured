@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="CutsceneData" load_steps=43 format=3 uid="uid://ci4auymnmsti5"]
+[gd_resource type="Resource" script_class="CutsceneData" load_steps=50 format=3 uid="uid://ci4auymnmsti5"]
 
 [ext_resource type="Script" uid="uid://b4pm6wxp5ivtk" path="res://data/cutscenes/CutsceneActorData.gd" id="1_k4irt"]
 [ext_resource type="Script" uid="uid://cp2gtb0hckrrj" path="res://data/cutscenes/CutsceneEffectData.gd" id="2_i8fex"]
@@ -8,7 +8,14 @@
 [ext_resource type="Script" uid="uid://camo0lur1qm85" path="res://data/cutscenes/CutsceneData.gd" id="5_gk7uj"]
 [ext_resource type="Script" uid="uid://0k0f68wqa7mm" path="res://data/cutscenes/CutsceneStepData.gd" id="6_aagwj"]
 [ext_resource type="Script" uid="uid://dt1fjl76x6n5o" path="res://data/dialogue/DialogueBeatData.gd" id="8_yj56w"]
+[ext_resource type="AudioStream" uid="uid://4byetvfa23yg" path="res://audio/voice/ash_passout_cutscene/ash_passout_01.MP3" id="9_aagwj"]
 [ext_resource type="Script" uid="uid://clb3lhdggkt8d" path="res://data/dialogue/DialogueSequenceData.gd" id="9_gk7uj"]
+[ext_resource type="AudioStream" uid="uid://b3bcrb0037yp6" path="res://audio/voice/ash_passout_cutscene/ash_passout_02.MP3" id="10_ryhcw"]
+[ext_resource type="AudioStream" uid="uid://s7xayvvkap25" path="res://audio/voice/ash_passout_cutscene/ash_passout_03.MP3" id="12_435ii"]
+[ext_resource type="AudioStream" uid="uid://2d8obyl7x7s1" path="res://audio/voice/ash_passout_cutscene/ash_passout_04.MP3" id="13_lgnja"]
+[ext_resource type="AudioStream" uid="uid://c1g3uf6a4ncl1" path="res://audio/voice/ash_passout_cutscene/ash_passout_05.MP3" id="14_1tkmq"]
+[ext_resource type="AudioStream" uid="uid://e7ow1223scug" path="res://audio/voice/ash_passout_cutscene/ash_passout_06.MP3" id="15_lrtxi"]
+[ext_resource type="AudioStream" uid="uid://clpxa0lex4pet" path="res://audio/voice/ash_passout_cutscene/ash_passout_07.MP3" id="16_lrtxi"]
 
 [sub_resource type="Resource" id="Resource_k4irt"]
 script = ExtResource("1_k4irt")
@@ -90,6 +97,7 @@ script = ExtResource("8_yj56w")
 text = "What are you doing out here?"
 speaker_id = "npc_ash"
 speaker_name_override = "???"
+voice_clip = ExtResource("9_aagwj")
 metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
 
 [sub_resource type="Resource" id="Resource_1tkmq"]
@@ -97,6 +105,7 @@ script = ExtResource("8_yj56w")
 text = "You’re walking like you’re about to fall over."
 speaker_id = "npc_ash"
 speaker_name_override = "???"
+voice_clip = ExtResource("10_ryhcw")
 metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
 
 [sub_resource type="Resource" id="Resource_tdbxl"]
@@ -136,13 +145,15 @@ script = ExtResource("8_yj56w")
 text = "...You’re the new farmer."
 speaker_id = "npc_ash"
 speaker_name_override = "???"
+voice_clip = ExtResource("12_435ii")
 metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
 
 [sub_resource type="Resource" id="Resource_ppkgv"]
 script = ExtResource("8_yj56w")
-text = "Of course."
+text = "...Of course."
 speaker_id = "npc_ash"
 speaker_name_override = "???"
+voice_clip = ExtResource("13_lgnja")
 metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
 
 [sub_resource type="Resource" id="Resource_qx1ki"]
@@ -175,6 +186,7 @@ script = ExtResource("8_yj56w")
 text = "Come on. Your house is this way."
 speaker_id = "npc_ash"
 speaker_name_override = "???"
+voice_clip = ExtResource("14_1tkmq")
 metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
 
 [sub_resource type="Resource" id="Resource_pxsr6"]
@@ -182,6 +194,7 @@ script = ExtResource("8_yj56w")
 text = "I’m not carrying you."
 speaker_id = "npc_ash"
 speaker_name_override = "???"
+voice_clip = ExtResource("15_lrtxi")
 metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
 
 [sub_resource type="Resource" id="Resource_2vc1f"]
@@ -203,9 +216,10 @@ metadata/_custom_type_script = "uid://0k0f68wqa7mm"
 
 [sub_resource type="Resource" id="Resource_p4kxf"]
 script = ExtResource("8_yj56w")
-text = "Probably."
+text = "...Probably."
 speaker_id = "npc_ash"
 speaker_name_override = "???"
+voice_clip = ExtResource("16_lrtxi")
 metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
 
 [sub_resource type="Resource" id="Resource_6dixj"]

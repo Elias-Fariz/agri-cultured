@@ -2,9 +2,15 @@
 extends Button
 class_name ShelfItemCard
 
-@onready var icon_rect: TextureRect = $Margin/Root/Icon
-@onready var name_label: Label = $Margin/Root/TextCol/NameLabel
-@onready var price_label: Label = $Margin/Root/TextCol/PriceLabel
+@onready var icon_rect: TextureRect = $Margin/CardArea/Icon
+
+@onready var name_label: Label = (
+	$Margin/CardArea/TextPanel/TextMargin/TextCol/NameLabel
+)
+
+@onready var price_label: Label = (
+	$Margin/CardArea/TextPanel/TextMargin/TextCol/PriceLabel
+)
 
 var item_id: String = ""
 var base_price: int = 0

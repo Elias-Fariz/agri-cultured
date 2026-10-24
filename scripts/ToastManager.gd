@@ -33,6 +33,8 @@ func _add_toast(text: String, kind: String, duration: float) -> void:
 
 	# Simple padding container
 	var margin := MarginContainer.new()
+	
+	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	margin.add_theme_constant_override("margin_left", 10)
 	margin.add_theme_constant_override("margin_right", 10)
 	margin.add_theme_constant_override("margin_top", 6)

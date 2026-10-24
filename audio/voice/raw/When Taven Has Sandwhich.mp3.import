@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://b65nifblsk2si"
+path="res://.godot/imported/When Taven Has Sandwhich.mp3-1ef6f21569000f3c9319b39e8b7a268d.mp3str"
+
+[deps]
+
+source_file="res://audio/voice/raw/When Taven Has Sandwhich.mp3"
+dest_files=["res://.godot/imported/When Taven Has Sandwhich.mp3-1ef6f21569000f3c9319b39e8b7a268d.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

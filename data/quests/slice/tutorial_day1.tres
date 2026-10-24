@@ -1,9 +1,74 @@
-[gd_resource type="Resource" script_class="QuestData" load_steps=11 format=3 uid="uid://dc5tn3osodxit"]
+[gd_resource type="Resource" script_class="QuestData" load_steps=22 format=3 uid="uid://dc5tn3osodxit"]
 
 [ext_resource type="Script" uid="uid://cg0ailnic1w71" path="res://data/quests/QuestData.gd" id="1_fvlvt"]
 [ext_resource type="Script" uid="uid://dqvgpvdaiv010" path="res://data/quests/QuestNpcOverrideData.gd" id="1_gw17v"]
 [ext_resource type="Script" uid="uid://bolxtchvrfo0y" path="res://data/quests/QuestStepData.gd" id="2_gw17v"]
 [ext_resource type="Script" uid="uid://fp28wf3omrn8" path="res://data/quests/QuestSpawnRewardData.gd" id="2_ie44q"]
+[ext_resource type="Script" uid="uid://dt1fjl76x6n5o" path="res://data/dialogue/DialogueBeatData.gd" id="2_ykw4r"]
+[ext_resource type="Script" uid="uid://clb3lhdggkt8d" path="res://data/dialogue/DialogueSequenceData.gd" id="5_aeioh"]
+
+[sub_resource type="Resource" id="Resource_u5kbn"]
+script = ExtResource("2_ykw4r")
+text = "...You don't have any seeds."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_wgfo2"]
+script = ExtResource("2_ykw4r")
+text = "And you don't have enough left for a packet."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_nnyk8"]
+script = ExtResource("2_ykw4r")
+text = "Hm."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_8mjwy"]
+script = ExtResource("2_ykw4r")
+text = "No judgment."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_yvvp3"]
+script = ExtResource("2_ykw4r")
+text = "...A little judgment."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_vfogo"]
+script = ExtResource("2_ykw4r")
+text = "Here. Take these."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_d852n"]
+script = ExtResource("2_ykw4r")
+text = "Just don't make a habit of bankrupting yourself before lunchtime."
+speaker_id = "npc_tansy"
+metadata/_custom_type_script = "uid://dt1fjl76x6n5o"
+
+[sub_resource type="Resource" id="Resource_fd6ws"]
+script = ExtResource("5_aeioh")
+beats = Array[ExtResource("2_ykw4r")]([SubResource("Resource_u5kbn"), SubResource("Resource_wgfo2"), SubResource("Resource_nnyk8"), SubResource("Resource_8mjwy"), SubResource("Resource_yvvp3"), SubResource("Resource_vfogo"), SubResource("Resource_d852n")])
+reward_items = Dictionary[String, int]({
+"Watermelon Seeds": 1
+})
+reward_flags = Array[String](["tutorial_day1_seed_rescue_used"])
+metadata/_custom_type_script = "uid://clb3lhdggkt8d"
+
+[sub_resource type="Resource" id="Resource_aeioh"]
+script = ExtResource("1_gw17v")
+npc_id = "npc_tansy"
+phase = "active_step"
+step_index = 1
+condition_item_id = "Watermelon Seeds"
+require_item_missing = true
+require_cannot_afford = 10
+blocked_by_flag = "tutorial_day1_seed_rescue_used"
+sequence = SubResource("Resource_fd6ws")
+metadata/_custom_type_script = "uid://dqvgpvdaiv010"
 
 [sub_resource type="Resource" id="Resource_aqkft"]
 script = ExtResource("2_gw17v")
@@ -14,9 +79,9 @@ metadata/_custom_type_script = "uid://bolxtchvrfo0y"
 
 [sub_resource type="Resource" id="Resource_1kbf8"]
 script = ExtResource("2_gw17v")
-type = "buy"
+type = "have_item"
 target = "Watermelon Seeds"
-text = "Buy some watermelon seeds at the counter."
+text = "Get some watermelon seeds from Tansy."
 metadata/_custom_type_script = "uid://bolxtchvrfo0y"
 
 [sub_resource type="Resource" id="Resource_12pbc"]
@@ -53,6 +118,7 @@ quest_type = "chain"
 oneshot_action = ""
 steps = Array[ExtResource("2_gw17v")]([SubResource("Resource_aqkft"), SubResource("Resource_1kbf8"), SubResource("Resource_12pbc"), SubResource("Resource_6e1om"), SubResource("Resource_sdq8m"), SubResource("Resource_dnr2a")])
 reward_money = 25
-participant_ids = null
+participant_ids = PackedStringArray("npc_tansy")
+npc_overrides = Array[ExtResource("1_gw17v")]([SubResource("Resource_aeioh")])
 auto_claim_on_complete = true
 metadata/_custom_type_script = "uid://cg0ailnic1w71"

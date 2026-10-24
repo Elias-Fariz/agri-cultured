@@ -132,7 +132,8 @@ position = Vector2(149, -190)
 [node name="ShopCounter" parent="." instance=ExtResource("19_ibrsf")]
 position = Vector2(150, -143)
 shop_title = "General Store"
-shop_open_hour = 8
+shop_open_hour = 6
+shop_close_hour = 20
 prompt_priority = 50
 
 [node name="Player" parent="." instance=ExtResource("2_l0ll2")]

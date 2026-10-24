@@ -31,6 +31,16 @@ var hints: Dictionary = {
 		"duration": 4.0,
 	},
 
+	"quest_menu": {
+		"text": "You have a quest to follow.\nPress V to check your quests.",
+		"duration": 4.0,
+	},
+
+	"tool_switch": {
+		"text": "You have a few tools to work with.\nUse 1–6 to switch between them.",
+		"duration": 4.5,
+	},
+
 	"seed_pouch": {
 		"text": "Seed Pouch\nUse it on tilled soil to plant your selected seed.",
 		"duration": 4.0,
@@ -39,6 +49,16 @@ var hints: Dictionary = {
 	"seed_switch": {
 		"text": "You have more than one kind of seed.\nUse the seed-switch control to choose between them.",
 		"duration": 4.5,
+	},
+
+	"crafting": {
+		"text": "You learned a crafting recipe!\nPress C to open the crafting menu.",
+		"duration": 4.5,
+	},
+
+	"food": {
+		"text": "Some food can restore energy.\nOpen your inventory with T to eat it.",
+		"duration": 4.0,
 	},
 
 	"shipping_bin": {
@@ -230,3 +250,24 @@ func _show_scrapbook_intro_delayed(
 		% display_name,
 		4.5
 	)
+
+func request_hint_delayed(
+	hint_id: String,
+	delay: float = 1.0
+) -> void:
+	await get_tree().create_timer(delay).timeout
+	request_hint(hint_id)
+
+func reset_hint_for_debug(hint_id: String) -> void:
+	hint_id = hint_id.strip_edges()
+
+	if hint_id == "":
+		return
+
+	if GameState == null:
+		return
+
+	var flag := SEEN_FLAG_PREFIX + hint_id
+
+	if GameState.has_method("set_flag"):
+		GameState.set_flag(flag, false)

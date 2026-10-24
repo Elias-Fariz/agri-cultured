@@ -1,11 +1,14 @@
-[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3 uid="uid://djgq1lqkx7dyj"]
+[gd_resource type="Resource" script_class="ItemData" load_steps=4 format=3 uid="uid://djgq1lqkx7dyj"]
 
 [ext_resource type="Script" uid="uid://dfoyyckymw8co" path="res://data/items/ItemData.gd" id="1_hpaic"]
+[ext_resource type="Script" uid="uid://cswkwxx0fqbww" path="res://data/food/FoodEffectData.gd" id="1_hwi2a"]
+[ext_resource type="Texture2D" uid="uid://tud8lhuuqfq3" path="res://art/apple.png" id="2_wivnd"]
 
 [resource]
 script = ExtResource("1_hpaic")
 id = "Apple"
 display_name = "Apple"
+icon = ExtResource("2_wivnd")
 sell_price = 10
 description = "Ooh, shiny~"
 energy_restore = 1

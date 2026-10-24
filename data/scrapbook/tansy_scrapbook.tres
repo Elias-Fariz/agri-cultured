@@ -11,7 +11,7 @@
 script = ExtResource("5_dnv6v")
 entry_id = "tansy:first_meeting"
 title = "The Shopkeeper"
-body = "Tansy runs the general store."
+body = "Meticulous and quick-minded, Tansy is usually counting, organizing, labeling—or attempting to do all three at once."
 metadata/_custom_type_script = "uid://c3sbfryce6tqg"
 
 [sub_resource type="Resource" id="Resource_2l0jg"]

@@ -73,8 +73,14 @@ func _on_inventory_changed() -> void:
 	_refresh()
 
 
-func _on_tool_changed(_tool_type: int, _tool_name: String) -> void:
+func _on_tool_changed(
+	_tool_type: int,
+	_tool_name: String
+) -> void:
 	_refresh()
+
+	if int(_tool_type) == int(GameState.ToolType.SEED_POUCH):
+		TutorialHintManager.request_hint("seed_pouch")
 
 
 func _refresh() -> void:
